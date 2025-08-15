@@ -12,7 +12,7 @@ interface GenerateCharacterImagesRequest {
 }
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('Generate character reference images endpoint called');
+
   try {
     if (!process.env.OPEN_AI_API_KEY) {
       return NextResponse.json({ 
@@ -38,7 +38,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     const { characterSheet } = body;
 
     // Generate reference image for main character
-    console.log('Generating reference image for main character...');
+
     let mainCharacterImage = '';
     
     try {
@@ -52,8 +52,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       mainCharacterImage = mainCharResult.imageData.startsWith('data:') 
         ? mainCharResult.imageData 
         : `data:image/png;base64,${mainCharResult.imageData}`;
-        
-      console.log('Main character reference image generated successfully');
+
     } catch (error) {
       console.error('Failed to generate main character image:', error);
       // Continue without image rather than failing completely
@@ -64,7 +63,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     
     for (const character of characterSheet.supportingCharacters) {
       if (character.visualDescription) {
-        console.log(`Generating reference image for ${character.name}...`);
+
         try {
           const charResult = await generateCharacterReferenceImage(
             character.visualDescription,
@@ -77,7 +76,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
             : `data:image/png;base64,${charResult.imageData}`;
             
           supportingCharacterImages[character.name] = imageUrl;
-          console.log(`Reference image for ${character.name} generated successfully`);
+
         } catch (error) {
           console.error(`Failed to generate image for ${character.name}:`, error);
           // Continue with other characters

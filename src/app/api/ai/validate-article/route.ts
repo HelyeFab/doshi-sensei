@@ -77,23 +77,17 @@ export async function POST(request: NextRequest) {
     const sampleStart = Math.max(0, Math.floor((content.length - 1000) / 2));
     const contentSample = content.slice(sampleStart, sampleStart + 1000);
 
-    console.log('📊 [AI VALIDATE] Analyzing article:', {
-      title,
-      contentLength: content.length,
-      sampleLength: contentSample.length,
-      source
-    });
-
     // Step 1: Analyze content quality and structure
     const qualitySystemPrompt = `You are an expert Japanese language educator and content quality analyst.
 Analyze this Japanese article for learning purposes and provide a detailed quality assessment.
 
 ANALYSIS CRITERIA:
-1. Language Quality: Is it pure Japanese without mixed English text?
+1. Language Quality: Is it primarily Japanese? (Note: English for names, quotes, or terms being explained is ACCEPTABLE)
 2. Content Completeness: Does it have introduction, body, and conclusion?
 3. Educational Value: Is it suitable for Japanese language learners?
 4. Text Structure: Are sentences well-formed and grammatically correct?
 5. Readability: Is the content easy to follow and understand?
+6. English Usage: If English appears, is it intentional (names, quotes, technical terms) or accidental (UI elements, ads)?
 
 OUTPUT FORMAT (JSON):
 {
@@ -125,31 +119,41 @@ OUTPUT FORMAT (JSON):
     });
 
     const validationResult = JSON.parse(qualityCompletion.choices[0].message.content || '{}');
-    
-    console.log('📊 [AI VALIDATE] Initial validation:', {
-      qualityScore: validationResult.qualityScore,
-      jlptLevel: validationResult.jlptLevel,
-      canBeAutoFixed: validationResult.canBeAutoFixed
-    });
 
     // Step 2: If content can be auto-fixed and quality is between 40-70, attempt enhancement
     let enhancedContent = undefined;
     if (validationResult.canBeAutoFixed && validationResult.qualityScore >= 40 && validationResult.qualityScore <= 70) {
-      console.log('📊 [AI VALIDATE] Attempting to enhance article content...');
-      
+
       const enhanceSystemPrompt = `You are an expert Japanese content editor. 
 Your task is to clean and enhance Japanese articles for language learners.
 
-CRITICAL RULES:
-1. Remove ALL English text except proper nouns
-2. Fix incomplete sentences
-3. Ensure proper Japanese grammar
-4. Maintain the original meaning and information
-5. Keep the educational value for Japanese learners
-6. Output ONLY Japanese text (kanji, hiragana, katakana)
-7. Preserve the article structure (introduction, body, conclusion)
-8. Do not add information not present in the original
-9. Fix any obvious errors or typos
+IMPORTANT CONTEXT: Some English text may be INTENTIONAL and should be preserved:
+- English terms being taught or explained (e.g., 「Hello」は挨拶です)
+- Company/product names (Apple, iPhone, Microsoft)
+- Person names (Joe Biden, Taylor Swift)
+- Direct quotes from English sources
+- Technical terms commonly used in katakana or English
+- English text that is the SUBJECT of the article
+
+WHAT TO REMOVE:
+- Navigation text (e.g., "Next", "Previous", "Share")
+- Website UI elements (e.g., "Subscribe", "Comments")
+- Advertisement text
+- Copyright notices
+- Meta information not part of the article content
+- Accidental English translations mixed with Japanese
+
+ENHANCEMENT RULES:
+1. PRESERVE English text that is intentionally part of the article's content
+2. REMOVE only English text that is clearly website UI or navigation
+3. Fix incomplete sentences
+4. Ensure proper Japanese grammar
+5. Maintain the original meaning and information
+6. Keep the educational value for Japanese learners
+7. If English appears to be a translation note, integrate it properly or remove it
+8. Preserve the article structure (introduction, body, conclusion)
+9. Do not add information not present in the original
+10. Fix any obvious errors or typos
 
 Return ONLY the cleaned Japanese text, nothing else.`;
 
@@ -170,7 +174,7 @@ Return ONLY the cleaned Japanese text, nothing else.`;
         if (enhancedContent && enhancedContent.length > content.length * 0.5) {
           validationResult.enhancedContent = enhancedContent;
           validationResult.qualityScore = Math.min(validationResult.qualityScore + 20, 85);
-          console.log('📊 [AI VALIDATE] Content successfully enhanced');
+
         }
       } catch (enhanceError) {
         console.error('Error enhancing content:', enhanceError);

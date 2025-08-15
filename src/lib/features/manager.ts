@@ -27,7 +27,7 @@ export class FeatureManager {
         this.features = registry;
       });
     } catch (error) {
-      console.warn('[FeatureManager] Failed to load dynamic registry, using static:', error);
+
       this.features = FEATURE_REGISTRY;
       this.initialized = true;
     }

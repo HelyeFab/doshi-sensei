@@ -117,7 +117,7 @@ function LearnContent() {
       setLoading(true);
       const enrichedKanji = await enrichKanjiList(selected as EnrichedKanji[], {
         onProgress: (completed, total) => {
-          console.log(`Enriching kanji: ${completed}/${total}`);
+
         }
       });
       

@@ -41,7 +41,7 @@ export async function generateFurigana(text: string): Promise<string> {
     if (data.success && data.result) {
       return data.result;
     } else {
-      console.warn('Furigana API returned no result, using original text');
+
       return text;
     }
 
@@ -147,7 +147,7 @@ class FuriganaCache {
       }
     }
     this.articleCache.set(articleId, paragraphCache);
-    console.log(`[FuriganaCache] Cached ${paragraphCache.size} paragraphs for article: ${articleId}`);
+
   }
 
   getFromArticle(articleId: string, text: string): string | undefined {
@@ -176,7 +176,7 @@ class FuriganaCache {
 
   clearArticle(articleId: string): void {
     this.articleCache.delete(articleId);
-    console.log(`[FuriganaCache] Cleared cache for article: ${articleId}`);
+
   }
 
   size(): number {
@@ -192,10 +192,10 @@ class FuriganaCache {
         const data = JSON.parse(stored);
         this.cache = new Map(data.cache || []);
         // Don't persist article cache due to size - rebuild on demand
-        console.log(`[FuriganaCache] Loaded ${this.cache.size} entries from storage`);
+
       }
     } catch (error) {
-      console.warn('[FuriganaCache] Failed to load from storage:', error);
+
     }
   }
 
@@ -210,7 +210,7 @@ class FuriganaCache {
       };
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
-      console.warn('[FuriganaCache] Failed to save to storage:', error);
+
     }
   }
 
@@ -248,11 +248,10 @@ export async function generateFuriganaWithCache(text: string): Promise<string> {
 export async function generateFuriganaForArticle(articleId: string, text: string): Promise<string> {
   const cached = furiganaCache.getFromArticle(articleId, text);
   if (cached !== undefined) {
-    console.log(`[FuriganaCache] Cache hit for article ${articleId}, text length: ${text.length}`);
+
     return cached;
   }
 
-  console.log(`[FuriganaCache] Cache miss for article ${articleId}, processing text length: ${text.length}`);
   const result = await generateFurigana(text);
   furiganaCache.setToArticle(articleId, text, result);
 
@@ -280,11 +279,9 @@ export async function generateFuriganaForArticleParagraphs(articleId: string, pa
   }
 
   if (uncachedParagraphs.length === 0) {
-    console.log(`[FuriganaCache] All ${paragraphs.length} paragraphs cached for article: ${articleId}`);
+
     return results;
   }
-
-  console.log(`[FuriganaCache] Processing ${uncachedParagraphs.length}/${paragraphs.length} uncached paragraphs for article: ${articleId}`);
 
   // Process uncached paragraphs in batches
   const batchSize = 3; // Smaller batches for articles to prevent freezing

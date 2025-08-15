@@ -32,7 +32,7 @@ export class PremiumSyncManager {
    * Main sync method - performs full sync for a user
    */
   async performSync(userId: string, progressCallback?: (progress: SyncProgress) => void): Promise<SyncResult> {
-    console.log('[Sync] performSync called with userId:', userId);
+
     // Early return if no userId (this should never happen but let's be safe)
     if (!userId) {
       return {
@@ -87,12 +87,11 @@ export class PremiumSyncManager {
 
       // Get local and remote manifests
       this.reportProgress(0, 4, 'Fetching sync manifests');
-      console.log('[Sync] Starting to fetch manifests for user:', userId);
-      
+
       let localManifest, remoteManifest;
       try {
         localManifest = await this.getLocalManifest(userId);
-        console.log('[Sync] Local manifest fetched:', localManifest);
+
       } catch (error) {
         console.error('[Sync] Error fetching local manifest:', error);
         throw error;
@@ -100,7 +99,7 @@ export class PremiumSyncManager {
       
       try {
         remoteManifest = await this.firebaseAdapter.getUserManifest(userId);
-        console.log('[Sync] Remote manifest fetched:', remoteManifest);
+
       } catch (error) {
         console.error('[Sync] Error fetching remote manifest:', error);
         throw error;
@@ -167,7 +166,7 @@ export class PremiumSyncManager {
    * Cancel ongoing sync
    */
   cancelSync(): void {
-    console.log('[Sync] Canceling sync');
+
     if (this.currentSyncController) {
       this.currentSyncController.abort();
     }
@@ -419,23 +418,22 @@ export class PremiumSyncManager {
    * Get all local cached resources
    */
   private async getAllLocalResources(): Promise<CachedResource[]> {
-    console.log('[Sync] getAllLocalResources called');
+
     const types = ['article', 'story', 'audio', 'kanji', 'verb', 'adjective'] as const;
     const allResources: CachedResource[] = [];
     
     for (const type of types) {
       try {
-        console.log(`[Sync] Fetching resources of type: ${type}`);
+
         const resources = await this.storageManager.getResourcesByType(type);
-        console.log(`[Sync] Found ${resources.length} ${type} resources`);
+
         allResources.push(...resources);
       } catch (error) {
         console.error(`[Sync] Error fetching ${type} resources:`, error);
         // Continue with other types even if one fails
       }
     }
-    
-    console.log(`[Sync] Total resources found: ${allResources.length}`);
+
     return allResources;
   }
 

@@ -98,7 +98,7 @@ export default function GooglePayButton({
         if (response.result) {
           setIsReadyToPay(true);
         } else {
-          console.log('Google Pay is not available');
+
         }
       })
       .catch((err: any) => {
@@ -205,7 +205,7 @@ export default function GooglePayButton({
     paymentsClient.loadPaymentData(paymentDataRequest)
       .catch((err: any) => {
         if (err.statusCode === 'CANCELED') {
-          console.log('User cancelled Google Pay');
+
           if (onCancel) {
             onCancel();
           }

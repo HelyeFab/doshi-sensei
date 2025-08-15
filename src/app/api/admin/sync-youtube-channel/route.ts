@@ -38,12 +38,10 @@ function parseDuration(duration: string): number {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('Sync YouTube channel API called');
-    
+
     // Initialize Firebase Admin
     const admin = await getFirebaseAdmin();
-    console.log('Firebase Admin initialized');
-    
+
     // Check authentication
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -52,12 +50,10 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.split('Bearer ')[1];
-    console.log('Token received, length:', token?.length);
-    
+
     try {
       const decodedToken = await admin.auth().verifyIdToken(token);
-      console.log('Token verified for user:', decodedToken.uid);
-      
+
       // Check if user is admin
       const userDoc = await getDoc(doc(db, 'users', decodedToken.uid));
       const userData = userDoc.data();
@@ -65,7 +61,7 @@ export async function POST(request: NextRequest) {
         console.error('User is not admin:', decodedToken.uid);
         return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
       }
-      console.log('Admin access confirmed');
+
     } catch (authError: any) {
       console.error('Auth verification failed:', authError.message || authError);
       return NextResponse.json({ error: `Invalid token: ${authError.message || 'Unknown error'}` }, { status: 401 });
@@ -125,8 +121,6 @@ export async function POST(request: NextRequest) {
     if (!youtubeChannelId || (!youtubeChannelId.startsWith('UC') && !youtubeChannelId.startsWith('@'))) {
       return NextResponse.json({ error: 'Could not determine valid YouTube channel ID' }, { status: 400 });
     }
-
-    console.log('Syncing channel:', youtubeChannelId);
 
     // Fetch channel details
     const channelResponse = await axios.get(`${YOUTUBE_API_BASE}/channels`, {

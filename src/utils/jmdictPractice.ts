@@ -135,11 +135,22 @@ function mapPartOfSpeechToType(partOfSpeech: string[]): string | null {
     return 'Irregular';
   }
   
-  // Check for adjective types
-  if (partOfSpeech.includes('adj-i') || partOfSpeech.includes('adj-ix')) {
+  // Check for adjective types - be more strict
+  // Only true i-adjectives (not expressions with adjectives)
+  if (partOfSpeech.includes('adj-i') && !partOfSpeech.includes('exp')) {
     return 'i-adjective';
   }
-  if (partOfSpeech.includes('adj-na') || partOfSpeech.includes('adj-no')) {
+  if (partOfSpeech.includes('adj-ix')) {
+    return 'i-adjective';
+  }
+  
+  // Only true na-adjectives (not の-adjectives or pre-noun adjectivals)
+  // adj-no are attributive only and don't conjugate like na-adjectives
+  // adj-pn are pre-noun adjectivals (like あの, この) that don't conjugate
+  if (partOfSpeech.includes('adj-na') && 
+      !partOfSpeech.includes('adj-no') && 
+      !partOfSpeech.includes('adj-pn') &&
+      !partOfSpeech.includes('exp')) {
     return 'na-adjective';
   }
   
@@ -307,15 +318,14 @@ export async function loadJMdictForPractice(): Promise<void> {
   if (jmdictLoaded) return;
   
   try {
-    console.log('Loading JMdict data for practice...');
+
     const response = await fetch('/data/jmdict-eng-common.json');
     if (!response.ok) {
       throw new Error('Failed to load JMdict data');
     }
     
     const jmdict: JMdict = await response.json();
-    console.log(`Loaded ${jmdict.words.length} JMdict entries`);
-    
+
     // Process words in chunks to avoid blocking main thread
     const { verbs, adjectives } = await processWordsInChunks(jmdict.words);
     
@@ -327,8 +337,7 @@ export async function loadJMdictForPractice(): Promise<void> {
     practiceVerbsCache = verbs;
     practiceAdjectivesCache = adjectives;
     jmdictLoaded = true;
-    
-    console.log(`Processed ${verbs.length} verbs and ${adjectives.length} adjectives for practice`);
+
   } catch (error) {
     console.error('Failed to load JMdict for practice:', error);
     throw error;
@@ -359,13 +368,32 @@ export async function getJMdictPracticeWords(
   }
   
   // Take top common words (already sorted by frequency)
-  const topWords = pool.slice(0, limit * 2); // Get more than needed for variety
+  const topWords = pool.slice(0, Math.min(limit * 3, pool.length)); // Get 3x for variety
   
-  // Add some randomization while keeping most common words more likely to appear
-  const shuffled = topWords.sort(() => Math.random() - 0.3); // Slight shuffle, not complete randomization
+  // Select words with weighted probability based on their position
+  // Earlier words (more common) have higher chance of being selected
+  const selected: JapaneseWord[] = [];
+  const used = new Set<string>();
   
-  // Return requested amount
-  return shuffled.slice(0, Math.min(limit, topWords.length));
+  while (selected.length < limit && topWords.length > 0) {
+    // Weighted selection: prefer earlier indices
+    const weightedIndex = Math.floor(Math.random() * Math.random() * topWords.length);
+    const word = topWords[weightedIndex];
+    
+    // Avoid duplicates
+    if (!used.has(word.id)) {
+      selected.push(word);
+      used.add(word.id);
+    }
+    
+    // Safety: avoid infinite loop
+    if (selected.length + 10 < limit && used.size >= topWords.length) {
+      break;
+    }
+  }
+  
+  // Return consistent order (most common first)
+  return selected;
 }
 
 /**

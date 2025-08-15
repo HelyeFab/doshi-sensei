@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       }
     } catch (error) {
       // User not authenticated, that's fine for view tracking
-      console.log('Anonymous view tracking');
+
     }
 
     await ArticleManager.trackArticleView(articleId, userId);

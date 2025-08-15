@@ -11,7 +11,7 @@ export function withErrorHandling(
     try {
       // Add timeout warning after 8 seconds (before Netlify's 10s limit)
       const timeoutWarning = setTimeout(() => {
-        console.warn('[API] Route is taking longer than 8 seconds:', req.url);
+
       }, 8000);
 
       const response = await handler(req);

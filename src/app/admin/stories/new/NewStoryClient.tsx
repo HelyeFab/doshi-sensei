@@ -407,7 +407,7 @@ export default function NewStoryClient() {
       });
 
       if (validation.warnings.length > 0) {
-        console.warn('Import warnings:', validation.warnings);
+
       }
     } catch (error) {
       console.error('Error importing JSON:', error);

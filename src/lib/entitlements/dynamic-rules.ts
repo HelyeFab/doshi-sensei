@@ -130,7 +130,7 @@ export class DynamicEntitlementRules {
     // Only admins can save rules
     const isAdmin = await this.checkAdminAccess();
     if (!isAdmin) {
-      console.warn('Non-admin attempted to save rules');
+
       throw new Error('Unauthorized: Only admins can modify rules');
     }
     
@@ -162,7 +162,7 @@ export class DynamicEntitlementRules {
     // Only admins can update limits
     const isAdmin = await this.checkAdminAccess();
     if (!isAdmin) {
-      console.warn('Non-admin attempted to update limits');
+
       throw new Error('Unauthorized: Only admins can modify limits');
     }
     

@@ -253,7 +253,7 @@ export class KanjiListManager {
       try {
         await this.dbManager.delete('kanjiLists', listId);
       } catch (error) {
-        console.warn('List not found in IndexedDB:', listId);
+
       }
 
       // Auto-sync for premium users

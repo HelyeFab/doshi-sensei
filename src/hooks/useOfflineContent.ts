@@ -103,7 +103,7 @@ export function useOfflineContent(resourceType: ResourceType): OfflineContentHoo
         await ArticleCache.cacheArticle(resource, userType);
       } else if (resourceType === 'story') {
         // StoryCache would be implemented similarly
-        console.log('Story caching not yet implemented');
+
       } else {
         // Generic caching for other resource types
         await EnhancedStorageManager2.cacheResource({
@@ -160,7 +160,7 @@ export function useOfflineContent(resourceType: ResourceType): OfflineContentHoo
         // Clear specific resource type from cache
         const resources = await EnhancedStorageManager2.getResourcesByType(resourceType);
         // Individual removal would be implemented in EnhancedStorageManager2
-        console.log(`Clearing ${resources.length} ${resourceType} resources`);
+
       }
       
       await loadCachedCount();

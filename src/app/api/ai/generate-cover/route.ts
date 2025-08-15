@@ -18,7 +18,7 @@ const UNSPLASH_API_URL = 'https://api.unsplash.com/search/photos';
 
 async function searchUnsplash(keywords: string[]): Promise<string | null> {
   if (!UNSPLASH_ACCESS_KEY) {
-    console.log('❌ [COVER] Unsplash API key not configured');
+
     return null;
   }
 
@@ -71,17 +71,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('🎨 [COVER] Generating cover image:', {
-      title,
-      keywords,
-      preferDallE
-    });
-
     // Step 1: Try Unsplash first (unless DALL-E is preferred)
     if (!preferDallE && keywords.length > 0) {
       const unsplashUrl = await searchUnsplash([...keywords, 'Japan']);
       if (unsplashUrl) {
-        console.log('✅ [COVER] Found Unsplash image');
+
         return NextResponse.json({
           imageUrl: unsplashUrl,
           unsplashUrl,
@@ -119,8 +113,6 @@ Return ONLY the prompt text, nothing else.`;
         const imagePrompt = promptCompletion.choices[0].message.content || 
           `Japanese cultural scene, ${keywords.slice(0, 3).join(', ')}, watercolor illustration, minimalist style`;
 
-        console.log('🎨 [COVER] Generated DALL-E prompt:', imagePrompt);
-
         // Generate image with DALL-E 3
         const imageResponse = await openai.images.generate({
           model: "dall-e-3",
@@ -132,7 +124,7 @@ Return ONLY the prompt text, nothing else.`;
         });
 
         if (imageResponse.data && imageResponse.data[0]?.url) {
-          console.log('✅ [COVER] Generated DALL-E image');
+
           return NextResponse.json({
             imageUrl: imageResponse.data[0].url,
             generatedPrompt: imagePrompt,
@@ -146,7 +138,7 @@ Return ONLY the prompt text, nothing else.`;
         if (keywords.length > 0) {
           const unsplashUrl = await searchUnsplash([...keywords, 'Japan', 'study']);
           if (unsplashUrl) {
-            console.log('✅ [COVER] Fallback to Unsplash after DALL-E failure');
+
             return NextResponse.json({
               imageUrl: unsplashUrl,
               unsplashUrl,
@@ -160,7 +152,7 @@ Return ONLY the prompt text, nothing else.`;
     // Step 3: Final fallback - return generic Japanese-themed Unsplash image
     const fallbackUrl = await searchUnsplash(['Japan', 'culture', 'traditional', 'landscape']);
     if (fallbackUrl) {
-      console.log('✅ [COVER] Using generic fallback image');
+
       return NextResponse.json({
         imageUrl: fallbackUrl,
         unsplashUrl: fallbackUrl,

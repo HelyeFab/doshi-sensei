@@ -40,9 +40,7 @@ export function register(config?: Config) {
 
       // Add some additional logging to localhost
       navigator.serviceWorker.ready.then(() => {
-        console.log(
-          'This web app is being served cache-first by a service worker.'
-        );
+
       });
     } else {
       // Is not localhost. Just register service worker
@@ -69,9 +67,6 @@ function registerValidSW(swUrl: string, config?: Config) {
               // At this point, the updated precached content has been fetched,
               // but the previous service worker will still serve the older
               // content until all client tabs are closed.
-              console.log(
-                'New content is available and will be used when all tabs are closed.'
-              );
 
               // Execute callback
               if (config && config.onUpdate) {
@@ -79,7 +74,6 @@ function registerValidSW(swUrl: string, config?: Config) {
               }
             } else {
               // At this point, everything has been precached.
-              console.log('Content is cached for offline use.');
 
               // Execute callback
               if (config && config.onSuccess) {
@@ -122,7 +116,7 @@ function checkValidServiceWorker(swUrl: string, config?: Config) {
       }
     })
     .catch(() => {
-      console.log('No internet connection found. App is running in offline mode.');
+
     });
 }
 
@@ -191,7 +185,7 @@ export async function requestPersistentStorage(): Promise<boolean> {
   }
     try {
     const granted = await navigator.storage.persist();
-    console.log(`Persistent storage ${granted ? 'granted' : 'denied'}`);
+
     return granted;
   } catch (error) {
     console.error('Error requesting persistent storage:', error);

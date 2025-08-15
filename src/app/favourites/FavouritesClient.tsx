@@ -136,12 +136,9 @@ export default function FavouritesClient() {
       
       // For premium users, sync from cloud first
       if (user && isPremium && subscription) {
-        console.log('Syncing from cloud for premium user...', {
-          user: user.uid,
-          status: subscription.status
-        });
+
         const syncSuccess = await StudyListManager.syncFromCloud(user, subscription.status);
-        console.log('Sync result:', syncSuccess);
+
       }
       
       // Then load study lists from localStorage
@@ -226,12 +223,7 @@ export default function FavouritesClient() {
       setCurrentPage(1); // Reset to first page when selecting a new list
       // Use the unified system to get words, kanji, and sentences from the list
       const { words, kanji, sentences, ankiCards } = await StudyListManager.getItemsInList(list.id);
-      console.log(`Loading items for list ${list.id}:`, {
-        words: words.length,
-        kanji: kanji.length,
-        sentences: sentences.length,
-        ankiCards: ankiCards.length
-      });
+
       setListWords(words);
       setListKanji(kanji);
       setListSentences(sentences);
@@ -330,7 +322,7 @@ export default function FavouritesClient() {
         doc(db, 'users', user.uid, 'studyLists', 'data'),
         (snapshot) => {
           if (snapshot.exists()) {
-            console.log('Real-time update: study lists changed');
+
             loadWordLists(); // Reload lists when Firebase data changes
           }
         },
@@ -344,7 +336,7 @@ export default function FavouritesClient() {
         doc(db, 'users', user.uid, 'savedStudyItems', 'data'),
         (snapshot) => {
           if (snapshot.exists()) {
-            console.log('Real-time update: saved items changed');
+
             // If we're viewing a specific list, reload its items
             if (selectedList) {
               handleListClick(selectedList);
@@ -538,7 +530,6 @@ export default function FavouritesClient() {
           return 0;
       }
     });
-
 
   if (loading) {
     return (

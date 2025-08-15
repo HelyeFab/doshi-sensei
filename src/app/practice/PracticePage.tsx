@@ -74,7 +74,7 @@ export default function PracticePage() {
   useEffect(() => {
     if (showUpgradeModal) {
       trackUpgradeModalShown('feature_limit', 'anki_import');
-      console.log('📊 [Analytics] Upgrade modal shown:', { trigger: 'feature_limit', feature: 'anki_import' });
+
     }
   }, [showUpgradeModal, trackUpgradeModalShown]);
 
@@ -85,8 +85,7 @@ export default function PracticePage() {
     try {
       // Track upgrade plan selected
       track('upgrade_plan_selected', { plan, feature: 'anki_import' });
-      console.log('📊 [Analytics] Upgrade plan selected:', { plan, feature: 'anki_import' });
-      
+
       const priceId = plan === 'monthly'
         ? STRIPE_CONFIG.priceIds.monthly
         : STRIPE_CONFIG.priceIds.yearly;
@@ -901,7 +900,7 @@ export default function PracticePage() {
         isOpen={showUpgradeModal}
         onClose={() => {
           track('upgrade_modal_dismissed', { feature: 'anki_import' });
-          console.log('📊 [Analytics] Upgrade modal dismissed:', { feature: 'anki_import' });
+
           setShowUpgradeModal(false);
         }}
         height="auto"
@@ -952,7 +951,7 @@ export default function PracticePage() {
           <button
             onClick={() => {
               track('upgrade_modal_dismissed', { feature: 'anki_import' });
-              console.log('📊 [Analytics] Upgrade modal dismissed:', { feature: 'anki_import' });
+
               setShowUpgradeModal(false);
             }}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"

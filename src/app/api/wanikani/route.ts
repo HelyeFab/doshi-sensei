@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
     // Check cache
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      console.log('[WaniKani Proxy] Cache hit for:', cacheKey);
+
       return NextResponse.json(cached.data, {
         headers: {
           'X-Cache': 'HIT',

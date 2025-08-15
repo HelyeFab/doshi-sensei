@@ -2,7 +2,7 @@
 
 export default function SimpleAITrigger({ text }: { text: string }) {
   const handleClick = () => {
-    console.log('AI Explanation requested for:', text);
+
     alert(`AI Explanation would be shown for: ${text}`);
   };
 

@@ -266,7 +266,7 @@ export class SearchHistoryManager2 {
         
         // Remove old history
         localStorage.removeItem(oldHistoryKey);
-        console.log('Successfully migrated search history from localStorage');
+
       }
     } catch (error) {
       console.error('Error migrating old search history:', error);

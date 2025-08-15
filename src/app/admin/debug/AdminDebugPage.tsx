@@ -44,7 +44,6 @@ export default function AdminDebugPage() {
     }
 
     // Log debug page load
-    console.log('Debug page loaded', { user: user.email });
 
     // Check system status
     checkSystemStatus();
@@ -163,7 +162,7 @@ export default function AdminDebugPage() {
     // Check Firebase Storage
     try {
       if (user) {
-        console.log('Checking Firebase Storage status...');
+
         const token = await user.getIdToken();
         const response = await fetch('/api/admin/test-storage', {
           method: 'POST',
@@ -175,7 +174,7 @@ export default function AdminDebugPage() {
         if (response.ok) {
           const result = await response.json();
           if (result.success) {
-            console.log('Firebase Storage check successful:', result.tests.bucketAccess.bucketName);
+
             setSystemStatus(prev => ({ 
               ...prev, 
               firebaseStorage: { 
@@ -252,11 +251,9 @@ export default function AdminDebugPage() {
     if (!confirm('This will clear all cached data including IndexedDB, localStorage, and sessionStorage. Are you sure?')) return;
 
     try {
-      console.log('Starting cache cleanup...');
-      
+
       // Clear IndexedDB using our utility
       await clearAllIndexedDB();
-      console.log('IndexedDB cleared');
 
       // Clear localStorage
       const localStorageCount = localStorage.length;
@@ -503,13 +500,7 @@ export default function AdminDebugPage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    console.log('=== Current User ===');
-                    console.log('User:', user);
-                    console.log('Email:', user?.email);
-                    console.log('UID:', user?.uid);
-                    console.log('=== Environment ===');
-                    console.log('NODE_ENV:', process.env.NODE_ENV);
-                    console.log('=== Storage ===');
+
                     console.log('LocalStorage items:', Object.keys(localStorage));
                     console.log('SessionStorage items:', Object.keys(sessionStorage));
                     alert('Debug info logged to console');
@@ -564,7 +555,7 @@ export default function AdminDebugPage() {
                       const result = await response.json();
                       
                       if (result.success) {
-                        console.log('Firebase Storage Test Results:', result);
+
                         alert(`Firebase Storage test successful!\n\nBucket: ${result.tests.bucketAccess.bucketName}\nFile uploaded: ${result.tests.fileUpload.success}\nImage test: ${result.tests.imageDownloadAndStore?.success ? 'Success' : 'Failed'}\n\nCheck console for full details.`);
                       } else {
                         console.error('Firebase Storage test failed:', result);
@@ -584,11 +575,9 @@ export default function AdminDebugPage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    console.log('This is a regular console.log message');
-                    console.info('This is an info message with data:', { test: true, value: 42 });
-                    console.warn('This is a warning message');
+
                     console.error('This is an error message', new Error('Test error'));
-                    console.debug('This is a debug message with array:', [1, 2, 3, 4, 5]);
+
                     console.log('Complex object:', {
                       user: { name: 'Test User', email: 'test@example.com' },
                       settings: { theme: 'dark', language: 'en' },

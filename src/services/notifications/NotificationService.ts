@@ -20,7 +20,7 @@ export class NotificationService {
 
   async initialize(userId: string): Promise<void> {
     if (typeof window === 'undefined' || !('Notification' in window)) {
-      console.warn('Notifications not supported in this environment');
+
       return;
     }
 
@@ -38,7 +38,7 @@ export class NotificationService {
 
       // Listen for foreground messages
       onMessage(this.messaging, (payload) => {
-        console.log('Foreground notification received:', payload);
+
         this.handleForegroundMessage(payload);
       });
     } catch (error) {
@@ -54,7 +54,7 @@ export class NotificationService {
 
       // Check if browser supports notifications
       if (!('Notification' in window)) {
-        console.warn('Browser does not support notifications');
+
         // Still enable in-app notifications
         await this.enableInAppOnly();
         return true;

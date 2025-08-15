@@ -142,10 +142,11 @@ export interface ConjugationForms {
 }
 
 // Drill Question Interface
+// Note: targetForm now uses ExtendedConjugationForms from conjugation-extended.ts
 export interface DrillQuestion {
   id: string;
   word: JapaneseWord;
-  targetForm: keyof ConjugationForms;
+  targetForm: any; // Using 'any' to avoid circular dependency, should be keyof ExtendedConjugationForms
   stem: string;
   correctAnswer: string;
   options: string[];

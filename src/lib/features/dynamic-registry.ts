@@ -91,12 +91,12 @@ export class DynamicFeatureRegistry {
       if (registryDoc.exists()) {
         const data = registryDoc.data();
         this.cachedRegistry = data.features as FeatureRegistry;
-        console.log('[DynamicRegistry] Loaded from Firebase');
+
         return this.cachedRegistry;
       }
       
       // Initialize with static registry if not found
-      console.log('[DynamicRegistry] Not found in Firebase, initializing with static registry');
+
       await this.saveRegistry(STATIC_REGISTRY);
       this.cachedRegistry = STATIC_REGISTRY;
       return STATIC_REGISTRY;
@@ -141,7 +141,7 @@ export class DynamicFeatureRegistry {
     // Only admins can save registry
     const isAdmin = await this.checkAdminAccess();
     if (!isAdmin) {
-      console.warn('Non-admin attempted to save feature registry');
+
       throw new Error('Unauthorized: Only admins can modify feature registry');
     }
     
@@ -162,7 +162,7 @@ export class DynamicFeatureRegistry {
       
       this.cachedRegistry = registry;
       this.notifyListeners(registry);
-      console.log('[DynamicRegistry] Saved to Firebase');
+
     } catch (error) {
       console.error('[DynamicRegistry] Error saving:', error);
       throw error;

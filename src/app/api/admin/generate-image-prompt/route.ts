@@ -6,8 +6,7 @@ export const runtime = 'nodejs';
 export const maxDuration = 30;
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('Generate image prompt endpoint called');
-  
+
   try {
     if (!process.env.OPEN_AI_API_KEY) {
       return NextResponse.json({ 
@@ -86,8 +85,6 @@ Create a detailed, descriptive image prompt that MUST include the character's fu
     if (!imagePrompt) {
       throw new Error('Failed to generate image prompt');
     }
-
-    console.log(`Generated image prompt for page ${pageNumber}:`, imagePrompt);
 
     return NextResponse.json({
       success: true,

@@ -45,12 +45,12 @@ export class FirebaseSyncAdapter {
       const manifestDoc = await getDoc(manifestRef);
       
       if (!manifestDoc.exists()) {
-        console.log('[Sync] No manifest found for user, returning null');
+
         return null;
       }
 
       const data = manifestDoc.data();
-      console.log('[Sync] Manifest data retrieved:', data);
+
       return {
         userId: data.userId,
         lastSyncTimestamp: data.lastSyncTimestamp,
@@ -66,7 +66,7 @@ export class FirebaseSyncAdapter {
       }
       
       // For other errors, log but don't throw to avoid breaking the app
-      console.warn('Error fetching user manifest:', error);
+
       return null;
     }
   }
@@ -286,7 +286,6 @@ export class FirebaseSyncAdapter {
       );
     }
   }
-
 
   /**
    * Generate a consistent document ID for resources

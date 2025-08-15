@@ -87,7 +87,7 @@ export class GameAudioManager {
   }
 
   stopAllSounds() {
-    console.log('[KanaDrop Audio] Stopping all sounds');
+
     this.currentlyPlayingSounds.forEach(sound => {
       sound.pause();
       sound.currentTime = 0;
@@ -99,7 +99,7 @@ export class GameAudioManager {
   // Stop the countdown sound specifically
   stopCountdownSound() {
     if (this.currentCountdownSound) {
-      console.log('[KanaDrop Audio] Stopping countdown sound');
+
       this.currentCountdownSound.pause();
       this.currentCountdownSound.currentTime = 0;
       this.currentlyPlayingSounds.delete(this.currentCountdownSound);
@@ -111,7 +111,6 @@ export class GameAudioManager {
   stopSound(soundType: 'error' | 'thud' | 'victory' | 'gameOver' | 'countdown' | 'start') {
     if (!this.sounds[soundType]) return;
 
-    console.log(`[KanaDrop Audio] Stopping ${soundType} sound`);
     const sound = this.sounds[soundType];
     sound.pause();
     sound.currentTime = 0;
@@ -128,7 +127,7 @@ export class GameAudioManager {
     if (!this.sounds[soundType]) return;
 
     try {
-      console.log(`[KanaDrop Audio] Playing ${soundType} sound`);
+
       if (this.audioContext && this.audioContext.state === 'suspended') {
         await this.audioContext.resume();
       }
@@ -141,7 +140,7 @@ export class GameAudioManager {
       } catch (playError: any) {
         // If play fails due to service worker/network issue, try fetch method
         if (playError.name === 'NotAllowedError' || playError.name === 'AbortError') {
-          console.warn(`[KanaDrop Audio] First attempt failed for ${soundType}, trying fetch method`);
+
           await this.playViaFetch(sound.src.split('?')[0], sound);
         } else {
           throw playError;
@@ -176,7 +175,7 @@ export class GameAudioManager {
     this.stopAllSounds();
 
     try {
-      console.log('[KanaDrop Audio] Starting background music');
+
       if (this.audioContext && this.audioContext.state === 'suspended') {
         await this.audioContext.resume();
       }
@@ -184,7 +183,7 @@ export class GameAudioManager {
       // Try to play background music with fallback
       this.backgroundMusic.play().catch(async (error) => {
         if (error.name === 'NotAllowedError' || error.name === 'AbortError') {
-          console.warn('[KanaDrop Audio] First attempt failed for background music, trying fetch method');
+
           try {
             if (this.backgroundMusic) {
               await this.playViaFetch(this.backgroundMusic.src.split('?')[0], this.backgroundMusic);
@@ -203,7 +202,7 @@ export class GameAudioManager {
 
   stopBackgroundMusic() {
     if (this.backgroundMusic) {
-      console.log('[KanaDrop Audio] Stopping background music');
+
       this.backgroundMusic.pause();
       this.backgroundMusic.currentTime = 0;
     }

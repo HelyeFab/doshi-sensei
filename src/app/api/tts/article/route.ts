@@ -13,14 +13,6 @@ export async function POST(request: NextRequest) {
   
   try {
     const body = await request.json();
-    console.log('[TTS API] Received request body:', {
-      hasArticleId: !!body.articleId,
-      hasContent: !!body.content,
-      contentLength: body.content?.length || 0,
-      voice: body.voice,
-      provider: body.provider,
-      bodyKeys: Object.keys(body)
-    });
     
     const { articleId, content, voice = 'male', provider = 'elevenlabs' } = body;
 
@@ -32,8 +24,6 @@ export async function POST(request: NextRequest) {
       });
       return NextResponse.json({ error: 'Article ID and content are required' }, { status: 400 });
     }
-
-    console.log(`[TTS API] Request for article ${articleId}, voice: ${voice}, provider: ${provider}`);
 
     // Initialize server-side cache
     const cache = ServerFirebaseCache.getInstance();
@@ -53,12 +43,9 @@ export async function POST(request: NextRequest) {
         });
       }
     } catch (cacheError) {
-      console.warn(`⚠️ Cache check failed for article ${articleId}:`, cacheError);
+
       // Continue to generate new audio
     }
-
-    console.log(`🎤 Generating new audio for article ${articleId} using ${provider}...`);
-    console.log(`[TTS API] Content length: ${content.length} characters`);
 
     // Generate audio for the entire content
     let audioBlob: Blob | null = null;
@@ -101,7 +88,7 @@ export async function POST(request: NextRequest) {
           if (response.ok) {
             const audioBuffer = await response.arrayBuffer();
             audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
-            console.log(`✅ ElevenLabs generated ${audioBuffer.byteLength} bytes`);
+
           } else {
             const errorText = await response.text();
             console.error('❌ ElevenLabs API error:', {
@@ -118,13 +105,13 @@ export async function POST(request: NextRequest) {
           // Fall through to Google TTS
         }
       } else {
-        console.log('[TTS API] No ElevenLabs API key found');
+
       }
     }
 
     // Fallback to Google TTS if ElevenLabs failed or not requested
     if (!audioBlob) {
-      console.log('🎤 Using Google TTS as fallback...');
+
       const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_TTS_API_KEY;
 
       if (!googleApiKey) {
@@ -208,8 +195,7 @@ export async function POST(request: NextRequest) {
       const audioUrl = await cache.cacheAudio(articleId, content, voice, provider, buffer);
       
       const totalTime = Date.now() - startTime;
-      console.log(`✅ Audio generated and cached in ${totalTime}ms`);
-      
+
       return NextResponse.json({
         audioUrl,
         success: true,

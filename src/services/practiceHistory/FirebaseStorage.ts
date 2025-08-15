@@ -32,18 +32,10 @@ export class FirebasePracticeHistoryStorage {
   async addOrUpdateItem(item: PracticeHistoryItem): Promise<void> {
     const docId = this.getDocId(item.videoId);
     const docRef = doc(db, COLLECTION_NAME, docId);
-    
-    console.log('=== Firebase Practice History Save ===');
-    console.log('Collection:', COLLECTION_NAME);
-    console.log('Doc ID:', docId);
-    console.log('User ID:', this.userId);
-    console.log('Item:', item);
-    
+
     // Ensure authentication is ready
     const currentUser = await waitForAuth();
-    console.log('Current auth user:', currentUser?.uid);
-    console.log('Auth user matches userId:', currentUser?.uid === this.userId);
-    
+
     if (!currentUser || currentUser.uid !== this.userId) {
       console.error('Authentication mismatch!', {
         currentUserId: currentUser?.uid,
@@ -54,8 +46,7 @@ export class FirebasePracticeHistoryStorage {
     
     // Get fresh token to ensure auth is current
     const token = await getFreshIdToken();
-    console.log('Got fresh auth token:', !!token);
-    
+
     try {
       // Check if document exists
       const docSnap = await getDoc(docRef);
@@ -64,8 +55,7 @@ export class FirebasePracticeHistoryStorage {
       if (docSnap.exists()) {
         // Update existing item
         const existingData = docSnap.data();
-        console.log('Existing document data:', existingData);
-        
+
         // Ensure we include all required fields in the update
         const updateData = {
           userId: this.userId,
@@ -77,13 +67,12 @@ export class FirebasePracticeHistoryStorage {
           practiceCount: (existingData.practiceCount || 0) + 1,
           contentType: item.contentType
         };
-        
-        console.log('Update data:', updateData);
+
         console.log('Update field keys:', Object.keys(updateData));
         
         // Use set instead of merge to ensure all fields are present
         await setDoc(docRef, updateData);
-        console.log('✅ Successfully updated practice history in Firebase');
+
       } else {
         // Create new item - only include required fields
         const dataToSave = {
@@ -98,28 +87,14 @@ export class FirebasePracticeHistoryStorage {
         };
         
         // Double-check userId matches document ID pattern
-        console.log('Document ID:', docId);
-        console.log('User ID in data:', dataToSave.userId);
-        console.log('Expected pattern:', `${this.userId}_${item.videoId}`);
-        
+
         console.log('Data to save (required fields only):', dataToSave);
         console.log('Field keys:', Object.keys(dataToSave));
-        console.log('Field types:', {
-          userId: typeof dataToSave.userId,
-          videoId: typeof dataToSave.videoId,
-          videoUrl: typeof dataToSave.videoUrl,
-          videoTitle: typeof dataToSave.videoTitle,
-          lastPracticed: dataToSave.lastPracticed?.constructor?.name,
-          firstPracticed: dataToSave.firstPracticed?.constructor?.name,
-          practiceCount: typeof dataToSave.practiceCount,
-          contentType: typeof dataToSave.contentType
-        });
-        
+
         // Validate all required fields
         const requiredFields = ['userId', 'videoId', 'videoUrl', 'videoTitle', 'lastPracticed', 'firstPracticed', 'practiceCount', 'contentType'];
         const hasAllFields = requiredFields.every(field => field in dataToSave);
-        console.log('Has all required fields:', hasAllFields);
-        
+
         // Validate contentType
         if (!['youtube', 'audio', 'video'].includes(dataToSave.contentType)) {
           console.error('Invalid contentType:', dataToSave.contentType);
@@ -127,7 +102,7 @@ export class FirebasePracticeHistoryStorage {
         }
         
         await setDoc(docRef, dataToSave);
-        console.log('✅ Successfully created new practice history in Firebase');
+
       }
     } catch (error: any) {
       console.error('❌ Error saving practice history to Firebase:', error);

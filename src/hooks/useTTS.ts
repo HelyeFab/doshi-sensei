@@ -47,7 +47,7 @@ export function useTTS(): TTSHookReturn {
 
   const speak = useCallback(async (text: string, options: TTSOptions = {}) => {
     if (!text?.trim()) {
-      console.warn('Empty text provided to TTS');
+
       return;
     }
 
@@ -139,7 +139,7 @@ export function useTTS(): TTSHookReturn {
   const clearCache = useCallback(async () => {
     try {
       await TTSManager.clearCache();
-      console.log('🧹 TTS cache cleared');
+
     } catch (error) {
       console.error('Error clearing TTS cache:', error);
       throw error;

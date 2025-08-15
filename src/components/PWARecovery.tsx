@@ -56,7 +56,7 @@ export default function PWARecovery() {
       if ('caches' in window) {
         const cacheNames = await caches.keys();
         await Promise.all(cacheNames.map(name => caches.delete(name)));
-        console.log('Cleared all caches for recovery');
+
       }
 
       // Clear localStorage except critical data
@@ -70,7 +70,7 @@ export default function PWARecovery() {
       if ('serviceWorker' in navigator) {
         const registrations = await navigator.serviceWorker.getRegistrations();
         await Promise.all(registrations.map(reg => reg.unregister()));
-        console.log('Unregistered all service workers');
+
       }
 
       // Force reload

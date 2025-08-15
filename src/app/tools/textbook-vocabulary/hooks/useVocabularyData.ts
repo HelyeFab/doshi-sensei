@@ -49,7 +49,7 @@ export function useLearningData(sourceId: string, lesson?: number) {
             const lessonModule = await import(`@/data/${sourceId}/lessons/lesson-${lesson}.json`);
             items = lessonModule.default;
           } catch (err) {
-            console.warn(`Lesson ${lesson} not found for source ${sourceId}, attempting to load all.`);
+
             // Fallback to loading all if specific lesson fails
             try {
               const allModule = await import(`@/data/${sourceId}/all.json`);

@@ -26,8 +26,7 @@ export class ArticleCache {
    */
   static async cacheArticle(article: Article, userType: UserType): Promise<void> {
     try {
-      console.log(`[ArticleCache] Caching article: ${article.id}`);
-      
+
       // Download and cache all images
       const imageBlobs = await this.downloadImages(article.images || []);
       
@@ -46,9 +45,9 @@ export class ArticleCache {
       // Check if eviction is needed before caching
       const needsEviction = await evictionEngine.requiresEviction('article', userType, size);
       if (needsEviction) {
-        console.log(`[ArticleCache] Eviction needed for user type: ${userType}`);
+
         const evictionResult = await evictionEngine.enforceLimit('article', userType);
-        console.log(`[ArticleCache] Evicted ${evictionResult.evictedCount} articles, freed ${evictionResult.freedBytes} bytes`);
+
       }
       
       // Create cached article
@@ -101,8 +100,7 @@ export class ArticleCache {
       
       // Also store in EnhancedStorageManager2 for compatibility
       await EnhancedStorageManager2.cacheResource(cachedArticle, userType);
-      
-      console.log(`[ArticleCache] Successfully cached article: ${article.id}`);
+
     } catch (error) {
       console.error(`[ArticleCache] Failed to cache article ${article.id}:`, error);
       throw error;
@@ -118,7 +116,7 @@ export class ArticleCache {
       const articleData = await ArticleIndexedDB.getArticle(id);
       
       if (articleData && !this.isStaleData(articleData)) {
-        console.log(`[ArticleCache] Serving article from IndexedDB: ${id}`);
+
         const assets = await ArticleIndexedDB.getArticleAssets(id);
         return {
           ...articleData,
@@ -130,13 +128,13 @@ export class ArticleCache {
       const cached = await EnhancedStorageManager2.getCachedResource('article', id);
       
       if (cached && !this.isStale(cached)) {
-        console.log(`[ArticleCache] Serving article from cache: ${id}`);
+
         return this.hydrateCachedArticle(cached as CachedArticle);
       }
       
       // Fall back to network if fetch function provided
       if (fetchFn) {
-        console.log(`[ArticleCache] Fetching article from network: ${id}`);
+
         const article = await fetchFn();
         
         // Cache in background (don't wait)
@@ -147,7 +145,7 @@ export class ArticleCache {
       
       // Return stale cache if no fetch function
       if (cached) {
-        console.log(`[ArticleCache] Serving stale article from cache: ${id}`);
+
         return this.hydrateCachedArticle(cached as CachedArticle);
       }
       
@@ -256,7 +254,7 @@ export class ArticleCache {
               if (!cached) {
                 // Fetch and cache in background
                 // This would call your API to get the article
-                console.log(`[ArticleCache] Pre-caching related article: ${id}`);
+
               }
             })
             .catch(console.error);
@@ -275,7 +273,7 @@ export class ArticleCache {
       await EnhancedStorageManager2.getCachedResource('article', article.id)
         .then(() => {
           // Remove from cache
-          console.log(`[ArticleCache] Clearing cached article: ${article.id}`);
+
         })
         .catch(console.error);
     }

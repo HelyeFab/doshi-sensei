@@ -73,7 +73,7 @@ class LearnedWordsStorage {
       try {
         await this.syncLearnedWordToFirebase(userId, learnedWord);
       } catch (error) {
-        console.warn('Failed to sync learned word to Firebase:', error);
+
       }
     }
   }
@@ -93,7 +93,7 @@ class LearnedWordsStorage {
       try {
         await this.removeLearnedWordFromFirebase(userId, wordId, lessonId);
       } catch (error) {
-        console.warn('Failed to remove learned word from Firebase:', error);
+
       }
     }
   }
@@ -112,7 +112,7 @@ class LearnedWordsStorage {
           return firebaseWords;
         }
       } catch (error) {
-        console.warn('Failed to get learned words from Firebase:', error);
+
       }
     }
     
@@ -154,7 +154,7 @@ class LearnedWordsStorage {
       try {
         await this.resetLessonProgressFirebase(userId, lessonId);
       } catch (error) {
-        console.warn('Failed to reset lesson progress in Firebase:', error);
+
       }
     }
   }

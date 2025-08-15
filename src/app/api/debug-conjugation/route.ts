@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { searchWords } from '@/utils/api';
-import { ConjugationEngine } from '@/utils/conjugation';
+import { ExtendedConjugationEngine } from '@/utils/conjugation-extended';
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         // Test conjugation if requested
         conjugations: testConjugation ? (() => {
           try {
-            const forms = ConjugationEngine.conjugate(result);
+            const forms = ExtendedConjugationEngine.conjugate(result);
             return {
               success: true,
               sampleForms: {

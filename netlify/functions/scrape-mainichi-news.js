@@ -1,5 +1,6 @@
 const admin = require('firebase-admin');
 const cheerio = require('cheerio');
+const { filterArticles, quickValidate } = require('./article-quick-validation');
 
 // Function to get Unsplash image for articles without covers
 async function getUnsplashImage(keyword = 'japan news') {
@@ -322,13 +323,34 @@ async function scrapeMainichi() {
           imageUrl = await getUnsplashImage('japan news ' + title.substring(0, 30));
         }
         
+        // Parse publish date safely
+        let parsedDate = new Date();
+        if (publishDate) {
+          try {
+            // Try to parse the date
+            const testDate = new Date(publishDate);
+            if (!isNaN(testDate.getTime())) {
+              parsedDate = testDate;
+            } else {
+              // Try parsing Japanese format like "8/15 18:26"
+              const match = publishDate.match(/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{2})/);
+              if (match) {
+                const year = new Date().getFullYear();
+                parsedDate = new Date(year, parseInt(match[1]) - 1, parseInt(match[2]), parseInt(match[3]), parseInt(match[4]));
+              }
+            }
+          } catch (e) {
+            console.warn('⚠️ Could not parse date:', publishDate);
+          }
+        }
+        
         const articleData = {
           title: title || article.title,
           content: content,
           summary: summary,
           url: article.url,
           imageUrl: imageUrl || '',
-          publishDate: publishDate ? new Date(publishDate) : new Date(),
+          publishDate: parsedDate,
           scrapedAt: admin.firestore.Timestamp.now(),
           source: {
             name: 'Mainichi Shimbun',
@@ -405,11 +427,31 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // Filter out invalid articles before saving
+    const validArticles = filterArticles(articles);
+    console.log(`📊 After validation: ${validArticles.length} valid articles (filtered ${articles.length - validArticles.length})`);
+    
+    if (validArticles.length === 0) {
+      console.log('⚠️ No valid articles to save');
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          success: true,
+          message: 'No valid Japanese articles found',
+          articlesCount: 0,
+          totalScraped: articles.length,
+          filtered: articles.length,
+          source: 'Mainichi Shimbun'
+        })
+      };
+    }
+    
     // Save to Firestore
     const batch = db.batch();
     let savedCount = 0;
 
-    for (const article of articles) {
+    for (const article of validArticles) {
       try {
         // Check if article already exists
         const existingDocs = await db.collection('articles')

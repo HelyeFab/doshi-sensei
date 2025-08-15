@@ -93,29 +93,26 @@ export function WordLearningLessonSelector({
   };
 
   const handleStartSession = async (lessonNumber: number) => {
-    console.log('handleStartSession called for lesson:', lessonNumber);
-    
+
     setIsLoading(true);
     
     try {
       // Check access
       const hasAccess = await checkAndTrack('word_learning_session');
       if (!hasAccess) {
-        console.log('Access denied');
+
         setIsLoading(false);
         return;
       }
 
     // For Genki 2, adjust lesson number (UI shows 1-11, but data has 13-23)
     const dataLessonNumber = textbook === 'genki-2' ? lessonNumber + 12 : lessonNumber;
-    console.log('Data lesson number:', dataLessonNumber);
 
     // Get vocabulary for this lesson
     const lessonWords = vocabulary.filter(word => word.lesson === dataLessonNumber);
-    console.log('Found words:', lessonWords.length);
-    
+
     if (lessonWords.length === 0) {
-      console.log('No words available for lesson');
+
       return; // No words available
     }
 
@@ -248,13 +245,13 @@ export function WordLearningLessonSelector({
                 reading: undefined, // Tatoeba doesn't provide reading
                 english: tatoebaExample.english || ''
               };
-              console.log(`Found Tatoeba example for ${word.id} using search term: ${searchTerm}`);
+
               break; // Stop searching once we find an example
             }
           }
           
           if (!example) {
-            console.log(`No Tatoeba examples found for ${word.id}. Tried terms:`, uniqueSearchTerms);
+
           }
         } catch (error) {
           console.error('Failed to search Tatoeba for word:', word.id, error);
@@ -277,17 +274,15 @@ export function WordLearningLessonSelector({
       textbook,
       words: transformedWords
     };
-    console.log('Storing session data:', sessionData);
-    
+
     try {
       sessionStorage.setItem('wordLearningSessionWords', JSON.stringify(sessionData));
-      console.log('Session data stored successfully');
+
     } catch (error) {
       console.error('Failed to store session data:', error);
       return;
     }
-    
-    console.log('Navigating to word learning session...');
+
     router.push(`/tools/word-learning-session?session=custom`);
     } catch (error) {
       console.error('Failed to start session:', error);

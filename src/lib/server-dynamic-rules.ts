@@ -42,7 +42,7 @@ const RULES_DOC_ID = 'entitlement_rules_v1';
 export async function getServerDynamicRules(): Promise<EntitlementRule[]> {
   try {
     if (!serverDb) {
-      console.log('Server Firebase not initialized, using default rules');
+
       return DEFAULT_RULES;
     }
 
@@ -51,10 +51,7 @@ export async function getServerDynamicRules(): Promise<EntitlementRule[]> {
     
     if (rulesDoc.exists()) {
       const data = rulesDoc.data();
-      console.log('✅ Successfully loaded dynamic rules from Firestore');
-      console.log(`📅 Last updated: ${data.lastUpdated}`);
-      console.log(`🔢 Version: ${data.version}`);
-      
+
       // Log YouTube shadowing limits specifically
       const rules = data.rules as EntitlementRule[];
       rules.forEach(rule => {
@@ -65,7 +62,7 @@ export async function getServerDynamicRules(): Promise<EntitlementRule[]> {
       
       return rules;
     } else {
-      console.log('📄 No dynamic rules found in Firestore, using defaults');
+
       return DEFAULT_RULES;
     }
   } catch (error) {

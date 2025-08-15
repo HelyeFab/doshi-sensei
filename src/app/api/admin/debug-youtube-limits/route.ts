@@ -9,9 +9,7 @@ export async function GET(request: NextRequest) {
     // Force refresh if requested
     const url = new URL(request.url);
     const forceRefresh = url.searchParams.get('refresh') === 'true';
-    
-    console.log('🔍 Debugging YouTube limits...');
-    
+
     // Get Firebase Admin instance
     const admin = await getFirebaseAdmin();
     const db = admin.firestore();

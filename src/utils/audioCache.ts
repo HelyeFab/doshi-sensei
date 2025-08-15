@@ -206,8 +206,7 @@ class AudioCacheManager {
 
     keysToDelete.forEach(key => this.memoryCache.delete(key));
     this.saveToStorage();
-    
-    console.log(`🗑️ Cleared cache for article ${articleId}`);
+
   }
 
   /**
@@ -225,8 +224,7 @@ class AudioCacheManager {
     localStorage.removeItem(this.STORAGE_KEY);
     this.hits = 0;
     this.misses = 0;
-    
-    console.log('🗑️ Cleared all audio cache');
+
   }
 
   /**
@@ -257,7 +255,7 @@ class AudioCacheManager {
     // Check if already cached
     const cached = await this.get(articleId, voice, provider, this.hashContent(content));
     if (cached) {
-      console.log(`✅ Audio already cached for ${articleId}`);
+
       return;
     }
 
@@ -279,10 +277,10 @@ class AudioCacheManager {
       
       if (response.ok && data.audioUrl) {
         await this.set(articleId, data.audioUrl, voice, provider, content);
-        console.log(`✅ Preloaded audio for ${articleId}`);
+
       }
     } catch (error) {
-      console.warn(`⚠️ Failed to preload audio for ${articleId}:`, error);
+
     }
   }
 
@@ -302,8 +300,7 @@ class AudioCacheManager {
       }
       this.memoryCache.delete(key);
     }
-    
-    console.log(`🧹 Cleaned up ${removeCount} items from memory cache`);
+
   }
 
   /**
@@ -321,11 +318,10 @@ class AudioCacheManager {
             this.memoryCache.set(key, cached as CachedAudio);
           }
         }
-        
-        console.log(`📱 Loaded ${this.memoryCache.size} items from storage cache`);
+
       }
     } catch (error) {
-      console.warn('⚠️ Failed to load audio cache from storage:', error);
+
     }
   }
 
@@ -363,7 +359,7 @@ class AudioCacheManager {
         localStorage.setItem(this.STORAGE_KEY, serialized);
       }
     } catch (error) {
-      console.warn('⚠️ Failed to save audio cache to storage:', error);
+
     }
   }
 
@@ -389,7 +385,7 @@ class AudioCacheManager {
       
       if (keysToDelete.length > 0) {
         this.saveToStorage();
-        console.log(`🧹 Cleaned up ${keysToDelete.length} expired cache items`);
+
       }
     }, 30 * 60 * 1000); // 30 minutes
   }

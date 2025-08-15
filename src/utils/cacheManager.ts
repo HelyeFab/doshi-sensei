@@ -245,8 +245,7 @@ export class CacheManager {
 
   // Public API methods
   async cleanup(): Promise<void> {
-    console.log('🧹 Running cache cleanup...');
-    
+
     // Clean memory cache
     this.enforceMemoryLimits();
 
@@ -263,7 +262,6 @@ export class CacheManager {
       }
     }
 
-    console.log('✅ Cache cleanup completed');
   }
 
   private async cleanupStore(storeName: string): Promise<void> {

@@ -27,7 +27,7 @@ interface GeneratePageTextRequest {
 }
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('Generate page text endpoint called');
+
   try {
     if (!process.env.OPEN_AI_API_KEY) {
       return NextResponse.json({ 
@@ -80,8 +80,6 @@ Return JSON:
   "english": "complete translation"
 }`;
 
-    console.log(`Generating text for page ${pageNumber}...`);
-
     const textResponse = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -107,9 +105,9 @@ Return JSON:
     // Apply furigana to the Japanese text
     let processedText = textResult.japanese || '';
     try {
-      console.log(`Applying furigana to page ${pageNumber} text...`);
+
       processedText = await generateFurigana(processedText);
-      console.log(`Furigana applied successfully for page ${pageNumber}`);
+
     } catch (furiganaError) {
       console.error('Failed to apply furigana, using plain text:', furiganaError);
       // Continue with plain text if furigana fails

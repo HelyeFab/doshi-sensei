@@ -51,8 +51,7 @@ export class AnkiParserBrowser {
     media: Map<string, Blob>;
   }> {
     try {
-      console.log('=== AnkiParserBrowser - Optimized for Core 2000 ===');
-      
+
       const zip = new JSZip();
       const zipContent = await zip.loadAsync(file);
       
@@ -85,18 +84,15 @@ export class AnkiParserBrowser {
       // Get ALL notes without limit
       const notesResult = db.exec('SELECT * FROM notes');
       const notes = this.parseQueryResult(notesResult[0]);
-      console.log(`Found ${notes.length} notes`);
-      
+
       // Get ALL cards without limit
       const cardsResult = db.exec('SELECT * FROM cards');
       const cards = this.parseQueryResult(cardsResult[0]);
-      console.log(`Found ${cards.length} cards`);
-      
+
       // Double-check we got all cards
       const cardCountResult = db.exec('SELECT COUNT(*) as count FROM cards');
       const totalCards = cardCountResult[0]?.values[0]?.[0];
-      console.log(`Total cards in database: ${totalCards}`);
-      
+
       // Process media
       const media = new Map<string, Blob>();
       const mediaFile = zipContent.files['media'];
@@ -113,7 +109,7 @@ export class AnkiParserBrowser {
             }
           }
         } catch (e) {
-          console.warn('Failed to parse media:', e);
+
         }
       }
       
@@ -145,8 +141,7 @@ export class AnkiParserBrowser {
         
         // Core 2000 specific detection
         if (model && model.name && model.name.toLowerCase().includes('core')) {
-          console.log('Detected Core deck model');
-          
+
           // For Core 2000, typically:
           // Field 0: Index number
           // Field 1: Expression (Japanese sentence)
@@ -228,8 +223,7 @@ export class AnkiParserBrowser {
       }).filter(Boolean);
       
       // Log summary of processed cards
-      console.log('\nProcessing summary:');
-      console.log(`Total cards processed: ${processedCards.length}`);
+
       const sampleCards = processedCards.slice(0, 3);
       sampleCards.forEach((card, i) => {
         console.log(`Sample card ${i}:`, {
@@ -313,7 +307,7 @@ export class AnkiParserBrowser {
     // Preserve audio references for later
     const audioMatches = cleaned.match(/\[sound:([^\]]+)\]/g) || [];
     if (audioMatches.length > 0) {
-      console.log('Found audio references:', audioMatches);
+
     }
     
     // For now, remove sound tags but log them

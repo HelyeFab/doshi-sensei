@@ -15,7 +15,7 @@ const initializeWaniKaniToken = () => {
     setWanikaniApiToken(token);
     return true;
   } else {
-    console.warn('⚠️ WaniKani API token not found');
+
     return false;
   }
 };
@@ -151,7 +151,7 @@ export class VocabularyAnalyzer {
   // Analyze vocabulary in Japanese text using WaniKani API
   static async analyzeVocabulary(text: string): Promise<ExtractedVocabulary[]> {
     if (!hasToken) {
-      console.warn('🔄 WaniKani API not available, using basic analysis');
+
       return this.fallbackVocabularyAnalysis(text);
     }
 
@@ -195,7 +195,7 @@ export class VocabularyAnalyzer {
             });
           }
         } catch (error) {
-          console.warn(`Error analyzing word "${word}":`, error);
+
           // Continue with next word
         }
       }

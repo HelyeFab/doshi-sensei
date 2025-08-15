@@ -39,8 +39,6 @@ export class BookmarkDebugger {
                 updatedAt: new Date()
             };
 
-            console.log('🔍 Testing bookmark creation with data:', testBookmark);
-
             const bookmarksRef = collection(db, 'user_bookmarks');
             const docRef = await addDoc(bookmarksRef, {
                 ...testBookmark,
@@ -48,8 +46,6 @@ export class BookmarkDebugger {
                 lastReadAt: Timestamp.fromDate(testBookmark.lastReadAt),
                 updatedAt: Timestamp.fromDate(testBookmark.updatedAt)
             });
-
-            console.log('✅ Test bookmark created successfully with ID:', docRef.id);
 
             return {
                 success: true,
@@ -98,8 +94,6 @@ export class BookmarkDebugger {
                 updatedAt: new Date()
             };
 
-            console.log('🔍 Testing story bookmark creation with data:', testBookmark);
-
             const bookmarksRef = collection(db, 'user_bookmarks');
             const docRef = await addDoc(bookmarksRef, {
                 ...testBookmark,
@@ -107,8 +101,6 @@ export class BookmarkDebugger {
                 lastReadAt: Timestamp.fromDate(testBookmark.lastReadAt),
                 updatedAt: Timestamp.fromDate(testBookmark.updatedAt)
             });
-
-            console.log('✅ Test story bookmark created successfully with ID:', docRef.id);
 
             return {
                 success: true,

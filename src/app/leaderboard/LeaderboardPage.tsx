@@ -164,18 +164,13 @@ export function LeaderboardPage() {
                 totalScore = timeStats.totalActivities || 0;
               }
             } catch (timeError) {
-              console.log(`No time-based stats for user ${userDoc.id} for period ${period}`);
+
               totalScore = 0;
             }
           }
           
           if (isCurrentUser && totalScore > 0) {
-            console.log('Current user stats:', {
-              id: userDoc.id,
-              email: userData.email,
-              timePeriod,
-              totalActivities: totalScore
-            });
+
           }
         } catch (error) {
           console.error(`Error loading stats for user ${userDoc.id}:`, error);

@@ -50,9 +50,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    console.log('Fetching video info for:', videoId);
-    
+
     // Method 1: Try YouTube Data API v3 (if API key is available)
     const GOOGLE_API_KEY = process.env.YOUTUBE_API_KEY || process.env.GOOGLE_API_KEY;
     
@@ -97,8 +95,7 @@ export async function POST(request: NextRequest) {
     
     // Method 2: Try ytdl-core as fallback
     try {
-      console.log('Trying ytdl-core for video info...');
-      
+
       const info = await ytdl.getInfo(`https://www.youtube.com/watch?v=${videoId}`);
       const videoDetails = info.videoDetails;
       

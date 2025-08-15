@@ -251,7 +251,6 @@ export class TranslationCache {
       }
     }
 
-    console.log(`✅ Translation preloading completed for article ${articleId}`);
   }
 
   /**
@@ -309,8 +308,7 @@ export class TranslationCache {
         // TODO: Use public method - this.cacheManager.memoryCache?.delete(cacheKey);
         await this.cacheManager.deleteDB('translations', translation.id);
       }
-      
-      console.log(`🗑️ Translations removed for article ${articleId}`);
+
     } catch (error) {
       console.error(`Error removing article translations for ${articleId}:`, error);
     }
@@ -339,8 +337,7 @@ export class TranslationCache {
       this.translationTimes.clear();
       this.hitStats = { hits: 0, misses: 0 };
       this.activeRequests.clear();
-      
-      console.log('🧹 Translation cache cleared');
+
     } catch (error) {
       console.error('Error clearing translation cache:', error);
     }

@@ -146,7 +146,6 @@ export class JapaneseNewsScraper {
       // Cache the articles
       await this.cacheArticles(sourceId, scrapedArticles);
 
-
       return {
         success: true,
         articlesScraped,
@@ -199,8 +198,6 @@ export class JapaneseNewsScraper {
       // Always use the production Netlify URL for scraping functions
       // These functions only exist on Netlify, not on localhost
       const baseUrl = 'https://doshisensei.com';
-      
-      console.log(`🔗 Using Netlify functions at: ${baseUrl}`);
 
       // Split articles evenly between three sources
       const articlesPerSource = Math.ceil(maxArticles / 3);
@@ -220,8 +217,7 @@ export class JapaneseNewsScraper {
       // Call both scraping functions in parallel
       for (const func of scrapingFunctions) {
         try {
-          console.log(`📡 Calling ${func.name} scraper...`);
-          
+
           const response = await fetch(func.url, {
             method: 'POST',
             headers: {
@@ -236,7 +232,7 @@ export class JapaneseNewsScraper {
 
           if (!response.ok) {
             const errorText = await response.text();
-            console.warn(`⚠️ ${func.name} scraper failed: HTTP ${response.status}`);
+
             console.warn(`Response: ${errorText.substring(0, 200)}...`);
             continue;
           }
@@ -258,9 +254,9 @@ export class JapaneseNewsScraper {
             );
 
             allArticles.push(...transformedArticles);
-            console.log(`✅ ${func.name}: ${transformedArticles.length} articles scraped`);
+
           } else {
-            console.warn(`⚠️ ${func.name} returned no articles or failed`);
+
           }
         } catch (error) {
           console.error(`❌ ${func.name} scraping error:`, error);
@@ -280,12 +276,9 @@ export class JapaneseNewsScraper {
         return acc;
       }, {});
 
-      console.log(`📊 Source distribution:`, sourceDistribution);
-      console.log(`📊 JLPT distribution:`, jlptDistribution);
-
       // If no articles were scraped, fall back to mock data
       if (allArticles.length === 0) {
-        console.warn('⚠️ No articles from scraping functions, using mock data');
+
         return this.mockScrapeNHKEasy(maxArticles);
       }
 
@@ -295,7 +288,7 @@ export class JapaneseNewsScraper {
 
     } catch (error) {
       console.error('❌ Failed to call Netlify scraping functions:', error);
-      console.warn('📋 Falling back to mock data');
+
       return this.mockScrapeNHKEasy(maxArticles);
     }
   }
@@ -366,7 +359,7 @@ export class JapaneseNewsScraper {
       const { VocabularyAnalyzer } = await import('./vocabularyAnalyzer');
       return await VocabularyAnalyzer.analyzeVocabulary(text);
     } catch (error) {
-      console.warn('Error in vocabulary analysis, using fallback:', error);
+
       return this.extractMockVocabulary(text);
     }
   }
@@ -377,7 +370,7 @@ export class JapaneseNewsScraper {
       const { VocabularyAnalyzer } = await import('./vocabularyAnalyzer');
       return await VocabularyAnalyzer.analyzeKanji(text);
     } catch (error) {
-      console.warn('Error in kanji analysis, using fallback:', error);
+
       return this.extractMockKanji(text);
     }
   }
@@ -500,7 +493,6 @@ export class JapaneseNewsScraper {
         default:
           throw new Error(`Unsupported news source: ${sourceId}`);
       }
-
 
       if (scrapingResult.success) {
         // Get the articles from cache after scraping

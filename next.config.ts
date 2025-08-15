@@ -69,6 +69,37 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: false, // Disable strict mode to prevent double rendering
+  
+  // Webpack configuration to remove console logs in production
+  webpack: (config, { isServer, dev }) => {
+    // Only remove console logs in production builds
+    if (!dev && !isServer) {
+      config.optimization = config.optimization || {};
+      config.optimization.minimizer = config.optimization.minimizer || [];
+      
+      // Use TerserPlugin to remove console statements
+      const TerserPlugin = require('terser-webpack-plugin');
+      
+      config.optimization.minimizer.push(
+        new TerserPlugin({
+          terserOptions: {
+            compress: {
+              drop_console: true, // Remove all console.* statements
+              drop_debugger: true, // Remove debugger statements
+              pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'], // Additional cleanup
+            },
+            mangle: true,
+            format: {
+              comments: false, // Remove comments
+            },
+          },
+          extractComments: false, // Don't extract comments to separate file
+        })
+      );
+    }
+    return config;
+  },
+  
   env: {
     WANIKANI_API_TOKEN: process.env.NEXT_PUBLIC_WANIKANI_API_TOKEN || process.env.WANIKANI_API_TOKEN,
     // Make Firebase env vars available to server-side code (remove NEXT_PUBLIC_ fallbacks)

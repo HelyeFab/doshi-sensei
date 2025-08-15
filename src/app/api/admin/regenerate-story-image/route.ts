@@ -6,8 +6,7 @@ export const runtime = 'nodejs';
 export const maxDuration = 30;
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('Regenerate story image endpoint called');
-  
+
   try {
     if (!process.env.OPEN_AI_API_KEY) {
       return NextResponse.json({ 
@@ -71,9 +70,6 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       finalPrompt = `${visualStyle}. ${imagePrompt}`;
     }
 
-    console.log(`Regenerating image for page ${pageNumber}`);
-    console.log('Final prompt:', finalPrompt);
-
     const response = await openai.images.generate({
       model: 'dall-e-3',
       prompt: finalPrompt,
@@ -90,8 +86,6 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     if (!imageUrl) {
       throw new Error('No image URL returned from OpenAI');
     }
-
-    console.log('Image regenerated successfully');
 
     return NextResponse.json({
       success: true,

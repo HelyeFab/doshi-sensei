@@ -239,10 +239,9 @@ export async function getCachedCommonWordsForPractice(limit: number = 50): Promi
   // Try to get from cache first
   const cached = PracticeCache.get<JapaneseWord[]>('commonWords');
   if (cached && cached.length > 0) {
-
-    // Shuffle and return requested amount
-    const shuffled = [...cached].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(limit, cached.length));
+    // Return the same order for consistency (already pre-sorted by commonality)
+    // Only shuffle if explicitly requested
+    return cached.slice(0, Math.min(limit, cached.length));
   }
 
   // If no cache, load fresh data from JMDict
@@ -282,8 +281,8 @@ export async function getCachedFilteredWords(filter: 'all' | 'verbs' | 'adjectiv
   const cached = PracticeCache.get<JapaneseWord[]>(cacheKey);
 
   if (cached && cached.length > 0) {
-    const shuffled = [...cached].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(limit, cached.length));
+    // Return consistent order (already sorted by commonality)
+    return cached.slice(0, Math.min(limit, cached.length));
   }
 
   // Fallback to loading all words and filtering

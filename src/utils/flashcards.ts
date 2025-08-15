@@ -206,7 +206,7 @@ export class FlashcardManager {
       // Track flashcard session in stats system
       // For now, we'll just log the session completion
       // TODO: Add a proper trackFlashcardSession function to trackingEvents
-      console.log(`Flashcard session completed: ${cardsCorrect}/${cardsReviewed} correct`);
+
     }
   }
 

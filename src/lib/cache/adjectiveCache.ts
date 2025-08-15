@@ -33,7 +33,6 @@ export class AdjectiveCache {
    */
   static async cacheAdjective(adjective: Adjective, userType: UserType): Promise<void> {
     try {
-      console.log(`[AdjectiveCache] Caching adjective: ${adjective.word}`);
 
       // Download and cache audio if available
       const audioBlob = adjective.audioUrl
@@ -78,7 +77,6 @@ export class AdjectiveCache {
       // Store in cache
       await EnhancedStorageManager2.cacheResource(cachedAdjective, userType);
 
-      console.log(`[AdjectiveCache] Successfully cached adjective: ${adjective.word}`);
     } catch (error) {
       console.error(`[AdjectiveCache] Failed to cache adjective ${adjective.word}:`, error);
       throw error;
@@ -98,13 +96,13 @@ export class AdjectiveCache {
       const cached = await EnhancedStorageManager2.getCachedResource('adjective', word);
 
       if (cached && !this.isStale(cached)) {
-        console.log(`[AdjectiveCache] Serving adjective from cache: ${word}`);
+
         return this.hydrateCachedAdjective(cached);
       }
 
       // Fall back to network if fetch function provided
       if (fetchFn) {
-        console.log(`[AdjectiveCache] Fetching adjective from network: ${word}`);
+
         const adjective = await fetchFn();
 
         // Cache in background only if userType is provided
@@ -117,7 +115,7 @@ export class AdjectiveCache {
 
       // Return stale cache if no fetch function
       if (cached) {
-        console.log(`[AdjectiveCache] Serving stale adjective from cache: ${word}`);
+
         return this.hydrateCachedAdjective(cached);
       }
 
@@ -132,7 +130,6 @@ export class AdjectiveCache {
    * Cache multiple adjectives at once (batch operation)
    */
   static async cacheAdjectiveSet(adjectiveList: Adjective[], userType: UserType): Promise<void> {
-    console.log(`[AdjectiveCache] Caching ${adjectiveList.length} adjectives`);
 
     // Process in batches to avoid overwhelming the storage
     const BATCH_SIZE = 10;
@@ -154,7 +151,6 @@ export class AdjectiveCache {
       }
     }
 
-    console.log(`[AdjectiveCache] Successfully cached ${adjectiveList.length} adjectives`);
   }
 
   /**
@@ -195,7 +191,6 @@ export class AdjectiveCache {
    * Pre-cache related adjectives based on type or JLPT level
    */
   static async preCacheRelated(currentAdjective: string, relatedAdjectives: string[]): Promise<void> {
-    console.log(`[AdjectiveCache] Pre-caching ${relatedAdjectives.length} related adjectives`);
 
     // Use requestIdleCallback for non-blocking pre-caching
     if ('requestIdleCallback' in window) {
@@ -205,7 +200,7 @@ export class AdjectiveCache {
             // Try to fetch and cache each related adjective
             // This would typically call an API to get adjective data
             // For now, we'll just log the intention
-            console.log(`[AdjectiveCache] Would pre-cache adjective: ${adjectiveWord}`);
+
           } catch (error) {
             console.error(`[AdjectiveCache] Failed to pre-cache adjective ${adjectiveWord}:`, error);
           }
@@ -265,7 +260,7 @@ export class AdjectiveCache {
   static async clearCache(): Promise<void> {
     try {
       await EnhancedStorageManager2.clearResourcesByType('adjective');
-      console.log('[AdjectiveCache] Cleared all cached adjectives');
+
     } catch (error) {
       console.error('[AdjectiveCache] Failed to clear cache:', error);
       throw error;

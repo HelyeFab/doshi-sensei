@@ -14,6 +14,7 @@ import { useAccess } from "@/hooks/useAccess";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useTTS } from "@/hooks/useTTS";
 import { QuickContextSelection } from "./QuickContextProvider";
+import { cleanFurigana } from "@/utils/cleanFurigana";
 
 interface Position {
   x: number;
@@ -75,7 +76,6 @@ export default function QuickContextBubble({
   // Notify parent when modals are open/closed
   useEffect(() => {
     const hasOpenModals = showSaveModal || showAIModal || showLookupModal;
-    console.log("Modal state changed - hasOpenModals:", hasOpenModals);
     onModalStateChange?.(hasOpenModals);
   }, [showSaveModal, showAIModal, showLookupModal, onModalStateChange]);
 
@@ -84,13 +84,11 @@ export default function QuickContextBubble({
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       // Don't close if currently dragging
       if (isDragging || dragStarted) {
-        console.log("Currently dragging, not closing bubble");
         return;
       }
 
       // Don't close if modals are open
       if (showSaveModal || showAIModal || showLookupModal) {
-        console.log("Modal is open, not closing bubble");
         return;
       }
 
@@ -104,7 +102,6 @@ export default function QuickContextBubble({
 
         // Check if clicking on a modal
         if (target.closest(".fixed.inset-0")) {
-          console.log("Clicking on modal, not closing");
           return;
         }
 
@@ -142,7 +139,10 @@ export default function QuickContextBubble({
   const fetchWordData = async () => {
     setIsLoading(true);
     try {
-      const results = await searchJMdictWords(selectedText);
+      // Clean furigana from text before searching
+      const cleanText = cleanFurigana(selectedText);
+      
+      const results = await searchJMdictWords(cleanText);
       if (results && results.length > 0) {
         setWordData(results[0]);
       }
@@ -154,14 +154,9 @@ export default function QuickContextBubble({
   };
 
   const handleSave = useCallback(async () => {
-    console.log("handleSave called");
     try {
       const canUse = await checkAndTrack("quick_context");
-      console.log("canUse:", canUse);
       if (!canUse) {
-        console.log(
-          "User cannot use quick_context - limit reached or no permission"
-        );
         return;
       }
 
@@ -179,7 +174,6 @@ export default function QuickContextBubble({
         tags: [],
       };
 
-      console.log("Setting word data and showing modal");
       setWordData(wordToSave);
       setShowSaveModal(true);
       setKeepBubbleVisible(true); // Keep bubble visible when modal opens
@@ -205,19 +199,13 @@ export default function QuickContextBubble({
 
     track("quick_context_lookup", { text: selectedText });
 
+    // Clean furigana from text before searching
+    const cleanText = cleanFurigana(selectedText);
+
     // Search in local JMDict and show results in modal
     setIsLookupLoading(true);
     try {
-      console.log(
-        "Searching for:",
-        selectedText,
-        "Type:",
-        textType,
-        "Is Kanji:",
-        isKanji
-      );
-      const results = await searchJMdictWords(selectedText, 30);
-      console.log("Search results:", results);
+      const results = await searchJMdictWords(cleanText, 30);
       setLookupResults(results || []);
       setShowLookupModal(true);
       setKeepBubbleVisible(true); // Keep bubble visible when modal opens
@@ -260,19 +248,13 @@ export default function QuickContextBubble({
   }, [checkAndTrack, track, selectedText, speakTTS, getRemainingUsage]);
 
   const handleAIExplain = useCallback(async () => {
-    console.log("handleAIExplain called");
     try {
       const canUse = await checkAndTrack("quick_context");
-      console.log("AI - canUse:", canUse);
       if (!canUse) {
-        console.log(
-          "User cannot use quick_context for AI - limit reached or no permission"
-        );
         return;
       }
 
       track("quick_context_ai", { text: selectedText, type: textType });
-      console.log("Showing AI modal");
       setShowAIModal(true);
       setKeepBubbleVisible(true); // Keep bubble visible when modal opens
     } catch (error) {
@@ -280,12 +262,48 @@ export default function QuickContextBubble({
     }
   }, [checkAndTrack, track, selectedText, textType]);
 
-  // Copy to clipboard
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(selectedText);
-    setCopiedText(selectedText);
-    setTimeout(() => setCopiedText(""), 2000);
-    track("quick_context_copy", { text: selectedText, type: textType });
+  // Copy to clipboard with proper error handling and fallback
+  const handleCopy = useCallback(async () => {
+    try {
+      // Try modern clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(selectedText);
+        setCopiedText(selectedText);
+        setTimeout(() => setCopiedText(""), 2000);
+        track("quick_context_copy", { text: selectedText, type: textType, method: "clipboard" });
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement("textarea");
+        textArea.value = selectedText;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          const successful = document.execCommand('copy');
+          if (successful) {
+            setCopiedText(selectedText);
+            setTimeout(() => setCopiedText(""), 2000);
+            track("quick_context_copy", { text: selectedText, type: textType, method: "execCommand" });
+          } else {
+            setCopiedText("Failed");
+            setTimeout(() => setCopiedText(""), 2000);
+          }
+        } catch (err) {
+          setCopiedText("Failed");
+          setTimeout(() => setCopiedText(""), 2000);
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
+    } catch (err) {
+      // Show error feedback
+      setCopiedText("Failed");
+      setTimeout(() => setCopiedText(""), 2000);
+    }
   }, [selectedText, track, textType]);
 
   // Keyboard shortcuts (must be after handleSave is defined)
@@ -301,14 +319,12 @@ export default function QuickContextBubble({
 
       // Esc to close
       if (e.key === "Escape") {
-        console.log("Esc pressed - closing QuickContext");
         onClose();
       }
 
       // Q for quick save (only when bubble is expanded)
       if (e.key === "q" || e.key === "Q") {
         if (isExpanded && !showSaveModal && !showAIModal && !showLookupModal) {
-          console.log("Q pressed - quick save");
           handleSave();
         }
       }
@@ -365,14 +381,6 @@ export default function QuickContextBubble({
 
   if (!mounted) return null;
 
-  console.log(
-    "QuickContextBubble render - showSaveModal:",
-    showSaveModal,
-    "showAIModal:",
-    showAIModal,
-    "isExpanded:",
-    isExpanded
-  );
 
   // Hide bubble visually when minimized and modal is open
   const shouldShowBubble =
@@ -423,12 +431,10 @@ export default function QuickContextBubble({
               bounceStiffness: 100,
             }}
             onDragStart={() => {
-              console.log("Drag started");
               setIsDragging(true);
               setDragStarted(true);
             }}
             onDragEnd={() => {
-              console.log("Drag ended");
               setIsDragging(false);
               // Keep dragStarted true for a moment to prevent immediate close
               setTimeout(() => setDragStarted(false), 100);
@@ -456,19 +462,16 @@ export default function QuickContextBubble({
               // Compact bubble - Modern floating action button
               <button
                 onClick={(e) => {
-                  console.log("QuickContext bubble clicked");
                   e.preventDefault();
                   e.stopPropagation();
                   setIsExpanded(true);
                 }}
                 onTouchEnd={(e) => {
-                  console.log("QuickContext bubble touched");
                   e.preventDefault();
                   e.stopPropagation();
                   setIsExpanded(true);
                 }}
                 onPointerDown={(e) => {
-                  console.log("QuickContext bubble pointer down");
                   e.preventDefault();
                 }}
                 className="w-full h-full flex items-center justify-center rounded-2xl bg-primary/10 hover:bg-primary/20 active:bg-primary/30 transition-all duration-200 cursor-pointer select-none touch-none group"
@@ -494,7 +497,6 @@ export default function QuickContextBubble({
                   onPointerDown={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log("Header pointer down - starting drag");
                     setDragStarted(true);
                     dragControls.start(e);
                   }}
@@ -526,7 +528,6 @@ export default function QuickContextBubble({
                   >
                     <button
                       onClick={() => {
-                        console.log("Minimize clicked");
                         setIsExpanded(false);
                       }}
                       className="w-7 h-7 rounded-md bg-muted/50 hover:bg-muted transition-colors flex items-center justify-center"
@@ -559,7 +560,7 @@ export default function QuickContextBubble({
                 </div>
 
                 {/* Main content area */}
-                <div className="flex-1 p-4 flex flex-col gap-3" onPointerDownCapture={(e) => e.stopPropagation()}>
+                <div className="flex-1 p-4 flex flex-col gap-3">
                   {/* Selected text card */}
                   <div className="bg-card rounded-lg border border-border p-3">
                     <div className="flex items-start justify-between gap-2">
@@ -585,13 +586,11 @@ export default function QuickContextBubble({
                     {/* Save tile */}
                     <button
                       onClick={(e) => {
-                        console.log("Save button clicked");
                         e.preventDefault();
                         e.stopPropagation();
                         handleSave();
                       }}
                       onTouchEnd={(e) => {
-                        console.log("Save button touched");
                         e.preventDefault();
                         e.stopPropagation();
                         handleSave();
@@ -609,13 +608,11 @@ export default function QuickContextBubble({
                     {/* Lookup tile */}
                     <button
                       onClick={(e) => {
-                        console.log("Lookup button clicked");
                         e.preventDefault();
                         e.stopPropagation();
                         handleLookup();
                       }}
                       onTouchEnd={(e) => {
-                        console.log("Lookup button touched");
                         e.preventDefault();
                         e.stopPropagation();
                         handleLookup();
@@ -633,13 +630,11 @@ export default function QuickContextBubble({
                     {/* Listen tile */}
                     <button
                       onClick={(e) => {
-                        console.log("Listen button clicked");
                         e.preventDefault();
                         e.stopPropagation();
                         handleListen();
                       }}
                       onTouchEnd={(e) => {
-                        console.log("Listen button touched");
                         e.preventDefault();
                         e.stopPropagation();
                         handleListen();
@@ -660,13 +655,11 @@ export default function QuickContextBubble({
                     {/* AI tile */}
                     <button
                       onClick={(e) => {
-                        console.log("AI button clicked");
                         e.preventDefault();
                         e.stopPropagation();
                         handleAIExplain();
                       }}
                       onTouchEnd={(e) => {
-                        console.log("AI button touched");
                         e.preventDefault();
                         e.stopPropagation();
                         handleAIExplain();
@@ -683,7 +676,19 @@ export default function QuickContextBubble({
 
                     {/* Copy tile */}
                     <button
-                      onClick={handleCopy}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleCopy();
+                      }}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleCopy();
+                      }}
+                      onPointerDown={(e) => {
+                        e.stopPropagation();
+                      }}
                       className="bg-muted/20 hover:bg-muted/30 border border-muted/30 hover:border-muted/50 rounded-lg p-3 flex flex-col items-center justify-center gap-1.5 transition-all group"
                       aria-label="Copy to clipboard"
                     >
@@ -691,7 +696,7 @@ export default function QuickContextBubble({
                         📋
                       </div>
                       <span className="text-[11px] text-foreground font-medium">
-                        {copiedText === selectedText ? "Copied!" : "Copy"}
+                        {copiedText === selectedText ? "Copied!" : copiedText === "Failed" ? "Failed" : "Copy"}
                       </span>
                     </button>
 
@@ -722,33 +727,28 @@ export default function QuickContextBubble({
       {/* Modals - Outside of AnimatePresence so they stay open when bubble is minimized */}
       {showSaveModal &&
         wordData &&
-        (console.log("Rendering SaveWordModal"),
+        (
         (
           <SaveWordModal
             word={wordData}
             onClose={() => {
-              console.log(
-                "SaveWordModal onClose called from QuickContextBubble"
-              );
               setShowSaveModal(false);
               setKeepBubbleVisible(false); // Allow bubble to be hidden again
             }}
             onSaveComplete={() => {
-              console.log("SaveWordModal onSaveComplete called");
             }}
             itemType={isKanji ? "kanji" : "word"}
           />
         ))}
 
       {showAIModal &&
-        (console.log("Rendering AIExplanationModal"),
+        (
         (
           <AIExplanationModal
             text={selectedText}
             contextType={selectedText.length > 20 ? "sentence" : "word"}
             surroundingContext={surroundingContext}
             onClose={() => {
-              console.log("AIExplanationModal onClose called");
               setShowAIModal(false);
               setKeepBubbleVisible(false); // Allow bubble to be hidden again
             }}
@@ -882,7 +882,6 @@ export default function QuickContextBubble({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          console.log("Save button clicked for word:", result);
 
                           // Immediately set the word data and switch modals
                           setWordData(result);

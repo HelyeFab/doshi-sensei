@@ -6,8 +6,7 @@ import { clearRulesCache } from '@/lib/server-dynamic-rules-admin';
 const RULES_DOC_ID = 'entitlement_rules_v1';
 
 export async function POST(request: NextRequest) {
-  console.log('🔄 Rebuild config collection API called');
-  
+
   try {
     // Verify authentication
     const authHeader = request.headers.get('authorization');
@@ -29,9 +28,7 @@ export async function POST(request: NextRequest) {
     if (!isAdmin) {
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
-    
-    console.log('✅ Admin verified, rebuilding config collection');
-    
+
     // Clear the cache first
     clearRulesCache();
     
@@ -42,15 +39,15 @@ export async function POST(request: NextRequest) {
     try {
       const oldDoc = await configRef.doc(RULES_DOC_ID).get();
       if (oldDoc.exists) {
-        console.log('🗑️ Deleting old rules document');
+
         await configRef.doc(RULES_DOC_ID).delete();
       }
     } catch (error) {
-      console.warn('Could not delete old document:', error);
+
     }
     
     // Create fresh rules document with all defaults
-    console.log('📝 Creating fresh rules document');
+
     console.log('📋 Rules being added:', DEFAULT_RULES.map(r => ({
       id: r.id,
       userTypes: r.userTypes,
@@ -68,9 +65,7 @@ export async function POST(request: NextRequest) {
         source: 'rebuild-config-api'
       }
     });
-    
-    console.log('✅ Config collection rebuilt successfully');
-    
+
     // Verify the document was created correctly
     const newDoc = await configRef.doc(RULES_DOC_ID).get();
     const data = newDoc.data();

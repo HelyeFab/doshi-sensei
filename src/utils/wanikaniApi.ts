@@ -26,7 +26,7 @@ export function setWanikaniApiToken(token: string) {
   // If using proxy, we don't need to set Authorization header in browser
   if (PROXY_BASE) {
     if (typeof window !== 'undefined') {
-      console.log('[WaniKani] Using proxy, token handled server-side');
+
     }
     return;
   }
@@ -246,7 +246,7 @@ export async function fetchWanikaniVocabulary(limit: number = 20): Promise<Japan
   try {
     // Check if API token is set (only needed when not using proxy)
     if (!PROXY_BASE && !wanikaniAxios.defaults.headers.common['Authorization']) {
-      console.warn('WaniKani API token not set');
+
       return [];
     }
 
@@ -321,24 +321,23 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       }
     }
 
-    // For conjugation page searches, don't fetch entire dictionary!
-    // Just return empty array and let JMDict handle it
-    // WaniKani doesn't have a proper search endpoint anyway
-    return [];
+    // Check if we have cached vocabulary
+    const now = Date.now();
+    if (vocabularyCache && (now - cacheTimestamp) < CACHE_DURATION) {
 
+      return performSearch(vocabularyCache, query, limit);
+    }
+    
     // If no cache or expired, fetch from API
     const allWords: JapaneseWord[] = [];
-
-    // Optimized parallel requests instead of sequential
+    
+    // Fetch vocabulary from ALL level ranges to get comprehensive results
     const levelRanges = [
       '1,2,3,4,5', '6,7,8,9,10', '11,12,13,14,15', '16,17,18,19,20',
       '21,22,23,24,25', '26,27,28,29,30', '31,32,33,34,35', '36,37,38,39,40',
       '41,42,43,44,45', '46,47,48,49,50', '51,52,53,54,55', '56,57,58,59,60'
     ];
 
-    // Removed verbose logging for performance
-    
-    // Make all API calls in parallel for speed
     const endpoint = PROXY_BASE ? '' : '/subjects';
     const promises = levelRanges.map(levels =>
       wanikaniAxios.get<WanikaniApiResponse<WanikaniSubject>>(endpoint, {
@@ -348,23 +347,16 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
           hidden: false,
           levels: levels,
           limit: 1000,
-          // Add timestamp to prevent caching
           _t: Date.now()
         }
       }).catch(error => {
-        console.error(`[WaniKani] Error fetching vocabulary for levels ${levels}:`, {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-          headers: error.response?.headers,
-          usingProxy: !!PROXY_BASE
-        });
+        console.error(`[WaniKani] Error fetching vocabulary for levels ${levels}:`, error.message);
         return null;
       })
     );
-
+    
     const responses = await Promise.all(promises);
-
+    
     // Process all successful responses
     for (const response of responses) {
       if (response?.data?.data) {
@@ -375,11 +367,21 @@ export async function searchWanikaniVocabulary(query: string, limit: number = 50
       }
     }
 
+    // Debug: Check if 運転する is in the fetched data
+    const untensuru = allWords.find(w => 
+      w.kanji.includes('運転') || 
+      w.kana.includes('うんてん')
+    );
+    if (untensuru) {
 
+    } else {
+
+    }
+    
     // Cache the results
     vocabularyCache = allWords;
     cacheTimestamp = now;
-
+    
     // Perform search on fresh data
     return performSearch(allWords, query, limit);
   } catch (error) {
@@ -394,6 +396,11 @@ function performSearch(words: JapaneseWord[], query: string, limit: number): Jap
 
   // Enhanced search logic to catch more variations
   const matchingWords = words.filter(word => {
+    // Debug specific word
+    if (word.kanji === '運転する') {
+
+    }
+    
     // Exact match on kanji
     if (word.kanji.toLowerCase() === queryLower) return true;
 
@@ -406,17 +413,27 @@ function performSearch(words: JapaneseWord[], query: string, limit: number): Jap
     // Check meanings more comprehensively
     const meaning = word.meaning.toLowerCase();
 
-    // Exact word match in meanings
-    if (meaning.includes(queryLower)) {
-      // Check if it's a word boundary match (more precise)
-      const wordBoundaryRegex = new RegExp(`\\b${queryLower}\\b`);
-      if (wordBoundaryRegex.test(meaning)) return true;
+    // Exact match on meaning (case insensitive)
+    if (meaning === queryLower) {
+      return true;
+    }
 
-      // Also match "to [verb]" patterns
-      if (meaning.includes(`to ${queryLower}`)) return true;
+    // If query starts with "to " (common for verbs), also search without it
+    let searchTerms = [queryLower];
+    if (queryLower.startsWith('to ')) {
+      searchTerms.push(queryLower.substring(3)); // Add version without "to "
+    }
 
-      // Match if query appears at start of meaning
-      if (meaning.startsWith(queryLower)) return true;
+    for (const term of searchTerms) {
+      // Exact word match in meanings
+      if (meaning.includes(term)) {
+        // Check if it's a word boundary match (more precise)
+        const wordBoundaryRegex = new RegExp(`\\b${term}\\b`);
+        if (wordBoundaryRegex.test(meaning)) return true;
+
+        // Match if query appears at start of meaning
+        if (meaning.startsWith(term)) return true;
+      }
     }
 
     return false;
@@ -658,7 +675,7 @@ export async function getCommonWordsFromWanikani(): Promise<JapaneseWord[]> {
   try {
     // Check if API token is set (only needed for non-proxy)
     if (!PROXY_BASE && !wanikaniAxios.defaults.headers.common['Authorization']) {
-      console.warn('WaniKani API token not set, using fallback conjugable words');
+
       return fallbackConjugableWords;
     }
 
@@ -701,7 +718,6 @@ export async function getCommonWordsFromWanikani(): Promise<JapaneseWord[]> {
       word.type === 'na-adjective'
     );
 
-
     // Log breakdown by type for debugging
     const breakdown = {
       ichidan: practiceWords.filter(w => w.type === 'Ichidan').length,
@@ -723,7 +739,7 @@ export async function getCommonVerbsFromWanikani(): Promise<JapaneseWord[]> {
   try {
     // Check if API token is set (only needed for non-proxy)
     if (!PROXY_BASE && !wanikaniAxios.defaults.headers.common['Authorization']) {
-      console.warn('WaniKani API token not set');
+
       return [];
     }
 
@@ -763,7 +779,7 @@ export async function getWordsByJLPTLevelFromWanikani(level: JLPTLevel): Promise
   try {
     // Check if API token is set (only needed for non-proxy)
     if (!PROXY_BASE && !wanikaniAxios.defaults.headers.common['Authorization']) {
-      console.warn('WaniKani API token not set');
+
       return [];
     }
 

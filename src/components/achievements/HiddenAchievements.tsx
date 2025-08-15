@@ -256,7 +256,7 @@ export function HiddenAchievementsSection({
         hiddenAchievements={hiddenAchievements}
         onAchievementClick={(achievement) => {
           if (achievement) {
-            console.log('Hidden achievement clicked:', achievement);
+
           }
         }}
         animated={true}

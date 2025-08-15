@@ -58,31 +58,24 @@ export function calculateDistributionStats(frequency: { [kanji: string]: number 
 // Test function to verify fairness
 export async function testKanjiSelectionFairness(jlptLevel: number) {
   const { getKanjiByJLPT } = await import('./kanjiUtils');
-  
-  console.log(`Testing kanji selection fairness for JLPT N${jlptLevel}...`);
-  
+
   try {
     const allKanji = await getKanjiByJLPT(jlptLevel);
-    console.log(`Total kanji available: ${allKanji.length}`);
-    
+
     const frequency = analyzeKanjiDistribution(allKanji);
     const stats = calculateDistributionStats(frequency);
-    
-    console.log('Distribution Statistics:');
+
     console.log(`- Mean frequency: ${stats.mean.toFixed(2)}`);
     console.log(`- Standard deviation: ${stats.stdDev.toFixed(2)}`);
     console.log(`- Coefficient of variation: ${stats.coefficient_of_variation.toFixed(2)}%`);
-    console.log(`- Min frequency: ${stats.min}`);
-    console.log(`- Max frequency: ${stats.max}`);
+
     console.log(`- Expected uniform frequency: ${stats.expected_frequency.toFixed(2)}`);
-    
-    console.log('\nMost frequently selected:');
+
     stats.most_frequent.forEach(({ kanji, count }) => {
       const deviation = ((count - stats.mean) / stats.mean * 100).toFixed(1);
       console.log(`  ${kanji}: ${count} times (${deviation}% from mean)`);
     });
-    
-    console.log('\nLeast frequently selected:');
+
     stats.least_frequent.forEach(({ kanji, count }) => {
       const deviation = ((count - stats.mean) / stats.mean * 100).toFixed(1);
       console.log(`  ${kanji}: ${count} times (${deviation}% from mean)`);
@@ -90,8 +83,7 @@ export async function testKanjiSelectionFairness(jlptLevel: number) {
     
     // Check if distribution is reasonably uniform
     const isUniform = stats.coefficient_of_variation < 10; // Less than 10% variation is good
-    console.log(`\nDistribution is ${isUniform ? 'FAIR' : 'BIASED'}`);
-    
+
     return { stats, isUniform };
   } catch (error) {
     console.error('Error testing kanji selection:', error);

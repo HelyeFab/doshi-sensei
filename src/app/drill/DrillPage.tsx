@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { JapaneseWord, DrillQuestion, ConjugationForms, WordList, KanjiList, WordType } from '@/types';
+import { JapaneseWord, DrillQuestion, WordList, KanjiList, WordType } from '@/types';
+import { ExtendedConjugationForms } from '@/types/conjugation-extended';
 import { searchWords } from '@/utils/api';
 import { getCachedCommonWordsForPractice } from '@/utils/practiceCache';
-import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
+import { ExtendedConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation-extended';
 import { useStrings } from '@/contexts/LanguageContext';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
@@ -22,6 +23,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import { useAchievements } from '@/hooks/useAchievements';
 import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
 import { PracticeCache } from '@/utils/practiceCache';
+import DrillSettingsDropdown from '@/components/drill/DrillSettingsDropdown';
 
 // Structured Data for Drill Page
 const drillStructuredData = {
@@ -86,7 +88,6 @@ export default function DrillPage() {
   const [drillMode, setDrillMode] = useState<'random' | 'lists'>('random');
   const [autoAdvance, setAutoAdvance] = useState(false);
 
-
   // Existing conjugation drill functions
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
@@ -99,7 +100,7 @@ export default function DrillPage() {
 
   const generateDrillQuestion = (
     word: JapaneseWord,
-    targetForm: keyof ConjugationForms,
+    targetForm: keyof ExtendedConjugationForms,
     correctAnswer: string
   ): DrillQuestion => {
     const stem = generateQuestionStem(word, targetForm);
@@ -113,13 +114,13 @@ export default function DrillPage() {
       stem,
       correctAnswer,
       options,
-      rule: ConjugationEngine.getConjugationRule(word.type, targetForm)
+      rule: ExtendedConjugationEngine.getConjugationRule(word.type, targetForm)
     };
   };
 
-  const generateDistractors = (word: JapaneseWord, targetForm: keyof ConjugationForms, correctAnswer: string): string[] => {
+  const generateDistractors = (word: JapaneseWord, targetForm: keyof ExtendedConjugationForms, correctAnswer: string): string[] => {
 
-    const conjugations = ConjugationEngine.conjugate(word);
+    const conjugations = ExtendedConjugationEngine.conjugate(word);
 
     const allForms = Object.values(conjugations).filter(form => form && form !== correctAnswer);
 
@@ -172,7 +173,6 @@ export default function DrillPage() {
       // Load unified study lists and convert them to legacy format for compatibility
       const studyLists = await StudyListManager.getAllStudyLists();
 
-
       const legacyWordLists: WordList[] = studyLists.map(studyList => ({
         id: studyList.id,
         name: studyList.name,
@@ -208,23 +208,21 @@ export default function DrillPage() {
   }, [loadWordLists, loadKanjiLists]);
 
   const loadQuestionsForWord = useCallback(async (word: JapaneseWord) => {
-    console.log('loadQuestionsForWord called with:', word);
+
     try {
       setLoading(true);
-      const forms: (keyof ConjugationForms)[] = [
+      const forms: (keyof ExtendedConjugationForms)[] = [
         'present', 'past', 'negative', 'pastNegative',
         'polite', 'politePast', 'teForm'
       ];
 
       const applicableForms = forms.filter(form => {
-        const conjugations = ConjugationEngine.conjugate(word);
+        const conjugations = ExtendedConjugationEngine.conjugate(word);
         return conjugations[form] !== undefined;
       });
 
-      console.log('Applicable forms:', applicableForms);
-
       const selectedForms = shuffleArray([...applicableForms]).slice(0, 5);
-      const conjugations = ConjugationEngine.conjugate(word);
+      const conjugations = ExtendedConjugationEngine.conjugate(word);
       const drillQuestions = selectedForms.map(form => {
         const correctAnswer = conjugations[form];
         if (!correctAnswer) {
@@ -233,7 +231,6 @@ export default function DrillPage() {
         return generateDrillQuestion(word, form, correctAnswer);
       });
 
-      console.log('Generated questions:', drillQuestions);
       setQuestions(drillQuestions);
     } catch (error) {
       console.error('Error loading questions for word:', error);
@@ -254,7 +251,6 @@ export default function DrillPage() {
           const { words: listWords } = await StudyListManager.getItemsInList(listId);
           words = [...words, ...listWords];
         }
-
 
         if (words.length === 0) {
           setQuestions([]);
@@ -281,7 +277,6 @@ export default function DrillPage() {
           return false; // We'll handle API lookup separately
         });
 
-
         // If we have few or no conjugable words, try to fix misclassified ones
         if (words.length < 5) {
           const remainingWords = allWords.filter((w: JapaneseWord) => !words.includes(w));
@@ -298,7 +293,6 @@ export default function DrillPage() {
             }
           }
         }
-
 
         if (words.length === 0) {
           setQuestions([]);
@@ -338,7 +332,6 @@ export default function DrillPage() {
     if (word.type === 'Ichidan' || word.type === 'Godan' || word.type === 'Irregular' || word.type === 'i-adjective' || word.type === 'na-adjective') {
       return word; // Already correctly classified
     }
-
 
     // First try pattern-based classification (faster and doesn't rely on API)
     const patternFixedWord = fixWordTypeByPattern(word);
@@ -449,9 +442,8 @@ export default function DrillPage() {
       const word = await fixWordType(originalWord); // Fix word type before conjugation
 
       const targetForm = getRandomConjugationForm(word.type);
-      const conjugations = ConjugationEngine.conjugate(word);
+      const conjugations = ExtendedConjugationEngine.conjugate(word);
       const correctAnswer = conjugations[targetForm];
-
 
       // Skip words that have empty/invalid conjugations
       if (!correctAnswer || correctAnswer.trim() === '') {
@@ -523,7 +515,6 @@ export default function DrillPage() {
     loadInitialQuestions();
   }, [settings.dailyGoal, settingsLoading, drillMode, selectedLists, loadQuestions, loadQuestionsForWord]);
 
-
   const handleAnswerSelect = async (answer: string) => {
     if (showResult) return;
 
@@ -551,13 +542,12 @@ export default function DrillPage() {
         
         // Track in new analytics system
         trackDrillComplete(drillMode, newScore, questions.length);
-        console.log('📊 [Analytics] Drill completion tracked:', { type: drillMode, correct: newScore, total: questions.length });
-        
+
         // Update achievement progress
         try {
           const newlyUnlocked = await updateProgress('drillsCompleted');
           if (newlyUnlocked.length > 0) {
-            console.log('🏆 [Achievements] New achievements unlocked:', newlyUnlocked);
+
           }
         } catch (error) {
           console.error('Error updating achievement progress:', error);
@@ -597,15 +587,15 @@ export default function DrillPage() {
   };
 
   const startGame = async () => {
-    console.log('startGame called');
+
     // Check if user can do drill
     const canDo = await checkAndTrack('drill_practice');
-    console.log('Can do drill:', canDo);
+
     if (!canDo) {
-      console.log('User cannot do drill, returning');
+
       return;
     }
-    console.log('Setting gameStarted to true');
+
     setGameStarted(true);
   };
 
@@ -628,7 +618,6 @@ export default function DrillPage() {
       
       // Track in new analytics system
       trackDrillComplete('conjugation', actualScore, questions.length);
-      console.log('📊 [Analytics] Drill session recorded:', { type: 'conjugation', correct: actualScore, total: questions.length });
 
       // Usage tracking is now handled automatically by checkAndTrack
     } catch (err) {
@@ -732,165 +721,260 @@ export default function DrillPage() {
               </div>
             ) : !gameStarted ? (
               // Start Screen
-              <div className="text-center py-12">
-                <div className="bg-card border border-border rounded-lg p-8 mb-8">
-                  <h2 className="text-2xl font-semibold mb-4 text-card-foreground">
-                    Ready to practice?
+              <div className="py-6 md:py-12">
+                {/* Header Card */}
+                <div className="bg-card border border-border rounded-lg p-6 mb-6 text-center">
+                  <div className="text-4xl mb-3">🎯</div>
+                  <h2 className="text-2xl font-semibold mb-2 text-card-foreground">
+                    Conjugation Practice
                   </h2>
-                  <p className="text-muted-foreground mb-4">
-                    Test your knowledge with {questions.length} conjugation questions
+                  <p className="text-muted-foreground">
+                    Master Japanese verb and adjective conjugations
                   </p>
-                  <div className="bg-muted/50 rounded-lg p-4 mb-6">
-                    <DailyGoalSlider 
-                      value={settings.dailyGoal} 
-                      onChange={(value) => updateSetting('dailyGoal', value)}
-                    />
-                  </div>
+                </div>
 
-                  {/* Drill Mode Selection */}
-                  <div className="mb-6">
-                    <div className="text-sm text-muted-foreground mb-3">Drill Mode:</div>
-                    <div className="flex gap-2 justify-center flex-wrap mb-4">
-                      <button
-                        onClick={() => setDrillMode('random')}
-                        className={`px-4 py-2 rounded-lg border transition-colors ${
-                          drillMode === 'random'
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'bg-background text-foreground border-input hover:bg-muted'
-                        }`}
-                      >
-                        Random Words
-                      </button>
-                      <button
-                        onClick={() => setDrillMode('lists')}
-                        className={`px-4 py-2 rounded-lg border transition-colors ${
-                          drillMode === 'lists'
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'bg-background text-foreground border-input hover:bg-muted'
-                        }`}
-                      >
-                        My Lists ({conjugableLists.length})
-                      </button>
+                {/* Mobile Settings Dropdown */}
+                <DrillSettingsDropdown
+                  dailyGoal={settings.dailyGoal}
+                  onDailyGoalChange={(value) => updateSetting('dailyGoal', value)}
+                  wordTypeFilter={wordTypeFilter}
+                  onWordTypeFilterChange={setWordTypeFilter}
+                  drillMode={drillMode}
+                  onDrillModeChange={setDrillMode}
+                  autoAdvance={autoAdvance}
+                  onAutoAdvanceChange={setAutoAdvance}
+                  conjugableLists={conjugableLists}
+                  selectedLists={selectedLists}
+                  onListToggle={handleListToggle}
+                />
+
+                {/* Desktop Settings (hidden on mobile) */}
+                <div className="hidden md:block bg-card border border-border rounded-lg p-6 mb-6">
+                  <div className="space-y-6">
+                    {/* Daily Goal */}
+                    <div className="bg-muted/30 rounded-lg p-4">
+                      <DailyGoalSlider 
+                        value={settings.dailyGoal} 
+                        onChange={(value) => updateSetting('dailyGoal', value)}
+                      />
                     </div>
 
-                    {/* List Selection - Only Conjugable Lists */}
-                    {drillMode === 'lists' && (
-                      <div className="mb-4">
-                        {conjugableLists.length > 0 ? (
-                          <div className="space-y-3">
-                            <div className="text-sm text-muted-foreground">Select conjugable lists to drill:</div>
-                            <div className="max-h-48 overflow-y-auto space-y-2">
-                              {conjugableLists.map((list) => (
-                                <label key={list.id} className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50">
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedLists.includes(list.id)}
-                                    onChange={() => handleListToggle(list.id)}
-                                    className="rounded border-border"
-                                  />
-                                  <div className="flex items-center gap-2 flex-1">
-                                    <div
-                                      className="w-3 h-3 rounded-full"
-                                      style={{ backgroundColor: list.color }}
-                                    ></div>
-                                    <span className="text-sm text-foreground">{list.name}</span>
-                                    <span className="text-xs text-muted-foreground">
-                                      ({list.wordIds.length} words)
-                                    </span>
-                                    {list.isConjugable && (
-                                      <span className="text-xs text-green-400">✓ conjugable</span>
-                                    )}
-                                  </div>
-                                </label>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg">
-                            No conjugable lists found. Create vocabulary lists with verbs and adjectives to use conjugation drills.
-                          </div>
-                        )}
+                    {/* Practice Type */}
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-3">Practice with:</div>
+                      <div className="flex gap-2 justify-center flex-wrap">
+                        {(['all', 'verbs', 'adjectives'] as const).map((filter) => (
+                          <button
+                            key={filter}
+                            onClick={() => setWordTypeFilter(filter)}
+                            className={`px-4 py-2 rounded-lg border transition-colors ${
+                              wordTypeFilter === filter
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-background text-foreground border-input hover:bg-muted'
+                            }`}
+                          >
+                            {filter === 'all' ? 'All Types' :
+                             filter === 'verbs' ? 'Verbs Only' : 'Adjectives Only'}
+                          </button>
+                        ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
 
-                  {/* Word Type Filter */}
-                  <div className="mb-6">
-                    <div className="text-sm text-muted-foreground mb-3">Practice with:</div>
-                    <div className="flex gap-2 justify-center flex-wrap">
-                      {(['all', 'verbs', 'adjectives'] as const).map((filter) => (
+                    {/* Drill Mode */}
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-3">Drill Mode:</div>
+                      <div className="flex gap-2 justify-center flex-wrap mb-4">
                         <button
-                          key={filter}
-                          onClick={() => setWordTypeFilter(filter)}
+                          onClick={() => setDrillMode('random')}
                           className={`px-4 py-2 rounded-lg border transition-colors ${
-                            wordTypeFilter === filter
+                            drillMode === 'random'
                               ? 'bg-primary text-primary-foreground border-primary'
                               : 'bg-background text-foreground border-input hover:bg-muted'
                           }`}
                         >
-                          {filter === 'all' ? 'All Types' :
-                           filter === 'verbs' ? 'Verbs Only' : 'Adjectives Only'}
+                          Random Words
                         </button>
-                      ))}
+                        <button
+                          onClick={() => setDrillMode('lists')}
+                          className={`px-4 py-2 rounded-lg border transition-colors ${
+                            drillMode === 'lists'
+                              ? 'bg-primary text-primary-foreground border-primary'
+                              : 'bg-background text-foreground border-input hover:bg-muted'
+                          }`}
+                        >
+                          My Lists ({conjugableLists.length})
+                        </button>
+                      </div>
+
+                      {/* List Selection */}
+                      {drillMode === 'lists' && (
+                        <div className="mb-4">
+                          {conjugableLists.length > 0 ? (
+                            <div className="space-y-3">
+                              <div className="text-sm text-muted-foreground">Select conjugable lists to drill:</div>
+                              <div className="max-h-48 overflow-y-auto space-y-2 bg-muted/30 rounded-lg p-3">
+                                {conjugableLists.map((list) => (
+                                  <label key={list.id} className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedLists.includes(list.id)}
+                                      onChange={() => handleListToggle(list.id)}
+                                      className="rounded border-border"
+                                    />
+                                    <div className="flex items-center gap-2 flex-1">
+                                      <div
+                                        className="w-3 h-3 rounded-full"
+                                        style={{ backgroundColor: list.color }}
+                                      />
+                                      <span className="text-sm text-foreground">{list.name}</span>
+                                      <span className="text-xs text-muted-foreground">
+                                        ({list.wordIds.length} words)
+                                      </span>
+                                    </div>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg">
+                              No conjugable lists found. Create vocabulary lists with verbs and adjectives to use conjugation drills.
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Auto-Advance */}
+                    <div>
+                      <label className="flex items-center justify-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={autoAdvance}
+                          onChange={(e) => setAutoAdvance(e.target.checked)}
+                          className="rounded border-border"
+                        />
+                        <div>
+                          <span className="text-sm text-foreground block">Auto-advance to next question</span>
+                          <span className="text-xs text-muted-foreground">(automatically moves to next after 2 seconds)</span>
+                        </div>
+                      </label>
                     </div>
                   </div>
+                </div>
 
-                  {/* Auto-Advance Toggle */}
-                  <div className="mb-6">
-                    <label className="flex items-center justify-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={autoAdvance}
-                        onChange={(e) => setAutoAdvance(e.target.checked)}
-                        className="rounded border-border"
-                      />
-                      <div>
-                        <span className="text-sm text-foreground block">Auto-advance to next question</span>
-                        <span className="text-xs text-muted-foreground">(automatically moves to next after 2 seconds)</span>
-                      </div>
-                    </label>
-                  </div>
-
+                {/* Action Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  {/* Start Drill Card */}
                   <button
                     onClick={startGame}
                     disabled={drillMode === 'lists' && selectedLists.length === 0}
-                    className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-card border-2 border-primary hover:bg-primary/10 rounded-lg p-6 transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed group"
                   >
-                    Start Conjugation Drill
+                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🚀</div>
+                    <h3 className="text-lg font-semibold text-card-foreground mb-2">Start Practice</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Begin with {questions.length} questions
+                    </p>
                   </button>
+
+                  {/* Quick Practice Card */}
+                  <button
+                    onClick={() => loadQuestions()}
+                    className="bg-card border border-border hover:bg-muted/50 rounded-lg p-6 transition-all hover:shadow-lg group"
+                  >
+                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🔄</div>
+                    <h3 className="text-lg font-semibold text-card-foreground mb-2">Refresh Questions</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Get a new set of practice questions
+                    </p>
+                  </button>
+                </div>
+                
+                {/* Additional Info Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                  <div className="bg-card border border-border rounded-lg p-4 text-center">
+                    <div className="text-2xl mb-1">📊</div>
+                    <div className="text-xs text-muted-foreground">Questions</div>
+                    <div className="text-lg font-semibold text-card-foreground">{questions.length}</div>
+                  </div>
+                  <div className="bg-card border border-border rounded-lg p-4 text-center">
+                    <div className="text-2xl mb-1">🎯</div>
+                    <div className="text-xs text-muted-foreground">Goal</div>
+                    <div className="text-lg font-semibold text-card-foreground">{settings.dailyGoal}</div>
+                  </div>
+                  <div className="bg-card border border-border rounded-lg p-4 text-center">
+                    <div className="text-2xl mb-1">📝</div>
+                    <div className="text-xs text-muted-foreground">Type</div>
+                    <div className="text-lg font-semibold text-card-foreground">
+                      {wordTypeFilter === 'all' ? 'All' : wordTypeFilter === 'verbs' ? 'Verbs' : 'Adj'}
+                    </div>
+                  </div>
+                  <div className="bg-card border border-border rounded-lg p-4 text-center">
+                    <div className="text-2xl mb-1">⚡</div>
+                    <div className="text-xs text-muted-foreground">Mode</div>
+                    <div className="text-lg font-semibold text-card-foreground">
+                      {drillMode === 'random' ? 'Random' : 'Lists'}
+                    </div>
+                  </div>
                 </div>
                 
                 {/* Quick Drill Preview - Show pre-selected words for random mode */}
                 {drillMode === 'random' && (
                   <QuickDrillPreview 
                     onSelectWord={async (word) => {
-                      console.log('Drill page: onSelectWord called with:', word);
+
                       await loadQuestionsForWord(word);
-                      console.log('Drill page: Questions loaded');
+
                       await startGame();
-                      console.log('Drill page: Game started');
+
                     }}
                   />
                 )}
               </div>
             ) : isFinished ? (
               // Results Screen
-              <div className="text-center py-12">
-                <div className="bg-card border border-border rounded-lg p-8">
-                  <h2 className="text-3xl font-semibold mb-4 text-card-foreground">
-                    {strings.common.success}
+              <div className="py-6 md:py-12">
+                {/* Results Header Card */}
+                <div className="bg-card border border-border rounded-lg p-6 mb-6 text-center">
+                  <div className="text-5xl mb-3">
+                    {score / questions.length >= 0.8 ? '🏆' : score / questions.length >= 0.6 ? '✨' : '💪'}
+                  </div>
+                  <h2 className="text-2xl font-semibold mb-2 text-card-foreground">
+                    {score / questions.length >= 0.8 ? 'Excellent!' : score / questions.length >= 0.6 ? 'Good Job!' : 'Keep Practicing!'}
                   </h2>
-                  <div className="text-6xl font-bold text-primary mb-2">
+                  <div className="text-4xl font-bold text-primary mb-2">
                     {score}/{questions.length}
                   </div>
-                  <div className="text-lg text-muted-foreground mb-4">
+                  <div className="text-lg text-muted-foreground">
                     {Math.round((score / questions.length) * 100)}% accuracy
                   </div>
+                </div>
+
+                {/* Action Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <button
                     onClick={handleRestart}
-                    className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium"
+                    className="bg-card border-2 border-primary hover:bg-primary/10 rounded-lg p-6 transition-all hover:shadow-lg group"
                   >
-                    Try Again
+                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🔄</div>
+                    <h3 className="text-lg font-semibold text-card-foreground mb-2">Try Again</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Practice with the same questions
+                    </p>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      loadQuestions();
+                      setGameStarted(false);
+                    }}
+                    className="bg-card border border-border hover:bg-muted/50 rounded-lg p-6 transition-all hover:shadow-lg group"
+                  >
+                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🎲</div>
+                    <h3 className="text-lg font-semibold text-card-foreground mb-2">New Practice</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Get a fresh set of questions
+                    </p>
                   </button>
                 </div>
               </div>

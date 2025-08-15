@@ -28,7 +28,7 @@ export function UpgradeSlideUpModalPaymentLinks({ isOpen, onClose, message, feat
   useEffect(() => {
     if (isOpen) {
       trackUpgradeModalShown('feature_limit', feature);
-      console.log('📊 [Analytics] Upgrade modal shown:', { trigger: 'feature_limit', feature });
+
     }
   }, [isOpen, feature, trackUpgradeModalShown]);
 
@@ -39,8 +39,7 @@ export function UpgradeSlideUpModalPaymentLinks({ isOpen, onClose, message, feat
     try {
       // Track upgrade plan selected
       track('upgrade_plan_selected', { plan, feature });
-      console.log('📊 [Analytics] Upgrade plan selected:', { plan, feature });
-      
+
       // Get the payment link URL with user info prefilled
       const paymentUrl = getPaymentLink(
         plan,
@@ -65,7 +64,7 @@ export function UpgradeSlideUpModalPaymentLinks({ isOpen, onClose, message, feat
 
   const handleClose = () => {
     track('upgrade_modal_dismissed', { feature });
-    console.log('📊 [Analytics] Upgrade modal dismissed:', { feature });
+
     onClose();
   };
 

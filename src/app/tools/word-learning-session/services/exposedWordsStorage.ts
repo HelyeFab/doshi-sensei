@@ -116,7 +116,7 @@ class ExposedWordsStorage {
           newCyclesCompleted
         );
       } catch (error) {
-        console.warn('Failed to sync exposure data to Firebase:', error);
+
       }
     }
   }
@@ -144,7 +144,7 @@ class ExposedWordsStorage {
       try {
         exposureData = await this.getLessonExposureFromFirebase(userId, lessonId);
       } catch (error) {
-        console.warn('Failed to get exposure data from Firebase:', error);
+
       }
     }
     
@@ -234,7 +234,7 @@ class ExposedWordsStorage {
       try {
         await this.clearLessonExposureFirebase(userId, lessonId);
       } catch (error) {
-        console.warn('Failed to clear exposure data in Firebase:', error);
+
       }
     }
   }

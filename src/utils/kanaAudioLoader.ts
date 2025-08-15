@@ -24,7 +24,7 @@ async function loadKanaAudioIndex(): Promise<KanaAudioIndex | null> {
       return audioIndexCache;
     }
   } catch (error) {
-    console.warn('Failed to load kana audio index:', error);
+
   }
 
   return null;
@@ -41,23 +41,23 @@ export async function getKanaAudioPath(text: string): Promise<string | null> {
 
   const audioIndex = await loadKanaAudioIndex();
   if (!audioIndex) {
-    console.log(`[Kana Audio] No audio index found for: "${text}"`);
+
     return null;
   }
 
   // Find the kana in our data
   const kana = kanaData.find(k => k.hiragana === text || k.katakana === text);
   if (!kana) {
-    console.log(`[Kana Audio] Not a kana character: "${text}"`);
+
     return null;
   }
 
   // Return the appropriate audio path
   if (kana.hiragana === text && audioIndex.hiragana[kana.id]) {
-    console.log(`[Kana Audio] Found local hiragana audio: "${text}" → ${audioIndex.hiragana[kana.id]}`);
+
     return audioIndex.hiragana[kana.id];
   } else if (kana.katakana === text && audioIndex.katakana[kana.id]) {
-    console.log(`[Kana Audio] Found local katakana audio: "${text}" → ${audioIndex.katakana[kana.id]}`);
+
     return audioIndex.katakana[kana.id];
   }
 
@@ -69,14 +69,13 @@ export async function getKanaAudioPath(text: string): Promise<string | null> {
  * Play kana audio from local file
  */
 export async function playKanaAudio(audioPath: string): Promise<void> {
-  console.log(`[Kana Audio] Playing local audio file: ${audioPath}`);
-  
+
   // Try direct method first for local files
   try {
     await playKanaAudioDirect(audioPath);
     return;
   } catch (directError) {
-    console.warn(`[Kana Audio] Direct method failed, trying fetch method:`, directError);
+
   }
   
   // Fallback to fetch method if direct fails
@@ -108,7 +107,7 @@ function playKanaAudioDirect(audioPath: string): Promise<void> {
       audio.play()
         .then(() => {
           hasPlayed = true;
-          console.log(`[Kana Audio] Started playing: ${audioPath}`);
+
         })
         .catch((err) => {
           console.error(`[Kana Audio] Play failed:`, err);
@@ -118,20 +117,20 @@ function playKanaAudioDirect(audioPath: string): Promise<void> {
     
     // Add event listeners
     audio.addEventListener('loadstart', () => {
-      console.log(`[Kana Audio] Started loading: ${audioPath}`);
+
       startLoadTimeout();
     });
     
     audio.addEventListener('loadeddata', () => {
-      console.log(`[Kana Audio] Audio data loaded: ${audioPath}`);
+
     });
     
     audio.addEventListener('canplay', () => {
-      console.log(`[Kana Audio] Audio can play: ${audioPath}`);
+
     });
     
     audio.addEventListener('ended', () => {
-      console.log(`[Kana Audio] Finished playing: ${audioPath}`);
+
       clearTimeout(loadTimeout);
       resolve();
     });
@@ -157,7 +156,7 @@ function playKanaAudioDirect(audioPath: string): Promise<void> {
         
         // For network errors, this is expected due to service worker
         if (audioError.code === 2) {
-          console.info(`[Kana Audio] This is expected - will retry with different method`);
+
         }
       }
       
@@ -194,8 +193,7 @@ export async function hasLocalKanaAudio(text: string): Promise<boolean> {
  * Alternative play method using fetch API to bypass service worker
  */
 export async function playKanaAudioViaFetch(audioPath: string): Promise<void> {
-  console.info(`[Kana Audio] Using fetch method: ${audioPath}`);
-  
+
   try {
     // Fetch the audio file
     const response = await fetch(audioPath, {
@@ -224,14 +222,14 @@ export async function playKanaAudioViaFetch(audioPath: string): Promise<void> {
       audio.addEventListener('canplaythrough', () => {
         audio.play()
           .then(() => {
-            console.log(`[Kana Audio] Started playing via fetch method`);
+
           })
           .catch(reject);
       }, { once: true });
       
       audio.addEventListener('ended', () => {
         URL.revokeObjectURL(audioUrl);
-        console.log(`[Kana Audio] Finished playing via fetch method`);
+
         resolve();
       });
       
@@ -260,7 +258,7 @@ export async function playKanaAudioWithRetry(audioPath: string, maxRetries: numb
   
   // Try direct play without blob conversion
   try {
-    console.log(`[Kana Audio] Attempting direct play: ${audioPath}`);
+
     const audio = new Audio(audioPath);
     audio.preload = 'auto';
     
@@ -285,7 +283,7 @@ export async function playKanaAudioWithRetry(audioPath: string, maxRetries: numb
     });
   } catch (error) {
     lastError = error as Error;
-    console.warn(`[Kana Audio] Direct play failed:`, error);
+
   }
   
   // If direct play fails, try with fetch method
@@ -298,7 +296,7 @@ export async function playKanaAudioWithRetry(audioPath: string, maxRetries: numb
       return;
     } catch (error) {
       lastError = error as Error;
-      console.warn(`[Kana Audio] Fetch attempt ${attempt + 1} failed:`, error);
+
     }
   }
   

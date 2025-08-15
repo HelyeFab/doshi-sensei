@@ -55,7 +55,7 @@ export class SubscriptionManager {
   ): Unsubscribe {
     // Validate userId before setting up listener
     if (!userId || typeof userId !== 'string' || userId.length === 0) {
-      console.warn('Invalid userId provided to subscription listener');
+
       callback(null);
       return () => {}; // Return empty unsubscribe function
     }

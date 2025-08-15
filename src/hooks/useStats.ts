@@ -56,14 +56,6 @@ export function useStats(): UseStatsReturn {
           return;
         }
 
-        console.log('🔍 [useStats] Initializing stats:', {
-          userId: profile.uid,
-          email: profile.email,
-          subscription: subscription,
-          isPremiumFromHook: isPremiumUser,
-          userType: subscription?.plan || 'free'
-        });
-
         // Only pass isPremium as true if user has an active premium subscription
         const actuallyPremium = isPremiumUser && subscription?.status === 'active';
         await statsTracker.initialize(user, actuallyPremium);

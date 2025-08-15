@@ -60,18 +60,11 @@ export class AnkiImporter {
     }
 
     try {
-      console.log('Starting Anki package parsing...', { fileName: file.name, fileSize: file.size });
-      
+
       // Use anki-apkg-parser library as requested
-      console.log('Using AnkiParserGenesis with anki-apkg-parser library...');
+
       const parseResult = await AnkiParserGenesis.parseApkg(file);
-      
-      console.log('Package parsed successfully:', {
-        cards: parseResult.cards.length,
-        decks: parseResult.decks.length,
-        media: parseResult.media.size
-      });
-      
+
       const decks = new Map<string, AnkiDeck>();
       const mediaMap = parseResult.media;
       
@@ -90,8 +83,7 @@ export class AnkiImporter {
       }
       
       // Process cards
-      console.log(`Processing ${parseResult.cards.length} cards...`);
-      
+
       for (const card of parseResult.cards) {
         const deckId = card.did || '1'; // Default deck ID if not found
         
@@ -226,7 +218,7 @@ export class AnkiImporter {
     deckName: string,
     onProgress?: (progress: number) => void
   ): Promise<Map<string, string>> {
-    console.warn('uploadMedia is deprecated. Media is now stored locally as blob URLs.');
+
     return new Map<string, string>();
   }
 
@@ -340,13 +332,7 @@ export class AnkiImporter {
       // For now, import only the first deck
       // TODO: Handle multiple decks
       const deck = decks[0];
-      
-      console.log('Selected deck for import:', {
-        deckName: deck.name,
-        deckId: deck.id,
-        cardCount: deck.cards.length
-      });
-      
+
       if (deck.cards.length === 0) {
         return { success: false, error: 'Selected deck has no cards' };
       }
@@ -356,7 +342,7 @@ export class AnkiImporter {
       
       if (media.size > 0) {
         // Store media in IndexedDB for persistent local storage
-        console.log(`Processing ${media.size} media files locally...`);
+
         if (onProgress) onProgress(30, `Processing ${media.size} media files...`);
         
         // Get AnkiMediaStore instance
@@ -375,11 +361,10 @@ export class AnkiImporter {
               onProgress(30 + ((processed / media.size) * 40), `Processing media files...`);
             }
           } catch (error) {
-            console.warn(`Failed to process media file ${filename}:`, error);
+
           }
         }
-        
-        console.log(`Processed ${processed} media files with persistent local storage`);
+
       }
       
       // Step 3: Convert to study list
@@ -400,12 +385,10 @@ export class AnkiImporter {
       );
       
       // Save all items in batches to improve performance
-      console.log(`Saving ${items.length} items to list ${createdList.id}`);
-      
+
       // Debug: Check total items in localStorage before saving
       const existingItems = await StudyListManager.getSavedStudyItems();
-      console.log(`Existing items in storage before save: ${existingItems.length}`);
-      
+
       // Update all items with the actual list ID first
       for (const item of items) {
         item.listIds = [createdList.id];
@@ -413,7 +396,7 @@ export class AnkiImporter {
       
       // Save all items at once using StudyListManager's batch save
       try {
-        console.log(`Attempting to save all ${items.length} items at once...`);
+
         const savedItems = await StudyListManager.getSavedStudyItems();
         
         // Add all new items to existing items
@@ -430,13 +413,10 @@ export class AnkiImporter {
           lists[listIndex].updatedAt = new Date();
           await StudyListManager['saveStudyListsToStorage'](lists);
         }
-        
-        console.log(`Successfully saved all ${items.length} items`);
-        
+
         // Verify the save
         const finalItems = await StudyListManager.getSavedStudyItems();
-        console.log(`Total items in storage after save: ${finalItems.length}`);
-        
+
         if (onProgress) {
           onProgress(100, `Saved all ${items.length} cards successfully`);
         }
@@ -474,15 +454,11 @@ export class AnkiImporter {
           }
         }
       }
-      
-      console.log('All items saved successfully');
-      
+
       // Debug: Check total items after saving
       const finalItems = await StudyListManager.getSavedStudyItems();
       const listItemsOnly = finalItems.filter(item => item.listIds.includes(createdList.id));
-      console.log(`Total items in localStorage after save: ${finalItems.length}`);
-      console.log(`Items in this list after save: ${listItemsOnly.length}`);
-      
+
       // Update list metadata
       createdList.metadata = list.metadata;
       if (createdList.metadata) {

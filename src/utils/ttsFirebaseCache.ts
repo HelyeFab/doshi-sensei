@@ -84,7 +84,7 @@ class FirebaseTTSCache {
   ): Promise<string | null> {
     // Client-side check - this shouldn't be called from client
     if (typeof window !== 'undefined') {
-      console.warn('[Firebase TTS Cache] Cache check should only happen server-side');
+
       return null;
     }
 
@@ -113,7 +113,7 @@ class FirebaseTTSCache {
   ): Promise<string> {
     // Client-side check - this shouldn't be called from client
     if (typeof window !== 'undefined') {
-      console.warn('[Firebase TTS Cache] Audio caching should only happen server-side');
+
       throw new Error('Audio caching is only available server-side');
     }
 
@@ -140,7 +140,7 @@ class FirebaseTTSCache {
     provider: 'elevenlabs' | 'google'
   ): Promise<void> {
     if (!storage) {
-      console.warn('[Firebase TTS Cache] Storage not initialized');
+
       return;
     }
 
@@ -150,7 +150,7 @@ class FirebaseTTSCache {
       const storageRef = ref(storage, storagePath);
 
       await deleteObject(storageRef);
-      console.log(`[Firebase TTS Cache] Deleted cache for article ${articleId}`);
+
     } catch (error: any) {
       if (error.code !== 'storage/object-not-found') {
         console.error('[Firebase TTS Cache] Error deleting cache:', error);
@@ -163,7 +163,7 @@ class FirebaseTTSCache {
    */
   async clearOldCache(daysOld: number = 30): Promise<void> {
     if (!storage) {
-      console.warn('[Firebase TTS Cache] Storage not initialized');
+
       return;
     }
 
@@ -188,7 +188,6 @@ class FirebaseTTSCache {
         }
       }
 
-      console.log(`[Firebase TTS Cache] Deleted ${deletedCount} old cache files`);
     } catch (error) {
       console.error('[Firebase TTS Cache] Error clearing old cache:', error);
     }

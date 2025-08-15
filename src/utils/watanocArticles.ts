@@ -66,16 +66,18 @@ export async function getWatanocArticles(forceRefresh: boolean = false, page?: n
     const articlesCollection = collection(db, 'articles');
     let articlesQuery;
     if (page && pageSize) {
-      // Paginated query
+      // Paginated query - ONLY visible articles
       articlesQuery = query(
         articlesCollection,
+        where('visible', '==', true),  // Only show validated or 98%+ Japanese articles
         orderBy('scrapedAt', 'desc'),
         limit(page * pageSize)
       );
     } else {
-      // No limit: fetch all articles
+      // No limit: fetch all visible articles
       articlesQuery = query(
         articlesCollection,
+        where('visible', '==', true),  // Only show validated or 98%+ Japanese articles
         orderBy('scrapedAt', 'desc')
       );
     }
@@ -227,12 +229,6 @@ export async function getArticleById(articleId: string): Promise<NewsArticle | n
     const data = articleDoc.data();
     
     // Log the raw data for debugging
-    console.log('[getArticleById] Raw article data:', {
-      id: articleDoc.id,
-      hasContent: !!data.content,
-      contentLength: data.content?.length || 0,
-      fields: Object.keys(data)
-    });
     
     const article: NewsArticle = {
       ...data,
@@ -302,7 +298,6 @@ export async function searchWatanocArticles(query: string): Promise<NewsArticle[
     article.tags.some(tag => tag.toLowerCase().includes(searchTerm))
   );
 }
-
 
 /**
  * Get cache status and metadata
@@ -411,14 +406,12 @@ export async function deleteArticle(articleId: string): Promise<{ success: boole
       throw new Error('Firebase not initialized');
     }
 
-
     // Delete the article document
     await deleteDoc(doc(db, 'articles', articleId));
 
     // Clear cache to force refresh
     articlesCache = null;
     cacheTimestamp = 0;
-
 
     return { success: true };
 
@@ -449,7 +442,6 @@ export async function deleteArticles(articleIds: string[]): Promise<{
       return { success: true, deletedCount: 0, failedCount: 0, errors: [] };
     }
 
-
     const batch = writeBatch(db);
     const errors: string[] = [];
     let deletedCount = 0;
@@ -476,11 +468,10 @@ export async function deleteArticles(articleIds: string[]): Promise<{
     try {
       await updateArticleStatistics();
     } catch (error) {
-      console.warn('Failed to update statistics after deletion:', error);
+
     }
 
     const failedCount = articleIds.length - deletedCount;
-
 
     return {
       success: failedCount === 0,
@@ -512,7 +503,6 @@ export async function deleteAllArticles(): Promise<{
     if (!db) {
       throw new Error('Firebase not initialized');
     }
-
 
     // Get all article IDs
     const articlesQuery = query(collection(db, 'articles'));
@@ -566,7 +556,6 @@ async function updateArticleStatistics(): Promise<void> {
       ...stats,
       lastUpdated: Timestamp.fromDate(new Date())
     }, { merge: true });
-
 
   } catch (error) {
     console.error('❌ Error updating article statistics:', error);

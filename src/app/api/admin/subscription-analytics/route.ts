@@ -38,9 +38,7 @@ export async function GET(request: NextRequest) {
     const snapshot = await usersRef
       .where('subscription.status', '==', 'active')
       .get();
-    
-    console.log(`Found ${snapshot.size} users with active subscriptions in Firebase`);
-    
+
     let totalMRR = 0;
     let monthlyCount = 0;
     let yearlyCount = 0;

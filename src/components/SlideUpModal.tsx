@@ -142,7 +142,9 @@ export default function SlideUpModal({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain rounded-t-3xl">
-          {children}
+          <div className="px-3 sm:px-4 py-3">
+            {children}
+          </div>
         </div>
       </div>
     </div>

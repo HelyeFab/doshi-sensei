@@ -83,7 +83,7 @@ class BackgroundSyncService {
 
   private async registerBackgroundSync(): Promise<void> {
     if (!('serviceWorker' in navigator) || !('SyncManager' in window)) {
-      console.log('Background Sync not supported');
+
       return;
     }
 

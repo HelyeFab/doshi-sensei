@@ -263,7 +263,6 @@ class ReadingProgressManager {
         }
       }
 
-      console.log(`Migration complete: ${results.migrated} migrated, ${results.failed} failed`);
       return results;
     } catch (error) {
       console.error('Error during migration:', error);

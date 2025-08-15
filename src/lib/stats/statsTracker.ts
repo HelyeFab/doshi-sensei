@@ -143,11 +143,10 @@ export class StatsTracker {
    * Initialize the stats tracker with user context
    */
   async initialize(user: User | null, isPremium: boolean): Promise<void> {
-    console.log(`🎯 [StatsTracker] Initializing for user: ${user?.uid || 'guest'}, premium: ${isPremium}`);
-    
+
     // If switching to a different user, clear existing data
     if (this.currentUser?.uid !== user?.uid) {
-      console.log(`🔄 [StatsTracker] User changed, clearing existing data`);
+
       this.stats = null;
       this.activities.clear();
       this.pendingActivities = [];
@@ -161,7 +160,7 @@ export class StatsTracker {
     
     // Update userId if user logged in and stats exist
     if (user && this.stats && this.stats.userId !== user.uid) {
-      console.log(`🔄 [StatsTracker] Updating userId from '${this.stats.userId}' to '${user.uid}'`);
+
       this.stats.userId = user.uid;
       await this.saveToIndexedDB();
     }
@@ -191,8 +190,6 @@ export class StatsTracker {
       userId: this.currentUser?.uid,
       details
     };
-
-    console.log(`📊 [StatsTracker] Tracking activity:`, event);
 
     // Add to pending activities
     this.pendingActivities.push(event);
@@ -259,7 +256,7 @@ export class StatsTracker {
    */
   async forceSync(): Promise<void> {
     if (!this.currentUser || !this.isPremium) {
-      console.log('🔄 [StatsTracker] Sync skipped - not premium user');
+
       return;
     }
 
@@ -276,7 +273,7 @@ export class StatsTracker {
       
       if (localStats) {
         this.stats = localStats;
-        console.log('📊 [StatsTracker] Loaded stats from IndexedDB:', this.stats);
+
       }
 
       // If premium user, also check cloud for newer data
@@ -286,14 +283,14 @@ export class StatsTracker {
         const recentlyUpdated = this.stats && (now - this.stats.lastUpdated < 10000);
         
         if (recentlyUpdated) {
-          console.log('⏭️ [StatsTracker] Skipping cloud load - have recent local updates');
+
         } else {
           const cloudStats = await this.loadFromCloud();
           
           // Only use cloud stats if they're actually newer than what we have in memory
           if (cloudStats && (!localStats || (cloudStats.lastUpdated > localStats.lastUpdated && cloudStats.lastUpdated > (this.stats?.lastUpdated || 0)))) {
             this.stats = cloudStats;
-            console.log('☁️ [StatsTracker] Using newer stats from cloud:', this.stats);
+
             // Save cloud stats locally
             await this.saveToIndexedDB();
           } else if (cloudStats) {
@@ -328,7 +325,7 @@ export class StatsTracker {
   private async loadFromIndexedDB(): Promise<UserStatsV2 | null> {
     // Guest users should not load from IndexedDB
     if (!this.currentUser) {
-      console.log('👤 [StatsTracker] Guest user - skipping IndexedDB load');
+
       return null;
     }
     
@@ -360,7 +357,7 @@ export class StatsTracker {
     
     // Guest users (no currentUser) should not persist to IndexedDB
     if (!this.currentUser) {
-      console.log('👤 [StatsTracker] Guest user - skipping IndexedDB save');
+
       return;
     }
 
@@ -371,7 +368,7 @@ export class StatsTracker {
         this.stats,
         this.currentUser?.uid || null
       );
-      console.log('💾 [StatsTracker] Saved stats to IndexedDB');
+
     } catch (error) {
       console.error('❌ [StatsTracker] Error saving to IndexedDB:', error);
     }
@@ -383,13 +380,13 @@ export class StatsTracker {
   private async loadFromCloud(): Promise<UserStatsV2 | null> {
     // First check if user exists and has a valid uid
     if (!this.currentUser || !this.currentUser.uid) {
-      console.log('☁️ [StatsTracker] Skipping cloud load - no authenticated user');
+
       return null;
     }
     
     // Check for guest user (uid might be 'guest' or similar)
     if (this.currentUser.uid === 'guest' || this.currentUser.uid.includes('guest')) {
-      console.log('☁️ [StatsTracker] Skipping cloud load - guest user');
+
       return null;
     }
 
@@ -420,7 +417,7 @@ export class StatsTracker {
           const { id, ...cleanData } = data;
           
           // Migrate to new structure on next save
-          console.log('📊 [StatsTracker] Found old stats structure, will migrate on next save');
+
           return cleanData as UserStatsV2;
         }
         
@@ -502,21 +499,7 @@ export class StatsTracker {
         completeStats.vocabStudied +
         completeStats.flashcardsReviewed +
         completeStats.practiceSessionsCompleted;
-      
-      console.log('📊 [StatsTracker] Recalculated totalActivities from components:', {
-        totalActivities: completeStats.totalActivities,
-        breakdown: {
-          drills: completeStats.drillsCompleted,
-          stories: completeStats.storiesRead,
-          articles: completeStats.articlesRead,
-          kanji: completeStats.kanjiStudySessions,
-          games: completeStats.gamesPlayed,
-          vocab: completeStats.vocabStudied,
-          flashcards: completeStats.flashcardsReviewed,
-          practice: completeStats.practiceSessionsCompleted
-        }
-      });
-      
+
       return completeStats;
     } catch (error) {
       console.error('❌ [StatsTracker] Error loading from cloud:', error);
@@ -528,21 +511,16 @@ export class StatsTracker {
    * Save stats to cloud
    */
   private async saveToCloud(): Promise<void> {
-    console.log('💾 [StatsTracker] saveToCloud called:', {
-      hasUser: !!this.currentUser,
-      hasStats: !!this.stats,
-      isPremium: this.isPremium
-    });
-    
+
     // First check if user exists and has a valid uid
     if (!this.currentUser || !this.currentUser.uid) {
-      console.log('📊 [StatsTracker] Skipping cloud save - no authenticated user');
+
       return;
     }
     
     // Check for guest user (uid might be 'guest' or similar)
     if (this.currentUser.uid === 'guest' || this.currentUser.uid.includes('guest')) {
-      console.log('📊 [StatsTracker] Skipping cloud save - guest user');
+
       return;
     }
     
@@ -550,13 +528,13 @@ export class StatsTracker {
 
     // Additional check for premium status
     if (!this.isPremium) {
-      console.log('📊 [StatsTracker] Skipping cloud save - not premium user');
+
       return;
     }
 
     // Ensure the userId in stats matches the current user
     if (this.stats.userId !== this.currentUser.uid) {
-      console.log('🔄 [StatsTracker] Updating userId in stats to match current user');
+
       this.stats.userId = this.currentUser.uid;
       await this.saveToIndexedDB();
     }
@@ -618,18 +596,9 @@ export class StatsTracker {
       }));
       
       // Execute all saves
-      console.log(`📤 [StatsTracker] Saving ${batch.length} documents to Firebase...`);
-      console.log('📊 [StatsTracker] Current stats before save:', {
-        gamesPlayed: this.stats.gamesPlayed,
-        articlesRead: this.stats.articlesRead,
-        drillsCompleted: this.stats.drillsCompleted
-      });
-      
+
       await Promise.all(batch);
-      
-      console.log('☁️ [StatsTracker] Saved stats to cloud with new structure');
-      console.log('📍 [StatsTracker] Documents saved to:', `userStats/${this.currentUser.uid}/current/`);
-      
+
       // Verify the documents were created and check the content
       const [summaryDoc, activitiesDoc] = await Promise.all([
         getDoc(doc(db, 'userStats', this.currentUser.uid, 'current', 'summary')),
@@ -659,8 +628,6 @@ export class StatsTracker {
 
     const activities = [...this.pendingActivities];
     this.pendingActivities = [];
-    
-    console.log(`📋 [StatsTracker] Processing ${activities.length} pending activities`);
 
     for (const activity of activities) {
       await this.processActivity(activity);
@@ -765,24 +732,22 @@ export class StatsTracker {
 
     // Validate data before processing
     if (!this.validateActivityData(event)) {
-      console.warn('[StatsTracker] Invalid activity data, skipping update', event);
+
       return;
     }
 
-    console.log(`📊 [StatsTracker] Updating stats for activity type: ${event.type}`);
-    
     switch (event.type) {
       case 'drill':
         this.stats.drillsCompleted++;
-        console.log(`✅ Drills completed: ${this.stats.drillsCompleted}`);
+
         break;
       case 'story':
         this.stats.storiesRead++;
-        console.log(`✅ Stories read: ${this.stats.storiesRead}`);
+
         break;
       case 'article':
         this.stats.articlesRead++;
-        console.log(`✅ Articles read: ${this.stats.articlesRead}`);
+
         break;
       case 'kanji':
         this.stats.kanjiStudySessions++;
@@ -794,7 +759,7 @@ export class StatsTracker {
         break;
       case 'game':
         this.stats.gamesPlayed++;
-        console.log(`✅ Games played: ${this.stats.gamesPlayed}`);
+
         // Track unique Pokemon caught
         if (event.details.gameType === 'pokemon' && event.details.itemId) {
           if (!this.stats.caughtPokemonSet.includes(event.details.itemId)) {
@@ -906,7 +871,6 @@ export class StatsTracker {
     const yesterday = this.getDateString(Date.now() - 24 * 60 * 60 * 1000);
     
     // Debug logging
-    console.log(`📊 [StatsTracker] updateStreak called with activityDate: ${activityDate}, today: ${today}, lastActiveDate: ${this.stats.lastActiveDate}`);
 
     // Update first active date
     if (!this.stats.firstActiveDate || activityDate < this.stats.firstActiveDate) {
@@ -918,21 +882,21 @@ export class StatsTracker {
       // Check previous activity to determine streak status
       if (!this.stats.lastActiveDate || this.stats.lastActiveDate === '') {
         // First activity ever
-        console.log(`🎉 [StatsTracker] First activity! Starting streak at 1`);
+
         this.stats.currentStreak = 1;
       } else if (this.stats.lastActiveDate === today) {
         // Already processed today - no change needed
-        console.log(`✅ [StatsTracker] Already active today, maintaining streak: ${this.stats.currentStreak}`);
+
         return;
       } else if (this.stats.lastActiveDate === yesterday) {
         // Consecutive day - INCREMENT the streak!
         this.stats.currentStreak += 1;
-        console.log(`🔥 [StatsTracker] Streak continues! Incremented from ${this.stats.currentStreak - 1} to ${this.stats.currentStreak}`);
+
       } else {
         // Gap in activity - reset streak to 1
         const previousStreak = this.stats.currentStreak;
         this.stats.currentStreak = 1;
-        console.log(`💔 [StatsTracker] Streak broken. Was: ${previousStreak}, Last active: ${this.stats.lastActiveDate}, Resetting to 1`);
+
       }
       
       // Update last active date AFTER checking (this was the critical bug!)
@@ -942,7 +906,7 @@ export class StatsTracker {
     // Update longest streak
     if (this.stats.currentStreak > this.stats.longestStreak) {
       this.stats.longestStreak = this.stats.currentStreak;
-      console.log(`🏆 [StatsTracker] New longest streak: ${this.stats.longestStreak}`);
+
     }
   }
 
@@ -951,8 +915,6 @@ export class StatsTracker {
    */
   private async validateAndFixStreak(): Promise<void> {
     if (!this.stats) return;
-
-    console.log('🔍 [StatsTracker] Validating streak and active days...');
 
     // Get all activity dates
     const activityDates = new Set<string>();
@@ -972,14 +934,13 @@ export class StatsTracker {
 
     // Sort dates
     const sortedDates = Array.from(activityDates).sort();
-    
-    console.log(`📊 [StatsTracker] Found ${sortedDates.length} days with activity`);
+
     if (sortedDates.length > 0) {
-      console.log(`📊 [StatsTracker] Date range: ${sortedDates[0]} to ${sortedDates[sortedDates.length - 1]}`);
+
     }
     
     if (sortedDates.length === 0) {
-      console.log('📊 [StatsTracker] No activity data found');
+
       this.stats.currentStreak = 0;
       this.stats.totalDaysActive = 0;
       return;
@@ -998,26 +959,26 @@ export class StatsTracker {
       // User has activity today, count backwards normally
       while (activityDates.has(checkDate)) {
         actualStreak++;
-        console.log(`✅ [StatsTracker] Activity found on ${checkDate}, streak now: ${actualStreak}`);
+
         const prevDate = new Date(checkDate + 'T00:00:00.000Z'); // Ensure UTC
         prevDate.setUTCDate(prevDate.getUTCDate() - 1);
         checkDate = this.getDateString(prevDate.getTime());
       }
     } else if (activityDates.has(yesterday)) {
       // No activity today yet, but was active yesterday - preserve streak
-      console.log(`⚠️ [StatsTracker] No activity today yet, but was active yesterday - preserving streak`);
+
       checkDate = yesterday;
       while (activityDates.has(checkDate)) {
         actualStreak++;
-        console.log(`✅ [StatsTracker] Activity found on ${checkDate}, streak now: ${actualStreak}`);
+
         const prevDate = new Date(checkDate + 'T00:00:00.000Z'); // Ensure UTC
         prevDate.setUTCDate(prevDate.getUTCDate() - 1);
         checkDate = this.getDateString(prevDate.getTime());
       }
-      console.log(`⏰ [StatsTracker] Streak preserved at ${actualStreak} - activity needed today to continue!`);
+
     } else {
       // No activity yesterday or today - streak is broken
-      console.log(`❌ [StatsTracker] No activity yesterday or today - streak is 0`);
+
       actualStreak = 0;
     }
 
@@ -1055,23 +1016,20 @@ export class StatsTracker {
     this.stats.totalDaysActive = activityDates.size;
     
     if (actualStreak !== previousStreak || this.stats.longestStreak !== previousLongest || this.stats.totalDaysActive !== previousActive) {
-      console.log(`✅ [StatsTracker] Stats updated:`);
-      console.log(`   - Current streak: ${previousStreak} → ${this.stats.currentStreak}`);
-      console.log(`   - Longest streak: ${previousLongest} → ${this.stats.longestStreak}`);
-      console.log(`   - Total active days: ${previousActive} → ${this.stats.totalDaysActive}`);
+
     } else {
-      console.log(`✅ [StatsTracker] Stats validated - no changes needed`);
+
     }
     
     // Update dates if needed
     if (sortedDates.length > 0) {
       if (!this.stats.firstActiveDate || sortedDates[0] < this.stats.firstActiveDate) {
         this.stats.firstActiveDate = sortedDates[0];
-        console.log(`📊 [StatsTracker] Updated first active date: ${this.stats.firstActiveDate}`);
+
       }
       if (!this.stats.lastActiveDate || sortedDates[sortedDates.length - 1] > this.stats.lastActiveDate) {
         this.stats.lastActiveDate = sortedDates[sortedDates.length - 1];
-        console.log(`📊 [StatsTracker] Updated last active date: ${this.stats.lastActiveDate}`);
+
       }
     }
   }
@@ -1082,7 +1040,7 @@ export class StatsTracker {
   private async saveDailyActivity(date: string, activity: DailyActivity): Promise<void> {
     // Guest users should not persist activities
     if (!this.currentUser) {
-      console.log('👤 [StatsTracker] Guest user - skipping activity save');
+
       return;
     }
     
@@ -1112,7 +1070,7 @@ export class StatsTracker {
     
     // Guest users should not load from storage
     if (!this.currentUser) {
-      console.log('👤 [StatsTracker] Guest user - skipping activity load');
+
       return activities;
     }
     
@@ -1175,18 +1133,18 @@ export class StatsTracker {
   private async syncToCloud(): Promise<void> {
     // First check if user exists and has a valid uid
     if (!this.currentUser || !this.currentUser.uid) {
-      console.log('🔄 [StatsTracker] Sync skipped - no authenticated user');
+
       return;
     }
     
     // Check for guest user (uid might be 'guest' or similar)
     if (this.currentUser.uid === 'guest' || this.currentUser.uid.includes('guest')) {
-      console.log('🔄 [StatsTracker] Sync skipped - guest user');
+
       return;
     }
     
     if (!this.isPremium) {
-      console.log('🔄 [StatsTracker] Sync skipped - not premium user');
+
       return;
     }
 
@@ -1194,14 +1152,14 @@ export class StatsTracker {
     
     // Debounce syncs (min 5 seconds between syncs)
     if (now - this.lastSyncTime < 5000) {
-      console.log('🔄 [StatsTracker] Sync debounced');
+
       return;
     }
 
     this.lastSyncTime = now;
 
     try {
-      console.log('☁️ [StatsTracker] Starting cloud sync...');
+
       // Save stats
       await this.saveToCloud();
       
@@ -1215,7 +1173,7 @@ export class StatsTracker {
       for (const [date, activity] of recentActivities) {
         // Double-check we have a user before trying to save
         if (!this.currentUser) {
-          console.warn('⚠️ [StatsTracker] No current user during sync, skipping activity save');
+
           continue;
         }
         
@@ -1268,8 +1226,7 @@ export class StatsTracker {
           }
         }
       }
-      
-      console.log(`☁️ [StatsTracker] Synced ${recentActivities.length} daily activities`);
+
     } catch (error) {
       console.error('❌ [StatsTracker] Sync error:', error);
     }
@@ -1281,18 +1238,18 @@ export class StatsTracker {
   private async loadActivitiesFromCloud(startDate: string, endDate: string): Promise<void> {
     // First check if user exists and has a valid uid
     if (!this.currentUser || !this.currentUser.uid) {
-      console.log('⏭️ [StatsTracker] Skipping cloud activities load - no authenticated user');
+
       return;
     }
     
     // Check for guest user (uid might be 'guest' or similar)
     if (this.currentUser.uid === 'guest' || this.currentUser.uid.includes('guest')) {
-      console.log('⏭️ [StatsTracker] Skipping cloud activities load - guest user');
+
       return;
     }
     
     if (!this.isPremium) {
-      console.log('⏭️ [StatsTracker] Skipping cloud activities load - not a premium user');
+
       return;
     }
     
@@ -1328,8 +1285,7 @@ export class StatsTracker {
           await this.saveDailyActivity(date, sanitized);
         }
       }
-      
-      console.log(`☁️ [StatsTracker] Loaded ${snapshot.size} activities from cloud`);
+
     } catch (error) {
       console.error('❌ [StatsTracker] Error loading activities from cloud:', error);
     }
@@ -1344,8 +1300,7 @@ export class StatsTracker {
     this.syncTimer = setInterval(() => {
       this.syncToCloud();
     }, StatsTracker.SYNC_INTERVAL);
-    
-    console.log('⏱️ [StatsTracker] Sync timer started');
+
   }
 
   /**
@@ -1355,7 +1310,7 @@ export class StatsTracker {
     if (this.syncTimer) {
       clearInterval(this.syncTimer);
       this.syncTimer = null;
-      console.log('⏹️ [StatsTracker] Sync timer stopped');
+
     }
   }
 
@@ -1566,7 +1521,7 @@ export class StatsTracker {
           const actualCount = pokedex.caught.length;
           // Update if count has changed
           if (actualCount !== this.stats.pokemonCaught) {
-            console.log(`🔄 [StatsTracker] Syncing Pokemon count: ${this.stats.pokemonCaught} → ${actualCount}`);
+
             this.stats.pokemonCaught = actualCount;
             await this.saveToIndexedDB();
             this.notifyListeners();
@@ -1662,8 +1617,7 @@ export class StatsTracker {
    */
   async recalculateStreak(): Promise<{ success: boolean; message: string; stats: any }> {
     try {
-      console.log('🔧 [StatsTracker] Manual streak recalculation requested');
-      
+
       const before = {
         currentStreak: this.stats?.currentStreak || 0,
         longestStreak: this.stats?.longestStreak || 0,
@@ -1708,8 +1662,7 @@ export class StatsTracker {
    * Reset all stats (for debugging)
    */
   async resetStats(): Promise<void> {
-    console.warn('⚠️ [StatsTracker] Resetting all stats...');
-    
+
     this.stats = this.createInitialStats();
     this.activities.clear();
     this.pendingActivities = [];
@@ -1729,9 +1682,7 @@ export class StatsTracker {
    */
   private async recalculateTotalsFromDailyActivities(): Promise<void> {
     if (!this.stats) return;
-    
-    console.log('🔄 [StatsTracker] Recalculating totals from daily activities...');
-    
+
     // Initialize counters
     let totalActivities = 0;
     let drillsCompleted = 0;
@@ -1769,17 +1720,7 @@ export class StatsTracker {
       this.stats.practiceSessionsCompleted !== practiceSessionsCompleted;
     
     if (hasChanges) {
-      console.log('📊 [StatsTracker] Updating stats from daily activities:', {
-        before: {
-          totalActivities: this.stats.totalActivities,
-          articlesRead: this.stats.articlesRead
-        },
-        after: {
-          totalActivities,
-          articlesRead
-        }
-      });
-      
+
       this.stats.totalActivities = totalActivities;
       this.stats.drillsCompleted = drillsCompleted;
       this.stats.storiesRead = storiesRead;
@@ -1817,22 +1758,7 @@ export class StatsTracker {
       this.stats.vocabStudied +
       this.stats.flashcardsReviewed +
       this.stats.practiceSessionsCompleted;
-    
-    console.log('📊 [StatsTracker] Recalculating totalActivities:', {
-      before,
-      calculated: calculatedTotal,
-      breakdown: {
-        drills: this.stats.drillsCompleted,
-        stories: this.stats.storiesRead,
-        articles: this.stats.articlesRead,
-        kanji: this.stats.kanjiStudySessions,
-        games: this.stats.gamesPlayed,
-        vocab: this.stats.vocabStudied,
-        flashcards: this.stats.flashcardsReviewed,
-        practice: this.stats.practiceSessionsCompleted
-      }
-    });
-    
+
     // Update if different
     if (this.stats.totalActivities !== calculatedTotal) {
       this.stats.totalActivities = calculatedTotal;

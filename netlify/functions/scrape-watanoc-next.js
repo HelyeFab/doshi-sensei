@@ -1,5 +1,6 @@
 const admin = require('firebase-admin');
 const cheerio = require('cheerio');
+const { filterArticles, quickValidate } = require('./article-quick-validation');
 
 // Function to get Unsplash image for articles without covers
 async function getUnsplashImage(keyword = 'japan news') {
@@ -354,9 +355,13 @@ exports.handler = async (event, context) => {
     ]);
     console.log(`📊 Scraped ${articles.length} articles`);
 
+    // Filter out invalid articles (English, errors, etc.)
+    const validArticles = filterArticles(articles);
+    console.log(`📊 After validation: ${validArticles.length} valid articles (filtered ${articles.length - validArticles.length})`);
+
     // Save articles to Firebase
-    if (articles.length > 0) {
-      await saveArticlesToFirebase(articles);
+    if (validArticles.length > 0) {
+      await saveArticlesToFirebase(validArticles);
     }
 
     const elapsed = Date.now() - startTime;
@@ -366,9 +371,11 @@ exports.handler = async (event, context) => {
       headers,
       body: JSON.stringify({
         success: true,
-        message: `Successfully saved ${articles.length} Watanoc articles (HTTP ENDPOINT)`,
-        articlesCount: articles.length,
-        articles: articles.map(a => ({ id: a.id, title: a.title, difficulty: a.difficulty })),
+        message: `Successfully saved ${validArticles.length} Watanoc articles (filtered ${articles.length - validArticles.length} invalid) (HTTP ENDPOINT)`,
+        articlesCount: validArticles.length,
+        totalScraped: articles.length,
+        filtered: articles.length - validArticles.length,
+        articles: validArticles.map(a => ({ id: a.id, title: a.title, difficulty: a.difficulty })),
         timestamp: new Date().toISOString(),
         timeElapsed: Math.round(elapsed / 1000)
       }),

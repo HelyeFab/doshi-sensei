@@ -48,12 +48,12 @@ export async function GET(request: NextRequest) {
     const apiKey = request.headers.get('x-api-key');
     
     // Debug logging
-    console.log('[Bug Sync Simple API] Request received');
+
     console.log('[Bug Sync Simple API] API Key from header:', apiKey ? `${apiKey.substring(0, 10)}...` : 'None provided');
     console.log('[Bug Sync Simple API] Valid API Key from env:', process.env.BUG_SYNC_API_KEY ? `${process.env.BUG_SYNC_API_KEY.substring(0, 10)}...` : 'NOT SET IN ENV');
     
     if (!apiKey) {
-      console.log('[Bug Sync Simple API] Rejected: No API key provided');
+
       return NextResponse.json(
         { error: 'API key required' },
         { status: 401 }
@@ -71,15 +71,12 @@ export async function GET(request: NextRequest) {
     }
     
     if (apiKey !== validApiKey) {
-      console.log('[Bug Sync Simple API] Rejected: Invalid API key');
-      console.log('[Bug Sync Simple API] Key mismatch');
+
       return NextResponse.json(
         { error: 'Invalid API key' },
         { status: 401 }
       );
     }
-    
-    console.log('[Bug Sync Simple API] Authentication successful');
 
     // For now, return mock data to test the connection
     return NextResponse.json({
@@ -120,8 +117,6 @@ export async function POST(request: NextRequest) {
     }
 
     const { reportIds } = await request.json();
-    
-    console.log('[Bug Sync Simple API] Marking as synced:', reportIds);
 
     return NextResponse.json({
       success: true,

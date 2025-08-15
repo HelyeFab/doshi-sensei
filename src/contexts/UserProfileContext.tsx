@@ -40,7 +40,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
 
     // Ensure we have a valid user ID before setting up the listener
     if (typeof user.uid !== 'string' || user.uid.length === 0) {
-      console.warn('Invalid user ID detected, skipping Firestore listener setup');
+
       setFirestoreData(null);
       setFirestoreLoading(false);
       return;

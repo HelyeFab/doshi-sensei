@@ -133,7 +133,6 @@ export default function DrawingCanvas({
     const coords = getCoordinates(e);
     if (!coords || !context) return;
 
-    console.log('Starting drawing at:', coords);
     setIsDrawing(true);
     setCurrentPath([coords]);
 
@@ -158,15 +157,11 @@ export default function DrawingCanvas({
     if (!isDrawing || !context) return;
 
     setIsDrawing(false);
-    console.log('Ending drawing, path length:', currentPath.length);
-    console.log('Current stroke index:', currentStrokeIndex);
-    console.log('Available stroke paths:', strokePaths.length);
 
     // Compare drawn path with expected stroke
     if (currentPath.length > 5 && currentStrokeIndex < strokePaths.length) {
       const accuracy = comparePathWithStroke(currentPath, strokePaths[currentStrokeIndex]);
-      console.log('Stroke accuracy:', accuracy);
-      
+
       if (accuracy > 0.6) { // 60% accuracy threshold
         onStrokeComplete(currentStrokeIndex, accuracy);
       } else {
@@ -201,9 +196,7 @@ export default function DrawingCanvas({
       const dy = drawnPath[i].y - drawnPath[i-1].y;
       totalDistance += Math.sqrt(dx * dx + dy * dy);
     }
-    
-    console.log('Total distance drawn:', totalDistance);
-    
+
     // If user drew a reasonable distance, consider it valid for now
     // This is just for testing - you can implement proper stroke recognition later
     if (totalDistance > 30) {

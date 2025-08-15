@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 const cheerio = require('cheerio');
 const { saveArticlesWithDeduplication } = require('./article-deduplication');
+const { filterArticles, quickValidate } = require('./article-quick-validation');
 
 // Function to get Unsplash image for articles without covers
 async function getUnsplashImage(keyword = 'japan news') {
@@ -167,12 +168,30 @@ async function scrapeNHKEasy() {
       
       // Process the JSON data
       let articleCount = 0;
-      for (const dateKey of Object.keys(data)) {
+      
+      // Handle both array and object formats from NHK API
+      let articlesToProcess = [];
+      if (Array.isArray(data)) {
+        // If data is an array with an object containing date keys (current format)
+        if (data.length > 0 && typeof data[0] === 'object') {
+          const dateObject = data[0];
+          for (const dateKey of Object.keys(dateObject)) {
+            if (Array.isArray(dateObject[dateKey])) {
+              articlesToProcess.push(...dateObject[dateKey]);
+            }
+          }
+        }
+      } else if (typeof data === 'object') {
+        // If data is an object with date keys (legacy format)
+        for (const dateKey of Object.keys(data)) {
+          if (Array.isArray(data[dateKey])) {
+            articlesToProcess.push(...data[dateKey]);
+          }
+        }
+      }
+      
+      for (const article of articlesToProcess) {
         if (articleCount >= 5) break;
-        
-        const dateArticles = data[dateKey];
-        for (const article of dateArticles) {
-          if (articleCount >= 5) break;
           
           const articleUrl = `https://www3.nhk.or.jp/news/easy/${article.news_id}/${article.news_id}.html`;
           const articleContent = await fetchArticleContent(articleUrl);
@@ -187,7 +206,6 @@ async function scrapeNHKEasy() {
           });
           
           articleCount++;
-        }
       }
     } else {
       // Fallback to HTML scraping
@@ -345,9 +363,13 @@ exports.handler = async (event, context) => {
     ]);
     console.log(`📊 [NHK Easy] Scraped ${articles.length} articles`);
 
+    // Filter out invalid articles (English, errors, etc.)
+    const validArticles = filterArticles(articles);
+    console.log(`📊 [NHK Easy] After validation: ${validArticles.length} valid articles (filtered ${articles.length - validArticles.length})`);
+
     // Save articles to Firebase
-    if (articles.length > 0) {
-      await saveArticlesToFirebase(articles);
+    if (validArticles.length > 0) {
+      await saveArticlesToFirebase(validArticles);
     }
 
     const elapsed = Date.now() - startTime;
@@ -357,9 +379,11 @@ exports.handler = async (event, context) => {
       headers,
       body: JSON.stringify({
         success: true,
-        message: `Successfully saved ${articles.length} NHK Easy articles`,
-        articlesCount: articles.length,
-        articles: articles.map(a => ({ 
+        message: `Successfully saved ${validArticles.length} NHK Easy articles (filtered ${articles.length - validArticles.length})`,
+        articlesCount: validArticles.length,
+        totalScraped: articles.length,
+        filtered: articles.length - validArticles.length,
+        articles: validArticles.map(a => ({ 
           id: a.id, 
           title: a.title, 
           difficulty: a.difficulty,

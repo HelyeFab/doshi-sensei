@@ -47,8 +47,11 @@
       "Bash(sed:*)",
       "Bash(NODE_ENV=production npm run build)",
       "Bash(git merge:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx terso:*)",
+      "Bash(npm uninstall:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits"
   }
 }

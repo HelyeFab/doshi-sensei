@@ -117,7 +117,7 @@ export default function SettingsClient() {
         }
         // Handle legacy format
         else if (data.wordLists) {
-          console.warn('Legacy import format detected - manual migration required');
+
         }
 
         setSyncModal({
@@ -278,7 +278,6 @@ export default function SettingsClient() {
     if (!canSync || premiumSyncing) return;
 
     try {
-      console.log('Starting manual sync...');
 
       // Sync study lists (all types: words, sentences, kanji, drillable)
       await StudyListManager.autoSyncLists(user, subscription?.status);
@@ -355,7 +354,6 @@ export default function SettingsClient() {
       // Clear any sessionStorage items
       sessionStorage.clear();
 
-
       // Reset settings to defaults (this will trigger a reload)
       resetSettings();
 
@@ -412,7 +410,6 @@ export default function SettingsClient() {
                 }}
               />
             </SettingsSection>
-
 
             {/* Tutorial & Learning */}
             <SettingsSection title={strings.settings.tutorialLearning}>
@@ -535,7 +532,6 @@ export default function SettingsClient() {
                         </p>
                       </div>
                     )}
-
 
                     {/* Manual Sync Button */}
                     <div className="pt-4 border-t border-border">

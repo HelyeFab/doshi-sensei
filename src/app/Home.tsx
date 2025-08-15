@@ -57,7 +57,6 @@ const structuredData = {
   "softwareVersion": "1.0"
 };
 
-
 // Feature cards will be generated from strings
 
 // Predefined color patterns for optimal visual distribution
@@ -163,7 +162,6 @@ export default function Home() {
     });
   }, [settings.colorScheme]);
 
-
   // Get user's first name only - memoized to prevent hydration issues
   const [displayName, setDisplayName] = useState('Friend');
 
@@ -214,7 +212,6 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, []);
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -718,21 +715,14 @@ function FeatureCard({ title, icon, href, color, description }: FeatureCardProps
   // Add debugging for Settings card navigation
   const handleClick = (e: React.MouseEvent) => {
     if (href === '/settings') {
-      console.log('🔧 Settings card clicked!');
-      console.log('📍 Current URL:', window.location.href);
-      console.log('🎯 Target href:', href);
-      console.log('🖱️ Click event:', e);
-      console.log('🔄 Is default prevented?', e.defaultPrevented);
-      console.log('📱 Event type:', e.type);
-      console.log('🎯 Event target:', e.target);
+
       console.log('⏰ Timestamp:', new Date().toISOString());
 
       // Check if there's any tutorial state in localStorage
       const tutorialState = localStorage.getItem('doshi-sensei-tutorial-seen');
-      console.log('📚 Tutorial state in localStorage:', tutorialState);
 
       // Log navigation type
-      console.log('🚀 About to navigate to:', href);
+
     }
   };
 

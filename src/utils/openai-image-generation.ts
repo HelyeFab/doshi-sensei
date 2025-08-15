@@ -42,11 +42,11 @@ export async function generateImageWithGPTImage(
     if (referenceImage) {
       // Note: DALL-E 3 doesn't support image inputs directly
       // We'll need to rely on detailed text descriptions and consistent style tags
-      console.log('Using detailed character description approach for consistency');
+
     }
 
     // Generate with DALL-E 3
-    console.log('Generating image with DALL-E 3...');
+
     const imageResponse = await openai.images.generate({
       model: 'dall-e-3',
       prompt: prompt,

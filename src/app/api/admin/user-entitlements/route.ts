@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
         userStats = userStatsDoc.data();
       }
     } catch (statsError) {
-      console.log('Could not fetch userStats:', statsError);
+
     }
 
     // Get daily activities from userStats
@@ -154,7 +154,7 @@ export async function GET(request: NextRequest) {
         ...doc.data()
       }));
     } catch (dailyError) {
-      console.log('Could not fetch daily activities:', dailyError);
+
     }
 
     const response = {

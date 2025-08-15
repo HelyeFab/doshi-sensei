@@ -64,20 +64,20 @@ export default function LoginClient() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted');
+
     setError('');
     setIsLoading(true);
 
     // Basic validation
     if (!email || !password) {
-      console.log('Missing email or password');
+
       setError(strings.forms.validation.required);
       setIsLoading(false);
       return;
     }
 
     if (!isLogin && password !== confirmPassword) {
-      console.log('Passwords do not match');
+
       setError(strings.forms.validation.passwordMismatch);
       setIsLoading(false);
       return;
@@ -86,16 +86,16 @@ export default function LoginClient() {
     // Validate password strength for signup
     if (!isLogin) {
       const { isValid, failedRequirements } = validatePassword(password);
-      console.log('Password validation:', { isValid, failedRequirements, password });
+
       if (!isValid) {
-        console.log('Failed requirements:', failedRequirements);
+
         setError(`Password must meet all requirements: ${failedRequirements.join(', ')}`);
         setIsLoading(false);
         return;
       }
       
       // Check if email is available (only block if explicitly false)
-      console.log('Email available:', emailAvailable);
+
       if (emailAvailable === false) {
         setError('This email is already registered. Please sign in instead.');
         setIsLoading(false);
@@ -104,16 +104,15 @@ export default function LoginClient() {
       
       // If email check is still pending, proceed anyway
       if (emailAvailable === null && email) {
-        console.log('Email availability not checked yet, proceeding with signup');
+
       }
     }
 
     try {
-      console.log('Attempting authentication...', { isLogin, email });
+
       if (isLogin) {
         await signInWithEmail(email, password);
-        console.log('Sign in successful');
-        
+
         // Clear form
         setEmail('');
         setPassword('');
@@ -121,10 +120,9 @@ export default function LoginClient() {
         // After sign in, the auth state will update and redirect will happen
         // through the useEffect that watches for auth changes
       } else {
-        console.log('Calling signUpWithEmail with:', { email, displayName });
+
         const user = await signUpWithEmail(email, password, displayName);
-        console.log('Sign up successful');
-        
+
         // Clear form
         setEmail('');
         setPassword('');

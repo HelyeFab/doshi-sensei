@@ -9,9 +9,6 @@ export async function POST(request: NextRequest) {
   try {
     const { subscriptionId, idToken } = await request.json();
 
-    console.log('Cancel subscription request received');
-    console.log('Subscription ID:', subscriptionId);
-
     if (!subscriptionId) {
       return NextResponse.json(
         { error: 'Missing subscription ID' },
@@ -40,8 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Check if this is an admin-created subscription
     if (subscriptionId.startsWith('admin_')) {
-      console.log('Admin-created subscription detected, handling differently');
-      
+
       const db = admin.firestore();
       
       // Update the user's subscription to 'canceled' status
@@ -92,10 +88,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Log subscription metadata for debugging
-    console.log('Subscription metadata:', subscription.metadata);
-    console.log('Expected Firebase UID:', decodedToken.uid);
-    console.log('Subscription Firebase UID:', subscription.metadata.firebaseUID);
-    
+
     // Verify the subscription belongs to the authenticated user
     if (subscription.metadata.firebaseUID !== decodedToken.uid) {
       // Also check customer metadata as a fallback
@@ -105,7 +98,7 @@ export async function POST(request: NextRequest) {
           const customer = await stripe.customers.retrieve(subscription.customer);
           if (customer && !customer.deleted && 'metadata' in customer) {
             customerFirebaseUID = customer.metadata?.firebaseUID;
-            console.log('Customer Firebase UID:', customerFirebaseUID);
+
           }
         } catch (error) {
           console.error('Error retrieving customer:', error);

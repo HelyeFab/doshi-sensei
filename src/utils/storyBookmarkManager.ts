@@ -96,7 +96,6 @@ export class StoryBookmarkManager {
                 updatedAt: Timestamp.fromDate(bookmark.updatedAt)
             });
 
-            console.log(`📖 User ${userId} bookmarked story: ${story.title}`);
             return true;
 
         } catch (error) {
@@ -125,7 +124,7 @@ export class StoryBookmarkManager {
         });
 
         await batch.commit();
-        console.log(`📖 User ${userId} removed bookmark for story: ${storyId}`);
+
     }
 
     // Get user's story bookmarks
@@ -187,7 +186,7 @@ export class StoryBookmarkManager {
         }
 
         await updateDoc(bookmarkDoc.ref, updateData);
-        console.log(`📖 Updated reading progress for story ${storyId}: ${progress}%`);
+
     }
 
     // Update bookmark metadata (notes, tags, favorite status)
@@ -233,7 +232,7 @@ export class StoryBookmarkManager {
         }
 
         await updateDoc(bookmarkDoc.ref, updateData);
-        console.log(`📖 Updated bookmark metadata for story ${storyId}`);
+
     }
 
     // Get bookmark statistics for user

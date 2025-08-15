@@ -96,7 +96,6 @@ export class CloudSync {
         timeoutPromise
       ]);
 
-
       this.setSyncStatus({
         isSyncing: false,
         lastSyncTime: new Date(),
@@ -271,9 +270,7 @@ export class CloudSync {
   ): 'local' | 'cloud' | 'merge' {
     const debugTimestamp = new Date().toISOString();
     console.log(`⚔️ [${debugTimestamp}] CloudSync.resolveConflict() called`);
-    console.log(`⚔️ [${debugTimestamp}] Local data exists:`, !!localData);
-    console.log(`⚔️ [${debugTimestamp}] Cloud data exists:`, !!cloudData);
-    
+
     // If no cloud data, use local
     if (!cloudData) {
       console.log(`⚔️ [${debugTimestamp}] Resolution: local (no cloud data)`);
@@ -285,9 +282,6 @@ export class CloudSync {
       console.log(`⚔️ [${debugTimestamp}] Resolution: cloud (no local data)`);
       return 'cloud';
     }
-
-    console.log(`⚔️ [${debugTimestamp}] Local updatedAt:`, localData.updatedAt);
-    console.log(`⚔️ [${debugTimestamp}] Cloud updatedAt:`, cloudData.updatedAt);
 
     // Compare timestamps - cloud wins if newer
     const localTime = localData.updatedAt?.toDate?.() || new Date(0);

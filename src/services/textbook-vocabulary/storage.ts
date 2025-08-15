@@ -357,8 +357,7 @@ class TextbookVocabularyStorage {
       });
       
       await batch.commit();
-      console.log('Successfully synced all vocabulary progress to Firebase');
-      
+
       // Sync all sessions
       const sessions = await this.getStudySessions(undefined, 1000); // Get all sessions
       const sessionBatch = writeBatch(this.firestore);
@@ -373,7 +372,7 @@ class TextbookVocabularyStorage {
       });
       
       await sessionBatch.commit();
-      console.log('Successfully synced all study sessions to Firebase');
+
     } catch (error) {
       console.error('Error syncing all data to Firebase:', error);
     }
@@ -410,9 +409,7 @@ class TextbookVocabularyStorage {
           await store.put(progress);
         }
       }
-      
-      console.log('Successfully loaded vocabulary progress from Firebase');
-      
+
       // Load sessions from Firebase
       const sessionsRef = collection(this.firestore, 'users', userId, 'textbookVocabularyStudySessions');
       const sessionsSnapshot = await getDocs(query(sessionsRef));
@@ -431,8 +428,7 @@ class TextbookVocabularyStorage {
         
         await sessionStore.put(session);
       }
-      
-      console.log('Successfully loaded study sessions from Firebase');
+
     } catch (error) {
       console.error('Error loading from Firebase:', error);
     }

@@ -86,11 +86,7 @@ async function initializeAdmin(): Promise<void> {
         const privateKeyId = process.env.FIREBASE_PRIVATE_KEY_ID || "";
         
         if (privateKey && clientEmail) {
-          console.log('Attempting Firebase Admin initialization with individual env vars');
-          console.log('Found private key:', privateKey ? 'Yes' : 'No');
-          console.log('Found client email:', clientEmail ? 'Yes' : 'No');
-          console.log('Project ID:', projectId);
-          
+
           const serviceAccount: ServiceAccount = {
           type: "service_account",
           project_id: projectId,
@@ -132,7 +128,7 @@ async function initializeAdmin(): Promise<void> {
 
       // Method 4: Minimal initialization (very limited functionality)
       if (!initialized) {
-        console.warn('Initializing Firebase Admin with project ID only - limited functionality');
+
         adminApp = admin.initializeApp({ 
           projectId,
           storageBucket: projectId, // New Firebase format: just project ID
@@ -140,8 +136,6 @@ async function initializeAdmin(): Promise<void> {
       }
 
       // Log success without exposing sensitive data
-      console.log(`✅ Firebase Admin SDK initialized for Storage`);
-      console.log(`📦 Using storage bucket: doshi-sensei`);
 
     } catch (error) {
       initializationError = error instanceof Error ? error : new Error('Unknown initialization error');
@@ -168,7 +162,7 @@ export async function getFirebaseAdmin(): Promise<typeof admin> {
  */
 export function getFirebaseAdminSync(): typeof admin {
   if (!adminApp && admin.apps.length === 0) {
-    console.warn('Firebase Admin accessed before initialization - operations may fail');
+
   }
   return admin;
 }

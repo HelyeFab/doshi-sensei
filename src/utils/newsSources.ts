@@ -80,12 +80,9 @@ async function triggerSourceScraping(source: NewsSourceConfig): Promise<Scraping
   const startTime = Date.now();
 
   try {
-    console.log(`🚀 Triggering ${source.name} scraping...`);
 
     // Use relative URL - Netlify Dev will proxy it correctly
     const functionsUrl = `/.netlify/functions/${source.netlifyFunction}`;
-
-    console.log(`📡 Triggering ${source.name} scraping via: ${functionsUrl}`);
 
     const response = await fetch(functionsUrl, {
       method: 'POST',
@@ -107,7 +104,7 @@ async function triggerSourceScraping(source: NewsSourceConfig): Promise<Scraping
     const timeElapsed = Date.now() - startTime;
 
     if (result.success) {
-      console.log(`✅ ${source.name} scraping completed successfully`);
+
       return {
         success: true,
         articlesScraped: result.articlesCount || 0,
@@ -200,7 +197,6 @@ export async function triggerMainichiNewsScraping(): Promise<ScrapingResult> {
   return triggerSourceScraping(NEWS_SOURCES.mainichiNews);
 }
 
-
 /**
  * Trigger all sources sequentially
  */
@@ -219,7 +215,6 @@ export async function triggerAllSourcesScraping(): Promise<{
     totalTimeElapsed: number;
   };
 }> {
-  console.log('🚀 Triggering all enhanced news sources scraping...');
 
   const startTime = Date.now();
 
@@ -275,8 +270,6 @@ export async function triggerAllSourcesScraping(): Promise<{
   const totalArticles = allResults.reduce((sum, r) => sum + r.articlesScraped, 0);
   const successfulSources = allResults.filter(r => r.success).length;
   const failedSources = 7 - successfulSources;
-
-  console.log(`✅ All enhanced sources scraping completed. Total: ${totalArticles} articles from ${successfulSources}/7 sources`);
 
   return {
     watanoc: watanocResult,

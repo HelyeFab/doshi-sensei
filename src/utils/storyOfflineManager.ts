@@ -195,7 +195,7 @@ class StoryOfflineManager {
         // Cache cover image
         if (story.coverImageUrl) {
           await cache.add(story.coverImageUrl).catch(() => {
-            console.warn('Failed to cache cover image:', story.coverImageUrl);
+
           });
         }
 
@@ -203,7 +203,7 @@ class StoryOfflineManager {
         for (const page of story.pages) {
           if (page.imageUrl) {
             await cache.add(page.imageUrl).catch(() => {
-              console.warn('Failed to cache page image:', page.imageUrl);
+
             });
           }
         }

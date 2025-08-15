@@ -37,7 +37,7 @@ export class ShareService {
           await this.trackShare(userId, method, content, success);
         } catch (trackError) {
           // Silently fail tracking - sharing should still work
-          console.warn('Failed to track share event:', trackError);
+
         }
       }
       

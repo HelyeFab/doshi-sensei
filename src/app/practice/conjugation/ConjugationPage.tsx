@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { JapaneseWord, ConjugationForms, WordList } from "@/types";
+import { JapaneseWord, WordList } from "@/types";
 import { ExtendedConjugationForms } from "@/types/conjugation-extended";
 import { searchWords } from "@/utils/api";
-import { ConjugationEngine } from "@/utils/conjugation";
 import { ExtendedConjugationEngine } from "@/utils/conjugation-extended";
 import { useStrings } from "@/contexts/LanguageContext";
 import { SmartPageHeader } from "@/components/navigation/SmartPageHeader";
@@ -28,6 +27,7 @@ import { ConjugationLoadingAnimation } from "@/components/ui/ConjugationLoadingA
 import { WordCardSkeletonGrid } from "@/components/ui/WordCardSkeleton";
 import { VocabularyTTSButton } from "@/components/ui/TTSButton";
 import { popularSearches } from "@/services/popularSearches";
+import { ComprehensiveConjugationDisplay } from "@/components/conjugation/ComprehensiveConjugationDisplay";
 
 // Structured Data for Conjugation Practice Page
 const conjugationStructuredData = {
@@ -154,8 +154,19 @@ export default function ConjugationPage() {
     }
   };
 
-  const handleWordSelect = (word: JapaneseWord) => {
+  const handleWordSelect = async (word: JapaneseWord) => {
     setSelectedWord(word);
+    
+    // Track this selection to improve future search results
+    if (searchTerm) {
+      const position = words.findIndex(w => w.id === word.id);
+      await popularSearches.trackSearchClick({
+        searchTerm,
+        selectedWord: word,
+        position: position + 1, // 1-indexed for analytics
+        userId: user?.uid
+      });
+    }
   };
 
   const handleBackToList = () => {
@@ -1011,6 +1022,7 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
   const strings = useStrings();
   const [showRules, setShowRules] = useState(false);
   const [showComplete, setShowComplete] = useState(false);
+  const [showComprehensive, setShowComprehensive] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(["basic", "polite", "te-forms"])
   );
@@ -1019,15 +1031,31 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
   // Generate conjugations using Extended Engine
   const conjugations = ExtendedConjugationEngine.conjugate(word);
   
-  // Filter sections based on view mode
+  // Count non-empty conjugation forms
+  const nonEmptyFormsCount = useMemo(() => {
+    return Object.values(conjugations).filter(value => value && value !== '').length;
+  }, [conjugations]);
+  
+  // Filter sections based on view mode and word type
   const visibleSections = useMemo(() => {
-    if (showComplete) return conjugationSections;
+    // For adjectives, only show relevant sections
+    const isAdjective = word.type === 'i-adjective' || word.type === 'na-adjective';
+    
+    let sections = conjugationSections;
+    
+    // Filter out verb-only sections for adjectives
+    if (isAdjective) {
+      const adjectiveSections = ['basic', 'polite', 'te-forms', 'conditional', 'alternative', 'presumptive'];
+      sections = sections.filter(section => adjectiveSections.includes(section.id));
+    }
+    
+    if (showComplete) return sections;
     
     // For essential view, only show sections with essential forms
-    return conjugationSections.filter(section =>
+    return sections.filter(section =>
       section.forms.some(form => form.essential)
     );
-  }, [showComplete]);
+  }, [showComplete, word.type]);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => {
@@ -1088,8 +1116,7 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
                   {word.kanji}
                 </h2>
                 <VocabularyTTSButton 
-                  word={word.kanji}
-                  kana={word.kana}
+                  word={word}
                   size="lg"
                   variant="pill"
                 />
@@ -1111,61 +1138,161 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
           </div>
         </div>
 
-        {/* View Toggle and Rules Button */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-2 cursor-pointer bg-card rounded-full px-4 py-2 shadow-sm">
-              <input
-                type="checkbox"
-                checked={showComplete}
-                onChange={(e) => setShowComplete(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-              />
-              <span className="text-sm font-medium">
-                Complete View ({Object.keys(conjugations).length} forms)
-              </span>
-            </label>
-            <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded-full">
-              {showComplete ? "All Forms" : "Essential Only"}
-            </span>
-          </div>
-          
-          <button
-            onClick={() => setShowRules(!showRules)}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 hover:from-primary/30 hover:to-accent/30 transition-all duration-200 border border-primary/30"
-          >
-            <span>📚</span>
-            <span className="font-medium text-primary">
-              {showRules ? "Hide" : "Show"} conjugation rules
-            </span>
-          </button>
+        {/* View Options Dropdown */}
+        <div className="mb-6">
+          <details className="group relative">
+            <summary className="w-full md:w-auto inline-flex items-center justify-between px-4 py-3 bg-card border border-border rounded-lg hover:bg-muted transition-colors cursor-pointer list-none">
+              <div className="flex items-center gap-3">
+                <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-sm font-medium text-foreground">
+                  {showComplete ? `Complete View (${nonEmptyFormsCount} forms)` : 'Essential Only'}
+                </span>
+              </div>
+              <svg
+                className="w-5 h-5 text-muted-foreground transition-transform group-open:rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            
+            {/* Dropdown Content */}
+            <div className="absolute z-10 mt-2 w-full md:w-96 bg-card rounded-lg shadow-lg border border-border overflow-hidden">
+              <div className="p-4 space-y-4">
+                {/* View Mode Toggle */}
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground mb-3">View Mode</h4>
+                  <div className="space-y-2">
+                    <label className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer transition-colors">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="viewMode"
+                          checked={!showComplete}
+                          onChange={() => setShowComplete(false)}
+                          className="w-4 h-4 text-primary border-border focus:ring-primary"
+                        />
+                        <div>
+                          <div className="text-sm font-medium text-foreground">Essential Only</div>
+                          <div className="text-xs text-muted-foreground">Show most common conjugations</div>
+                        </div>
+                      </div>
+                    </label>
+                    
+                    <label className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer transition-colors">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="viewMode"
+                          checked={showComplete}
+                          onChange={() => setShowComplete(true)}
+                          className="w-4 h-4 text-primary border-border focus:ring-primary"
+                        />
+                        <div>
+                          <div className="text-sm font-medium text-foreground">Complete View</div>
+                          <div className="text-xs text-muted-foreground">Show all {nonEmptyFormsCount} conjugation forms</div>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+                
+                {/* Comprehensive View Toggle */}
+                <div className="pt-3 border-t border-border">
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📊</span>
+                      <div>
+                        <div className="text-sm font-medium text-foreground">Comprehensive View</div>
+                        <div className="text-xs text-muted-foreground">Show ALL conjugation forms in organized groups</div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowComprehensive(!showComprehensive);
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        showComprehensive ? 'bg-primary' : 'bg-muted'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-card transition-transform ${
+                          showComprehensive ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </label>
+                </div>
+                
+                {/* Conjugation Rules Toggle */}
+                <div className="pt-3 border-t border-border">
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📚</span>
+                      <div>
+                        <div className="text-sm font-medium text-foreground">Conjugation Rules</div>
+                        <div className="text-xs text-muted-foreground">Show rules for {word.type}</div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowRules(!showRules);
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        showRules ? 'bg-primary' : 'bg-muted'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-card transition-transform ${
+                          showRules ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
         
         {/* Conjugation Rules */}
         {showRules && (
-          <div className="bg-info/10 border border-info/20 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold mb-2">Conjugation Rules for {word.type}</h3>
-            <p className="text-sm text-muted-foreground">
+          <div className="bg-accent/10 border border-accent/20 rounded-lg p-4 mb-6">
+            <h3 className="font-semibold mb-2 text-accent-foreground">Conjugation Rules for {word.type}</h3>
+            <p className="text-sm text-accent-foreground/80">
               {getConjugationRules(word.type)}
             </p>
           </div>
         )}
 
-        {/* Conjugation Sections */}
-        <div className="space-y-4">
-          {visibleSections.map((section) => {
+        {/* Conditional Rendering: Comprehensive View or Current View */}
+        {showComprehensive ? (
+          <ComprehensiveConjugationDisplay word={word} showFurigana={false} />
+        ) : (
+          <>
+            {/* Current Conjugation Sections */}
+            <div className="space-y-4">
+              {visibleSections.map((section) => {
             const isExpanded = expandedSections.has(section.id);
             const visibleForms = showComplete
               ? section.forms
               : section.forms.filter(form => form.essential);
 
-            // Check if ANY of the forms have actual values
-            const hasValidForms = visibleForms.some(form => {
+            // Filter out forms that don't apply to this word type
+            const applicableForms = visibleForms.filter(form => {
               const value = conjugations[form.key];
-              return value && value !== 'undefined';
+              return value && value !== '' && value !== 'undefined';
             });
 
-            if (visibleForms.length === 0 || !hasValidForms) return null;
+            // Skip section if no applicable forms
+            if (applicableForms.length === 0) return null;
 
             return (
               <div
@@ -1181,7 +1308,7 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
                     <span className="text-2xl">{section.emoji}</span>
                     <h3 className="text-lg font-semibold">{section.title}</h3>
                     <span className="text-xs text-muted-foreground">
-                      ({visibleForms.length} forms)
+                      ({applicableForms.length} forms)
                     </span>
                   </div>
                   <svg
@@ -1205,29 +1332,28 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
                 {isExpanded && (
                   <div className="px-6 pb-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {visibleForms.map((form) => {
+                      {applicableForms.map((form) => {
                         const value = conjugations[form.key];
-                        if (!value) return null;
+                        if (!value || value === '') return null;
 
                         return (
                           <div
                             key={form.key}
-                            className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                            className="p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
                           >
-                            <div className="flex-1">
-                              <p className="text-xs text-muted-foreground mb-1">
-                                {form.label}
-                                {form.essential && !showComplete && (
-                                  <span className="ml-1 text-primary">★</span>
-                                )}
-                              </p>
+                            <p className="text-xs text-muted-foreground mb-1">
+                              {form.label}
+                              {form.essential && !showComplete && (
+                                <span className="ml-1 text-primary">★</span>
+                              )}
+                            </p>
+                            <div className="flex items-center justify-between">
                               <p className="text-lg font-medium japanese-text">{value}</p>
+                              <VocabularyTTSButton
+                                word={value}
+                                size="sm"
+                              />
                             </div>
-                            <VocabularyTTSButton
-                              text={value}
-                              language="ja-JP"
-                              size="sm"
-                            />
                           </div>
                         );
                       })}
@@ -1239,25 +1365,27 @@ function WordPractice({ word, onBack }: WordPracticeProps) {
           })}
         </div>
 
-        {/* Quick Actions */}
-        <div className="mt-8 flex gap-3 justify-center">
-          <button
-            onClick={() => {
-              setExpandedSections(new Set(conjugationSections.map(s => s.id)));
-            }}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Expand All
-          </button>
-          <button
-            onClick={() => {
-              setExpandedSections(new Set());
-            }}
-            className="px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
-          >
-            Collapse All
-          </button>
-        </div>
+            {/* Quick Actions */}
+            <div className="mt-8 flex gap-3 justify-center">
+              <button
+                onClick={() => {
+                  setExpandedSections(new Set(conjugationSections.map(s => s.id)));
+                }}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Expand All
+              </button>
+              <button
+                onClick={() => {
+                  setExpandedSections(new Set());
+                }}
+                className="px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
+              >
+                Collapse All
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

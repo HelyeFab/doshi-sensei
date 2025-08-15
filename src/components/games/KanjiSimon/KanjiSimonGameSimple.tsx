@@ -80,9 +80,7 @@ export default function KanjiSimonGame({ kanji, onRoundComplete, onGameOver }: K
     const randomMeaningReading = allReadings.length > 0
       ? allReadings[Math.floor(Math.random() * allReadings.length)]
       : 'いみ';
-    
-    console.log(`🎲 Selected readings - On: ${randomOnReading}, Kun: ${randomKunReading}, Meaning: ${randomMeaningReading}`);
-    
+
     const baseSegments: Segment[] = [
       {
         id: 'onyomi',
@@ -140,7 +138,7 @@ export default function KanjiSimonGame({ kanji, onRoundComplete, onGameOver }: K
     const validSegments = segments.filter(s => s.id !== 'distractor');
     const firstItem = validSegments[Math.floor(Math.random() * validSegments.length)].value;
     const newSequence = [firstItem];
-    console.log('🎮 Starting new game with sequence:', newSequence);
+
     setSequence(newSequence);
     sequenceRef.current = newSequence;
     setPlayerSequence([]);
@@ -177,7 +175,7 @@ export default function KanjiSimonGame({ kanji, onRoundComplete, onGameOver }: K
     const showSegmentAtIndex = (index: number) => {
       if (index >= sequenceRef.current.length) {
         // Done showing, player's turn
-        console.log('👁️ Finished showing sequence:', sequenceRef.current);
+
         timeoutId = setTimeout(() => {
           setPhase('playing');
           setPlayerSequence([]);
@@ -228,9 +226,7 @@ export default function KanjiSimonGame({ kanji, onRoundComplete, onGameOver }: K
   // Handle player click
   const handleSegmentClick = async (segmentValue: string) => {
     if (phase !== 'playing') return;
-    
-    console.log(`🎯 Player clicked: ${segmentValue}`);
-    
+
     const segment = segments.find(s => s.value === segmentValue);
     
     // Play sound
@@ -249,14 +245,12 @@ export default function KanjiSimonGame({ kanji, onRoundComplete, onGameOver }: K
     // Check if correct
     const expectedValue = sequence[playerSequence.length];
     const isCorrect = segmentValue === expectedValue && segmentValue !== 'distractor';
-    
-    console.log(`📊 Expected: ${expectedValue}, Got: ${segmentValue}, Correct: ${isCorrect}`);
+
     console.log(`📝 Player sequence so far: [${[...playerSequence, segmentValue].join(', ')}]`);
     
     if (!isCorrect) {
       // Wrong! Game over
-      console.log(`❌ Wrong! Expected ${expectedValue} but got ${segmentValue}`);
-      console.log(`💔 Game Over - Final Score: ${score}`);
+
       setCurrentHighlight('wrong');
       setPhase('gameover');
       setTimeout(() => {
@@ -277,12 +271,11 @@ export default function KanjiSimonGame({ kanji, onRoundComplete, onGameOver }: K
     if (newPlayerSequence.length === sequence.length) {
       // Success!
       const roundScore = sequence.length * 100;
-      console.log(`✅ Round ${round} complete!`);
+
       console.log(`🎯 Sequence was: [${sequence.join(', ')}]`);
       console.log(`👤 Player entered: [${newPlayerSequence.join(', ')}]`);
       console.log(`💰 Round score: ${roundScore} (${sequence.length} items × 100)`);
-      console.log(`📈 Total score: ${score} + ${roundScore} = ${score + roundScore}`);
-      
+
       setScore(score + roundScore);
       setCurrentHighlight('success');
       setPhase('success');

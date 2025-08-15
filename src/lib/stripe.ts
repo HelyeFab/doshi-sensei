@@ -18,20 +18,20 @@ async function loadStripeSmartly(): Promise<Stripe | null> {
   
   // Check if we're in a browser environment
   if (typeof window === 'undefined') {
-    console.log('Stripe.js: Skipping load in non-browser environment');
+
     return null;
   }
   
   // Check if we have a valid key
   if (!stripePublishableKey) {
-    console.log('Stripe.js: No publishable key provided');
+
     return null;
   }
   
   try {
     // Only log in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('Loading Stripe.js...');
+
     }
     
     const stripe = await loadStripe(stripePublishableKey);
@@ -41,7 +41,7 @@ async function loadStripeSmartly(): Promise<Stripe | null> {
     }
     
     if (process.env.NODE_ENV === 'development') {
-      console.log('Stripe.js loaded successfully');
+
     }
     
     return stripe;

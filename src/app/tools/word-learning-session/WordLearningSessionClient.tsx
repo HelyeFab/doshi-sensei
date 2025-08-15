@@ -112,7 +112,7 @@ export default function WordLearningSessionClient() {
         
         // If no words selected (shouldn't happen), fall back to random selection
         if (selectedWords.length === 0) {
-          console.warn('No words selected by smart selection, falling back to random');
+
           const shuffled = shuffleArray(vocabSet.words);
           const fallbackWords = shuffled.slice(0, Math.min(wordCount, vocabSet.words.length));
           selectedWords.push(...fallbackWords);

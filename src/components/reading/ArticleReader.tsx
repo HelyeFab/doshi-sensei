@@ -393,7 +393,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   useEffect(() => {
     const category = article.category || 'uncategorized';
     trackArticleView(category, article.id);
-    console.log('📊 [Analytics] Article view tracked:', { category, articleId: article.id });
+
   }, [article.id, article.category, trackArticleView]);
   const [userRequestedStats, setUserRequestedStats] = useState(false);
   const [showGrammarLegend, setShowGrammarLegend] = useState(false);
@@ -596,7 +596,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
     // Track article completion when progress reaches 95% (accounting for footer)
     if (progress >= 95 && readingProgress < 95) {
-      console.log('✅ [ArticleReader] Article completed! Tracking read...');
+
       const readingTime = Math.ceil((Date.now() - readingStartTime.getTime()) / 60000); // in minutes
       
       // Track in both systems during migration
@@ -611,7 +611,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   };
 
   useEffect(() => {
-    console.log('🎯 [ArticleReader] Setting up scroll listener, articleRef:', articleRef.current);
+
     window.addEventListener('scroll', handleScroll);
     // Call it once immediately to check initial state
     handleScroll();
@@ -632,7 +632,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
         // Check cache first
         const cached = contentCacheRef.current.get(cacheKey);
         if (cached) {
-          console.log('[ArticleReader] Using cached content for:', cacheKey);
+
           setProcessedContent(cached);
           setContentLoading(false);
           return;
@@ -640,7 +640,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
         // Prevent concurrent processing of the same content
         if (processingRef.current) {
-          console.log('[ArticleReader] Already processing content, waiting...');
+
           const result = await processingRef.current;
           setProcessedContent(result);
           setContentLoading(false);
@@ -649,7 +649,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
         // Skip heavy processing by default - prioritize performance
         if (!settings.showFurigana && (!settings.highlightVocabulary || settings.highlightMode === 'none')) {
-          console.log('[ArticleReader] Using unprocessed content for performance');
+
           setProcessedContent(paragraphs);
           contentCacheRef.current.set(cacheKey, paragraphs);
           setContentLoading(false);
@@ -657,17 +657,12 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
         }
 
         // Heavy processing only when specifically requested
-        console.log('[ArticleReader] Processing content with settings:', {
-          showFurigana: settings.showFurigana,
-          highlightVocabulary: settings.highlightVocabulary,
-          highlightMode: settings.highlightMode
-        });
 
         const processPromise = (async () => {
           if (!settings.highlightVocabulary || settings.highlightMode === 'none') {
             // Use optimized batch processing for furigana
             if (settings.showFurigana) {
-              console.log('[ArticleReader] Batch processing furigana for all paragraphs');
+
               const furiganaParagraphs = await generateFuriganaForArticleParagraphs(article.id, paragraphs);
 
               // Apply vocabulary highlighting if needed
@@ -713,7 +708,6 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
         // Cache the result
         contentCacheRef.current.set(cacheKey, result);
-        console.log('[ArticleReader] Content processed and cached for:', cacheKey);
 
         setProcessedContent(result);
 
@@ -804,7 +798,6 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       setBookmarkLoading(false);
     }
   };
-
 
   // Handle comprehension quiz completion
   const handleQuizComplete = (score: number) => {
@@ -1211,7 +1204,6 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
             </div>
           )}
 
-
           {/* Quiz Notification Banner */}
           {showQuizNotification && !showQuiz && !quizCompleted && (
             <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 shadow-lg max-w-md z-50">
@@ -1264,7 +1256,6 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
               onClose={() => setShowQuiz(false)}
             />
           )}
-
 
           {/* Reading Completion Celebration */}
           {quizCompleted && comprehensionScore !== null && (

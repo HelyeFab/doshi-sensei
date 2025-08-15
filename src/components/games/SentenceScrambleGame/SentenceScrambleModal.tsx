@@ -495,7 +495,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
       // Track with new analytics
       const accuracy = gameState.sentences.length > 0 ? (gameState.totalScore / gameState.sentences.length) * 100 : 0;
       trackGameComplete('sentence_scramble', score, accuracy);
-      console.log('[SentenceScramble] Analytics tracked:', { game: 'sentence_scramble', score, accuracy });
+
     }
 
     showNotification({
@@ -912,7 +912,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
                     className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
                     onError={(e) => {
                       if (process.env.NODE_ENV === 'development') {
-                        console.warn('Failed to load distractor image:', block.distractorImage);
+
                       }
                       // Replace with emoji fallback instead of hiding
                       const img = e.target as HTMLImageElement;
@@ -924,7 +924,7 @@ export default function SentenceScrambleModal({ isOpen, onClose }: SentenceScram
                     }}
                     onLoad={() => {
                       if (process.env.NODE_ENV === 'development') {
-                        console.log('Successfully loaded distractor:', block.distractorImage);
+
                       }
                     }}
                   />

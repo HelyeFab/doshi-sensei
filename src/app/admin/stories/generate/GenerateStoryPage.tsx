@@ -143,7 +143,7 @@ export default function GenerateStoryPage() {
                 
                 if (storeResponse.ok) {
                   const { url: permanentModelSheetUrl } = await storeResponse.json();
-                  console.log('Stored model sheet permanently:', permanentModelSheetUrl);
+
                   modelSheetUrl = permanentModelSheetUrl;
                 }
               } catch (error) {
@@ -165,8 +165,7 @@ export default function GenerateStoryPage() {
                 referenceImage: modelSheetUrl // Use model sheet as reference
               }
             };
-            
-            console.log('Character model sheet generated successfully');
+
             setGenerationProgress({ 
               step: 'character_sheet', 
               message: 'Model sheet generated! Now generating individual character images...' 
@@ -188,7 +187,7 @@ export default function GenerateStoryPage() {
           if (characterImagesResponse.ok) {
             const { characterSheet: sheetWithImages } = await characterImagesResponse.json();
             updatedCharacterSheet = sheetWithImages;
-            console.log('Character reference images generated successfully');
+
           } else {
             console.error('Failed to generate character reference images, continuing with model sheet only');
           }
@@ -328,7 +327,7 @@ export default function GenerateStoryPage() {
             if (promptResponse.ok) {
               const { imagePrompt: generatedPrompt } = await promptResponse.json();
               imagePrompt = generatedPrompt;
-              console.log(`Generated context-aware prompt for page ${i + 1}:`, imagePrompt);
+
             }
             
             // Then generate the image with character consistency
@@ -385,7 +384,7 @@ export default function GenerateStoryPage() {
                   
                   if (storeResponse.ok) {
                     const { url: permanentUrl } = await storeResponse.json();
-                    console.log(`Stored page ${i + 1} image permanently:`, permanentUrl);
+
                     pageImages[i] = {
                       imageUrl: permanentUrl,
                       imageAlt: imagePrompt,
@@ -477,9 +476,9 @@ export default function GenerateStoryPage() {
       let quiz = [];
       if (quizResponse.ok) {
         const quizData = await quizResponse.json();
-        console.log('Quiz response data:', quizData);
+
         quiz = quizData.quiz || [];
-        console.log('Generated quiz:', quiz);
+
       } else {
         console.error('Quiz generation failed:', await quizResponse.text());
       }
@@ -706,7 +705,7 @@ export default function GenerateStoryPage() {
                           }
                         });
                         const data = await response.json();
-                        console.log('OpenAI test result:', data);
+
                         alert(data.success ? `OpenAI works! Response: ${data.response}` : `Error: ${data.error}`);
                       } catch (error) {
                         console.error('Test failed:', error);
@@ -895,7 +894,7 @@ export default function GenerateStoryPage() {
                           <p className="text-muted-foreground mb-4">No image generated</p>
                           <button
                             onClick={async () => {
-                              console.log('Try Generate Image clicked for page', index + 1);
+
                               setGeneratingImageIndex(index);
                               try {
                                 showNotification({
@@ -926,11 +925,9 @@ export default function GenerateStoryPage() {
                                     }
                                   })
                                 });
-                                
-                                console.log('Image response status:', imageResponse.status);
+
                                 const responseData = await imageResponse.json();
-                                console.log('Image response data:', responseData);
-                                
+
                                 if (imageResponse.ok && responseData.success) {
                                   const { pageImage } = responseData;
                                   if (pageImage?.imageUrl) {
@@ -1076,7 +1073,7 @@ export default function GenerateStoryPage() {
               if (storeResponse.ok) {
                 const { url } = await storeResponse.json();
                 permanentUrl = url;
-                console.log(`Stored regenerated image for page ${regenerateModal.pageNumber}:`, permanentUrl);
+
               }
             } catch (error) {
               console.error('Error storing regenerated image:', error);

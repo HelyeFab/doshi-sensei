@@ -217,7 +217,7 @@ class PWAPerformanceService {
 
     // Log significant metrics
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[PWA Performance] ${name}: ${metric.value}ms`, metadata);
+
     }
   }
 

@@ -147,6 +147,10 @@
   [functions."scrape-news-scheduled-enhanced"]
     schedule = "0 21 * * *"
   
+  # AI validation for scraped articles - runs hourly
+  [functions."validate-articles-scheduled"]
+    schedule = "0 * * * *"
+  
   # Puppeteer-based scraper configurations with increased memory
   [functions."scrape-nhk-easy-puppeteer"]
     memory = 1024

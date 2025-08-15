@@ -53,7 +53,7 @@ export class StudyListManager {
       await this.dbManager.clear('kanjiLists');
       await this.dbManager.clear('savedKanji');
     } catch (error) {
-      console.warn('Legacy data cleanup warning:', error);
+
     }
 
   }
@@ -146,7 +146,6 @@ export class StudyListManager {
         listName: name,
         hasDescription: !!description
       });
-      console.log('📊 [Analytics] Study list created:', { type, name });
 
       return newList;
     } catch (error) {
@@ -238,7 +237,6 @@ export class StudyListManager {
       return false;
     }
   }
-
 
   /**
    * Add an item to study lists with validation
@@ -366,7 +364,7 @@ export class StudyListManager {
         if (itemType === 'word') {
           const newlyUnlocked = await AchievementManager.updateStats('wordsSaved', validListIds.length);
           if (newlyUnlocked.length > 0) {
-            console.log('🏆 [Achievements] New achievements unlocked from word saving:', newlyUnlocked);
+
           }
         }
       } catch (error) {
@@ -417,7 +415,7 @@ export class StudyListManager {
           
           // Clean up media if this is an Anki card
           if (itemToDelete.itemType === 'anki_card' && itemToDelete.ankiData?.media) {
-            console.log(`Cleaning up media for deleted Anki card ${itemId}`);
+
             const mediaStore = AnkiMediaStore.getInstance();
             await mediaStore.deleteMedia(itemToDelete.ankiData.media);
           }
@@ -556,7 +554,7 @@ export class StudyListManager {
       
       // Delete media files if any
       if (mediaToDelete.length > 0) {
-        console.log(`Cleaning up ${mediaToDelete.length} media files from deleted Anki cards`);
+
         const mediaStore = AnkiMediaStore.getInstance();
         await mediaStore.deleteMedia(mediaToDelete);
       }
@@ -574,7 +572,7 @@ export class StudyListManager {
       try {
         await this.dbManager.delete('studyLists', listId);
       } catch (error) {
-        console.warn('List not found in IndexedDB:', listId);
+
       }
 
       // Auto-sync for premium users
@@ -634,14 +632,14 @@ export class StudyListManager {
       try {
         const indexedDBItems = await largeDataStorage.getAllItems();
         if (indexedDBItems && indexedDBItems.length > 0) {
-          console.log(`Loaded ${indexedDBItems.length} items from IndexedDB`);
+
           return indexedDBItems.map(saved => ({
             ...saved,
             savedAt: new Date(saved.savedAt)
           }));
         }
       } catch (dbError) {
-        console.log('IndexedDB not available, falling back to localStorage:', dbError);
+
       }
       
       // Fallback to localStorage
@@ -652,7 +650,7 @@ export class StudyListManager {
       
       // Migrate to IndexedDB if we have items
       if (savedItems.length > 0) {
-        console.log(`Migrating ${savedItems.length} saved items from localStorage to IndexedDB`);
+
         try {
           await largeDataStorage.saveAllItems(savedItems);
           // Don't remove from localStorage yet, keep as backup
@@ -759,16 +757,14 @@ export class StudyListManager {
    */
   static async syncFromCloud(user: User | null, subscriptionStatus?: string): Promise<boolean> {
     if (!user || !CloudSync.canSync(user, subscriptionStatus)) {
-      console.log('Cannot sync:', { user: !!user, subscriptionStatus });
+
       return false;
     }
 
     try {
-      console.log('Starting sync from cloud for user:', user.uid);
-      
+
       // Don't clear existing data - merge instead
-      console.log('Starting cloud sync without clearing local data');
-      
+
       // Download study lists
       const listsResult = await CloudSync.downloadData<{
         studyLists: StudyList[];
@@ -786,7 +782,7 @@ export class StudyListManager {
       const currentListIds = new Set(currentLists.map(l => l.id));
       
       if (listsResult.data?.studyLists) {
-        console.log('Downloaded study lists from Firebase:', listsResult.data.studyLists);
+
         // Convert date strings back to Date objects
         const cloudLists = listsResult.data.studyLists.map(list => ({
           ...list,
@@ -816,9 +812,9 @@ export class StudyListManager {
         }
         
         await this.saveStudyListsToStorage(mergedLists);
-        console.log('Merged and saved study lists to localStorage');
+
       } else {
-        console.log('No study lists found in Firebase');
+
       }
 
       if (itemsResult.data?.savedStudyItems) {
@@ -853,7 +849,7 @@ export class StudyListManager {
         
         const mergedItems = Array.from(itemMap.values());
         await this.saveSavedStudyItemsToStorage(mergedItems);
-        console.log('Merged and saved study items to localStorage');
+
       }
 
       return true;
@@ -897,7 +893,7 @@ export class StudyListManager {
       // Save to IndexedDB (no size limits!)
       try {
         await largeDataStorage.saveAllItems(savedItems);
-        console.log(`Successfully saved ${savedItems.length} items to IndexedDB`);
+
       } catch (dbError) {
         console.error('Failed to save to IndexedDB, falling back to localStorage:', dbError);
         
@@ -905,7 +901,7 @@ export class StudyListManager {
         // Check localStorage quota
         if ('storage' in navigator && 'estimate' in navigator.storage) {
           const estimate = await navigator.storage.estimate();
-          console.log(`Storage quota: ${estimate.quota} bytes, used: ${estimate.usage} bytes`);
+
         }
         
         localStorage.setItem(SAVED_STUDY_ITEMS_KEY, data);
@@ -913,7 +909,7 @@ export class StudyListManager {
         // Verify save
         const saved = localStorage.getItem(SAVED_STUDY_ITEMS_KEY);
         const parsedSaved = JSON.parse(saved || '[]');
-        console.log(`Verified save: ${parsedSaved.length} items saved to localStorage`);
+
       }
     } catch (error) {
       console.error('Error saving study items to storage:', error);

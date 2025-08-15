@@ -30,50 +30,26 @@ export default function ConsoleMonitorClient() {
 
   const triggerTestLogs = () => {
     // SEO logs
-    console.log('[SEO] Checking meta tags for page optimization');
-    console.info('Structured data validation passed', { 
-      schema: 'WebPage', 
-      url: '/admin/console-monitor' 
-    });
-    
+
     // Auth logs
-    console.log('[Auth] User session validated', { 
-      uid: user?.uid, 
-      email: user?.email 
-    });
-    console.warn('Permission check: admin access granted');
-    
+
     // Stats logs
-    console.log('[Stats] Analytics event tracked', { 
-      event: 'console_monitor_view', 
-      userId: user?.uid 
-    });
-    console.info('Achievement progress updated: Console Master');
-    
+
     // API logs
-    console.log('[API] Fetching console logs from backend');
+
     console.error('API Error: Failed to fetch historical logs', { 
       endpoint: '/api/admin/logs', 
       status: 404 
     });
     
     // UI logs
-    console.debug('[UI] Component rendered: ConsoleMonitor');
-    console.log('React component update: EnhancedConsoleMonitor');
-    
+
     // Performance logs
-    console.warn('[Performance] Slow render detected', { 
-      component: 'LogDisplay', 
-      renderTime: '250ms' 
-    });
-    console.info('IndexedDB cache hit for user preferences');
-    
+
     // System logs
-    console.log('[System] Firebase connection established');
-    console.info('Firestore real-time listener attached');
-    
+
     // Other logs
-    console.log('Random log message without specific category');
+
   };
 
   if (!user) {

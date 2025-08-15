@@ -17,7 +17,7 @@ function KanjiQuestButton() {
     
     if (canPlay) {
       // Start the game
-      console.log('Starting Kanji Quest!');
+
     } else {
       // Show appropriate error message
       showAccessPrompt('kanji_quest', 'Kanji Quest');

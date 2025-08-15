@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // If user changed, reinitialize the stats tracker to load correct user data
       if (userChanged) {
-        console.log('🔄 [AuthContext] User changed, reinitializing stats tracker');
+
         // Import and reinitialize stats tracker
         const { statsTracker } = await import('@/lib/stats/statsTracker');
         await statsTracker.initialize(currentUser);
@@ -110,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             timestamp: new Date().toISOString(),
           });
         } catch (error) {
-          console.warn('Failed to track session start:', error);
+
         }
 
         // Initialize textbook vocabulary sync for premium users
@@ -118,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const { textbookVocabularySyncManager } = await import('@/services/textbook-vocabulary');
           await textbookVocabularySyncManager.initializeSync();
         } catch (error) {
-          console.warn('Failed to initialize textbook vocabulary sync:', error);
+
         }
       }
 
@@ -176,7 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Brief delay to ensure analytics event is sent before signing out
         await new Promise(resolve => setTimeout(resolve, 100));
       } catch (error) {
-        console.warn('Failed to track session end on logout:', error);
+
         // Don't prevent logout if analytics fails
       }
       // No longer clear any Pokémon data on logout

@@ -79,7 +79,7 @@ export default function YouTubeShadowing() {
   // Debug logging helper
   const debugLog = (category: string, message: string, data?: any) => {
     const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] [${category}] ${message}`, data || '');
+
   };
 
   // Parse YouTube duration format (ISO 8601) to seconds
@@ -184,7 +184,7 @@ export default function YouTubeShadowing() {
     if (urlParam && !session) {
       // Decode the URL and automatically start processing
       const decodedUrl = decodeURIComponent(urlParam);
-      console.log('Loading video from URL param:', decodedUrl);
+
       handleUrlSubmit(decodedUrl);
     }
   }, [searchParams]);

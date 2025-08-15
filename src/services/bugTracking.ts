@@ -107,8 +107,7 @@ export class BugTrackingService {
       };
 
       await setDoc(doc(db, this.collectionName, reportId), bugReport);
-      
-      console.log('Bug report created:', reportId);
+
       return reportId;
     } catch (error) {
       console.error('Error creating bug report:', error);

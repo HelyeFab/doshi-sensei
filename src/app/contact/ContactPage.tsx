@@ -105,7 +105,7 @@ export default function ContactPage() {
               url: window.location.href,
               userAgent: navigator.userAgent
             });
-            console.log('Bug report saved to Firestore');
+
           } catch (firestoreError) {
             // Don't block the success flow if Firestore fails
             console.error('Failed to save to Firestore:', firestoreError);

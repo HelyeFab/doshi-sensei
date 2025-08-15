@@ -33,7 +33,7 @@ export default function TextbookVocabularyPage() {
     const trackUsage = async () => {
       const canAccess = await checkAndTrack('textbook_vocabulary');
       if (!canAccess) {
-        console.log('Access denied for textbook_vocabulary feature');
+
       }
     };
     trackUsage();

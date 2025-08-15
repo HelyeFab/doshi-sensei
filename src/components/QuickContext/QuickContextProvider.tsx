@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import QuickContextBubble from './QuickContextBubble';
+import { cleanFurigana } from '@/utils/cleanFurigana';
 
 interface QuickContextProviderProps {
   children: React.ReactNode;
@@ -125,6 +126,9 @@ export default function QuickContextProvider({
     }
 
     let text = selection.toString().trim();
+    
+    // Clean furigana patterns from selected text
+    text = cleanFurigana(text);
     
     // Check for Japanese text
     if (!text || !japaneseRegex.test(text) || text.length > 200) {

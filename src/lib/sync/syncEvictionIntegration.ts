@@ -62,7 +62,6 @@ export class SyncEvictionIntegration {
           throw new Error(`Failed to make space for synced resource: ${evictionResult.error || 'Unknown error'}`);
         }
 
-        console.log(`[SyncEviction] Evicted ${evictionResult.evictedCount} items, freed ${evictionResult.freedBytes} bytes`);
       } finally {
         // Unprotect the resource
         this.evictionEngine.markInactive(resource.id);

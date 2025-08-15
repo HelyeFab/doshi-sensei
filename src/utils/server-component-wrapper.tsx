@@ -13,7 +13,7 @@ export async function withServerErrorBoundary<T extends {}>(
                     headersList.get('next-url')?.includes('_rsc');
       
       if (isRSC) {
-        console.log(`[RSC] Rendering ${Component.name} as React Server Component`);
+
       }
       
       return <Component {...props} />;

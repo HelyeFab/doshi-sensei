@@ -228,7 +228,7 @@ export async function getFeatureStats(): Promise<FeatureStats> {
         moodBoardViews = Math.floor((latestStats.articlesRead || 0) * 0.8); // Rough estimate
       }
     } catch (statsError) {
-      console.log('Could not fetch statsTracker data:', statsError);
+
       // Continue with default values
     }
 
@@ -243,7 +243,7 @@ export async function getFeatureStats(): Promise<FeatureStats> {
         mostPopularMoodBoard = topBoard.theme || topBoard.name || 'Unknown';
       }
     } catch (moodBoardError) {
-      console.log('Could not fetch mood board data:', moodBoardError);
+
       // Continue with default value
     }
 

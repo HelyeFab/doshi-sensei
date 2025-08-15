@@ -97,7 +97,7 @@ class KuromojiService {
           resolve(); // Resolve anyway, we'll use fallback
         } else {
           this.tokenizer = tokenizer;
-          console.log('Kuromoji initialized successfully');
+
           resolve();
         }
       });

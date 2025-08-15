@@ -43,7 +43,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
   const cacheKanji = useCallback(async (kanji: Kanji): Promise<boolean> => {
     try {
       if (resourceCaching?.status !== 'active') {
-        console.log('[useResourceCache] Resource caching not available');
+
         return false;
       }
 
@@ -72,7 +72,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
   const cacheVerb = useCallback(async (verb: Verb): Promise<boolean> => {
     try {
       if (resourceCaching?.status !== 'active') {
-        console.log('[useResourceCache] Resource caching not available');
+
         return false;
       }
 
@@ -101,7 +101,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
   const cacheAdjective = useCallback(async (adjective: Adjective): Promise<boolean> => {
     try {
       if (resourceCaching?.status !== 'active') {
-        console.log('[useResourceCache] Resource caching not available');
+
         return false;
       }
 
@@ -130,7 +130,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
   const cacheAudio = useCallback(async (audioResource: AudioResource): Promise<boolean> => {
     try {
       if (resourceCaching?.status !== 'active') {
-        console.log('[useResourceCache] Resource caching not available');
+
         return false;
       }
 
@@ -159,7 +159,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
   const cacheKanaSound = useCallback(async (kana: string): Promise<boolean> => {
     try {
       if (resourceCaching?.status !== 'active') {
-        console.log('[useResourceCache] Resource caching not available');
+
         return false;
       }
 

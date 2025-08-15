@@ -32,8 +32,7 @@ export async function middleware(request: NextRequest) {
       !MAINTENANCE_PATHS.some(path => pathname.startsWith(path))) {
     
     // Log the shutdown trigger for monitoring
-    console.log(`[MAINTENANCE] Mode activated: ${maintenanceMode.reason}`);
-    
+
     // API endpoints return JSON error
     if (pathname.startsWith('/api/')) {
       return NextResponse.json(

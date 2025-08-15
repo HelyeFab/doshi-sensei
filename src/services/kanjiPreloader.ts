@@ -56,9 +56,9 @@ class KanjiPreloader {
     try {
       // Check if already loaded
       if (!this.cache[priorityLevel]) {
-        console.log(`Preloading ${priorityLevel} kanji data...`);
+
         await this.loadLevel(priorityLevel);
-        console.log(`Successfully preloaded ${priorityLevel} kanji data`);
+
       }
     } catch (error) {
       console.error(`Failed to preload ${priorityLevel}:`, error);

@@ -27,7 +27,7 @@ interface GeneratePageImageRequest {
 }
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('Generate page image endpoint called');
+
   try {
     if (!process.env.OPEN_AI_API_KEY) {
       return NextResponse.json({ 
@@ -81,7 +81,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       // Use the character consistency system
       const sceneDescription = storyContext?.pageTranslation || imagePrompt;
       contextualPrompt = generateConsistentCharacterPrompt(profile, sceneDescription, pageNumber);
-      console.log('Using character consistency prompt');
+
     } else if (storyContext) {
       // Fallback to old method
       const isStudent = storyContext.characterRole?.toLowerCase().includes('student') || 
@@ -101,18 +101,13 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     
     const dallePrompt = contextualPrompt;
 
-    console.log(`Generating image for page ${pageNumber}...`);
-    console.log('GPT Image 1 prompt:', dallePrompt);
-
     try {
       let imageUrl = '';
       let modelUsed = 'unknown';
       
       // Try OpenAI with character consistency first
       try {
-        console.log('Attempting image generation with character consistency');
-        console.log('Has reference image:', !!characterReferenceImage);
-        
+
         if (characterReferenceImage) {
           // Use the new approach with reference image for consistency
           const result = await generateImageWithGPTImage(dallePrompt, {
@@ -123,15 +118,13 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
           
           imageUrl = result.imageData;
           modelUsed = result.modelUsed;
-          
-          console.log(`Character-consistent image generation successful for page ${pageNumber}`);
+
         } else {
           // No reference image, use standard DALL-E 3
           const result = await generateImageWithDALLE3(dallePrompt, 'vivid');
           imageUrl = result.imageData;
           modelUsed = result.modelUsed;
-          
-          console.log(`DALL-E 3 generation successful for page ${pageNumber}`);
+
         }
         
         // Convert to data URL if needed
@@ -140,11 +133,9 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
         }
         
       } catch (openAIError: any) {
-        console.log('OpenAI generation failed:', openAIError.message);
-        
+
         // Try Google Gemini as fallback
-        console.log('Trying Google Gemini as fallback...');
-        
+
         if (!process.env.GOOGLE_GEMINI) {
           throw new Error('Google Gemini API key not configured');
         }
@@ -181,7 +172,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
             const mimeType = part.inlineData.mimeType || 'image/png';
             imageUrl = `data:${mimeType};base64,${part.inlineData.data}`;
             modelUsed = 'gemini-2.0-flash-preview';
-            console.log('Gemini image generated successfully');
+
             break;
           }
         }

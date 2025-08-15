@@ -75,7 +75,7 @@ export function NotificationServiceProvider({ children }: { children: React.Reac
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
     if (!isInitialized) {
-      console.warn('Notification service not initialized');
+
       return false;
     }
 

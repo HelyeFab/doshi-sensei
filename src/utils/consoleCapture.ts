@@ -153,5 +153,5 @@ export const consoleCapture = new ConsoleCapture();
 // Auto-start capture in development
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   consoleCapture.startCapture();
-  console.log('🎯 Console capture started - all console logs are now being captured');
+
 }

@@ -44,8 +44,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Fetching video info for:', videoId);
-
     // Fetch video details and captions list
     const videoResponse = await axios.get(`${YOUTUBE_API_BASE}/videos`, {
       params: {
@@ -107,8 +105,7 @@ export async function POST(request: NextRequest) {
         );
 
         if (jaCaption) {
-          console.log('Found Japanese caption track:', jaCaption);
-          
+
           // Note: The YouTube Data API v3 doesn't provide direct access to caption content
           // We need to use the caption download feature which requires OAuth2 authentication
           // For now, we'll return the caption metadata

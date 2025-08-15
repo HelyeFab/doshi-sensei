@@ -64,7 +64,7 @@ class TranslationService {
         return cachedTranslation.translatedText;
       }
     } catch (error) {
-      console.warn('Cache lookup failed:', error);
+
     }
 
     // If not in cache, translate using Google

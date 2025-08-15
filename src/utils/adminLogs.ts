@@ -26,7 +26,7 @@ export async function logAdminAction({
 }: LogAdminActionParams): Promise<void> {
   try {
     if (!db) {
-      console.warn('Firebase not initialized, cannot log admin action');
+
       return;
     }
 

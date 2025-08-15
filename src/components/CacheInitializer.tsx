@@ -14,10 +14,10 @@ export default function CacheInitializerComponent() {
         // Register service worker
         register({
           onSuccess: (registration) => {
-            console.log('Service Worker registered successfully:', registration);
+
           },
           onUpdate: (registration) => {
-            console.log('Service Worker updated:', registration);
+
             // Optionally show update notification to user
           },
           onError: (error) => {

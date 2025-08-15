@@ -134,7 +134,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     case 'ADD_TO_SEQUENCE': {
       const validSegments = state.segments.filter(s => s.id !== 'distractor');
       if (validSegments.length === 0) {
-        console.warn('No valid segments available for sequence generation');
+
         return state;
       }
       

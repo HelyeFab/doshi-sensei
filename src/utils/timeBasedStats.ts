@@ -140,7 +140,7 @@ export async function getTimeBasedStats(
 ): Promise<TimeBasedStats | null> {
   // Validate userId
   if (!userId || userId.trim() === '') {
-    console.warn('[getTimeBasedStats] Invalid userId provided');
+
     return null;
   }
 

@@ -75,7 +75,6 @@ export default function MoodBoardsPage() {
 
   const handleGeneratedMoodboard = async (moodboardData: any) => {
     try {
-      console.log('Handling generated moodboard:', moodboardData);
 
       if (!moodboardData || !moodboardData.kanjiList) {
         throw new Error('Invalid moodboard data received');

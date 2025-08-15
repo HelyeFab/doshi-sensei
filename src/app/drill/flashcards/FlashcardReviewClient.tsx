@@ -153,7 +153,7 @@ export default function FlashcardReviewClient() {
   
   // Debug confirmDialog state changes
   useEffect(() => {
-    console.log('confirmDialog state changed:', confirmDialog);
+
   }, [confirmDialog]);
   
   // SRS data map
@@ -444,7 +444,7 @@ export default function FlashcardReviewClient() {
       if (isPremium && Math.random() < 0.1) { // 10% chance to run cleanup
         flashcardSRSManager.cleanupOldData().then(deleted => {
           if (deleted > 0) {
-            console.log(`Cleaned up ${deleted} old SRS records`);
+
           }
         }).catch(console.error);
       }
@@ -456,10 +456,7 @@ export default function FlashcardReviewClient() {
   };
 
   const handleListDelete = async (listId: string) => {
-    console.log('handleListDelete called with listId:', listId);
-    console.log('Full strings object:', strings);
-    console.log('confirmDialog state before:', confirmDialog);
-    
+
     setConfirmDialog({
       isOpen: true,
       loading: false,
@@ -564,7 +561,7 @@ export default function FlashcardReviewClient() {
           }
         } else {
           // For English text, skip TTS
-          console.log('Skipping TTS for English text');
+
           return;
         }
       }
@@ -721,7 +718,7 @@ export default function FlashcardReviewClient() {
       setShowSaveModal(true);
     } else {
       // For Anki cards, could show a different message or modal
-      console.log('Anki cards are already saved in their original format');
+
     }
   };
 
@@ -792,7 +789,7 @@ export default function FlashcardReviewClient() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto mb-8">
               <button
                 onClick={() => {
-                  console.log('Import button clicked');
+
                   setShowImportModal(true);
                 }}
                 className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors flex items-center justify-center gap-2"
@@ -949,7 +946,7 @@ export default function FlashcardReviewClient() {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            console.log('Delete button clicked for list:', list.id, list.name);
+
                             handleListDelete(list.id);
                           }}
                           className="text-red-400 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -1010,7 +1007,7 @@ export default function FlashcardReviewClient() {
             onClose={() => setShowImportModal(false)}
             onImportSuccess={() => {
               loadUserLists();
-              console.log('Reloading lists after Anki import...');
+
             }}
           />
         )}
@@ -1164,7 +1161,6 @@ export default function FlashcardReviewClient() {
           onClose={() => setShowImportModal(false)}
           onImportSuccess={() => {
             loadUserLists();
-            console.log('Reloading lists after Anki import...');
 
           }}
         />

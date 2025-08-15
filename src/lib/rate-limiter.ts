@@ -88,7 +88,7 @@ export class RateLimiter {
       }
     }
     if (cleaned > 0) {
-      console.log(`Rate limiter cleanup: removed ${cleaned} expired entries`);
+
     }
   }
 

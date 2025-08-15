@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     
     if (cleaned > 0) {
       await batch.commit();
-      console.log(`Cleaned ${cleaned} phantom subscriptions`);
+
     }
     
     return NextResponse.json({

@@ -4,12 +4,11 @@
  */
 
 export async function clearAllIndexedDB(): Promise<void> {
-  console.log('Starting IndexedDB cleanup...');
 
   try {
     // First, try to close any open connections
     if ((window as any).doshiSenseiDB) {
-      console.log('Closing existing DoshiSenseiDB connection...');
+
       (window as any).doshiSenseiDB.close();
       delete (window as any).doshiSenseiDB;
     }
@@ -17,8 +16,7 @@ export async function clearAllIndexedDB(): Promise<void> {
     // Get all databases (this method might not be available in all browsers)
     if ('databases' in indexedDB) {
       const databases = await (indexedDB as any).databases();
-      console.log('Found databases:', databases);
-      
+
       for (const db of databases) {
         try {
           console.log(`Deleting database: ${db.name} (version ${db.version})`);
@@ -45,7 +43,7 @@ export async function clearAllIndexedDB(): Promise<void> {
     
     for (const dbName of knownDatabases) {
       try {
-        console.log(`Attempting to delete database: ${dbName}`);
+
         await deleteDatabase(dbName);
       } catch (error) {
         // Only log if it's not a "not found" error
@@ -54,8 +52,7 @@ export async function clearAllIndexedDB(): Promise<void> {
         }
       }
     }
-    
-    console.log('IndexedDB cleanup completed');
+
   } catch (error) {
     console.error('Error during IndexedDB cleanup:', error);
     throw error;
@@ -67,7 +64,7 @@ async function deleteDatabase(name: string): Promise<void> {
     const deleteReq = indexedDB.deleteDatabase(name);
     
     deleteReq.onsuccess = () => {
-      console.log(`Successfully deleted database: ${name}`);
+
       resolve();
     };
     
@@ -77,7 +74,7 @@ async function deleteDatabase(name: string): Promise<void> {
     };
     
     deleteReq.onblocked = () => {
-      console.warn(`Delete blocked for database ${name}. Close all connections and try again.`);
+
       // Still resolve to continue with other databases
       resolve();
     };

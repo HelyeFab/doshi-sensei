@@ -57,7 +57,7 @@ export async function loadJMdict(): Promise<void> {
     // You'll need to place the jmdict-eng-common.json file in public/data/
     const response = await fetch('/data/jmdict-eng-common.json');
     if (!response.ok) {
-      console.warn('JMdict data not found, using fallback vocabulary');
+
       return;
     }
     

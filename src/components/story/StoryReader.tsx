@@ -204,7 +204,6 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       // Track in analytics system
       const level = story.jlptLevel || 'N5';
       trackArticleView(`stories.${level}`, story.id);
-      console.log('📊 [Analytics] Story view tracked:', { level, storyId: story.id });
 
       // Cache story for offline reading
       storyOfflineManager.cacheStory(story).catch(error => {
@@ -255,8 +254,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
             const readingTime = Math.ceil((Date.now() - startTime.getTime()) / 1000); // in seconds
             const level = story.jlptLevel || 'N5';
             trackArticleComplete(`stories.${level}`, readingTime, story.id);
-            console.log('📊 [Analytics] Story completion tracked:', { level, storyId: story.id, readingTime });
-            
+
             setHasTrackedCompletion(true);
             
             // Call the onComplete callback if provided
@@ -380,12 +378,12 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       if (isBookmarked) {
         await StoryBookmarkManager.removeBookmark(user.uid, story.id);
         setIsBookmarked(false);
-        console.log('📖 Story bookmark removed');
+
       } else {
         const success = await StoryBookmarkManager.bookmarkStory(user.uid, story.id, isPremium);
         if (success) {
           setIsBookmarked(true);
-          console.log('📖 Story bookmarked successfully');
+
         }
       }
     } catch (error) {

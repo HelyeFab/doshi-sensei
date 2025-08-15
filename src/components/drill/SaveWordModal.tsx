@@ -25,8 +25,6 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [savedListName, setSavedListName] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
-  
-  console.log('SaveWordModal rendered, showCreateNew:', showCreateNew, 'saving:', saving);
 
   // Load unified study lists
   useEffect(() => {
@@ -82,23 +80,21 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
   };
 
   const handleSave = async () => {
-    console.log('handleSave called');
-    console.log('selectedLists:', selectedLists, 'newListName:', newListName);
-    
+
     if (selectedLists.length === 0 && !newListName.trim()) {
-      console.log('No lists selected and no new list name, returning');
+
       return;
     }
 
     try {
-      console.log('Starting save process...');
+
       setSaving(true);
       setErrors([]);
 
       // Create new list if needed
       const listsToSaveTo = [...selectedLists];
       if (newListName.trim() && showCreateNew) {
-        console.log('Creating new list:', newListName);
+
         try {
           const newList = await StudyListManager.createStudyList(
             newListName.trim(),
@@ -107,7 +103,7 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
             user, // user from useAuth
             undefined // subscriptionStatus (optional)
           );
-          console.log('New list created:', newList);
+
           listsToSaveTo.push(newList.id);
         } catch (error) {
           console.error('Error creating new list:', error);
@@ -154,11 +150,9 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
         user, // user from useAuth
         undefined // subscriptionStatus (optional)
       );
-      
-      console.log('Save result:', result);
+
       if (result.success) {
-        console.log('Save successful, calling onSaveComplete and onClose');
-        
+
         // Show success state
         setSaveSuccess(true);
         setSavedListName(newListName.trim() || 'your lists');
@@ -171,7 +165,7 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
           onClose();
         }, 1500);
       } else {
-        console.log('Save failed with errors:', result.errors);
+
         setErrors(result.errors);
       }
     } catch (err) {
@@ -280,7 +274,7 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
         {!showCreateNew ? (
           <button
             onClick={() => {
-              console.log('Setting showCreateNew to true');
+
               setShowCreateNew(true);
             }}
             className="w-full text-center text-sm text-primary hover:text-primary/80 transition-colors mb-4"
@@ -361,7 +355,7 @@ export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word'
         <div className="flex gap-3">
           <button
             onClick={() => {
-              console.log('Save button clicked directly');
+
               handleSave();
             }}
             disabled={saving || (selectedLists.length === 0 && !newListName.trim())}

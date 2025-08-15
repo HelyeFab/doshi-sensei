@@ -63,7 +63,7 @@ export default function KanjiCard({
       jlptLevel: kanji.jlpt || 'unknown',
       source: 'moodboard'
     });
-    console.log('📊 [Analytics] Kanji viewed from moodboard:', { kanji: kanji.char });
+
   };
 
   const handleBookmarkClick = (e: React.MouseEvent) => {

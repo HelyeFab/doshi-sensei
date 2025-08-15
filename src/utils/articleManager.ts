@@ -63,7 +63,7 @@ export class ArticleManager {
     }
 
     await batch.commit();
-    console.log(`✅ Successfully saved ${articles.length} articles with expiration management`);
+
   }
 
   // Get paginated articles with filtering
@@ -76,6 +76,9 @@ export class ArticleManager {
     // Add filters
     q = query(q, where('isArchived', '==', false)); // Only active articles
     q = query(q, where('expiresAt', '>', Timestamp.now())); // Only non-expired articles
+    
+    // CRITICAL: Only show visible articles (98%+ Japanese or AI validated)
+    q = query(q, where('visible', '==', true));
 
     if (options.difficulty && options.difficulty.length > 0) {
       q = query(q, where('difficulty', 'in', options.difficulty));
@@ -123,7 +126,8 @@ export class ArticleManager {
     const totalQuery = query(
       articlesRef,
       where('isArchived', '==', false),
-      where('expiresAt', '>', Timestamp.now())
+      where('expiresAt', '>', Timestamp.now()),
+      where('visible', '==', true)  // Only count visible articles
     );
     const totalSnapshot = await getDocs(totalQuery);
     const totalCount = totalSnapshot.size;
@@ -207,7 +211,6 @@ export class ArticleManager {
         bookmarkedBy: [...currentBookmarkedBy, userId]
       });
 
-      console.log(`📖 User ${userId} bookmarked article: ${article.title}`);
       return true;
 
     } catch (error) {
@@ -228,10 +231,8 @@ export class ArticleManager {
       where('contentId', '==', articleId)
     );
 
-    console.log('[removeBookmark] userId:', userId, 'articleId:', articleId);
-
     const snapshot = await getDocs(q);
-    console.log('[removeBookmark] Found', snapshot.docs.length, 'docs to delete');
+
     const batch = writeBatch(db);
 
     snapshot.docs.forEach(doc => {
@@ -250,7 +251,7 @@ export class ArticleManager {
     }
 
     await batch.commit();
-    console.log(`📖 User ${userId} removed bookmark for article: ${articleId}`);
+
   }
 
   // Get user's bookmarks (with backward compatibility)
@@ -347,14 +348,12 @@ export class ArticleManager {
     }
 
     await updateDoc(bookmarkDoc.ref, updateData);
-    console.log(`📖 Updated reading progress for article ${articleId}: ${progress}%`);
+
   }
 
   // Cleanup expired articles
   static async cleanupExpiredArticles(): Promise<number> {
     if (!db) throw new Error('Firebase not initialized');
-
-    console.log('🧹 Starting cleanup of expired articles...');
 
     const articlesRef = collection(db, 'articles');
     const expiredQuery = query(
@@ -373,16 +372,15 @@ export class ArticleManager {
       // If article is bookmarked, move to archive instead of deleting
       if (article.bookmarkedBy && article.bookmarkedBy.length > 0) {
         batch.update(docSnapshot.ref, { isArchived: true });
-        console.log(`📦 Archived bookmarked article: ${article.title}`);
+
       } else {
         batch.delete(docSnapshot.ref);
         deletedCount++;
-        console.log(`🗑️ Deleted expired article: ${article.title}`);
+
       }
     }
 
     await batch.commit();
-    console.log(`✅ Cleanup complete: ${deletedCount} articles deleted, ${snapshot.size - deletedCount} archived`);
 
     return deletedCount;
   }

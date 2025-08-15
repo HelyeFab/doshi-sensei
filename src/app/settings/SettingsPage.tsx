@@ -63,7 +63,6 @@ export default function SettingsPage() {
 
   // Handler functions for settings
 
-
   const handleContactUs = () => {
     router.push('/contact');
   };
@@ -188,7 +187,6 @@ export default function SettingsPage() {
     if (!canSync || premiumSyncing) return;
 
     try {
-      console.log('Starting manual sync...');
 
       // Sync study lists (all types: words, sentences, kanji, drillable)
       await StudyListManager.autoSyncLists(user, subscription?.status);
@@ -236,7 +234,6 @@ export default function SettingsPage() {
     }
   };
 
-
   return (
     <div className="min-h-screen bg-background">
       <SmartPageHeader title={strings.settings.title} />
@@ -273,7 +270,6 @@ export default function SettingsPage() {
                 }}
               />
             </SettingsSection>
-
 
             {/* Tutorial & Learning */}
             <SettingsSection title={strings.settings.tutorialLearning}>
@@ -350,7 +346,6 @@ export default function SettingsPage() {
               </div>
             </SettingsSection>
 
-
             {/* Cloud Sync */}
             <SettingsSection title={strings.settings.cloudSync}>
               <div className="space-y-4">
@@ -360,7 +355,6 @@ export default function SettingsPage() {
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <SyncStatusIndicator />
                     </div>
-
 
                     {/* Sync Error */}
                     {syncError && (
@@ -390,7 +384,6 @@ export default function SettingsPage() {
                         </p>
                       </div>
                     )}
-
 
                     {/* Manual Sync Button */}
                     <div className="pt-4 border-t border-border">
@@ -569,7 +562,6 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
-
 
         {/* Cache Clear Modal */}
         {showCacheModal && (

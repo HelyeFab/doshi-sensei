@@ -164,14 +164,13 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
     try {
       // Generate cache key
       const cacheKey = `${article.id}_sentence_${currentSentenceIndex}_${voice}_${provider}`;
-      console.log('[Shadowing] Requesting audio for:', cacheKey);
-      
+
       let audio: HTMLAudioElement;
       
       // Check local cache first
       const cachedAudio = audioCache.current.get(cacheKey);
       if (cachedAudio) {
-        console.log('[Shadowing] Using cached audio!');
+
         audio = cachedAudio.cloneNode() as HTMLAudioElement;
         // Reset the cloned audio and ensure it's at the beginning
         audio.currentTime = 0;
@@ -179,8 +178,7 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
         audio.preload = 'auto';
         audio.load();
       } else {
-        console.log('[Shadowing] Generating new audio...');
-        
+
         // Generate new audio and cache it
         audio = await ArticleTTSManager.playArticle(
           cacheKey,
@@ -189,7 +187,7 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
             voice,
             provider,
             onProgress: (status) => {
-              console.log('[Shadowing] TTS Progress:', status);
+
             }
           }
         );
@@ -201,7 +199,7 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
         // Ensure the cached audio is fully loaded
         audioForCache.load();
         audioCache.current.set(cacheKey, audioForCache);
-        console.log('[Shadowing] Cached audio for future use');
+
       }
 
       if (audio) {
@@ -219,23 +217,22 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
         // Handle audio end
         audio.onended = () => {
           const currentRepeatValue = currentRepeatRef.current;
-          console.log('[Shadowing] Audio ended. Current repeat:', currentRepeatValue, 'of', repeatCount);
-          
+
           if (currentRepeatValue < repeatCount - 1) {
             // More repeats to go
             const nextRepeat = currentRepeatValue + 1;
-            console.log('[Shadowing] Moving to repeat:', nextRepeat);
+
             currentRepeatRef.current = nextRepeat;
             setCurrentRepeat(nextRepeat);
             
             // Pause before repeating
             repeatTimeoutRef.current = setTimeout(() => {
-              console.log('[Shadowing] Starting repeat:', nextRepeat + 1, 'of', repeatCount);
+
               playCurrentSentence();
             }, pauseBetweenRepeats);
           } else {
             // Done with repeats, reset
-            console.log('[Shadowing] All repeats completed, stopping');
+
             currentRepeatRef.current = 0;
             setCurrentRepeat(0);
             setIsPlaying(false);
@@ -256,7 +253,7 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
 
         // Start playback
         try {
-          console.log('[Shadowing] Starting playback');
+
           await audio.play();
           setIsLoading(false);
         } catch (playError) {
@@ -274,11 +271,10 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
     }
   };
 
-
   // Control functions
   const play = () => {
     if (!isPlaying && !isLoading) {
-      console.log('[Shadowing] Starting playback with', repeatCount, 'repeats');
+
       currentRepeatRef.current = 0;
       setCurrentRepeat(0);
       setError(null);
@@ -341,7 +337,7 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
 
   // Clear cache when voice or provider changes
   useEffect(() => {
-    console.log('[Shadowing] Voice/Provider changed, clearing cache');
+
     audioCache.current.forEach(audio => {
       if (audio.src.startsWith('blob:')) {
         URL.revokeObjectURL(audio.src);

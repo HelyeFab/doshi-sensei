@@ -41,7 +41,7 @@ async function enrichWithVocabulary(kanji: EnrichedKanji): Promise<void> {
       }));
     }
   } catch (error) {
-    console.warn(`Failed to get vocabulary for ${kanji.kanji}:`, error);
+
   }
 }
 
@@ -71,7 +71,7 @@ async function enrichWithSentences(kanji: EnrichedKanji): Promise<void> {
       }
     }
   } catch (error) {
-    console.warn(`Failed to get sentences for ${kanji.kanji}:`, error);
+
   }
 }
 

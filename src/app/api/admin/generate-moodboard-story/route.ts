@@ -84,9 +84,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     const jlptLevels = moodBoard.kanjiItems.map(item => item.jlptLevel);
     const mostCommonLevel = getMostCommonJLPTLevel(jlptLevels) as JLPTLevel;
 
-    console.log('🌸 Generating story for mood board:', moodBoard.title);
     console.log('📚 Using kanji:', kanjiList.map(k => k.kanji).join(', '));
-    console.log('🎯 Target JLPT level:', mostCommonLevel);
 
     // Generate the story content
     const storyPrompt = `You are creating an educational Japanese story for young learners.
@@ -214,8 +212,6 @@ Return JSON with this structure:
 
     // Use Firebase Admin to save the story
     await admin.firestore().collection('stories').doc(storyId).set(storyData);
-
-    console.log('✅ Story generated and published:', storyId);
 
     return NextResponse.json({
       success: true,

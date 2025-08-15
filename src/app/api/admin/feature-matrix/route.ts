@@ -25,7 +25,7 @@ export async function GET() {
       dynamicRules.clearCache();
       rules = await dynamicRules.getRules();
     } catch (error) {
-      console.log('Using static rules as fallback:', error);
+
     }
     
     // Get features from dynamic registry (with static fallback)
@@ -35,9 +35,9 @@ export async function GET() {
       dynamicRegistry.clearCache();
       const registry = await dynamicRegistry.getRegistry();
       features = Object.values(registry);
-      console.log('[FeatureMatrix] Using dynamic registry');
+
     } catch (error) {
-      console.log('[FeatureMatrix] Using static registry as fallback');
+
     }
     
     // Build feature matrix data
@@ -56,17 +56,13 @@ export async function GET() {
       userTypes.forEach(userType => {
         const rule = rules.find(r => r.userTypes.includes(userType));
         if (!rule) {
-          console.warn(`No rule found for user type: ${userType}`);
+
           return;
         }
         
         // Debug which rule is being used
         if (feature.id === 'youtube_shadowing') {
-          console.log(`Rule for ${userType}:`, {
-            ruleId: rule.id,
-            userTypes: rule.userTypes,
-            youtubeShadowingLimit: rule.limits.daily?.youtube_shadowing
-          });
+
         }
         
         // Check if feature is allowed for this user type
@@ -121,12 +117,7 @@ export async function GET() {
     // Debug specific feature
     const youtubeShadowingData = matrix.find(m => m.feature.id === 'youtube_shadowing');
     if (youtubeShadowingData) {
-      console.log('YouTube Shadowing Access Data:', {
-        guest: youtubeShadowingData.access.guest,
-        free: youtubeShadowingData.access.free,
-        monthly: youtubeShadowingData.access.monthly,
-        yearly: youtubeShadowingData.access.yearly
-      });
+
     }
     
     const response = NextResponse.json({

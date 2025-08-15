@@ -30,13 +30,7 @@ export function usePremiumSync3(): UsePremiumSyncReturn {
   const { user } = useAuth();
   
   // Debug subscription status
-  console.log('[PremiumSync3] Subscription status:', {
-    isPremium,
-    userType,
-    subscription,
-    user: user?.email
-  });
-  
+
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [lastSyncTime, setLastSyncTime] = useState<number | null>(null);
   const [syncProgress, setSyncProgress] = useState<SyncProgress | null>(null);
@@ -52,7 +46,7 @@ export function usePremiumSync3(): UsePremiumSyncReturn {
   // Initialize sync manager ONLY for users with access
   useEffect(() => {
     if (canSync && !syncManagerRef.current) {
-      console.log('[PremiumSync3] Initializing sync manager for premium user');
+
       syncManagerRef.current = new PremiumSyncManager();
       
       // Update queued items count
@@ -124,7 +118,7 @@ export function usePremiumSync3(): UsePremiumSyncReturn {
             // Sync registration can fail for various reasons (no network, browser restrictions)
             // This is not a critical error, so we just silently continue
             if (process.env.NODE_ENV === 'development') {
-              console.warn('Failed to register sync:', error);
+
             }
           }
         }
@@ -149,22 +143,19 @@ export function usePremiumSync3(): UsePremiumSyncReturn {
 
   const triggerSync = useCallback(async () => {
     if (!user || !syncManagerRef.current) {
-      console.log('[PremiumSync3] Cannot sync: no user or sync manager');
+
       return;
     }
 
-    console.log('[PremiumSync3] User subscription status:', { isPremium, canSync });
-    console.log('[PremiumSync3] Checking manual sync access...');
-    
     // Check manual sync access using three-pillar system
     const hasAccess = await checkAndTrack('manual_sync');
     if (!hasAccess) {
-      console.log('[PremiumSync3] Manual sync access denied - user is not premium or has exceeded limits');
+
       return;
     }
 
     if (syncStatus === 'syncing') {
-      console.log('[PremiumSync3] Sync already in progress');
+
       return;
     }
 
@@ -182,7 +173,7 @@ export function usePremiumSync3(): UsePremiumSyncReturn {
         setSyncStatus('completed');
         setLastSyncTime(Date.now());
         setSyncError(null);
-        console.log('[PremiumSync3] Sync completed successfully:', result);
+
       } else {
         setSyncStatus('error');
         setSyncError(result.error || 'Sync failed');

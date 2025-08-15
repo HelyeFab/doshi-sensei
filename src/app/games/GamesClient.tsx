@@ -224,7 +224,7 @@ export default function GamesClient() {
         const hasAccess = await checkAndTrack('kanji_quest');
         if (!hasAccess) {
           // Redirect to subscription page or show upgrade modal
-          console.log('No access to Kanji Quest');
+
           clearSelectedKanji();
           setWaitingForKanji(false);
           return;
@@ -594,7 +594,7 @@ export default function GamesClient() {
     // Check access first
     const hasAccess = await checkAndTrack('kanji_quest');
     if (!hasAccess) {
-      console.log('No access to Kanji Quest');
+
       return;
     }
 

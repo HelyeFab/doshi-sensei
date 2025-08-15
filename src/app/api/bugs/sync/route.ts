@@ -31,8 +31,7 @@ export async function GET(request: NextRequest) {
     
     // Debug logging for development
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Bug Sync API] Request received');
-      console.log('[Bug Sync API] API Key provided:', !!apiKey);
+
     }
     
     if (!apiKey) {

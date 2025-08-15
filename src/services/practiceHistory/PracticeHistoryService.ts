@@ -15,13 +15,13 @@ export class PracticeHistoryService {
   async initialize(userId?: string, isPremium?: boolean): Promise<void> {
     // If already initialized with Firebase, don't reinitialize
     if (this.isInitialized && this.firebaseStorage) {
-      console.log('PracticeHistoryService already initialized with Firebase');
+
       return;
     }
     
     // If initializing with a user after being initialized as guest, reinitialize
     if (this.isInitialized && !this.firebaseStorage && userId) {
-      console.log('Reinitializing PracticeHistoryService with user after guest init');
+
       this.isInitialized = false;
     }
     
@@ -32,28 +32,21 @@ export class PracticeHistoryService {
 
     // Initialize Firebase for all authenticated users (free and premium)
     if (userId) {
-      console.log('🔥 Initializing Firebase storage for user:', userId);
-      console.log('User type:', isPremium ? 'premium' : 'free');
+
       this.firebaseStorage = new FirebasePracticeHistoryStorage(userId);
       this.userType = isPremium ? 'premium' : 'free';
-      console.log('Firebase storage created:', !!this.firebaseStorage);
+
       console.log('Firebase user ID stored:', (this.firebaseStorage as any).userId);
       // Sync local data to Firebase on first login
       await this.syncLocalToFirebase();
     } else {
-      console.log('⚠️ No userId provided - initializing as guest');
+
       this.userType = 'guest';
       this.firebaseStorage = null;
     }
 
     this.isInitialized = true;
-    
-    console.log('PracticeHistoryService initialized', {
-      userId,
-      userType: this.userType,
-      hasFirebase: !!this.firebaseStorage,
-      isPremium
-    });
+
   }
 
   async addOrUpdateItem(item: PracticeHistoryItem): Promise<void> {
@@ -61,21 +54,18 @@ export class PracticeHistoryService {
       throw new Error('PracticeHistoryService not initialized');
     }
 
-    console.log('=== PracticeHistoryService.addOrUpdateItem ===');
     console.log('Service status:', this.getStatus());
-    console.log('Item to save:', item);
 
     // Always save to IndexedDB
     await this.indexedDBStorage.addOrUpdateItem(item);
-    console.log('✅ Saved to IndexedDB');
 
     // Also save to Firebase for authenticated users
     if (this.firebaseStorage) {
-      console.log('🔥 Firebase storage is available, attempting to save...');
+
       console.log('Firebase user ID:', (this.firebaseStorage as any).userId);
       try {
         await this.firebaseStorage.addOrUpdateItem(item);
-        console.log('✅ Successfully saved to Firebase');
+
       } catch (error: any) {
         console.error('❌ Failed to save to Firebase, but local save succeeded:', error);
         console.error('Error details:', {
@@ -85,12 +75,7 @@ export class PracticeHistoryService {
         });
       }
     } else {
-      console.log('⚠️ No Firebase storage available - saved locally only');
-      console.log('Service details:', {
-        isInitialized: this.isInitialized,
-        userType: this.userType,
-        hasFirebaseStorage: !!this.firebaseStorage
-      });
+
     }
   }
 
@@ -152,7 +137,7 @@ export class PracticeHistoryService {
     try {
       const { TranscriptCacheManager } = await import('@/utils/transcriptCache');
       const contentId = `youtube_${videoId}`;
-      console.log('🗑️ [CACHE] Deleting cached transcript for:', contentId);
+
       await TranscriptCacheManager.deleteCachedTranscript(contentId);
     } catch (error) {
       console.error('Failed to delete cached transcript:', error);
@@ -213,9 +198,9 @@ export class PracticeHistoryService {
     try {
       const localItems = await this.indexedDBStorage.getAllItems();
       if (localItems.length > 0) {
-        console.log(`Syncing ${localItems.length} practice history items to Firebase...`);
+
         await this.firebaseStorage.syncFromLocal(localItems);
-        console.log('Sync completed successfully');
+
       }
     } catch (error) {
       console.error('Failed to sync local data to Firebase:', error);

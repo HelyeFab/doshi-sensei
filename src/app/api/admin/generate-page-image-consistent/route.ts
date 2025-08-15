@@ -7,8 +7,7 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('Generate consistent page image endpoint called');
-  
+
   try {
     const { 
       pageNumber,
@@ -75,9 +74,6 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       // Fallback to original prompt
       finalPrompt = `${visualStyle}. ${imagePrompt}`;
     }
-
-    console.log(`Generating image for page ${pageNumber}`);
-    console.log('Prompt:', finalPrompt);
 
     try {
       const response = await openai.images.generate({

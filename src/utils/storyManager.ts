@@ -408,7 +408,7 @@ class StoryManager {
    */
   async canReadStory(userId: string | null, isPremium: boolean): Promise<boolean> {
     // Always return true - actual checking is done via entitlements system
-    console.warn('canReadStory is deprecated. Use useEntitlements hook instead.');
+
     return true;
   }
 

@@ -56,8 +56,6 @@ export async function DELETE(request: NextRequest) {
     // Finally, delete the user account from Firebase Auth
     await auth.deleteUser(uid);
 
-    console.log(`Successfully deleted account for user: ${userRecord.email}`);
-
     return NextResponse.json({ 
       success: true, 
       message: 'Account deleted successfully' 

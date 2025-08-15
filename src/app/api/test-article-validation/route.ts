@@ -14,8 +14,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`🧪 [TEST] Processing article: ${articleId}`);
-    
     // Process the article
     const result = await articlePostProcessor.reprocessArticle(articleId, forceReprocess);
     
@@ -45,8 +43,7 @@ export async function POST(request: NextRequest) {
 // GET endpoint to trigger batch processing
 export async function GET(request: NextRequest) {
   try {
-    console.log('🧪 [TEST] Triggering batch article processing...');
-    
+
     // Process unvalidated articles
     await articlePostProcessor.processUnvalidatedArticles(3); // Process 3 articles
     

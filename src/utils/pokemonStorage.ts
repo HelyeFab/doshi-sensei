@@ -60,13 +60,13 @@ class PokemonStorageManager {
 
             // Note: This might delete existing Pokemon data if upgrading from v1
             // But it's necessary for proper user isolation
-            console.log('Upgraded Pokemon DB schema to include user identification');
+
           }
         },
       });
     } catch (error) {
       // Don't throw, just log the error
-      console.warn('Failed to initialize Pokemon IndexedDB:', error);
+
       // Leave db as null so we can handle it gracefully
       this.db = null;
     }
@@ -82,7 +82,7 @@ class PokemonStorageManager {
     try {
       await this.initDB();
       if (!this.db) {
-        console.warn('Database not initialized, cannot save Pokemon');
+
         return;
       }
 
@@ -99,10 +99,10 @@ class PokemonStorageManager {
         jlptLevel,
         kanjiIds,
       });
-      console.log(`Saved Pokemon ${pokemonId} for user ${userId || 'guest'}`);
+
     } catch (error) {
       // Don't throw, just log the error
-      console.warn('Failed to save Pokemon locally:', error);
+
     }
   }
 
@@ -130,7 +130,7 @@ class PokemonStorageManager {
       
       await this.initDB();
       if (!this.db) {
-        console.warn('Database not initialized, returning empty Pokemon list');
+
         return [];
       }
 
@@ -145,7 +145,7 @@ class PokemonStorageManager {
       return userPokemon.map(p => p.pokemonId);
     } catch (error) {
       // Don't throw errors, just log and return empty array
-      console.warn('Failed to get all caught Pokemon locally:', error);
+
       return [];
     }
   }
@@ -213,7 +213,7 @@ class PokemonStorageManager {
         await tx.store.delete(pokemon.id);
       }
       await tx.done;
-      console.log(`Cleared all Pokemon for user ${userId}`);
+
     } catch (error) {
       console.error('Failed to clear user Pokemon:', error);
       throw error;

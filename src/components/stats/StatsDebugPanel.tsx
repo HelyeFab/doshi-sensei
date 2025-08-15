@@ -46,7 +46,6 @@ export function StatsDebugPanel() {
       a.click();
       URL.revokeObjectURL(url);
 
-      console.log('✅ Debug data exported successfully');
     } catch (err) {
       console.error('Failed to export debug data:', err);
       alert('Failed to export debug data. Check console for details.');
@@ -58,9 +57,9 @@ export function StatsDebugPanel() {
     setShowDebug(newValue);
     localStorage.setItem('STATS_DEBUG', newValue.toString());
     if (newValue) {
-      console.log('🐛 Debug mode enabled');
+
     } else {
-      console.log('🐛 Debug mode disabled');
+
     }
   };
 

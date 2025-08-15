@@ -119,7 +119,7 @@ export default function PayPalButton({
           onError(err);
         },
         onCancel: function(data: any) {
-          console.log('PayPal subscription cancelled:', data);
+
           if (onCancel) {
             onCancel();
           }

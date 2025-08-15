@@ -37,8 +37,7 @@ export class AnkiMediaStore {
     try {
       // TODO: Implement proper media storage when re-enabled
       // For now, just return object URL without persisting
-      console.warn('Anki media storage is temporarily disabled');
-      
+
       // Create and cache blob URL
       const blobUrl = URL.createObjectURL(blob);
       this.blobUrlCache.set(filename, blobUrl);
@@ -60,7 +59,7 @@ export class AnkiMediaStore {
     }
     
     // TODO: Implement retrieval when storage is re-enabled
-    console.warn('Anki media retrieval is temporarily disabled');
+
     return null;
   }
   
@@ -121,7 +120,7 @@ export class AnkiMediaStore {
       
       // TODO: Remove from storage when re-enabled
       console.warn('Anki media deletion is limited to cache only (storage temporarily disabled)');
-      console.log(`Removed ${filenames.length} media files from cache`);
+
     } catch (error) {
       console.error('Failed to delete media:', error);
     }
@@ -137,7 +136,7 @@ export class AnkiMediaStore {
       
       // TODO: Clear from storage when re-enabled
       console.warn('Anki media clearing is limited to cache only (storage temporarily disabled)');
-      console.log('Cleared all media files from cache');
+
     } catch (error) {
       console.error('Failed to delete all media:', error);
     }

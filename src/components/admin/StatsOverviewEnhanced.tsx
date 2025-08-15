@@ -177,6 +177,7 @@ export function StatsOverviewEnhanced() {
   const [selectedModal, setSelectedModal] = useState<string | null>(null);
   const [modalData, setModalData] = useState<any[]>([]);
   const [modalLoading, setModalLoading] = useState(false);
+  const [modalSubtitle, setModalSubtitle] = useState<string>('');
 
   const fetchDetailedData = async (type: string) => {
     setModalLoading(true);
@@ -202,18 +203,74 @@ export function StatsOverviewEnhanced() {
           today.setHours(0, 0, 0, 0);
           const todayTimestamp = Timestamp.fromDate(today);
           
+          console.log('Fetching new users since:', today.toISOString());
+          
           const newUsersQuery = query(
             usersRef,
             where('createdAt', '>=', todayTimestamp),
             orderBy('createdAt', 'desc')
           );
           const newUsersSnapshot = await getDocs(newUsersQuery);
-          data = newUsersSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            createdAt: doc.data().createdAt?.toDate?.()?.toISOString(),
-            lastLoginAt: doc.data().lastLoginAt?.toDate?.()?.toISOString()
-          }));
+
+          // If no users found today, try to get users from the last 24 hours as fallback
+          if (newUsersSnapshot.empty) {
+            const last24Hours = new Date();
+            last24Hours.setHours(last24Hours.getHours() - 24);
+            const last24HoursTimestamp = Timestamp.fromDate(last24Hours);
+            
+            console.log('No users today, checking last 24 hours since:', last24Hours.toISOString());
+            
+            const last24HoursQuery = query(
+              usersRef,
+              where('createdAt', '>=', last24HoursTimestamp),
+              orderBy('createdAt', 'desc')
+            );
+            const last24HoursSnapshot = await getDocs(last24HoursQuery);
+
+            // If still no users in last 24 hours, get the most recent users
+            if (last24HoursSnapshot.empty) {
+
+              const recentUsersQuery = query(
+                usersRef,
+                orderBy('createdAt', 'desc'),
+                limit(10)
+              );
+              const recentUsersSnapshot = await getDocs(recentUsersQuery);
+
+              data = recentUsersSnapshot.docs.map(doc => {
+                const userData = doc.data();
+                return {
+                  id: doc.id,
+                  ...userData,
+                  createdAt: userData.createdAt?.toDate?.()?.toISOString() || userData.createdAt,
+                  lastLoginAt: userData.lastLoginAt?.toDate?.()?.toISOString() || userData.lastLoginAt
+                };
+              });
+              setModalSubtitle('(Most recent users)');
+            } else {
+              data = last24HoursSnapshot.docs.map(doc => {
+                const userData = doc.data();
+                return {
+                  id: doc.id,
+                  ...userData,
+                  createdAt: userData.createdAt?.toDate?.()?.toISOString() || userData.createdAt,
+                  lastLoginAt: userData.lastLoginAt?.toDate?.()?.toISOString() || userData.lastLoginAt
+                };
+              });
+              setModalSubtitle('(Last 24 hours)');
+            }
+          } else {
+            data = newUsersSnapshot.docs.map(doc => {
+              const userData = doc.data();
+              return {
+                id: doc.id,
+                ...userData,
+                createdAt: userData.createdAt?.toDate?.()?.toISOString() || userData.createdAt,
+                lastLoginAt: userData.lastLoginAt?.toDate?.()?.toISOString() || userData.lastLoginAt
+              };
+            });
+            setModalSubtitle('');
+          }
           break;
           
         case 'active-today':
@@ -468,8 +525,11 @@ export function StatsOverviewEnhanced() {
 
       <DetailModal
         isOpen={selectedModal !== null}
-        onClose={() => setSelectedModal(null)}
-        title={selectedModal || ''}
+        onClose={() => {
+          setSelectedModal(null);
+          setModalSubtitle('');
+        }}
+        title={`${selectedModal || ''} ${modalSubtitle}`}
         data={modalData}
         loading={modalLoading}
       />

@@ -188,7 +188,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
         }, user?.uid);
       } catch (error) {
         // Silently fail if notifications aren't enabled
-        console.log('Could not schedule notification:', error);
+
       }
     }
   };
@@ -388,7 +388,7 @@ export default function ExposurePhase({ word, lessonId, onComplete, onStruggle, 
                 className="text-lg"
                 onWordClick={(clickedWord) => {
                   // Optional: Add word lookup functionality here
-                  console.log('Word clicked:', clickedWord);
+
                 }}
               />
             </div>

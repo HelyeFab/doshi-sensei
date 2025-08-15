@@ -24,7 +24,6 @@ export const loadFFmpeg = async (): Promise<FFmpeg> => {
         wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
       });
 
-      console.log('FFmpeg loaded successfully');
       ffmpegInstance = ffmpeg;
       return ffmpeg;
     } catch (error) {
@@ -88,8 +87,7 @@ export const processVideoAudio = async (
     const audioBlob = new Blob([audioData as Uint8Array], { type: 'audio/mp3' });
     
     onProgress?.({ stage: 'processing', progress: 1, percent: 100 });
-    
-    console.log('Audio extraction complete, size:', audioBlob.size, 'bytes');
+
     return audioBlob;
   } catch (error) {
     console.error('Audio processing error:', error);

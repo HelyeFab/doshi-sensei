@@ -62,12 +62,11 @@ export function AdjustableSnakePath({
 
   // Export positions to console for production use
   const exportPositions = () => {
-    console.log('// Production positions:');
-    console.log('const PRODUCTION_POSITIONS = [');
+
     nodePositions.forEach((pos, i) => {
       console.log(`  { x: ${pos.x.toFixed(1)}, y: ${pos.y} }, // ${nodes[i]?.title || `Node ${i}`}`);
     });
-    console.log('];');
+
   };
 
   const totalHeight = nodes.length * nodeSpacing + 200;

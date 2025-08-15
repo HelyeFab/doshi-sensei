@@ -23,8 +23,7 @@ export async function clearAdminCache() {
     await Promise.all(
       cachesToClear.map(cacheName => caches.delete(cacheName))
     );
-    
-    console.log('Admin caches cleared:', cachesToClear);
+
   } catch (error) {
     console.error('Error clearing admin caches:', error);
   }

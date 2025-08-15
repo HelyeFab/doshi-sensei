@@ -78,7 +78,7 @@ class TTSCacheManager {
 
     // Check if adding this would exceed cache size limit
     if (this.currentCacheSize + audioSize > this.MAX_CACHE_SIZE) {
-      console.log('[TTS Cache] Cache size limit reached, cleaning up old entries...');
+
       this.cleanupOldEntries(audioSize);
     }
 
@@ -113,7 +113,7 @@ class TTSCacheManager {
     }
 
     if (removedCount > 0) {
-      console.log(`[TTS Cache] Removed ${removedCount} expired entries`);
+
       this.updateCacheSize();
     }
   }
@@ -183,8 +183,7 @@ class TTSCacheManager {
       }
       keysToRemove.forEach(key => localStorage.removeItem(key));
     }
-    
-    console.log('[TTS Cache] Cache cleared');
+
   }
 
   // Format bytes to human readable
@@ -207,7 +206,7 @@ class TTSCacheManager {
       
       // Note: We can't easily store ArrayBuffers in localStorage
       // For a production app, you'd want to use IndexedDB instead
-      console.log('[TTS Cache] Cache index saved to localStorage');
+
     } catch (error) {
       console.error('[TTS Cache] Failed to save to localStorage:', error);
     }
@@ -222,8 +221,7 @@ class TTSCacheManager {
       if (!indexStr) return;
 
       const index = JSON.parse(indexStr);
-      console.log(`[TTS Cache] Found ${index.length} cached entries in localStorage`);
-      
+
       // Note: In a real implementation, you'd load the actual audio data
       // from IndexedDB or another persistent storage
     } catch (error) {

@@ -21,14 +21,13 @@ export class AudioCache {
    */
   static async cacheAudio(audioResource: AudioResource, userType: UserType): Promise<void> {
     try {
-      console.log(`[AudioCache] Caching audio: ${audioResource.id}`);
 
       // Download and cache audio
       const audioBlob = await this.downloadAudio(audioResource.audioUrl);
 
       if (!audioBlob) {
         // Don't throw error for missing audio files, just skip caching
-        console.log(`[AudioCache] Audio not available for caching: ${audioResource.id}`);
+
         return;
       }
 
@@ -68,7 +67,6 @@ export class AudioCache {
       // Store in cache
       await EnhancedStorageManager2.cacheResource(cachedAudio, userType);
 
-      console.log(`[AudioCache] Successfully cached audio: ${audioResource.id}`);
     } catch (error) {
       console.error(`[AudioCache] Failed to cache audio ${audioResource.id}:`, error);
       throw error;
@@ -79,7 +77,6 @@ export class AudioCache {
    * Cache multiple audio resources at once (batch operation)
    */
   static async cacheAudioSet(audioList: AudioResource[], userType: UserType): Promise<void> {
-    console.log(`[AudioCache] Caching ${audioList.length} audio resources`);
 
     // Process in batches to avoid overwhelming the storage
     const BATCH_SIZE = 10;
@@ -101,7 +98,6 @@ export class AudioCache {
       }
     }
 
-    console.log(`[AudioCache] Successfully cached ${audioList.length} audio resources`);
   }
 
   /**
@@ -117,13 +113,13 @@ export class AudioCache {
       const cached = await EnhancedStorageManager2.getCachedResource('audio', id);
 
       if (cached && !this.isStale(cached)) {
-        console.log(`[AudioCache] Serving audio from cache: ${id}`);
+
         return this.hydrateCachedAudio(cached);
       }
 
       // Fall back to network if fetch function provided
       if (fetchFn) {
-        console.log(`[AudioCache] Fetching audio from network: ${id}`);
+
         const audioResource = await fetchFn();
 
         // Cache in background only if userType is provided
@@ -136,7 +132,7 @@ export class AudioCache {
 
       // Return stale cache if no fetch function
       if (cached) {
-        console.log(`[AudioCache] Serving stale audio from cache: ${id}`);
+
         return this.hydrateCachedAudio(cached);
       }
 
@@ -151,7 +147,6 @@ export class AudioCache {
    * Pre-cache related audio resources
    */
   static async preCacheRelated(currentAudio: string, relatedAudio: string[]): Promise<void> {
-    console.log(`[AudioCache] Pre-caching ${relatedAudio.length} related audio resources`);
 
     // Use requestIdleCallback for non-blocking pre-caching
     if ('requestIdleCallback' in window) {
@@ -161,7 +156,7 @@ export class AudioCache {
             // Try to fetch and cache each related audio
             // This would typically call an API to get audio data
             // For now, we'll just log the intention
-            console.log(`[AudioCache] Would pre-cache audio: ${audioId}`);
+
           } catch (error) {
             console.error(`[AudioCache] Failed to pre-cache audio ${audioId}:`, error);
           }
@@ -208,8 +203,6 @@ export class AudioCache {
       'ら', 'り', 'る', 'れ', 'ろ',
       'わ', 'を', 'ん'
     ];
-
-    console.log(`[AudioCache] Pre-caching ${commonKana.length} common kana sounds`);
 
     // Use requestIdleCallback for non-blocking pre-caching
     if ('requestIdleCallback' in window) {
@@ -340,7 +333,7 @@ export class AudioCache {
   static async clearCache(): Promise<void> {
     try {
       await EnhancedStorageManager2.clearResourcesByType('audio');
-      console.log('[AudioCache] Cleared all cached audio');
+
     } catch (error) {
       console.error('[AudioCache] Failed to clear cache:', error);
       throw error;

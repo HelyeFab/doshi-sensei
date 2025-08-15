@@ -20,26 +20,25 @@ class TextbookVocabularySyncManager {
 
     // Avoid duplicate syncs
     if (this.syncInProgress) {
-      console.log('Textbook vocabulary sync already in progress');
+
       return;
     }
 
     // Check if we've synced recently (within last 5 minutes)
     if (this.lastSyncTime && 
         new Date().getTime() - this.lastSyncTime.getTime() < 5 * 60 * 1000) {
-      console.log('Textbook vocabulary synced recently, skipping');
+
       return;
     }
 
     try {
       this.syncInProgress = true;
-      console.log('Starting textbook vocabulary sync for user:', user.uid);
 
       // Load data from Firebase for premium users
       await vocabStorage.loadFromFirebase();
       
       this.lastSyncTime = new Date();
-      console.log('Textbook vocabulary sync completed successfully');
+
     } catch (error) {
       console.error('Error during textbook vocabulary sync:', error);
     } finally {

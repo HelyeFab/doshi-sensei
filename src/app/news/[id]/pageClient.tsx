@@ -10,7 +10,6 @@ import { useAccess } from '@/hooks/useAccess';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 
-
 export default function ArticleClient() {
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
@@ -55,7 +54,7 @@ export default function ArticleClient() {
             }
 
             // Load article from Firebase
-            console.log('[ArticlePage] Loading article:', articleId);
+
             const loadedArticle = await getArticleById(articleId);
 
             if (!loadedArticle) {
@@ -63,13 +62,6 @@ export default function ArticleClient() {
                 router.push('/news');
                 return;
             }
-
-            console.log('[ArticlePage] Article loaded:', {
-                id: loadedArticle.id,
-                hasContent: !!loadedArticle.content,
-                contentLength: loadedArticle.content?.length || 0,
-                title: loadedArticle.title
-            });
 
             setArticle(loadedArticle);
             // Usage tracking is handled automatically by checkAndTrack

@@ -60,7 +60,7 @@ export default function StrokeGuides({
       // Select only the stroke paths (those with IDs starting with 'kvg:' and ending with '-s' followed by a number)
       const paths = svgDoc.querySelectorAll('path[id^="kvg:"][id*="-s"]');
       const pathData = Array.from(paths).map(path => path.getAttribute('d') || '');
-      console.log(`Found ${pathData.length} strokes for kanji ${kanji}`);
+
       setStrokePaths(pathData);
     } catch (err) {
       setError('Failed to load kanji data');

@@ -40,7 +40,7 @@ export default function ShadowingPlayer({ session, onLineChange }: ShadowingPlay
     if (session.audioUrl === 'youtube-player') {
       // For YouTube player mode, we'll control the embedded player
       // This would require YouTube IFrame API integration
-      console.log('YouTube player mode - playback controls will be limited');
+
       return;
     }
     

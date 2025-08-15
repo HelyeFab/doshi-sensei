@@ -27,8 +27,6 @@ if (!admin.apps.length) {
       storageBucket: bucketName
     });
 
-    console.log('✅ Firebase Admin SDK initialized for Storage');
-    console.log('📦 Using storage bucket:', bucketName);
   } catch (error) {
     console.error('❌ Failed to initialize Firebase Admin SDK:', error);
   }
@@ -43,7 +41,7 @@ export class ServerFirebaseCache {
   private constructor() {
     try {
       this.bucket = admin.storage().bucket();
-      console.log('✅ Firebase Storage bucket initialized');
+
     } catch (error) {
       console.error('❌ Failed to initialize storage bucket:', error);
     }
@@ -99,7 +97,7 @@ export class ServerFirebaseCache {
 
       const [exists] = await file.exists();
       if (!exists) {
-        console.log(`[Server Firebase Cache] Cache miss for article ${articleId}`);
+
         return null;
       }
 
@@ -107,7 +105,7 @@ export class ServerFirebaseCache {
       const [metadata] = await file.getMetadata();
       const createdAt = new Date(metadata.timeCreated).getTime();
       if (Date.now() - createdAt > this.CACHE_DURATION) {
-        console.log(`[Server Firebase Cache] Cache expired for article ${articleId}`);
+
         await file.delete();
         return null;
       }
@@ -118,7 +116,6 @@ export class ServerFirebaseCache {
         expires: Date.now() + 60 * 60 * 1000 // 1 hour
       });
 
-      console.log(`[Server Firebase Cache] Cache hit for article ${articleId}`);
       return url;
     } catch (error: any) {
       console.error('[Server Firebase Cache] Error checking cache:', error);
@@ -144,8 +141,7 @@ export class ServerFirebaseCache {
 
       const cacheKey = this.generateCacheKey(articleId, content, voice, provider);
       const storagePath = this.getStoragePath(cacheKey);
-      console.log(`[Server Firebase Cache] Attempting to cache audio at path: ${storagePath}`);
-      
+
       const file = this.bucket.file(storagePath);
 
       // Upload the audio file
@@ -207,7 +203,7 @@ export class ServerFirebaseCache {
       const [exists] = await file.exists();
       if (exists) {
         await file.delete();
-        console.log(`[Server Firebase Cache] Deleted cache for article ${articleId}`);
+
       }
     } catch (error: any) {
       console.error('[Server Firebase Cache] Error deleting cache:', error);

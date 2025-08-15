@@ -26,13 +26,6 @@ export function useAchievements() {
         AchievementManager.getUserStats()
       ]);
 
-      console.log('[useAchievements] Loaded data:', {
-        achievementCount: allAchievements.length,
-        unlockedCount: unlocked.length,
-        stats,
-        unlockedIds: unlocked.map(u => u.achievementId)
-      });
-
       setAchievements(allAchievements);
       setUnlockedAchievements(unlocked);
       setUserStats(stats);
@@ -166,8 +159,7 @@ export function useAchievements() {
     const achievement = achievements.find(a => a.id === unlockedAchievement.achievementId);
     if (achievement) {
       // For now, just log to console. In Phase 2, we'll add toast notifications
-      console.log(`🏆 Achievement Unlocked: ${achievement.title} - ${achievement.description}`);
-      
+
       // You can dispatch a custom event here for toast notifications
       window.dispatchEvent(new CustomEvent('achievementUnlocked', {
         detail: { achievement, unlockedAchievement }
@@ -177,7 +169,7 @@ export function useAchievements() {
 
   // Load data on mount
   useEffect(() => {
-    console.log('[useAchievements] Component mounted, loading achievement data...');
+
     loadData();
   }, [loadData]);
 

@@ -78,7 +78,6 @@ function convertFirebaseMoodBoard(fireboardMoodBoard: FirebaseMoodBoard): MoodBo
   };
 }
 
-
 export function useMoodBoards(): UseMoodBoardsReturn {
   const [moodBoards, setMoodBoards] = useState<MoodBoard[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,11 +96,9 @@ export function useMoodBoards(): UseMoodBoardsReturn {
         return;
       }
 
-      console.log('Fetching mood boards from Firestore...');
       const moodBoardsRef = collection(db, 'moodBoards');
       const q = query(moodBoardsRef, orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
-      console.log('Fetched mood boards:', snapshot.size);
 
       const fetchedMoodBoards: MoodBoard[] = snapshot.docs.map(doc => {
         const firebaseMoodBoard: FirebaseMoodBoard = {
@@ -141,7 +138,7 @@ export function useMoodBoards(): UseMoodBoardsReturn {
     if (!db) return;
 
     // Migration no longer needed - mood boards are managed through Firebase
-    console.warn('Migration function called but no JSON data available');
+
   };
 
   const refreshMoodBoards = async () => {

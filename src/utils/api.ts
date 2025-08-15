@@ -63,10 +63,7 @@ function convertJishoWord(jishoWord: JishoWord, index: number): JapaneseWord {
   
   // Debug logging for conjugation issues
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[Jisho] Converting word: ${japanese.word || japanese.reading}`, {
-      partsOfSpeech: sense.parts_of_speech,
-      determinedType: wordType
-    });
+
   }
 
   // Get JLPT level
@@ -199,10 +196,13 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
     // Try WaniKani with a timeout to prevent long waits
     let wanikaniResults: JapaneseWord[] = [];
     try {
-      // Add 3 second timeout for WaniKani
+      // Add 10 second timeout for WaniKani (3 seconds was too short)
       const wanikaniPromise = searchWanikaniVocabulary(query, Math.min(10, limit));
       const timeoutPromise = new Promise<JapaneseWord[]>((resolve) => 
-        setTimeout(() => resolve([]), 3000)
+        setTimeout(() => {
+
+          resolve([]);
+        }, 10000)
       );
       
       wanikaniResults = await Promise.race([wanikaniPromise, timeoutPromise]);
@@ -219,7 +219,7 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
         }));
       }
     } catch (wanikaniError) {
-      console.warn('WaniKani search failed or timed out:', wanikaniError);
+
       // Continue - we'll use other sources
     }
 
@@ -258,8 +258,7 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
           }));
         }
       } catch (practiceError) {
-        console.warn('JMDict practice search failed:', practiceError);
-        
+
         // Try the general JMDict search as secondary fallback
         try {
           const { searchJMdictWords } = await import('./jmdictLocalSearch');
@@ -296,7 +295,7 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
             }));
           }
         } catch (jmdictError) {
-          console.warn('JMDict local search also failed:', jmdictError);
+
         }
       }
     }
@@ -329,7 +328,7 @@ export async function searchWords(query: string, limit: number = 20): Promise<Ja
           return resultsWithExamples;
         }
       } catch (jishoError) {
-        console.warn('Jisho fallback failed:', jishoError);
+
       }
     }
 
@@ -556,7 +555,6 @@ export async function searchJisho(
       const response = await axios.get<JishoAPIResponse>(`${JISHO_API_BASE}?${params.toString()}`);
       return response.data;
     } catch (directError) {
-      console.warn('Direct Jisho API call failed:', directError);
 
       // If direct call fails and we're in a deployed environment, try Netlify proxy
       if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
@@ -564,12 +562,12 @@ export async function searchJisho(
           const proxyResponse = await jishoAxios.get<JishoAPIResponse>(`?${params.toString()}`);
           return proxyResponse.data;
         } catch (proxyError) {
-          console.warn('Netlify proxy also failed:', proxyError);
+
         }
       }
 
       // If all else fails, return empty response instead of throwing
-      console.warn('All Jisho API methods failed, returning empty response');
+
       return {
         meta: { status: 200 },
         data: []

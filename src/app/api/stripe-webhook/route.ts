@@ -20,7 +20,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  console.log('Stripe webhook endpoint hit!');
+
   console.log('Headers:', Object.fromEntries(request.headers.entries()));
   const body = await request.text();
   const signature = request.headers.get('stripe-signature')!;
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   try {
     const existingEvent = await getDoc(processedEventRef);
     if (existingEvent.exists()) {
-      console.log(`Webhook event ${idempotencyKey} already processed, skipping`);
+
       return NextResponse.json({ received: true, duplicate: true });
     }
   } catch (error) {
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+
     }
 
     // Mark event as processed
@@ -113,7 +113,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     // Log the donation
     try {
       // You could store donation records in Firestore here if needed
-      console.log('Donation received:', session);
+
     } catch (error) {
       console.error('Error logging donation:', error);
     }
@@ -130,25 +130,21 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   // The subscription will be handled by the subscription.created event
   // This is mainly for logging and any additional setup needed
-  console.log('Checkout completed for user:', firebaseUID);
+
 }
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
-  console.log('🔔 Processing subscription update:', subscription.id);
-  console.log('Subscription status:', subscription.status);
-  console.log('Customer ID:', subscription.customer);
-  
+
   // First try to get firebaseUID from subscription metadata
   let firebaseUID = subscription.metadata?.firebaseUID;
-  console.log('Firebase UID from subscription metadata:', firebaseUID);
-  
+
   // If not found in subscription metadata, try to get it from customer
   if (!firebaseUID && typeof subscription.customer === 'string') {
     try {
       const customer = await stripe.customers.retrieve(subscription.customer);
       if (customer && !customer.deleted && 'metadata' in customer) {
         firebaseUID = customer.metadata?.firebaseUID;
-        console.log('Found firebaseUID in customer metadata:', firebaseUID);
+
       }
     } catch (error) {
       console.error('Error retrieving customer:', error);
@@ -162,8 +158,6 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     console.error('Subscription metadata:', subscription.metadata);
     return;
   }
-
-  console.log('✅ Processing subscription for Firebase UID:', firebaseUID);
 
   // Log subscription event for user history
   await logUserSubscriptionEvent(firebaseUID, {
@@ -252,13 +246,9 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 
     // Update the user document with the new structure
     transaction.set(userDocRef, userSubscriptionData, { merge: true });
-    
-    console.log(`✅ Updated subscription for user ${firebaseUID}: ${userType}`);
+
   });
 
-  console.log('🎉 Subscription update completed successfully for:', firebaseUID);
-  console.log('Plan:', plan);
-  console.log('Status:', subscription.status);
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
@@ -271,7 +261,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
       const customer = await stripe.customers.retrieve(subscription.customer);
       if (customer && !customer.deleted && 'metadata' in customer) {
         firebaseUID = customer.metadata?.firebaseUID;
-        console.log('Found firebaseUID in customer metadata for deletion:', firebaseUID);
+
       }
     } catch (error) {
       console.error('Error retrieving customer for deletion:', error);
@@ -351,8 +341,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     };
 
     transaction.set(userDocRef, userSubscriptionData, { merge: true });
-    
-    console.log(`Subscription canceled for user ${firebaseUID}, reverted to free plan`);
+
   });
 }
 
@@ -402,10 +391,9 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
             currency: invoice.currency
           }
         });
-        
-        console.log(`✅ Custom invoice PDF generated and stored for user ${firebaseUID}`);
+
       } else {
-        console.warn('Could not generate invoice PDF - no Firebase UID found');
+
       }
     } catch (error) {
       console.error('Error generating invoice PDF:', error);
@@ -483,8 +471,7 @@ async function logUserSubscriptionEvent(userId: string, event: {
     // Create a user-friendly subscription event log
     const userSubscriptionRef = collection(db, 'users', userId, 'subscription_history');
     await addDoc(userSubscriptionRef, event);
-    
-    console.log(`Logged subscription event for user ${userId}:`, event.type);
+
   } catch (error) {
     console.error('Error logging user subscription event:', error);
     // Don't throw - this is not critical to the webhook processing

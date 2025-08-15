@@ -1,7 +1,7 @@
 // Extended Conjugation Engine with Comprehensive Forms
 // Supports Godan, Ichidan, and Irregular verbs with 100+ conjugation forms
 
-import { JapaneseWord } from '@/types';
+import { JapaneseWord, WordType } from '@/types';
 import { ExtendedConjugationForms } from '@/types/conjugation-extended';
 
 export class ExtendedConjugationEngine {
@@ -1055,15 +1055,6 @@ export class ExtendedConjugationEngine {
     return mappings[ending] || null;
   }
 
-  // Placeholder for i-adjectives
-  private static conjugateIAdjective(word: JapaneseWord): ExtendedConjugationForms {
-    return this.getEmptyConjugations();
-  }
-
-  // Placeholder for na-adjectives
-  private static conjugateNaAdjective(word: JapaneseWord): ExtendedConjugationForms {
-    return this.getEmptyConjugations();
-  }
 
   // Return empty conjugations
   private static getEmptyConjugations(): ExtendedConjugationForms {
@@ -1172,5 +1163,233 @@ export class ExtendedConjugationEngine {
       presumptivePolite: empty,
       presumptivePoliteNegative: empty,
     };
+  }
+
+  // Get all possible conjugation forms as an array (for drill distractors)
+  static getAllPossibleForms(conjugations: ExtendedConjugationForms): string[] {
+    const forms: string[] = [];
+    
+    // Iterate through all properties of the conjugations object
+    Object.values(conjugations).forEach(value => {
+      if (value && typeof value === 'string' && value.trim() !== '') {
+        forms.push(value);
+      }
+    });
+    
+    // Remove duplicates
+    return [...new Set(forms)];
+  }
+
+  // Get conjugation rule explanation
+  static getConjugationRule(wordType: WordType, form: keyof ExtendedConjugationForms): string {
+    const rules: { [key in WordType]: { [key: string]: string } } = {
+      'Ichidan': {
+        present: 'Dictionary form - no change',
+        past: 'Remove る, add た',
+        negative: 'Remove る, add ない',
+        pastNegative: 'Remove る, add なかった',
+        polite: 'Remove る, add ます',
+        politePast: 'Remove る, add ました',
+        teForm: 'Remove る, add て',
+        potential: 'Remove る, add られる',
+        conditional: 'Remove る, add たら',
+        provisional: 'Remove る, add れば'
+      },
+      'Godan': {
+        present: 'Dictionary form - no change',
+        past: 'Change ending to う-column, add た/だ',
+        negative: 'Change ending to あ-column, add ない',
+        polite: 'Change ending to い-column, add ます',
+        teForm: 'Change ending according to て-form rules',
+        potential: 'Change ending to え-column, add る',
+        conditional: 'Change ending to conditional form',
+        provisional: 'Change ending to え-column, add ば'
+      },
+      'Irregular': {
+        present: 'Irregular - memorize the form',
+        past: 'Irregular - memorize the form',
+        negative: 'Irregular - memorize the form',
+        polite: 'Irregular - memorize the form',
+        teForm: 'Irregular - memorize the form'
+      },
+      'i-adjective': {
+        present: 'Dictionary form - no change',
+        past: 'Remove い, add かった',
+        negative: 'Remove い, add くない',
+        pastNegative: 'Remove い, add くなかった',
+        polite: 'Add です to dictionary form',
+        conditional: 'Remove い, add かったら',
+        provisional: 'Remove い, add ければ'
+      },
+      'na-adjective': {
+        present: 'Add だ to stem',
+        past: 'Add だった to stem',
+        negative: 'Add じゃない to stem',
+        pastNegative: 'Add じゃなかった to stem',
+        polite: 'Add です to stem',
+        conditional: 'Add だったら to stem',
+        provisional: 'Add なら to stem'
+      },
+      'noun': {
+        present: 'Nouns do not conjugate'
+      },
+      'adverb': {
+        present: 'Adverbs do not conjugate'
+      },
+      'particle': {
+        present: 'Particles do not conjugate'
+      },
+      'other': {
+        present: 'This word type does not conjugate'
+      }
+    };
+
+    return rules[wordType]?.[form] || 'No rule available for this combination';
+  }
+}
+
+// Helper function to get random conjugation form for drill
+export function getRandomConjugationForm(wordType: WordType): keyof ExtendedConjugationForms {
+  // Define all available forms by frequency/importance
+  const veryCommonForms: (keyof ExtendedConjugationForms)[] = [
+    'present', 'past', 'negative', 'pastNegative',
+    'polite', 'politePast', 'politeNegative', 'politePastNegative',
+    'teForm'
+  ];
+
+  const commonForms: (keyof ExtendedConjugationForms)[] = [
+    'progressive', 'progressivePolite', 'progressiveNegative', 'progressivePoliteNegative',
+    'conditional', 'provisional', 'conditionalNegative', 'provisionalNegative',
+    'volitional', 'politeVolitional'
+  ];
+
+  const intermediateForms: (keyof ExtendedConjugationForms)[] = [
+    'potential', 'potentialNegative', 'potentialPast', 'potentialPastNegative',
+    'potentialPolite', 'potentialPoliteNegative', 'potentialPolitePast', 'potentialPolitePastNegative',
+    'taiForm', 'taiFormNegative', 'taiFormPast', 'taiFormPastNegative',
+    'imperativePlain', 'imperativePolite', 'request', 'requestNegative'
+  ];
+
+  const advancedForms: (keyof ExtendedConjugationForms)[] = [
+    'passive', 'passiveNegative', 'passivePast', 'passivePastNegative',
+    'passivePolite', 'passivePoliteNegative', 'passivePolitePast', 'passivePolitePastNegative',
+    'causative', 'causativeNegative', 'causativePast', 'causativePastNegative',
+    'causativePolite', 'causativePoliteNegative', 'causativePolitePast', 'causativePolitePastNegative',
+    'causativePassive', 'causativePassiveNegative', 'causativePassivePast', 'causativePassivePastNegative',
+    'causativePassivePolite', 'causativePassivePoliteNegative', 'causativePassivePolitePast', 'causativePassivePolitePastNegative'
+  ];
+
+  // Extra advanced forms unique to Extended engine
+  const expertForms: (keyof ExtendedConjugationForms)[] = [
+    'alternativeForm', 'alternativeNegative',
+    'provisionalNegativeColloquial',
+    'volitionalNegative',
+    'imperativeNegative',
+    'adverbialNegative',
+    'colloquialNegative', 'formalNegative', 'classicalNegative',
+    'presumptive', 'presumptiveNegative', 'presumptivePolite', 'presumptivePoliteNegative'
+  ];
+
+  // Filter forms based on word type
+  if (wordType === 'i-adjective' || wordType === 'na-adjective') {
+    // For adjectives, only use forms that actually work with adjectives
+    const adjectiveForms: (keyof ExtendedConjugationForms)[] = [
+      // Basic forms that adjectives have
+      'present', 'past', 'negative', 'pastNegative',
+      'polite', 'politePast', 'politeNegative', 'politePastNegative',
+      'teForm', 'negativeTeForm', // Adjectives DO have te-forms!
+      // Conditional forms
+      'conditional', 'provisional', 'conditionalNegative', 'provisionalNegative',
+      // Presumptive forms
+      'presumptive', 'presumptiveNegative', 'presumptivePolite', 'presumptivePoliteNegative'
+    ];
+    
+    // Weighted selection: prefer common forms
+    const weights = [
+      ...Array(4).fill(0, 0, 4),   // indices 0-3 (present, past, negative, pastNegative) - 4x weight
+      ...Array(4).fill(1, 0, 4),   // indices 4-7 (polite forms) - 4x weight
+      ...Array(2).fill(2, 0, 2),   // indices 8-9 (te-forms) - 2x weight
+      ...Array(1).fill(3, 0, 4),   // indices 10-13 (conditional) - 1x weight each
+      ...Array(1).fill(4, 0, 4)    // indices 14-17 (presumptive) - 1x weight each
+    ];
+    
+    const weightedIndex = weights[Math.floor(Math.random() * weights.length)];
+    const formGroups = [
+      adjectiveForms.slice(0, 4),   // Basic
+      adjectiveForms.slice(4, 8),   // Polite
+      adjectiveForms.slice(8, 10),  // Te-forms
+      adjectiveForms.slice(10, 14), // Conditional
+      adjectiveForms.slice(14, 18)  // Presumptive
+    ];
+    
+    const selectedGroup = formGroups[weightedIndex] || formGroups[0];
+    return selectedGroup[Math.floor(Math.random() * selectedGroup.length)];
+  }
+
+  // For verbs (Ichidan, Godan, Irregular), use weighted selection
+  const allForms: (keyof ExtendedConjugationForms)[] = [];
+
+  // Weight distribution: 35% very common, 25% common, 20% intermediate, 15% advanced, 5% expert
+  const random = Math.random();
+
+  if (random < 0.35) {
+    // 35% chance for very common forms
+    allForms.push(...veryCommonForms);
+  } else if (random < 0.6) {
+    // 25% chance for common forms
+    allForms.push(...commonForms);
+  } else if (random < 0.8) {
+    // 20% chance for intermediate forms
+    allForms.push(...intermediateForms);
+  } else if (random < 0.95) {
+    // 15% chance for advanced forms
+    allForms.push(...advancedForms);
+  } else {
+    // 5% chance for expert forms
+    allForms.push(...expertForms);
+  }
+
+  return allForms[Math.floor(Math.random() * allForms.length)];
+}
+
+// Generate drill question stem
+export function generateQuestionStem(word: JapaneseWord, targetForm: keyof ExtendedConjugationForms): string {
+  // Create a partial conjugation to show the stem
+  switch (word.type) {
+    case 'Ichidan': {
+      const kana = word.kana || word.kanji || '';
+      if (!kana) return '？';
+      return kana.slice(0, -1) + '？';
+    }
+    case 'Godan': {
+      // For Godan verbs, show the full word since conjugation changes the ending vowel
+      const kana = word.kana || word.kanji || '';
+      if (!kana) return '？';
+      return kana + '？';
+    }
+    case 'i-adjective': {
+      const kana = word.kana || word.kanji || '';
+      if (!kana) return '？';
+      return kana.slice(0, -1) + '？';
+    }
+    case 'na-adjective': {
+      const kana = word.kana || word.kanji || '';
+      if (!kana) return '？';
+      return kana + '？';
+    }
+    case 'Irregular': {
+      const kana = word.kana || word.kanji || '';
+      if (!kana) return '？';
+      // For irregular verbs, show partial stem
+      if (kana === 'する' || kana.endsWith('する')) {
+        return kana.slice(0, -2) + '？';
+      }
+      return kana + '？';
+    }
+    default: {
+      const kana = word.kana || word.kanji || '';
+      if (!kana) return '？';
+      return kana + '？';
+    }
   }
 }

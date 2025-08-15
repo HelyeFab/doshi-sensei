@@ -29,9 +29,9 @@ export class ArticleTTSManager {
     const hasGoogle = !!process.env.NEXT_PUBLIC_GOOGLE_TTS_API_KEY;
     
     if (!hasElevenLabs && !hasGoogle) {
-      console.warn('⚠️ No TTS API keys found. Article audio generation will not be available.');
+
     } else {
-      console.log('✅ Article TTS Manager initialized');
+
       if (hasElevenLabs) console.log('  - ElevenLabs: Available');
       if (hasGoogle) console.log('  - Google TTS: Available');
     }
@@ -56,7 +56,6 @@ export class ArticleTTSManager {
     try {
       // Update progress
       onProgress?.('Preparing audio...');
-      console.log(`🎤 Requesting audio for article ${articleId}`);
 
       // Generate a unique cache key for this audio
       const cacheKey = `article-${articleId}-${voice}-${provider}`;
@@ -70,7 +69,7 @@ export class ArticleTTSManager {
         );
 
         if (cachedAudio && cachedAudio.audioUrl) {
-          console.log(`✅ Serving article audio from client-side cache: ${articleId}`);
+
           onProgress?.('Loading cached audio...');
           
           // If we have a blob URL from cache, return it
@@ -89,7 +88,7 @@ export class ArticleTTSManager {
           }
         }
       } catch (cacheError) {
-        console.log(`⚠️ Cache check failed: ${cacheError}`);
+
         // Continue without cache
       }
 
@@ -139,8 +138,7 @@ export class ArticleTTSManager {
         
         // Don't cache Firebase Storage URLs directly since AudioCache needs to download the blob
         // The URL will work fine for playback, and Firebase Storage acts as our cache
-        console.log(`📦 Using Firebase Storage cached audio: ${data.audioUrl}`);
-        
+
         return data.audioUrl;
       } else if (data.audioContent) {
         // Fallback: convert base64 to blob URL
@@ -257,7 +255,7 @@ export class ArticleTTSManager {
   ): Promise<void> {
     try {
       await this.getArticleAudio(articleId, content, options);
-      console.log(`✅ Preloaded audio for article ${articleId}`);
+
     } catch (error) {
       console.error(`❌ Failed to preload audio for article ${articleId}:`, error);
     }
@@ -274,7 +272,7 @@ export class ArticleTTSManager {
   ): Promise<void> {
     try {
       await this.cache.deleteCachedAudio(articleId, content, voice, provider);
-      console.log(`✅ Cleared cache for article ${articleId}`);
+
     } catch (error) {
       console.error(`❌ Failed to clear cache for article ${articleId}:`, error);
     }

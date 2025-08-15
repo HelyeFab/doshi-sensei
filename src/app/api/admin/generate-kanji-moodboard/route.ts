@@ -15,21 +15,14 @@ export const runtime = 'nodejs';
 export const maxDuration = 60; // 60 seconds max execution time
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('=== Generate Kanji Moodboard API Called ===');
-  
+
   let theme: string | undefined;
   let jlptLevel: JLPTLevel | undefined;
   let kanjiCount: number | undefined;
   
   try {
     const apiKey = process.env.OPEN_AI_API_KEY || process.env.OPENAI_API_KEY;
-    
-    console.log('API Key check:', {
-      OPEN_AI_API_KEY: !!process.env.OPEN_AI_API_KEY,
-      OPENAI_API_KEY: !!process.env.OPENAI_API_KEY,
-      hasKey: !!apiKey
-    });
-    
+
     if (!apiKey) {
       console.error('OpenAI API key is missing');
       return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
@@ -42,8 +35,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     });
 
     const body: GenerateMoodboardRequest = await request.json();
-    console.log('Request body:', body);
-    
+
     ({ theme, jlptLevel = 'N5', kanjiCount = 15 } = body);
     const { tags = [] } = body;
 
@@ -51,8 +43,6 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       console.error('Theme is missing from request');
       return NextResponse.json({ error: 'Theme is required' }, { status: 400 });
     }
-    
-    console.log('Generating moodboard for:', { theme, jlptLevel, kanjiCount, tags });
 
     // Generate kanji list using GPT-4
     const systemPrompt = `You are a Japanese language expert creating educational kanji mood boards. Generate a list of kanji related to the given theme.
@@ -137,9 +127,6 @@ ${tags.length > 0 ? `Include these tags where relevant: ${tags.join(', ')}` : ''
 Focus on ${jlptLevel} level and below.
 ${themeGuidance}`;
 
-    console.log('Calling OpenAI with prompt:', userPrompt);
-    
-    console.log('Calling OpenAI API...');
     const startTime = Date.now();
     
     const completion = await openai.chat.completions.create({
@@ -154,15 +141,12 @@ ${themeGuidance}`;
     });
     
     const apiDuration = Date.now() - startTime;
-    console.log(`OpenAI API responded in ${apiDuration}ms`);
 
     const generatedContent = completion.choices[0].message.content;
     if (!generatedContent) {
       throw new Error('No content generated');
     }
 
-    console.log('OpenAI response:', generatedContent);
-    
     const moodboardData = JSON.parse(generatedContent);
 
     // Validate the generated data
@@ -204,8 +188,6 @@ ${themeGuidance}`;
       sortOrder: 0
     };
 
-    console.log('Sending response with', response.kanjiList.length, 'kanji');
-    
     return NextResponse.json(response);
 
   } catch (error: any) {

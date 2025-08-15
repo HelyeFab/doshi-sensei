@@ -10,7 +10,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 
-
 export default function MoodBoardClient() {
   const router = useRouter();
   const params = useParams();
@@ -50,7 +49,7 @@ export default function MoodBoardClient() {
             
             // Track in new analytics system
             trackArticleView('moodboards', boardId);
-            console.log('📊 [Analytics] Moodboard view tracked:', { boardId, title: boardData.title });
+
           } else {
           setNotFound(true);
         }

@@ -20,7 +20,7 @@ function NewMoodBoardContent() {
     notifications = useAdminNotifications();
   } catch (e) {
     // If notifications aren't available, we'll use console logging as fallback
-    console.warn('Notifications not available:', e);
+
   }
 
   const handleSave = async (moodBoardData: any) => {

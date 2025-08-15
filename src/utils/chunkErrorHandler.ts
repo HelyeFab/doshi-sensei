@@ -16,9 +16,7 @@ export function setupChunkErrorHandler() {
         error?.message?.includes('Loading chunk') ||
         error?.message?.includes('Failed to fetch dynamically imported module') ||
         error?.message?.includes('Loading CSS chunk')) {
-      
-      console.warn('Chunk loading error detected:', error.message);
-      
+
       // Prevent infinite reload loops
       if (!hasAttemptedRecovery) {
         hasAttemptedRecovery = true;
@@ -41,7 +39,7 @@ export function setupChunkErrorHandler() {
         if (typeof window.showNotification === 'function') {
           window.showNotification(message);
         } else {
-          console.log(message);
+
         }
         
         // Reload after a short delay to allow cache clearing
@@ -92,7 +90,7 @@ export async function clearAllCaches() {
     await Promise.all(
       cacheNames.map(cacheName => caches.delete(cacheName))
     );
-    console.log('All caches cleared');
+
   }
   
   // Also clear service worker
@@ -101,7 +99,7 @@ export async function clearAllCaches() {
     for (const registration of registrations) {
       await registration.unregister();
     }
-    console.log('Service workers unregistered');
+
   }
   
   // Clear session storage flags

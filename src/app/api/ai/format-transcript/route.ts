@@ -41,12 +41,7 @@ export async function POST(request: NextRequest) {
 
     // Don't format if transcript is already well-segmented
     const avgLineLength = transcript.reduce((sum, line) => sum + line.text.length, 0) / transcript.length;
-    console.log('📊 [AI FORMAT] Checking if formatting needed:', {
-      avgLineLength,
-      transcriptLength: transcript.length,
-      skipCondition: avgLineLength < 40 && transcript.length > 10
-    });
-    
+
     // For very short transcripts (< 5 lines), always skip formatting
     // For medium length (5-50 lines), format if lines are long
     // For long transcripts (> 50 lines), always try to format
@@ -55,7 +50,7 @@ export async function POST(request: NextRequest) {
                          avgLineLength > 40;
     
     if (!shouldFormat) {
-      console.log('📊 [AI FORMAT] Skipping formatting - transcript already optimal');
+
       return NextResponse.json({ 
         formattedTranscript: transcript,
         wasFormatted: false 
@@ -68,9 +63,7 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < transcript.length; i += CHUNK_SIZE) {
       chunks.push(transcript.slice(i, i + CHUNK_SIZE));
     }
-    
-    console.log(`📊 [AI FORMAT] Splitting ${transcript.length} lines into ${chunks.length} chunks of max ${CHUNK_SIZE} lines`);
-    
+
     const allFormattedSegments: TranscriptLine[] = [];
     let globalNewId = 1;
 
@@ -186,15 +179,13 @@ Break up any long run-on sentences into natural, meaningful segments that are ea
     
     // If formatting failed or produced no results, return original
     if (allFormattedSegments.length === 0) {
-      console.log('AI formatting produced no results, returning original');
+
       return NextResponse.json({ 
         formattedTranscript: transcript,
         wasFormatted: false 
       });
     }
-    
-    console.log(`📊 [AI FORMAT] Complete: ${transcript.length} lines -> ${allFormattedSegments.length} lines`);
-    
+
     return NextResponse.json({
       formattedTranscript: allFormattedSegments,
       wasFormatted: true,

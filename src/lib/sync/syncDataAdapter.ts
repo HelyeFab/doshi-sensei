@@ -17,7 +17,7 @@ export class SyncDataAdapter {
     try {
       // Check if IndexedDB is available
       if (!isIndexedDBAvailable()) {
-        console.warn('[SyncAdapter] IndexedDB not available');
+
         return [];
       }
       
@@ -29,12 +29,10 @@ export class SyncDataAdapter {
       
       // Make sure items is an array
       if (!items || !Array.isArray(items)) {
-        console.warn('[SyncAdapter] No items found in apiCache or invalid format');
+
         return [];
       }
-      
-      console.log(`[SyncAdapter] Found ${items.length} items in apiCache`);
-      
+
       // Transform each item to CachedResource format
       for (const item of items) {
         if (!item) continue; // Skip null/undefined items
@@ -44,8 +42,7 @@ export class SyncDataAdapter {
           resources.push(resource);
         }
       }
-      
-      console.log(`[SyncAdapter] Found ${resources.length} syncable resources`);
+
       return resources;
       
     } catch (error) {
@@ -129,7 +126,7 @@ export class SyncDataAdapter {
       
       return null;
     } catch (error) {
-      console.warn('[SyncAdapter] Could not transform item:', error, item);
+
       return null;
     }
   }
@@ -156,8 +153,7 @@ export class SyncDataAdapter {
       await performDBOperation('apiCache', 'readwrite', (store) => 
         store.put(apiCacheItem)
       );
-      
-      console.log(`[SyncAdapter] Saved resource ${resource.id} to storage`);
+
     } catch (error) {
       console.error('[SyncAdapter] Error saving resource to storage:', error);
       throw error;

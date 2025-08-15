@@ -30,7 +30,7 @@ export default function RecognitionGame({
   const playQuestionAudio = async () => {
     if (question?.type === 'audio' && currentWord) {
       try {
-        console.log('Playing audio for word:', currentWord.kana);
+
         await TTSManager.speak(
           currentWord.kana,
           {

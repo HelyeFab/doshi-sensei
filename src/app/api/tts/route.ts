@@ -21,8 +21,7 @@ export async function POST(request: NextRequest) {
       
       if (elevenLabsApiKey) {
         try {
-          console.log('🎤 Using ElevenLabs TTS...');
-          
+
           // ElevenLabs voice IDs - high-quality Japanese voices
           const voiceId = voice === 'female' 
             ? 'RBnMinrYKeccY3vaUxlZ'  // Japanese female voice
@@ -97,7 +96,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Fallback to Google TTS
-    console.log('🎤 Using Google TTS...');
+
     const googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_TTS_API_KEY;
 
     if (!googleApiKey) {

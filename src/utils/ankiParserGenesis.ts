@@ -58,8 +58,7 @@ export class AnkiParserGenesis {
     media: Map<string, Blob>;
   }> {
     try {
-      console.log('=== AnkiParserGenesis - Using 74Genesis/anki-apkg-parser ===');
-      
+
       // Convert File to Buffer as shown in your example
       const buffer = await file.arrayBuffer();
       const deckBuffer = Buffer.from(buffer);
@@ -67,13 +66,7 @@ export class AnkiParserGenesis {
       // Create a temporary in-memory representation
       // Since we can't use filesystem in browser, we'll work with the data directly
       const deck = await this.parseInMemory(deckBuffer);
-      
-      console.log('Deck parsed:', {
-        name: deck.meta?.name || 'Imported Deck',
-        notesCount: deck.notes?.length || 0,
-        mediaCount: deck.mediaFiles?.length || 0
-      });
-      
+
       // Map notes to our card structure as shown in your example
       const mappedNotes: ParsedAnkiNote[] = deck.notes.map((note) => ({
         id: note.id,
@@ -83,7 +76,7 @@ export class AnkiParserGenesis {
       }));
       
       // Debug: Log first few notes
-      console.log('Sample notes:');
+
       mappedNotes.slice(0, 5).forEach((note, idx) => {
         console.log(`Note ${idx}:`, {
           id: note.id,
@@ -124,9 +117,7 @@ export class AnkiParserGenesis {
           fields: note.fields
         };
       });
-      
-      console.log(`Total cards processed: ${processedCards.length}`);
-      
+
       // Process media
       const media = new Map<string, Blob>();
       if (deck.mediaFiles && Array.isArray(deck.mediaFiles)) {
@@ -187,40 +178,31 @@ export class AnkiParserGenesis {
     const models = JSON.parse(modelsJson || '{}');
     
     // Debug: Check what's in the notes table
-    console.log('Checking notes table...');
-    
+
     // First, count total notes
     const countResult = db.exec('SELECT COUNT(*) as total FROM notes');
     const totalNotes = countResult[0]?.values[0]?.[0];
-    console.log(`Total notes in database: ${totalNotes}`);
-    
+
     // Try different queries to debug
-    console.log('Testing different queries:');
-    
+
     // Query 1: Simple SELECT *
     const query1 = db.exec('SELECT * FROM notes');
-    console.log(`Query "SELECT * FROM notes" returned: ${query1[0]?.values?.length || 0} rows`);
-    
+
     // Query 2: With explicit columns
     const query2 = db.exec('SELECT id, guid, mid, mod, usn, tags, flds, sfld, csum, flags, data FROM notes');
-    console.log(`Query with explicit columns returned: ${query2[0]?.values?.length || 0} rows`);
-    
+
     // Query 3: Just get IDs to see if it's a data size issue
     const query3 = db.exec('SELECT id FROM notes');
-    console.log(`Query "SELECT id FROM notes" returned: ${query3[0]?.values?.length || 0} rows`);
-    
+
     // Use the explicit column query
     const notesResult = query2;
     let notesData = this.parseQueryResult(notesResult[0]);
-    
-    console.log(`Parsed ${notesData.length} notes from query result`);
-    
+
     // If we're only getting 41, let's see what's special about row 41/42
     if (notesData.length <= 50) {
-      console.log('Limited results detected. Checking for patterns...');
-      
+
       // Try paginated queries
-      console.log('Trying paginated queries...');
+
       let offset = 0;
       let allNotes = [];
       let hasMore = true;
@@ -228,8 +210,7 @@ export class AnkiParserGenesis {
       while (hasMore) {
         const pageQuery = db.exec(`SELECT * FROM notes LIMIT 100 OFFSET ${offset}`);
         const pageData = pageQuery[0]?.values || [];
-        console.log(`Page at offset ${offset}: ${pageData.length} rows`);
-        
+
         if (pageData.length === 0) {
           hasMore = false;
         } else {
@@ -240,12 +221,10 @@ export class AnkiParserGenesis {
         // Safety limit
         if (offset > 10000) break;
       }
-      
-      console.log(`Total notes from paginated query: ${allNotes.length}`);
-      
+
       // If pagination works, use that data instead
       if (allNotes.length > notesData.length) {
-        console.log('Using paginated results instead!');
+
         notesData = allNotes.map((row) => {
           const obj: Record<string, any> = {};
           notesResult[0].columns.forEach((col, idx) => {
@@ -290,7 +269,7 @@ export class AnkiParserGenesis {
           }
         }
       } catch (e) {
-        console.warn('Failed to parse media:', e);
+
       }
     }
     
@@ -348,7 +327,7 @@ export class AnkiParserGenesis {
     // Keep track of media
     const audioMatches = cleaned.match(/\[sound:([^\]]+)\]/g) || [];
     if (audioMatches.length > 0) {
-      console.log('Audio references found:', audioMatches);
+
     }
     
     // Clean remaining HTML

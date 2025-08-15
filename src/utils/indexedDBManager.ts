@@ -26,7 +26,7 @@ class IndexedDBManager {
 
       request.onsuccess = () => {
         this.db = request.result;
-        console.log('IndexedDB initialized successfully');
+
         resolve();
       };
 
@@ -94,7 +94,7 @@ class IndexedDBManager {
       };
 
       transaction.oncomplete = () => {
-        console.log(`Saved ${lists.length} study lists to IndexedDB`);
+
         resolve();
       };
 
@@ -115,7 +115,7 @@ class IndexedDBManager {
 
       request.onsuccess = () => {
         const items = request.result || [];
-        console.log(`Retrieved ${items.length} study items from IndexedDB`);
+
         resolve(items);
       };
 
@@ -159,7 +159,7 @@ class IndexedDBManager {
       };
 
       transaction.oncomplete = () => {
-        console.log(`Saved ${items.length} study items to IndexedDB`);
+
         resolve();
       };
 
@@ -230,7 +230,7 @@ class IndexedDBManager {
       transaction.objectStore(STORES.studyItems).clear();
 
       transaction.oncomplete = () => {
-        console.log('Cleared all IndexedDB data');
+
         resolve();
       };
 
@@ -252,17 +252,16 @@ class IndexedDBManager {
 
       if (listsData) {
         const lists = JSON.parse(listsData);
-        console.log(`Migrating ${lists.length} lists from localStorage to IndexedDB`);
+
         await this.saveStudyLists(lists);
       }
 
       if (itemsData) {
         const items = JSON.parse(itemsData);
-        console.log(`Migrating ${items.length} items from localStorage to IndexedDB`);
+
         await this.saveStudyItems(items);
       }
 
-      console.log('Migration from localStorage to IndexedDB completed');
     } catch (error) {
       console.error('Migration failed:', error);
       throw error;

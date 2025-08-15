@@ -20,8 +20,6 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    console.log('🧹 Admin requested cache clear');
-    
     // Clear the server-side rules cache
     clearRulesCache();
     

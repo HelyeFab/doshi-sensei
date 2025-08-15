@@ -8,21 +8,24 @@ export function PerformanceMonitor() {
     if (typeof window === 'undefined') return;
     if (process.env.NODE_ENV === 'production') return; // Skip entirely in production
     
-    // Log initial load performance
-    if (typeof window !== 'undefined' && window.performance) {
-      // Wait for page to be fully loaded
-      if (document.readyState === 'complete') {
-        logPerformance();
-      } else {
-        window.addEventListener('load', logPerformance);
+    // Defer performance monitoring to avoid blocking main thread
+    const timeoutId = setTimeout(() => {
+      // Log initial load performance
+      if (typeof window !== 'undefined' && window.performance) {
+        // Wait for page to be fully loaded
+        if (document.readyState === 'complete') {
+          logPerformance();
+        } else {
+          window.addEventListener('load', logPerformance);
+        }
       }
-    }
+    }, 100); // Defer by 100ms to let critical UI render first
     
     function logPerformance() {
       const perfData = window.performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
       
       if (perfData) {
-        console.log('%c⚡ Performance Metrics', 'color: #FF6B6B; font-weight: bold; font-size: 16px');
+
         console.log({
           'DNS Lookup': `${Math.round(perfData.domainLookupEnd - perfData.domainLookupStart)}ms`,
           'TCP Connection': `${Math.round(perfData.connectEnd - perfData.connectStart)}ms`,
@@ -37,7 +40,7 @@ export function PerformanceMonitor() {
       const observer = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         const lastEntry = entries[entries.length - 1];
-        console.log('%c🎨 Largest Contentful Paint', 'color: #4ECDC4; font-weight: bold');
+
         console.log(`${Math.round(lastEntry.startTime)}ms`);
       });
       
@@ -47,7 +50,7 @@ export function PerformanceMonitor() {
       const fidObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         const firstInput = entries[0];
-        console.log('%c👆 First Input Delay', 'color: #45B7D1; font-weight: bold');
+
         console.log(`${Math.round(firstInput.processingStart - firstInput.startTime)}ms`);
       });
       
@@ -58,7 +61,7 @@ export function PerformanceMonitor() {
         const longTaskObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach(entry => {
-            console.warn('%c⚠️ Long Task Detected', 'color: #F7B731; font-weight: bold');
+
             console.warn({
               duration: `${Math.round(entry.duration)}ms`,
               startTime: `${Math.round(entry.startTime)}ms`,
@@ -72,6 +75,7 @@ export function PerformanceMonitor() {
     }
     
     return () => {
+      clearTimeout(timeoutId);
       window.removeEventListener('load', logPerformance);
     };
   }, []);

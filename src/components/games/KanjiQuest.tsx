@@ -121,14 +121,6 @@ export default function KanjiQuest({
   onKanjiCompleted,
   customKanji
 }: KanjiQuestProps) {
-  console.log('KanjiQuest rendered with props:', {
-    jlptLevel,
-    onBack,
-    onPokemonCaught,
-    completedKanjiIds,
-    onKanjiCompleted,
-    customKanji
-  });
 
   const { user, loading: authLoading } = useAuth();
   const { checkAndTrack } = useAccess();
@@ -268,13 +260,11 @@ export default function KanjiQuest({
       setEntitlementCheckComplete(true);
 
       if (!canPlay) {
-        console.log('🎮 KanjiQuest Access Check Failed');
+
         setGameLoading(false);
         setShowLimitMessage(true);
         return;
       }
-
-      console.log('✅ KanjiQuest Access Granted');
 
       // User has access, proceeding with game setup
 
@@ -1336,7 +1326,7 @@ export default function KanjiQuest({
       // Track with new analytics
       const accuracy = questionsAnswered > 0 ? (correctAnswers / questionsAnswered) * 100 : 0;
       trackGameComplete('kanji_quest', score, accuracy);
-      console.log('[KanjiQuest] Analytics tracked:', { game: 'kanji_quest', score, accuracy });
+
     }
 
     if (passed) {

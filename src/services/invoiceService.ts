@@ -46,8 +46,7 @@ export class InvoiceService {
 
       // Get the download URL
       const downloadUrl = await getDownloadURL(snapshot.ref);
-      
-      console.log(`Invoice PDF uploaded successfully: ${downloadUrl}`);
+
       return downloadUrl;
     } catch (error) {
       console.error('Error generating/uploading invoice PDF:', error);

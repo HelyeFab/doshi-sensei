@@ -117,124 +117,38 @@ const testVerbs: JapaneseWord[] = [
 function testVerb(verb: JapaneseWord): void {
   console.log(`\n${'='.repeat(60)}`);
   console.log(`Testing: ${verb.kanji} (${verb.kana}) - ${verb.meaning}`);
-  console.log(`Type: ${verb.type}`);
+
   console.log('='.repeat(60));
   
   const conjugations = ExtendedConjugationEngine.conjugate(verb);
   
   // Print selected conjugations for verification
-  console.log('\n📘 BASIC FORMS:');
-  console.log(`  Present: ${conjugations.present}`);
-  console.log(`  Masu Stem: ${conjugations.masuStem}`);
-  console.log(`  Negative Stem: ${conjugations.negativeStem}`);
-  console.log(`  Past: ${conjugations.past}`);
-  console.log(`  Negative: ${conjugations.negative}`);
-  console.log(`  Past Negative: ${conjugations.pastNegative}`);
-  
-  console.log('\n📗 POLITE FORMS:');
-  console.log(`  Polite: ${conjugations.polite}`);
-  console.log(`  Polite Past: ${conjugations.politePast}`);
-  console.log(`  Polite Negative: ${conjugations.politeNegative}`);
-  console.log(`  Polite Past Negative: ${conjugations.politePastNegative}`);
-  
-  console.log('\n📙 TE-FORMS:');
-  console.log(`  Te-form: ${conjugations.teForm}`);
-  console.log(`  Negative Te-form: ${conjugations.negativeTeForm}`);
-  console.log(`  Naide-form: ${conjugations.naiDeForm}`);
-  console.log(`  Adverbial Negative: ${conjugations.adverbialNegative}`);
-  
-  console.log('\n📕 CONDITIONAL FORMS:');
+
   console.log(`  Provisional (ba): ${conjugations.provisional}`);
-  console.log(`  Provisional Negative: ${conjugations.provisionalNegative}`);
-  console.log(`  Colloquial: ${conjugations.provisionalNegativeColloquial}`);
+
   console.log(`  Conditional (tara): ${conjugations.conditional}`);
-  console.log(`  Conditional Negative: ${conjugations.conditionalNegative}`);
-  
-  console.log('\n📓 POTENTIAL FORMS:');
-  console.log(`  Potential: ${conjugations.potential}`);
-  console.log(`  Potential Negative: ${conjugations.potentialNegative}`);
-  console.log(`  Potential Past: ${conjugations.potentialPast}`);
-  console.log(`  Potential Masu Stem: ${conjugations.potentialMasuStem}`);
-  console.log(`  Potential Te-form: ${conjugations.potentialTeForm}`);
-  console.log(`  Potential Polite: ${conjugations.potentialPolite}`);
-  
-  console.log('\n📔 PASSIVE FORMS:');
-  console.log(`  Passive: ${conjugations.passive}`);
-  console.log(`  Passive Negative: ${conjugations.passiveNegative}`);
-  console.log(`  Passive Past: ${conjugations.passivePast}`);
-  console.log(`  Passive Masu Stem: ${conjugations.passiveMasuStem}`);
-  console.log(`  Passive Te-form: ${conjugations.passiveTeForm}`);
-  
-  console.log('\n📒 CAUSATIVE FORMS:');
-  console.log(`  Causative: ${conjugations.causative}`);
-  console.log(`  Causative Negative: ${conjugations.causativeNegative}`);
-  console.log(`  Causative Past: ${conjugations.causativePast}`);
-  console.log(`  Causative Masu Stem: ${conjugations.causativeMasuStem}`);
-  console.log(`  Causative Te-form: ${conjugations.causativeTeForm}`);
-  
-  console.log('\n📝 CAUSATIVE-PASSIVE:');
-  console.log(`  Causative-Passive: ${conjugations.causativePassive}`);
-  console.log(`  Causative-Passive Negative: ${conjugations.causativePassiveNegative}`);
-  console.log(`  Causative-Passive Te-form: ${conjugations.causativePassiveTeForm}`);
-  
+
   console.log('\n💛 TAI FORMS (Want to):');
-  console.log(`  Tai-form: ${conjugations.taiForm}`);
-  console.log(`  Tai Negative: ${conjugations.taiFormNegative}`);
-  console.log(`  Tai Past: ${conjugations.taiFormPast}`);
-  console.log(`  Tai Past Negative: ${conjugations.taiFormPastNegative}`);
-  console.log(`  Tai Adjective Stem: ${conjugations.taiAdjectiveStem}`);
-  console.log(`  Tai Te-form: ${conjugations.taiTeForm}`);
-  console.log(`  Tai Adverbial: ${conjugations.taiAdverbial}`);
-  console.log(`  Tai Provisional: ${conjugations.taiProvisional}`);
-  console.log(`  Tai Provisional Negative: ${conjugations.taiProvisionalNegative}`);
-  console.log(`  Tai Conditional: ${conjugations.taiConditional}`);
-  console.log(`  Tai Conditional Negative: ${conjugations.taiConditionalNegative}`);
-  console.log(`  Tai Objective: ${conjugations.taiObjective}`);
-  
-  console.log('\n🔄 PROGRESSIVE FORMS:');
-  console.log(`  Progressive: ${conjugations.progressive}`);
-  console.log(`  Progressive Negative: ${conjugations.progressiveNegative}`);
-  console.log(`  Progressive Past: ${conjugations.progressivePast}`);
-  console.log(`  Progressive Polite: ${conjugations.progressivePolite}`);
-  
-  console.log('\n💭 VOLITIONAL & IMPERATIVE:');
-  console.log(`  Volitional: ${conjugations.volitional}`);
-  console.log(`  Volitional Negative: ${conjugations.volitionalNegative}`);
-  console.log(`  Imperative Plain: ${conjugations.imperativePlain}`);
-  console.log(`  Imperative Polite: ${conjugations.imperativePolite}`);
-  console.log(`  Imperative Negative: ${conjugations.imperativeNegative}`);
-  
-  console.log('\n📚 CLASSICAL/FORMAL:');
-  console.log(`  Colloquial Negative: ${conjugations.colloquialNegative}`);
+
   console.log(`  Formal Negative (zu): ${conjugations.formalNegative}`);
   console.log(`  Classical Negative (nu): ${conjugations.classicalNegative}`);
   console.log(`  Classical Modifier (zaru): ${conjugations.classicalNegativeModifier}`);
-  
-  console.log('\n🎯 ALTERNATIVE & REQUEST:');
+
   console.log(`  Alternative Form (tari): ${conjugations.alternativeForm}`);
-  console.log(`  Alternative Negative: ${conjugations.alternativeNegative}`);
-  console.log(`  Request: ${conjugations.request}`);
-  console.log(`  Request Negative: ${conjugations.requestNegative}`);
-  
-  console.log('\n💫 PRESUMPTIVE FORMS:');
-  console.log(`  Presumptive: ${conjugations.presumptive}`);
-  console.log(`  Presumptive Negative: ${conjugations.presumptiveNegative}`);
-  console.log(`  Presumptive Polite: ${conjugations.presumptivePolite}`);
-  console.log(`  Presumptive Polite Negative: ${conjugations.presumptivePoliteNegative}`);
+
 }
 
 // Function to run all tests
 export function runConjugationTests(): void {
-  console.log('\n');
+
   console.log('🌸'.repeat(30));
-  console.log('   EXTENDED CONJUGATION ENGINE TEST SUITE');
+
   console.log('🌸'.repeat(30));
   
   testVerbs.forEach(verb => testVerb(verb));
-  
-  console.log('\n');
+
   console.log('🌸'.repeat(30));
-  console.log('   TEST COMPLETE');
+
   console.log('🌸'.repeat(30));
 }
 
@@ -339,7 +253,7 @@ export function testKauComprehensive(): void {
   });
   
   console.log('\n' + '='.repeat(80));
-  console.log(`RESULTS: ${passCount} passed, ${failCount} failed out of ${expectedForms.length} forms`);
+
   console.log(`Success Rate: ${((passCount / expectedForms.length) * 100).toFixed(1)}%`);
   console.log('='.repeat(80));
 }

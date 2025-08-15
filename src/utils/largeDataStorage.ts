@@ -40,7 +40,7 @@ class LargeDataStorage {
       const request = store.getAll();
 
       request.onsuccess = () => {
-        console.log(`LargeDataStorage: Retrieved ${request.result.length} items from IndexedDB`);
+
         resolve(request.result || []);
       };
 
@@ -94,12 +94,12 @@ class LargeDataStorage {
             };
             request.onerror = (event) => {
               errors++;
-              console.warn(`Failed to add item with id ${item.id}:`, event);
+
               checkComplete();
             };
           } catch (error) {
             errors++;
-            console.warn(`Exception adding item with id ${item.id}:`, error);
+
             checkComplete();
           }
         }
@@ -146,7 +146,7 @@ class LargeDataStorage {
       const request = store.count();
 
       request.onsuccess = () => {
-        console.log(`LargeDataStorage: Total items in IndexedDB: ${request.result}`);
+
         resolve(request.result);
       };
       request.onerror = () => reject(new Error('Failed to count items'));

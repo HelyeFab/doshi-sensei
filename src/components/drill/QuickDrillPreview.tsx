@@ -35,11 +35,11 @@ export function QuickDrillPreview({ onSelectWord, onLoadComplete }: QuickDrillPr
 
       // If no cache, preload it
       if (!cachedVerbs || !cachedAdjectives) {
-        console.log('No cache found, preloading from JMDict...');
+
         await PracticeCache.preloadCache();
         cachedVerbs = PracticeCache.get<JapaneseWord[]>('verbs');
         cachedAdjectives = PracticeCache.get<JapaneseWord[]>('adjectives');
-        console.log('After preload - verbs:', cachedVerbs?.length, 'adjectives:', cachedAdjectives?.length);
+
       }
 
       // Combine all verbs and adjectives
@@ -57,17 +57,7 @@ export function QuickDrillPreview({ onSelectWord, onLoadComplete }: QuickDrillPr
       const shuffledAll = allWords.sort(() => Math.random() - 0.5).slice(0, 21);
       
       // Log to confirm we're using JMDict data
-      console.log('Quick Drill Preview - Loaded words from JMDict cache:', {
-        totalWords: allWords.length,
-        displayingWords: shuffledAll.length,
-        sampleWord: shuffledAll[0] ? {
-          kanji: shuffledAll[0].kanji,
-          kana: shuffledAll[0].kana,
-          type: shuffledAll[0].type,
-          meaning: shuffledAll[0].meaning || shuffledAll[0].english
-        } : null
-      });
-      
+
       setWords(shuffledAll);
 
       if (onLoadComplete) {
@@ -81,13 +71,13 @@ export function QuickDrillPreview({ onSelectWord, onLoadComplete }: QuickDrillPr
   };
 
   const handleWordClick = (word: JapaneseWord) => {
-    console.log('QuickDrillPreview: Word clicked:', word);
+
     // Store the word in session storage and trigger the drill
     sessionStorage.setItem('drillWord', JSON.stringify(word));
-    console.log('QuickDrillPreview: Stored word in sessionStorage');
+
     setShowWordsModal(false); // Close the modal
     onSelectWord(word);
-    console.log('QuickDrillPreview: Called onSelectWord');
+
   };
 
   const refreshWords = () => {
@@ -158,8 +148,8 @@ export function QuickDrillPreview({ onSelectWord, onLoadComplete }: QuickDrillPr
         height="90%"
         showHandle={false}
       >
-        <div className="space-y-4">
-          <div className="flex items-center justify-between mb-4">
+        <div className="pb-safe space-y-4">
+          <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               Choose a word to practice its conjugations
             </p>
@@ -175,26 +165,26 @@ export function QuickDrillPreview({ onSelectWord, onLoadComplete }: QuickDrillPr
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {words.map((word) => {
           // Debug log to check word content
           if (!word.kanji && !word.kana) {
-            console.warn('Word missing kanji/kana:', word);
+
           }
           return (
           <div
             key={word.id}
-            className="flex flex-col p-5 bg-card hover:bg-muted/50 border border-border hover:border-primary rounded-lg transition-all group min-h-[100px] cursor-pointer"
+            className="flex flex-col p-4 sm:p-5 bg-card hover:bg-muted/50 border border-border hover:border-primary rounded-lg transition-all group min-h-[120px] cursor-pointer"
             onClick={() => handleWordClick(word)}
           >
             <div className="flex items-start justify-between mb-3">
-              <div className="flex-1 min-w-0 pr-3">
-                <div className="flex items-baseline gap-2 mb-2">
-                  <span className="font-semibold text-xl text-card-foreground group-hover:text-primary transition-colors">
+              <div className="flex-1 min-w-0 pr-2">
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 mb-2">
+                  <span className="font-semibold text-lg sm:text-xl text-card-foreground group-hover:text-primary transition-colors">
                     {word.kanji || word.word || 'Loading...'}
                   </span>
                   {word.kana && word.kana !== word.kanji && (
-                    <span className="text-base text-muted-foreground">
+                    <span className="text-sm sm:text-base text-muted-foreground">
                       ({word.kana})
                     </span>
                   )}
@@ -203,13 +193,13 @@ export function QuickDrillPreview({ onSelectWord, onLoadComplete }: QuickDrillPr
                   {word.english || word.meaning || word.meanings?.join('; ') || ''}
                 </p>
               </div>
-              <div className="ml-3 flex-shrink-0">
+              <div className="ml-2 flex-shrink-0">
                 {getWordTypePill(word)}
               </div>
             </div>
             
             {/* Action buttons */}
-            <div className="flex items-center justify-between mt-auto pt-2 border-t border-border/50">
+            <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/50">
               <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                 <VocabularyTTSButton 
                   word={word} 
@@ -238,7 +228,7 @@ export function QuickDrillPreview({ onSelectWord, onLoadComplete }: QuickDrillPr
                   e.stopPropagation();
                   handleWordClick(word);
                 }}
-                className="px-3 py-1 text-sm bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors"
+                className="px-3 py-1.5 text-sm bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors font-medium"
               >
                 Practice
               </button>
@@ -248,7 +238,7 @@ export function QuickDrillPreview({ onSelectWord, onLoadComplete }: QuickDrillPr
         })}
           </div>
 
-          <div className="mt-4 text-center">
+          <div className="mt-6 text-center pb-4">
             <p className="text-xs text-muted-foreground">
               Cached from JMDict for blazing fast performance
             </p>

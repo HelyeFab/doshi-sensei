@@ -24,7 +24,7 @@ class StatePreservationService implements StatePreservationManager {
       const serialized = this.serialize(state);
       
       if (serialized.length > this.maxStateSize) {
-        console.warn(`State too large for ${key}, truncating`);
+
         // For now, just skip saving oversized states
         return;
       }

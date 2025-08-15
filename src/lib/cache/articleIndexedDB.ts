@@ -71,7 +71,6 @@ export class ArticleIndexedDB {
         }
       });
 
-      console.log('[ArticleIndexedDB] Database initialized successfully');
     } catch (error) {
       console.error('[ArticleIndexedDB] Failed to initialize database:', error);
       throw error;

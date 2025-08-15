@@ -111,17 +111,15 @@ export default function StrokeOrderPracticePage() {
         // Extract kanji characters from the board
         if (board.kanji && Array.isArray(board.kanji) && board.kanji.length > 0) {
           // Extract the character from KanjiItem objects
-          console.log('Board kanji:', board.kanji);
+
           kanjiItems = board.kanji.map(k => {
             if (typeof k === 'string') return k;
             const char = k.char || (k as any).character || (k as any).kanji || '';
-            console.log('Extracted char:', char, 'from:', k);
+
             return char;
           }).filter(k => k !== '');
         }
-        
-        console.log('Final kanjiItems:', kanjiItems);
-        
+
         const moodBoardSet = {
           id: `mood-${boardId}`,
           name: board.title,

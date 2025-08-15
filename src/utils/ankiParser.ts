@@ -64,11 +64,9 @@ export class SimpleAnkiParser {
     media: Map<string, Blob>;
   }> {
     try {
-      console.log('=== SimpleAnkiParser V2 - Core 2000 Field Detection ===');
-      console.log('Loading JSZip...');
+
       const zip = new JSZip();
-      
-      console.log('Loading zip file...');
+
       const zipContent = await zip.loadAsync(file);
       
       console.log('Files in zip:', Object.keys(zipContent.files));
@@ -78,33 +76,29 @@ export class SimpleAnkiParser {
       if (!collectionFile) {
         throw new Error('No collection.anki2 file found in the package');
       }
-      
-      console.log('Extracting collection.anki2...');
+
       const collectionData = await collectionFile.async('arraybuffer');
       
       // Initialize SQL.js
-      console.log('Initializing SQL.js...');
+
       const SQL = await this.initSQL();
       
       // Load the database
-      console.log('Loading Anki database...');
+
       const db = new SQL.Database(new Uint8Array(collectionData));
       
       // Query cards
-      console.log('Querying cards...');
+
       const cardsResult = db.exec('SELECT * FROM cards');
-      console.log('Cards query result:', cardsResult.length > 0 ? `Found ${cardsResult[0].values.length} cards` : 'No cards found');
-      
+
       // Query notes
-      console.log('Querying notes...');
+
       const notesResult = db.exec('SELECT * FROM notes');
-      console.log('Notes query result:', notesResult.length > 0 ? `Found ${notesResult[0].values.length} notes` : 'No notes found');
-      
+
       // Query decks
-      console.log('Querying decks...');
+
       const decksResult = db.exec('SELECT decks FROM col');
-      console.log('Decks query result:', decksResult.length > 0 ? 'Found decks' : 'No decks found');
-      
+
       // Process media
       const media = new Map<string, Blob>();
       const mediaFile = zipContent.files['media'];
@@ -121,7 +115,7 @@ export class SimpleAnkiParser {
             }
           }
         } catch (e) {
-          console.warn('Failed to parse media:', e);
+
         }
       }
       

@@ -24,7 +24,7 @@ interface GenerateOutlineRequest {
 }
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('Generate outline endpoint called');
+
   try {
     if (!process.env.OPEN_AI_API_KEY) {
       return NextResponse.json({ 
@@ -86,8 +86,6 @@ IMPORTANT for imagePrompt:
 - Focus on settings and simple activities
 
 Keep summaries under 15 words each.`;
-
-    console.log('Generating outline...');
 
     const outlineResponse = await openai.chat.completions.create({
       model: 'gpt-4o-mini',

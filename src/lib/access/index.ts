@@ -118,10 +118,9 @@ export class AccessControl {
       console.error(`[Access] No permission mapping for feature: ${featureId}`);
       return false;
     }
-    
-    console.log(`[Access] Checking permission '${permission}' for userType '${userType}' and feature '${featureId}'`);
+
     const hasPermission = await entitlementManager.hasPermission(userType, permission as any);
-    console.log(`[Access] Permission check result: ${hasPermission}`);
+
     return hasPermission;
   }
   

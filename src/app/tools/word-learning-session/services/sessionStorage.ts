@@ -75,7 +75,7 @@ class SessionStorageService {
       try {
         await this.saveSessionFirebase(userId, session);
       } catch (error) {
-        console.warn('Failed to sync to Firebase, saved locally only:', error);
+
       }
     }
   }

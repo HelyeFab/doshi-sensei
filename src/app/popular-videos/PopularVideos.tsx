@@ -220,11 +220,7 @@ export default function PopularVideos() {
   
   const loadHistoryVideos = async (isInitial = false) => {
     if (!user) return;
-    
-    console.log('=== Loading History Videos ===');
-    console.log('User ID:', user.uid);
-    console.log('Is Initial Load:', isInitial);
-    
+
     try {
       if (!isInitial) {
         setIsLoadingMore(true);
@@ -237,9 +233,7 @@ export default function PopularVideos() {
         orderBy('lastPracticed', 'desc'),
         limit(ITEMS_PER_PAGE)
       ];
-      
-      console.log('Practice History Query Constraints:', practiceHistoryConstraints);
-      
+
       if (contentFilter !== 'all') {
         practiceHistoryConstraints.splice(2, 0, where('contentType', '==', contentFilter));
       }
@@ -249,15 +243,13 @@ export default function PopularVideos() {
       }
       
       const practiceHistoryQuery = query(...practiceHistoryConstraints);
-      console.log('Executing practice history query...');
-      
+
       const practiceHistorySnapshot = await getDocs(practiceHistoryQuery);
-      console.log('Practice history docs found:', practiceHistorySnapshot.docs.length);
-      
+
       // Convert practice history items to PopularVideo format
       const practiceHistoryData = practiceHistorySnapshot.docs.map(doc => {
         const data = doc.data() as any;
-        console.log('Practice history doc:', doc.id, data);
+
         return {
           id: data.videoId || doc.id,
           videoTitle: data.videoTitle,
@@ -290,11 +282,9 @@ export default function PopularVideos() {
       }
       
       const cacheQuery = query(...cacheConstraints);
-      console.log('Executing transcript cache query...');
-      
+
       const cacheSnapshot = await getDocs(cacheQuery);
-      console.log('Transcript cache docs found:', cacheSnapshot.docs.length);
-      
+
       const cacheData = cacheSnapshot.docs.map(doc => {
         console.log('Cache doc:', doc.id, doc.data());
         return {
@@ -431,10 +421,7 @@ export default function PopularVideos() {
           videoId = deleteConfirmation.video.id;
         }
       }
-      
-      console.log('Deleting video with ID:', videoId);
-      console.log('Full video object:', deleteConfirmation.video);
-      
+
       // Delete from practice history (this also deletes the cached transcript)
       await practiceHistoryService.deleteItem(videoId);
       
@@ -447,8 +434,7 @@ export default function PopularVideos() {
         video: null,
         isDeleting: false
       });
-      
-      console.log('Video deleted successfully');
+
     } catch (error) {
       console.error('Error deleting video:', error);
       alert('Failed to delete video. Please try again.');

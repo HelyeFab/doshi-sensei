@@ -7,13 +7,13 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 export const syncLogger = {
   log: (...args: any[]) => {
     if (isDevelopment) {
-      console.log('[Sync]', ...args);
+
     }
   },
   
   warn: (...args: any[]) => {
     if (isDevelopment) {
-      console.warn('[Sync]', ...args);
+
     }
   },
   
@@ -30,7 +30,7 @@ export const syncLogger = {
   
   debug: (...args: any[]) => {
     if (isDevelopment) {
-      console.debug('[Sync]', ...args);
+
     }
   }
 };

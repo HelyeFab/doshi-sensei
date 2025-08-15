@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ConjugationEngine } from '@/utils/conjugation';
+import { ExtendedConjugationEngine } from '@/utils/conjugation-extended';
 
 export function ConjugationDebugger() {
   const [word, setWord] = useState('');
@@ -27,7 +27,7 @@ export function ConjugationDebugger() {
         ...result,
         clientSideConjugation: (() => {
           try {
-            const forms = ConjugationEngine.conjugate({
+            const forms = ExtendedConjugationEngine.conjugate({
               id: 'test',
               kanji: result.word,
               kana: result.kana,

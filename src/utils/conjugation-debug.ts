@@ -19,20 +19,12 @@ export class ConjugationDebugger {
     if (!this.debugMode) return;
     
     console.group(`🔍 Word Classification Debug: ${word.kanji || word.kana}`);
-    console.log('Source:', source);
-    console.log('Word Object:', {
-      kanji: word.kanji,
-      kana: word.kana,
-      type: word.type,
-      meaning: word.meaning
-    });
-    
+
     if (rawPartsOfSpeech) {
-      console.log('Raw Parts of Speech:', rawPartsOfSpeech);
+
       console.log('Joined POS:', rawPartsOfSpeech.join(' ').toLowerCase());
     }
-    
-    console.log('Determined Type:', word.type);
+
     console.log('Is Valid for Conjugation:', this.isValidForConjugation(word.type));
     console.groupEnd();
   }
@@ -55,9 +47,7 @@ export class ConjugationDebugger {
     if (!this.debugMode) return;
     
     console.group(`⚙️ Conjugation Attempt: ${word.kanji || word.kana}`);
-    console.log('Input Word:', word);
-    console.log('Word Type:', word.type);
-    
+
     if (result) {
       const nonEmptyForms = Object.entries(result)
         .filter(([_, value]) => value && value !== '')
@@ -66,7 +56,7 @@ export class ConjugationDebugger {
       console.log('Sample Conjugations:', Object.fromEntries(nonEmptyForms));
       console.log('Total Forms Generated:', Object.values(result).filter(v => v && v !== '').length);
     } else {
-      console.log('❌ No conjugations generated');
+
     }
     
     console.groupEnd();
@@ -82,14 +72,10 @@ export class ConjugationDebugger {
     source: string
   ) {
     console.group(`⚠️ Type Mismatch Detected: ${word.kanji || word.kana}`);
-    console.log('Data Source:', source);
-    console.log('Expected Type:', expectedType);
-    console.log('Actual Type:', actualType);
-    console.log('Word:', word);
-    
+
     // Suggest fixes
     if (actualType === 'other' && expectedType !== 'other') {
-      console.log('💡 Suggestion: Word may not have proper part-of-speech data');
+
     }
     
     console.groupEnd();
@@ -110,12 +96,10 @@ export class ConjugationDebugger {
       type: expectedType,
       jlpt: 'N5'
     };
-    
-    console.log('Test Word:', testWord);
-    
-    // Import and test with ConjugationEngine
-    import('./conjugation').then(({ ConjugationEngine }) => {
-      const result = ConjugationEngine.conjugate(testWord);
+
+    // Import and test with ExtendedConjugationEngine
+    import('./conjugation-extended').then(({ ExtendedConjugationEngine }) => {
+      const result = ExtendedConjugationEngine.conjugate(testWord);
       this.logConjugationAttempt(testWord, result);
     });
     

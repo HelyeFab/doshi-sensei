@@ -76,10 +76,7 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [progress, setProgress] = useState<StrokeOrderProgress | null>(null);
 
-  console.log('Practice set:', practiceSet);
-  console.log('Practice set kanji:', practiceSet.kanji);
   const currentKanji = practiceSet.kanji[gameState.currentKanjiIndex];
-  console.log('Current kanji:', currentKanji, 'at index:', gameState.currentKanjiIndex);
 
   // Load progress on mount
   useEffect(() => {
@@ -93,18 +90,18 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
 
   const loadKanjiData = async () => {
     if (!currentKanji) {
-      console.warn('No kanji to load');
+
       setLoadingKanji(false);
       return;
     }
     
     try {
       setLoadingKanji(true);
-      console.log('Loading kanji:', currentKanji);
+
       const codePoint = currentKanji.charCodeAt(0).toString(16).padStart(5, '0');
-      console.log('Code point:', codePoint);
+
       const url = `/data/kanjivg/${codePoint}.svg`;
-      console.log('Fetching from:', url);
+
       const response = await fetch(url);
       
       if (response.ok) {
@@ -113,7 +110,7 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
         const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
         const paths = svgDoc.querySelectorAll('path[id^="kvg:"][id*="-s"]');
         const pathData = Array.from(paths).map(path => path.getAttribute('d') || '');
-        console.log('Found stroke paths:', pathData.length);
+
         setStrokePaths(pathData);
       } else {
         console.error('Failed to fetch SVG:', response.status, response.statusText);
@@ -188,7 +185,7 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
       // Check if kanji is complete
       if (newCorrectStrokes.length === totalStrokesInKanji) {
         // Track kanji completion
-        console.log(`Completed kanji: ${currentKanji}`);
+
         setTimeout(() => {
           moveToNextKanji();
         }, 1000);

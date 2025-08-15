@@ -54,7 +54,7 @@ export function TTSButton({
   const variantClasses = {
     default: 'hover:bg-purple-500/20 text-purple-600 border border-purple-200 dark:border-purple-800',
     minimal: 'hover:bg-muted text-muted-foreground',
-    pill: 'bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-full dark:bg-purple-900 dark:hover:bg-purple-800 dark:text-purple-300'
+    pill: 'hover:bg-purple-100 text-purple-600 rounded-full dark:hover:bg-purple-900 dark:text-purple-300'
   };
 
   // Icon size based on button size

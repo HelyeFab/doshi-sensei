@@ -29,12 +29,7 @@ export function AnkiImportModal({ isOpen, onClose, onImportSuccess }: AnkiImport
   // Debug logging
   useEffect(() => {
     if (isOpen) {
-      console.log('AnkiImportModal Debug:', {
-        isPremium,
-        userType,
-        subscription,
-        user: user?.email
-      });
+
     }
   }, [isOpen, isPremium, userType, subscription, user]);
   
@@ -91,18 +86,10 @@ export function AnkiImportModal({ isOpen, onClose, onImportSuccess }: AnkiImport
   
   const handleImport = async () => {
     if (!file || !user) return;
-    
-    console.log('handleImport - Pre-access check:', {
-      isPremium,
-      userType,
-      subscription,
-      user: user?.email
-    });
-    
+
     // Check access
     const canImport = await checkAndTrack('anki_import');
-    console.log('handleImport - Access check result:', canImport);
-    
+
     if (!canImport) return;
     
     // Check list count for free users

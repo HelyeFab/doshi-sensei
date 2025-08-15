@@ -24,7 +24,6 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     // Explicitly specify the bucket name
     const bucket = firebaseAdmin.storage().bucket('doshi-sensei');
     const bucketName = bucket.name;
-    console.log('Storage bucket:', bucketName);
 
     // Test 2: Create a test text file
     const testContent = `Firebase Storage Test
@@ -95,7 +94,7 @@ This is a test file to verify Firebase Storage integration.`;
     setTimeout(async () => {
       try {
         await file.delete();
-        console.log('Test file cleaned up');
+
       } catch (err) {
         console.error('Error cleaning up test file:', err);
       }

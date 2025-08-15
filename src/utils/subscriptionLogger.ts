@@ -122,14 +122,6 @@ class SubscriptionLogger {
   ): void {
     if (!this.enabled) return;
 
-    console.log(`🔑 Feature Access Check: ${feature}`, {
-      allowed,
-      userType,
-      userEmail: user?.email || 'guest',
-      isPremium: userType === 'premium',
-      limits: userSubscription?.limits || 'N/A',
-      currentUsage: userSubscription?.currentUsage || 'N/A'
-    });
   }
 
   /**
@@ -241,6 +233,6 @@ export function logFullUserDebugInfo({
 
   // Print all in a single, pretty log
   console.group(`🚦 Doshi Sensei User Debug - ${context}`);
-  console.log(`\n${userInfo}\n\n${subInfo}\n\n${limitsInfo}\n\n${usageInfo}\n\n${kqInfo}\n\n${allChecks}${extraInfo}\n`);
+
   console.groupEnd();
 }

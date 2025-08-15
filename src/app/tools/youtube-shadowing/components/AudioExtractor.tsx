@@ -25,7 +25,6 @@ export default function AudioExtractor({ videoUrl, onAudioExtracted }: AudioExtr
     setProgress(0);
     
     // Show a note about potential server startup time
-    console.log('Note: The server may take up to 50 seconds to wake up if it has been idle.');
 
     try {
       // Simulate progress updates

@@ -88,7 +88,7 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
         }
       }, 50);
     }).catch(err => {
-      console.log('Audio play blocked, will retry on user interaction');
+
       // Set up play on first user interaction
       const playOnInteraction = () => {
         fadeIn(audio, targetVolume);
@@ -131,7 +131,7 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
     
     // Add load event listener to ensure audio is ready
     audio.addEventListener('loadeddata', () => {
-      console.log('Audio loaded successfully');
+
     });
     
     audio.addEventListener('error', (e) => {
@@ -268,8 +268,7 @@ export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain 
                   // Track with new analytics
                   const accuracy = newMoves > 0 ? (prev.totalPairs / newMoves) * 100 : 0;
                   trackGameComplete('matching_game', score, accuracy);
-                  console.log('[MatchingGame] Analytics tracked:', { game: 'matching_game', score, accuracy });
-                  
+
                   setGameStats({
                     totalMoves: newMoves,
                     timeTaken,

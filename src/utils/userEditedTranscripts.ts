@@ -103,7 +103,6 @@ export class UserEditedTranscriptsManager {
         await updateDoc(docRef, data);
       }
 
-      console.log('User edited transcript saved successfully');
     } catch (error) {
       console.error('Error saving user edited transcript:', error);
       throw error;
@@ -121,7 +120,7 @@ export class UserEditedTranscriptsManager {
       const docId = this.generateId(userId, contentId);
       const docRef = doc(db, this.COLLECTION_NAME, docId);
       await deleteDoc(docRef);
-      console.log('User edited transcript deleted successfully');
+
     } catch (error) {
       console.error('Error deleting user edited transcript:', error);
       throw error;

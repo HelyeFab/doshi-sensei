@@ -51,7 +51,7 @@ export class ArticleCache {
       
       if (article) {
         this.recordHit(articleId, Date.now() - startTime);
-        console.log(`📄 Article ${articleId} loaded from memory cache`);
+
         return article;
       }
 
@@ -62,13 +62,13 @@ export class ArticleCache {
         // Also store in memory for faster subsequent access
         this.cacheManager.setMemory(`article:${articleId}`, article);
         this.recordHit(articleId, Date.now() - startTime);
-        console.log(`📄 Article ${articleId} loaded from IndexedDB cache`);
+
         return article;
       }
 
       // Cache miss - fetch from API if function provided
       if (fetchFn) {
-        console.log(`🔍 Fetching article ${articleId} from API`);
+
         const fetchedArticle = await fetchFn();
         
         if (fetchedArticle) {
@@ -101,8 +101,7 @@ export class ArticleCache {
       // Store in both memory and IndexedDB
       this.cacheManager.setMemory(`article:${articleId}`, cachedArticle);
       await this.cacheManager.setDB('articles', articleId, cachedArticle);
-      
-      console.log(`💾 Article ${articleId} cached successfully`);
+
     } catch (error) {
       console.error(`Error caching article ${articleId}:`, error);
     }
@@ -124,8 +123,7 @@ export class ArticleCache {
         // Update both caches
         this.cacheManager.setMemory(`article:${articleId}`, article);
         await this.cacheManager.setDB('articles', articleId, article);
-        
-        console.log(`✨ Processed content cached for article ${articleId}`);
+
       }
     } catch (error) {
       console.error(`Error caching processed content for ${articleId}:`, error);
@@ -151,8 +149,7 @@ export class ArticleCache {
    * Preload articles for better UX
    */
   async preloadArticles(articleIds: string[], fetchFn: (id: string) => Promise<NewsArticle>): Promise<void> {
-    console.log(`🔄 Preloading ${articleIds.length} articles...`);
-    
+
     const promises = articleIds.map(async (articleId) => {
       try {
         // Check if already cached
@@ -171,7 +168,7 @@ export class ArticleCache {
     });
 
     await Promise.allSettled(promises);
-    console.log(`✅ Article preloading completed`);
+
   }
 
   /**
@@ -218,7 +215,7 @@ export class ArticleCache {
     try {
       this.cacheManager.memoryCache?.delete(`article:${articleId}`);
       await this.cacheManager.deleteDB('articles', articleId);
-      console.log(`🗑️ Article ${articleId} removed from cache`);
+
     } catch (error) {
       console.error(`Error removing article ${articleId}:`, error);
     }
@@ -245,8 +242,7 @@ export class ArticleCache {
 
       this.loadTimes.clear();
       this.hitStats = { hits: 0, misses: 0 };
-      
-      console.log('🧹 Article cache cleared');
+
     } catch (error) {
       console.error('Error clearing article cache:', error);
     }

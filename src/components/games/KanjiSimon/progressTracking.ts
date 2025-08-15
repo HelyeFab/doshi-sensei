@@ -66,7 +66,6 @@ export async function saveKanjiSimonProgress(
     // Track with new analytics
     const accuracy = result.totalQuestions > 0 ? (result.correctAnswers / result.totalQuestions) * 100 : 0;
     analyticsTracker.trackGameComplete('kanji_simon', result.score, accuracy);
-    console.log('[KanjiSimon] Analytics tracked:', { game: 'kanji_simon', score: result.score, accuracy });
 
     // Track analytics event
     if (userId) {

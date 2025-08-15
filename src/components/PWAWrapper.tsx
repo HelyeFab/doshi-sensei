@@ -34,18 +34,17 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
 
     // If already initialized, we've already set ready state above
     if (sessionStorage.getItem('doshi_app_initialized')) {
-      console.log('App already initialized, skipping all init logic');
+
       return; // Exit early - don't run any initialization
     }
 
     // Only run initialization on true first load
-    console.log('First load detected, running initialization...');
 
     // Initialize app with better error handling and timeouts
     const initializeApp = async () => {
       // Set a hard timeout to prevent infinite splash screen
       const initTimeout = setTimeout(() => {
-        console.warn('App initialization timeout - forcing ready state');
+
         setIsReady(true);
         setIsFirstLoad(false);
         sessionStorage.setItem('doshi_app_initialized', 'true');
@@ -86,7 +85,7 @@ export default function PWAWrapper({ children }: PWAWrapperProps) {
     if (showSplashScreen) {
       // Force close splash after 8 seconds no matter what
       const splashTimeout = setTimeout(() => {
-        console.warn('Splash screen timeout - forcing close');
+
         setShowSplashScreen(false);
         setIsReady(true);
         setIsFirstLoad(false);

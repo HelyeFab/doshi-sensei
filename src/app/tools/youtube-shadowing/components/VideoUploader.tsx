@@ -28,12 +28,6 @@ export default function VideoUploader({ onVideoReady }: VideoUploaderProps) {
       return;
     }
 
-    console.log('Video file details:', {
-      name: file.name,
-      type: file.type,
-      size: file.size
-    });
-
     // Check file size (limit to 500MB for videos)
     const maxSize = 500 * 1024 * 1024; // 500MB
     if (file.size > maxSize) {
@@ -77,12 +71,6 @@ export default function VideoUploader({ onVideoReady }: VideoUploaderProps) {
       // Create video URL directly from the original file
       const videoUrl = URL.createObjectURL(videoFile);
       const audioUrl = URL.createObjectURL(audioBlob);
-      
-      console.log('Created URLs:', {
-        videoUrl,
-        audioUrl,
-        videoType: videoFile.type
-      });
 
       // Success!
       setUploadProgress(100);

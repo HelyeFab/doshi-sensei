@@ -47,9 +47,9 @@ export const authOptions: NextAuthOptions = {
                 scope: 'youtube.readonly'
               }
             });
-            console.log('YouTube OAuth tokens saved for user:', userDoc.id);
+
           } else {
-            console.log('No Firebase user found with email:', user.email);
+
           }
         } catch (error) {
           console.error('Error saving YouTube OAuth tokens:', error);

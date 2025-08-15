@@ -30,8 +30,7 @@ export default function SubscriptionAnalytics() {
             const data = await response.json();
             if (data.success) {
               setMetrics(data.metrics);
-              console.log('[SubscriptionAnalytics] Loaded from Stripe:', data);
-              
+
               // Still load conversion metrics separately
               const convMetrics = await calculateConversionMetrics();
               setConversion(convMetrics);
@@ -65,7 +64,7 @@ export default function SubscriptionAnalytics() {
     setIsDebugging(true);
     try {
       await debugAllSubscriptions();
-      console.log('Debug complete - check browser console for subscription details');
+
     } catch (error) {
       console.error('Debug error:', error);
     } finally {

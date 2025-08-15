@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 const cheerio = require('cheerio');
 const { saveArticlesWithDeduplication } = require('./article-deduplication');
+const { filterArticles, quickValidate } = require('./article-quick-validation');
 
 // Function to get Unsplash image for articles without covers
 async function getUnsplashImage(keyword = 'japan news') {
@@ -311,10 +312,14 @@ exports.handler = async (event, context) => {
     ]);
     console.log(`📊 Scraped ${articles.length} articles`);
 
+    // Filter out invalid articles (English, errors, etc.)
+    const validArticles = filterArticles(articles);
+    console.log(`📊 After validation: ${validArticles.length} valid articles (filtered ${articles.length - validArticles.length})`);
+
     // Save articles to Firebase
     let savedCount = 0;
-    if (articles.length > 0) {
-      savedCount = await saveArticlesWithDeduplication(db, articles, admin);
+    if (validArticles.length > 0) {
+      savedCount = await saveArticlesWithDeduplication(db, validArticles, admin);
     }
 
     const elapsed = Date.now() - startTime;

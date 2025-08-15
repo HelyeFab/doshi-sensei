@@ -46,7 +46,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
           if (result.isAdmin) {
             setIsAdminVerified(true);
           } else {
-            console.warn('Admin verification failed:', result);
+
             router.replace('/');
           }
         } catch (error) {

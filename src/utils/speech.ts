@@ -16,7 +16,7 @@ export async function speakJapanese(
       try {
         TTSManager.initialize();
       } catch (initError) {
-        console.warn('Failed to initialize TTS:', initError);
+
         return;
       }
     }

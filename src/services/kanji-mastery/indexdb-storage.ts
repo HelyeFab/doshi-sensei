@@ -153,7 +153,7 @@ class KanjiMasteryIndexedDBStorage {
     
     // Only save for authenticated users (free and premium)
     if (!userId) {
-      console.warn('Cannot save progress: user not authenticated');
+
       return;
     }
     
@@ -470,8 +470,7 @@ class KanjiMasteryIndexedDBStorage {
       });
       
       await batch.commit();
-      console.log('Successfully synced all kanji progress to Firebase');
-      
+
       // Sync all sessions
       const sessions = await this.getStudySessions(undefined, 1000); // Get all sessions
       const sessionBatch = writeBatch(this.firestore);
@@ -486,7 +485,7 @@ class KanjiMasteryIndexedDBStorage {
       });
       
       await sessionBatch.commit();
-      console.log('Successfully synced all study sessions to Firebase');
+
     } catch (error) {
       console.error('Error syncing all data to Firebase:', error);
     }
@@ -519,9 +518,7 @@ class KanjiMasteryIndexedDBStorage {
         
         await store.put(progress);
       });
-      
-      console.log('Successfully loaded kanji progress from Firebase');
-      
+
       // Load sessions from Firebase
       const sessionsRef = collection(this.firestore, 'users', userId, 'kanjiStudySessions');
       const sessionsSnapshot = await getDocs(query(sessionsRef));
@@ -540,8 +537,7 @@ class KanjiMasteryIndexedDBStorage {
         
         await sessionStore.put(session);
       });
-      
-      console.log('Successfully loaded study sessions from Firebase');
+
     } catch (error) {
       console.error('Error loading from Firebase:', error);
     }

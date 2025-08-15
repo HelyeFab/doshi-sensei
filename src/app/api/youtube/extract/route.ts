@@ -36,8 +36,7 @@ async function extractWithYouTubeTranscriptIO(
   url: string
 ): Promise<NextResponse> {
   try {
-    console.log('=== Extracting with YouTube-Transcript.io ===');
-    
+
     if (!videoId) {
       return NextResponse.json({
         success: false,
@@ -64,19 +63,13 @@ async function extractWithYouTubeTranscriptIO(
     if (apiKey) {
       headers['Authorization'] = `Bearer ${apiKey}`;
     }
-    
-    console.log('Requesting transcript from YouTube-Transcript.io...');
-    console.log('Video ID:', videoId);
-    console.log('Has API key:', !!apiKey);
-    
+
     const response = await axios.get(apiUrl, {
       params,
       headers,
       timeout: 15000
     });
-    
-    console.log('YouTube-Transcript.io response status:', response.status);
-    
+
     if (response.data && response.data.transcript) {
       const transcript = response.data.transcript.map((segment: any, index: number) => ({
         id: String(index + 1),
@@ -85,10 +78,7 @@ async function extractWithYouTubeTranscriptIO(
         endTime: segment.end || segment.start + segment.duration || (index + 1) * 5,
         words: (segment.text || '').split(/[\s、。！？]/g).filter((w: string) => w.length > 0)
       }));
-      
-      console.log('Successfully extracted transcript via YouTube-Transcript.io');
-      console.log('Transcript length:', transcript.length);
-      
+
       // Save to cache only for authenticated users
       if (isAuthenticated) {
         try {
@@ -108,7 +98,7 @@ async function extractWithYouTubeTranscriptIO(
               method: 'youtube-transcript-io'
             }
           });
-          console.log('Transcript cached successfully');
+
         } catch (cacheError) {
           console.error('Failed to cache transcript:', cacheError);
         }
@@ -180,7 +170,7 @@ async function formatTranscriptWithAI(
   contentId?: string
 ): Promise<any[] | null> {
   try {
-    console.log('🤖 [AI] Attempting to format transcript with GPT-4...');
+
     console.log('🤖 [AI] Transcript details:', {
       lineCount: transcript.length,
       totalChars: transcript.reduce((sum, line) => sum + line.text.length, 0),
@@ -205,9 +195,7 @@ async function formatTranscriptWithAI(
     const data = await response.json();
     
     if (data.formattedTranscript && data.wasFormatted) {
-      console.log('✅ [AI] Transcript formatted successfully');
-      console.log(`📊 [AI] Stats: ${data.stats.originalLines} -> ${data.stats.formattedLines} lines`);
-      
+
       // Update cache with formatted version if contentId provided
       if (contentId) {
         try {
@@ -215,7 +203,7 @@ async function formatTranscriptWithAI(
             contentId,
             data.formattedTranscript
           );
-          console.log('✅ [AI] Formatted transcript saved to cache');
+
         } catch (cacheError) {
           console.error('Failed to save formatted transcript to cache:', cacheError);
         }
@@ -278,10 +266,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('=== Starting YouTube extraction ===');
-    console.log('URL:', url);
-    console.log('Request headers:', request.headers);
-    
     // Check if user is authenticated by looking for auth headers or cookies
     const authHeader = request.headers.get('authorization');
     const cookies = request.headers.get('cookie');
@@ -307,11 +291,11 @@ export async function POST(request: NextRequest) {
     
     // Skip cache if force regenerate is requested
     if (!forceRegenerate) {
-      console.log('Checking transcript cache for:', contentId);
+
       const cachedTranscript = await TranscriptCacheManager.getCachedTranscript(contentId);
       
       if (cachedTranscript && cachedTranscript.transcript.length > 0) {
-        console.log('Using cached transcript! Access count:', cachedTranscript.accessCount);
+
         return NextResponse.json({
         success: true,
         transcript: cachedTranscript.transcript,
@@ -325,14 +309,7 @@ export async function POST(request: NextRequest) {
       });
       }
     }
-    
-    console.log('No cache hit, fetching from YouTube...');
-    console.log('Selected provider:', provider);
-    console.log('Environment check - GOOGLE_API_KEY exists:', !!process.env.GOOGLE_API_KEY);
-    console.log('Environment check - YOUTUBE_API_KEY exists:', !!process.env.YOUTUBE_API_KEY);
-    console.log('Environment check - SUPA_YOUTUBE_API_KEY exists:', !!process.env.SUPA_YOUTUBE_API_KEY);
-    console.log('Environment check - GOOGLE_CLIENT_ID exists:', !!process.env.GOOGLE_CLIENT_ID);
-    
+
     // Extract video ID for YouTube API calls
     const videoId = extractVideoIdFromUrl(url);
     let videoMetadata = null;
@@ -354,8 +331,7 @@ export async function POST(request: NextRequest) {
     
     // Method 1: Try OAuth/YouTube API if user has connected YouTube account
     try {
-      console.log('=== Trying OAuth YouTube API method ===');
-      
+
       // Check if user has YouTube OAuth tokens
       // Pass auth headers to captions API
       const captionsResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/youtube/captions?videoId=${videoId}`, {
@@ -369,8 +345,7 @@ export async function POST(request: NextRequest) {
         const captionsData = await captionsResponse.json();
         
         if (captionsData.success && captionsData.captions && captionsData.captions.length > 0) {
-          console.log('Found caption tracks via OAuth:', captionsData.captions.length);
-          
+
           // Get the first Japanese caption track (or first available)
           const captionTrack = captionsData.captions[0];
           
@@ -395,10 +370,7 @@ export async function POST(request: NextRequest) {
                 const transcript = parseSRT(downloadData.caption);
                 
                 if (transcript.length > 0) {
-                  console.log('Successfully got captions via OAuth YouTube API');
-                  console.log('Caption language:', captionTrack.snippet?.language);
-                  console.log('Transcript length:', transcript.length);
-                  
+
                   // Save to cache only for authenticated users
                   if (isAuthenticated) {
                     try {
@@ -419,7 +391,7 @@ export async function POST(request: NextRequest) {
                           isAutoGenerated: captionTrack.snippet?.trackKind === 'asr'
                         }
                       });
-                      console.log('OAuth transcript cached successfully');
+
                     } catch (cacheError) {
                       console.error('Failed to cache OAuth transcript:', cacheError);
                     }
@@ -451,13 +423,13 @@ export async function POST(request: NextRequest) {
             }
           }
         } else if (captionsData.error === 'YouTube not connected') {
-          console.log('User has not connected YouTube account, trying other methods...');
+
         } else {
-          console.log('No captions found via OAuth, trying other methods...');
+
         }
       } else {
         const errorData = await captionsResponse.json().catch(() => ({}));
-        console.log('OAuth method failed:', errorData.error || captionsResponse.statusText);
+
       }
     } catch (oauthError: any) {
       console.error('OAuth YouTube API error:', oauthError.message);
@@ -469,8 +441,7 @@ export async function POST(request: NextRequest) {
     
     if (GOOGLE_API_KEY) {
       try {
-        console.log('Fetching video metadata from YouTube Data API v3...');
-        
+
         const videoResponse = await axios.get(`${YOUTUBE_API_BASE}/videos`, {
           params: {
             part: 'snippet,contentDetails',
@@ -489,7 +460,7 @@ export async function POST(request: NextRequest) {
             duration: video.contentDetails.duration,
             publishedAt: video.snippet.publishedAt
           };
-          console.log('Successfully fetched video metadata:', videoMetadata.title);
+
         }
       } catch (youtubeApiError) {
         console.error('YouTube Data API error:', youtubeApiError.message);
@@ -499,7 +470,7 @@ export async function POST(request: NextRequest) {
         // Continue with other methods - don't let this block SupaData
       }
     } else {
-      console.warn('GOOGLE_API_KEY not configured in environment variables');
+
     }
     
     // Method 2: Try SupaData AI for transcripts (with better error handling)
@@ -515,9 +486,7 @@ export async function POST(request: NextRequest) {
         try {
           console.log(`=== Trying SupaData AI (attempt ${attempt + 1}/${maxRetries}) ===`);
           console.log('SupaData API Key first 10 chars:', SUPA_API_KEY.substring(0, 10) + '...');
-          console.log('Request URL:', url);
-          console.log('Request params:', { url, lang: 'ja' });
-          
+
           // Exponential backoff: 0ms, 1000ms
           if (attempt > 0) {
             const backoffDelay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
@@ -541,7 +510,7 @@ export async function POST(request: NextRequest) {
           
           // If successful, break out of retry loop
           if (supaResponse && supaResponse.data) {
-            console.log(`SupaData succeeded on attempt ${attempt + 1}`);
+
             await logApiUsage('supadata', true, undefined, { videoId, attempt: attempt + 1 });
             break;
           }
@@ -552,7 +521,7 @@ export async function POST(request: NextRequest) {
           // Special handling for different error types
           if (error.response?.status === 429) {
             console.warn('⚠️ SupaData rate limit exceeded (429) - Monthly limit reached');
-            console.warn('Details:', error.response?.data?.message || 'Plan usage limit was exceeded');
+
             hitRateLimit = true;
             await logApiUsage('supadata', false, 'rate_limit_exceeded', { videoId, status: 429 });
             // Don't retry on 429, just move to fallback methods
@@ -564,48 +533,37 @@ export async function POST(request: NextRequest) {
             console.error('❌ SupaData API key forbidden - check permissions (403)');
             break; // Don't retry on permission errors
           } else if (error.response?.status === 404) {
-            console.log('No transcript available from SupaData for this video');
+
             break; // Don't retry if transcript doesn't exist
           }
           
           // Only retry on network errors or 5xx server errors
           const shouldRetry = !error.response || error.response.status >= 500;
           if (!shouldRetry || attempt === maxRetries - 1) {
-            console.log('Not retrying SupaData. Moving to fallback methods.');
+
             break;
           }
         }
       }
       
       if (supaResponse && supaResponse.data) {
-        
-        console.log('SupaData response status:', supaResponse.status);
+
         console.log('SupaData response data keys:', Object.keys(supaResponse.data || {}));
-          console.log('Successfully got transcript from SupaData AI');
-          console.log('Response lang:', supaResponse.data.lang);
-          console.log('Available langs:', supaResponse.data.availableLangs);
-          console.log('Content exists:', !!supaResponse.data.content);
-          console.log('Content length:', supaResponse.data.content?.length || 0);
-          
+
           // Check if Japanese subtitles are available
           if (supaResponse.data.lang !== 'ja' && !supaResponse.data.availableLangs?.includes('ja')) {
-            console.log('No Japanese subtitles available from SupaData');
+
             throw new Error('No Japanese subtitles available');
           }
           
           // Parse SupaData response to our format
           const transcript = parseSupaDataTranscript(supaResponse.data);
-          console.log('Parsed transcript length:', transcript.length);
-          console.log('First transcript item:', transcript[0]);
-          
+
           if (transcript && transcript.length > 0) {
             // Save to cache only for authenticated users
             if (isAuthenticated) {
               console.log('=== Saving to transcript cache (authenticated user) ===');
-              console.log('Content ID:', contentId);
-              console.log('Video URL:', url);
-              console.log('Video title:', videoMetadata?.title || supaResponse.data.title || 'Unknown');
-              
+
               try {
                 await TranscriptCacheManager.saveTranscriptToCache({
                   contentId,
@@ -623,12 +581,12 @@ export async function POST(request: NextRequest) {
                     method: 'supadata-ai'
                   }
                 });
-                console.log('=== Cache save completed ===');
+
               } catch (cacheError) {
                 console.error('=== Cache save failed ===', cacheError);
               }
             } else {
-              console.log('⚠️ [CACHE] Skipping cache save for guest user');
+
             }
             
             // Format transcript with AI for Japanese content
@@ -640,12 +598,7 @@ export async function POST(request: NextRequest) {
               videoMetadata?.title || supaResponse.data.title,
               contentId
             );
-            console.log('🤖 [EXTRACT] Formatting result:', {
-              originalLines: transcript.length,
-              formattedLines: formattedTranscript?.length || 0,
-              wasFormatted: !!formattedTranscript
-            });
-            
+
             return NextResponse.json({
               success: true,
               transcript,
@@ -665,7 +618,7 @@ export async function POST(request: NextRequest) {
         console.error('Error response status:', lastError.response?.status);
         console.error('Error response data:', lastError.response?.data);
         if (lastError.response?.status === 404) {
-          console.log('No transcript available from SupaData');
+
         } else if (lastError.response?.status === 401) {
           console.error('SupaData API key authentication failed');
         } else if (lastError.response?.status === 403) {
@@ -678,14 +631,12 @@ export async function POST(request: NextRequest) {
         // Continue to fallback methods
       }
     } else {
-      console.warn('SUPA_YOUTUBE_API_KEY not configured');
+
     }
     
     // Method 3: Try youtube-captions-scraper (JavaScript package)
     try {
-      console.log('=== Trying youtube-captions-scraper package ===');
-      console.log('Video ID:', videoId);
-      
+
       // Create a timeout promise
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('youtube-captions-scraper timeout')), 5000);
@@ -704,14 +655,12 @@ export async function POST(request: NextRequest) {
           timeoutPromise
         ]) as any[];
       } catch (jaError: any) {
-        console.log('No Japanese captions via youtube-captions-scraper');
+
         // Continue to next method
       }
       
       if (captions && captions.length > 0) {
-        console.log('Successfully got captions via youtube-captions-scraper');
-        console.log('Caption count:', captions.length);
-        
+
         // Convert to our format
         const transcript = captions.map((caption: any, index: number) => ({
           id: String(index + 1),
@@ -723,7 +672,7 @@ export async function POST(request: NextRequest) {
         
         // Save to cache only for authenticated users
         if (isAuthenticated) {
-          console.log('Saving youtube-captions-scraper transcript to cache...');
+
           try {
             await TranscriptCacheManager.saveTranscriptToCache({
               contentId,
@@ -740,12 +689,12 @@ export async function POST(request: NextRequest) {
                 duration: videoMetadata?.duration
               }
             });
-            console.log('youtube-captions-scraper transcript cached successfully');
+
           } catch (cacheError) {
             console.error('Failed to cache youtube-captions-scraper transcript:', cacheError);
           }
         } else {
-          console.log('⚠️ [CACHE] Skipping cache save for guest user');
+
         }
         
         return NextResponse.json({
@@ -768,9 +717,7 @@ export async function POST(request: NextRequest) {
     
     if (SEARCH_API_KEY) {
       try {
-        console.log('=== Trying SearchAPI as fallback ===');
-        console.log('Video ID:', videoId);
-        
+
         const searchApiUrl = 'https://www.searchapi.io/api/v1/search';
         
         // Try Japanese first, then fallback to auto-generated
@@ -780,7 +727,7 @@ export async function POST(request: NextRequest) {
         
         for (const lang of languagesToTry) {
           try {
-            console.log(`Trying SearchAPI with lang: ${lang}`);
+
             const response = await axios.get(searchApiUrl, {
               params: {
                 engine: 'youtube_transcripts',
@@ -796,16 +743,16 @@ export async function POST(request: NextRequest) {
             if (response.data && response.data.transcripts && response.data.transcripts.length > 0) {
               searchApiResponse = response;
               successfulLang = lang;
-              console.log(`Found transcripts with lang: ${lang}`);
+
               await logApiUsage('searchapi', true, undefined, { videoId, lang });
               break;
             }
           } catch (langError: any) {
-            console.log(`No transcripts for lang: ${lang}`);
+
             await logApiUsage('searchapi', false, `no_transcripts_${lang}`, { videoId, lang });
             // Check if error response contains available languages
             if (langError.response?.data?.available_languages) {
-              console.log('Available languages:', langError.response.data.available_languages);
+
             }
           }
         }
@@ -813,7 +760,7 @@ export async function POST(request: NextRequest) {
         // If no Japanese found, try to get any available transcript and note it
         if (!searchApiResponse) {
           try {
-            console.log('No Japanese transcripts found, trying to get any available transcript...');
+
             const anyLangResponse = await axios.get(searchApiUrl, {
               params: {
                 engine: 'youtube_transcripts',
@@ -827,20 +774,15 @@ export async function POST(request: NextRequest) {
             if (anyLangResponse.data && anyLangResponse.data.transcripts) {
               searchApiResponse = anyLangResponse;
               successfulLang = anyLangResponse.data.language || 'unknown';
-              console.log(`Found transcripts in language: ${successfulLang}`);
+
             }
           } catch (anyLangError: any) {
             console.error('Failed to get any transcripts via SearchAPI');
           }
         }
-        
-        console.log('SearchAPI response status:', searchApiResponse?.status || 'No response');
-        
+
         if (searchApiResponse && searchApiResponse.data && searchApiResponse.data.transcripts) {
-          console.log('SearchAPI transcripts found');
-          console.log('Transcript language:', successfulLang);
-          console.log('Is auto-generated:', searchApiResponse.data.is_generated);
-          
+
           const transcript = searchApiResponse.data.transcripts;
           
           if (transcript && transcript.length > 0) {
@@ -875,12 +817,12 @@ export async function POST(request: NextRequest) {
                     method: 'searchapi'
                   }
                 });
-                console.log('SearchAPI transcript cached');
+
               } catch (cacheError) {
                 console.error('Failed to cache SearchAPI transcript:', cacheError.message);
               }
             } else if (!isAuthenticated) {
-              console.log('⚠️ [CACHE] Skipping SearchAPI cache save for guest user');
+
             } else {
               console.log(`⚠️ [CACHE] Not caching non-Japanese transcript (${successfulLang})`);
             }
@@ -924,17 +866,13 @@ export async function POST(request: NextRequest) {
     
     // Method 5: Try @distube/ytdl-core to get video info (with better error handling)
     try {
-      console.log('=== Trying @distube/ytdl-core as fallback ===');
-      
+
       // Create agent with cookies for better success rate
       const agent = ytdl.createAgent();
       
       const info = await ytdl.getInfo(url, { agent });
       const videoDetails = info.videoDetails;
-      
-      console.log('Video title:', videoDetails.title);
-      console.log('Available captions:', info.player_response?.captions);
-      
+
       // Check for captions in player response
       const captionTracks = info.player_response?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
       
@@ -948,8 +886,7 @@ export async function POST(request: NextRequest) {
         );
         
         if (jaTrack) {
-          console.log('Found Japanese captions via ytdl-core, fetching...');
-          
+
           // Fetch the actual captions
           try {
             const captionResponse = await axios.get(jaTrack.baseUrl, {
@@ -982,12 +919,12 @@ export async function POST(request: NextRequest) {
                       duration: videoMetadata?.duration || videoDetails.lengthSeconds
                     }
                   });
-                  console.log('ytdl-core transcript cached successfully');
+
                 } catch (cacheError) {
                   console.error('Failed to cache ytdl-core transcript:', cacheError);
                 }
               } else {
-                console.log('⚠️ [CACHE] Skipping ytdl-core cache save for guest user');
+
               }
               
               return NextResponse.json({
@@ -1008,16 +945,15 @@ export async function POST(request: NextRequest) {
     } catch (ytdlError: any) {
       console.error('@distube/ytdl-core error:', ytdlError.message);
       if (ytdlError.message?.includes('Sign in to confirm')) {
-        console.log('Video requires sign-in, cannot extract with ytdl-core');
+
       } else if (ytdlError.message?.includes('410')) {
-        console.log('ytdl-core received 410 error - YouTube may have changed their API');
+
       }
     }
     
     // Method 6: Try get_video_info approach (more reliable)
     try {
-      console.log('Trying get_video_info method for video:', videoId);
-      
+
       // First, get video info to extract caption URLs
       const videoInfoUrl = `https://www.youtube.com/get_video_info?video_id=${videoId}&hl=ja`;
       
@@ -1046,8 +982,7 @@ export async function POST(request: NextRequest) {
           );
           
           if (jaTrack && jaTrack.baseUrl) {
-            console.log('Found Japanese track, fetching from:', jaTrack.baseUrl);
-            
+
             const captionResponse = await axios.get(jaTrack.baseUrl, {
               headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -1083,7 +1018,7 @@ export async function POST(request: NextRequest) {
     
     for (const altUrl of alternativeUrls) {
       try {
-        console.log('Trying alternative URL:', altUrl);
+
         const response = await axios.get(altUrl, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -1117,9 +1052,7 @@ export async function POST(request: NextRequest) {
     }
     
     // No captions found
-    console.log('=== All methods failed ===');
-    console.log('Returning error response with metadata:', !!videoMetadata);
-    
+
     // Provide more specific error message if we hit rate limits
     let errorMessage = 'This video does not have Japanese captions available. Try uploading the audio for AI transcription.';
     let errorCode = 'NO_CAPTIONS';

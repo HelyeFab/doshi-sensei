@@ -289,7 +289,7 @@ export default function EditableTranscriptReader({
   };
 
   const handleTranscriptRegenerated = (newTranscript: TranscriptLine[], provider: string) => {
-    console.log(`Transcript regenerated using ${provider}`);
+
     setEditedTranscript(newTranscript);
     setShowRegenerateModal(false);
     // Show a success message or update the UI to indicate the transcript was regenerated

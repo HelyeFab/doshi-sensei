@@ -62,7 +62,7 @@ export function ThemeSelector({ currentTheme, currentColorScheme, onThemeChange 
                       </>
                     );
                   } catch (error) {
-                    console.warn('Error getting theme preview:', error);
+
                     return null;
                   }
                 })()}

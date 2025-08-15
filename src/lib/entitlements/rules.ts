@@ -215,7 +215,7 @@ async function getDynamicRules(): Promise<EntitlementRule[]> {
     // Don't log expected permission errors for non-admin users
     // The dynamic-rules module will return static rules for non-admins
     // If dynamic rules fail to load, fall back to static rules
-    console.warn('Failed to load dynamic entitlement rules, falling back to static rules.', error);
+
     return ENTITLEMENT_RULES;
   }
 }
@@ -223,7 +223,7 @@ async function getDynamicRules(): Promise<EntitlementRule[]> {
 // Synchronous fallback for backwards compatibility
 export function getEntitlementRulesForUserType(userType: string): EntitlementRule | undefined {
   // This function is being phased out - use async version
-  console.warn('getEntitlementRulesForUserType is deprecated. Use getEntitlementRulesForUserTypeAsync');
+
   // Find the rule that matches the userType, or return undefined if not found
   return ENTITLEMENT_RULES.find(rule => rule.userTypes.includes(userType as any));
 }
@@ -237,7 +237,7 @@ export async function getEntitlementRulesForUserTypeAsync(userType: string): Pro
 
 export function getUserPermissions(userType: string): string[] {
   // This function is being phased out - use async version
-  console.warn('getUserPermissions is deprecated. Use getUserPermissionsAsync');
+
   const rule = getEntitlementRulesForUserType(userType);
   return rule?.permissions || [];
 }
@@ -249,7 +249,7 @@ export async function getUserPermissionsAsync(userType: string): Promise<string[
 
 export function getUserLimits(userType: string) {
   // This function is being phased out - use async version
-  console.warn('getUserLimits is deprecated. Use getUserLimitsAsync');
+
   const rule = getEntitlementRulesForUserType(userType);
   return rule?.limits || { daily: {}, total: {} };
 }

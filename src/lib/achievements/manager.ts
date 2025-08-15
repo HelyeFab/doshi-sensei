@@ -102,7 +102,6 @@ export class AchievementManager {
         }
       }
 
-      console.log('Achievement data synced with cloud successfully');
     } catch (error) {
       console.error('Failed to sync with cloud:', error);
     }
@@ -604,14 +603,14 @@ export class AchievementManager {
     if (isActivityCompletion) {
       // Early Bird - Study before 6 AM
       if (!unlockedIds.has('early_bird') && now.getHours() < 6) {
-        console.log('[AchievementManager] User completed activity before 6 AM - awarding Early Bird');
+
         const unlocked = await this.unlockAchievement('early_bird');
         if (unlocked) newlyUnlocked.push(unlocked);
       }
 
       // Night Owl - Study after 11 PM
       if (!unlockedIds.has('night_owl') && now.getHours() >= 23) {
-        console.log('[AchievementManager] User completed activity after 11 PM - awarding Night Owl');
+
         const unlocked = await this.unlockAchievement('night_owl');
         if (unlocked) newlyUnlocked.push(unlocked);
       }
@@ -649,7 +648,7 @@ export class AchievementManager {
           }
           
           if (saturdayStudied && sundayStudied) {
-            console.log('[AchievementManager] User studied both Saturday and Sunday - awarding Weekend Warrior');
+
             const unlocked = await this.unlockAchievement('weekend_warrior');
             if (unlocked) newlyUnlocked.push(unlocked);
             
@@ -767,7 +766,7 @@ export class AchievementManager {
   static async initializeUserStats(): Promise<void> {
     const existingStats = await EnhancedStorageManager.getUserStats();
     if (!existingStats) {
-      console.log('[AchievementManager] Initializing new user stats');
+
       await this.saveUserStats(this.getDefaultStats());
     }
     
@@ -801,11 +800,6 @@ export class AchievementManager {
   static async debugAchievementState(): Promise<void> {
     const stats = await this.getUserStats();
     const unlocked = await this.getUnlockedAchievements();
-    console.log('[AchievementManager] Current state:', {
-      stats,
-      unlockedCount: unlocked.length,
-      unlockedIds: unlocked.map(u => u.achievementId)
-    });
   }
 
   /**
@@ -813,8 +807,7 @@ export class AchievementManager {
    */
   private static async clearLocalAchievementData(): Promise<void> {
     try {
-      console.log('[AchievementManager] Clearing local achievement data due to logout');
-      
+
       // Clear from IndexedDB
       await EnhancedStorageManager.clearUserStats();
       await EnhancedStorageManager.clearUnlockedAchievements();
@@ -825,8 +818,7 @@ export class AchievementManager {
       // Clear any other achievement-related localStorage items
       const keysToRemove = ['achievement_last_checked', 'achievement_streak_date'];
       keysToRemove.forEach(key => localStorage.removeItem(key));
-      
-      console.log('[AchievementManager] Local achievement data cleared');
+
     } catch (error) {
       console.error('[AchievementManager] Error clearing local achievement data:', error);
     }

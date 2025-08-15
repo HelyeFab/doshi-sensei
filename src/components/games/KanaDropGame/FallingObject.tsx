@@ -23,7 +23,7 @@ export default function FallingObject({
   const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
     // e.stopPropagation();
     // e.preventDefault(); // Prevent touch scroll on mobile
-    console.log(`[KanaDrop] Clicked object: ${object.type} - ${object.content}`);
+
     if (isClickable) {
       onClick(object);
     }
@@ -73,7 +73,7 @@ export default function FallingObject({
             className="w-full h-full object-contain drop-shadow-md"
             draggable={false}
             onError={(e) => {
-              console.warn('[KanaDrop] Failed to load distractor image:', object.content);
+
               // Hide broken images instead of showing broken icon
               (e.target as HTMLImageElement).style.display = 'none';
             }}

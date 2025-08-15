@@ -192,7 +192,7 @@ export class CacheCleaner {
             }
           } catch (e) {
             // Skip items that can't be accessed
-            console.warn(`Could not access localStorage item: ${key}`, e);
+
           }
         }
       }

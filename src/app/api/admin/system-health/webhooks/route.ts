@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
         ...doc.data()
       }));
     } catch (error) {
-      console.log('webhook_logs collection not found or no index');
+
     }
     
     try {
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
         ...doc.data()
       }));
     } catch (error) {
-      console.log('webhook_events collection not found or no index');
+
     }
     
     // Calculate statistics

@@ -34,7 +34,7 @@ async function fetchPricingConfig() {
       const pricing = configSnap.data();
       MONTHLY_PRICE = pricing.monthly?.amount || 3.99;
       YEARLY_PRICE = pricing.yearly?.amount || 39.99;
-      console.log('[SubscriptionAnalytics] Loaded pricing config:', { MONTHLY_PRICE, YEARLY_PRICE });
+
     }
   } catch (error) {
     console.error('[SubscriptionAnalytics] Error fetching pricing config:', error);
@@ -54,9 +54,7 @@ export async function calculateSubscriptionMetrics(): Promise<SubscriptionMetric
     );
     
     const snapshot = await getDocs(activeSubQuery);
-    
-    console.log('[SubscriptionAnalytics] Active subscribers found:', snapshot.size);
-    
+
     let monthlyCount = 0;
     let yearlyCount = 0;
     let debugSubscriptions: any[] = [];
@@ -64,12 +62,7 @@ export async function calculateSubscriptionMetrics(): Promise<SubscriptionMetric
     // Hard-coded price IDs since env vars aren't available in browser
     const MONTHLY_PRICE_ID = 'price_1RakzXHdrJomitOwZc0HJC4J';
     const YEARLY_PRICE_ID = 'price_1RakzXHdrJomitOwE7B56erf';
-    
-    console.log('[SubscriptionAnalytics] Using price IDs:', {
-      monthly: MONTHLY_PRICE_ID,
-      yearly: YEARLY_PRICE_ID
-    });
-    
+
     snapshot.forEach((doc) => {
       const data = doc.data();
       const subData = {
@@ -100,26 +93,19 @@ export async function calculateSubscriptionMetrics(): Promise<SubscriptionMetric
         const priceId = data.subscription?.priceId;
         
         if (priceId === MONTHLY_PRICE_ID) {
-          console.log(`[SubscriptionAnalytics] User ${doc.id} inferred as monthly from price ID`);
+
           monthlyCount++;
         } else if (priceId === YEARLY_PRICE_ID) {
-          console.log(`[SubscriptionAnalytics] User ${doc.id} inferred as yearly from price ID`);
+
           yearlyCount++;
         } else {
           // Can't determine from price ID, default to monthly
-          console.warn(`[SubscriptionAnalytics] User ${doc.id} has unknown price ID ${priceId}, defaulting to monthly:`, subData);
+
           monthlyCount++;
         }
       }
     });
-    
-    console.log('[SubscriptionAnalytics] Subscription breakdown:', {
-      total: snapshot.size,
-      monthly: monthlyCount,
-      yearly: yearlyCount,
-      subscriptions: debugSubscriptions
-    });
-    
+
     const totalSubscribers = monthlyCount + yearlyCount;
     const monthlyMRR = monthlyCount * MONTHLY_PRICE;
     const yearlyMRR = (yearlyCount * YEARLY_PRICE) / 12; // Convert to monthly
@@ -246,14 +232,7 @@ export async function debugAllSubscriptions() {
         statusCounts[status] = (statusCounts[status] || 0) + 1;
       }
     });
-    
-    console.log('[SubscriptionAnalytics] Debug - All subscriptions:', {
-      totalUsers: allUsersSnapshot.size,
-      usersWithSubscription: allSubscriptions.length,
-      statusBreakdown: statusCounts,
-      allSubscriptions
-    });
-    
+
     return allSubscriptions;
   } catch (error) {
     console.error('Error in debugAllSubscriptions:', error);

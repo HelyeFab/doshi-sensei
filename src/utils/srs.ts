@@ -37,7 +37,6 @@ export class SRS {
       easy: 7   // Review in a week
     };
 
-    console.log(`SRS: Card ${wordId} rated as ${rating}, next review in ${intervals[rating]} days`);
   }
 
   // Calculate next review date based on SuperMemo 2 algorithm

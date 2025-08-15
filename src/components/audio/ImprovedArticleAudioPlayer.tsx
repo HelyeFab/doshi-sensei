@@ -40,12 +40,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
 
   // Debug state changes
   useEffect(() => {
-    console.log('[Audio Player] State changed:', {
-      isPlaying: controls.isPlaying,
-      isPaused: controls.isPaused,
-      isLoading,
-      hasAudio: !!audioRef.current
-    });
+
   }, [controls.isPlaying, controls.isPaused, isLoading]);
 
   // Clean up on unmount
@@ -91,7 +86,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
     setLoadingStatus(strings.audio.generating);
 
     try {
-      console.log('[Audio Player] Starting TTS for article:', article.id);
+
       const audio = await ArticleTTSManager.playArticle(
         article.id,
         article.content,
@@ -100,7 +95,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
           provider,
           onProgress: (status) => {
             setLoadingStatus(status);
-            console.log(`[Audio Player] ${status}`);
+
           }
         }
       );
@@ -148,12 +143,12 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
 
       // Ensure state is properly set when audio starts
       audio.addEventListener('playing', () => {
-        console.log('[Audio Player] Playing event triggered');
+
         setControls(prev => ({ ...prev, isPlaying: true, isPaused: false }));
       });
 
       audio.addEventListener('loadedmetadata', () => {
-        console.log('[Audio Player] Metadata loaded, duration:', audio.duration);
+
         setControls(prev => ({ ...prev, duration: audio.duration || 0 }));
       });
 
@@ -207,7 +202,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
 
     // Add metadata and timeupdate listeners
     audio.addEventListener('loadedmetadata', () => {
-      console.log('[Audio Player] Original audio metadata loaded, duration:', audio.duration);
+
       setControls(prev => ({ ...prev, duration: audio.duration || 0 }));
     });
 
@@ -312,7 +307,7 @@ export default function ImprovedArticleAudioPlayer({ article }: ArticleAudioPlay
 
   // Don't render if no article is provided
   if (!article) {
-    console.warn('[Audio Player] Component rendered without article data');
+
     return null;
   }
 

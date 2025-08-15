@@ -62,7 +62,6 @@ export default function VocabularyClient() {
     }
   }, [searchSource]);
 
-
   // Persist search source
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -146,7 +145,7 @@ export default function VocabularyClient() {
         resultsCount: searchResults.length,
         source: searchSource 
       });
-      console.log('📊 [Analytics] Word search tracked:', { term, results: searchResults.length, source: searchSource });
+
     } catch (err) {
       setError('Search failed. Please try again.');
       console.error('Error searching words:', err);
@@ -256,7 +255,7 @@ export default function VocabularyClient() {
       setExampleToSave(null);
 
       // Show success message (optional)
-      console.log(exampleToSave ? 'Sentence saved successfully' : 'Word saved successfully');
+
     } catch (error) {
       console.error('Error saving to lists:', error);
     }

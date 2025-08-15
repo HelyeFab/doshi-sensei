@@ -17,7 +17,7 @@ export function FastRefreshLogger() {
         if (errorString.includes('Fast Refresh') || 
             errorString.includes('mixed exports') ||
             errorString.includes('useNavigation')) {
-          console.log('🚨 [FastRefreshLogger] Fast Refresh Error Detected:', errorString);
+
           console.trace('Error stack trace:');
         }
         

@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         userId = decodedToken.uid;
       } catch (error) {
         // Continue without user ID - anonymous tracking
-        console.log('Anonymous share tracking');
+
       }
     }
     

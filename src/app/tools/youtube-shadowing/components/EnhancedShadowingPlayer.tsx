@@ -70,14 +70,7 @@ export default function EnhancedShadowingPlayer({
   
   // Debug logging for formatted transcript
   useEffect(() => {
-    console.log('🎮 [PLAYER] Formatted transcript status:', {
-      hasMetadata: !!session.videoMetadata,
-      hasFormattedField: !!session.videoMetadata?.formattedTranscript,
-      formattedLength: session.videoMetadata?.formattedTranscript?.length || 0,
-      hasFormattedVersion: session.videoMetadata?.hasFormattedVersion,
-      hasFormattedTranscript,
-      currentlyUsing: hasFormattedTranscript && useFormattedTranscript ? 'AI-Formatted' : 'Original/Raw'
-    });
+
   }, [session.videoMetadata, useFormattedTranscript, hasFormattedTranscript]);
   
   const activeTranscript = (useFormattedTranscript && hasFormattedTranscript) 
@@ -249,7 +242,7 @@ export default function EnhancedShadowingPlayer({
     if (isLocalVideo && localVideoRef.current && session.videoUrl) {
       // Force reload the video source
       localVideoRef.current.load();
-      console.log('Local video initialized with URL:', session.videoUrl);
+
     }
   }, [isLocalVideo, session.videoUrl]);
 
@@ -279,7 +272,7 @@ export default function EnhancedShadowingPlayer({
     // Ensure the DOM element exists before creating the player
     const playerElement = document.getElementById('enhanced-youtube-player');
     if (!playerElement) {
-      console.warn('YouTube player element not found, retrying...');
+
       setTimeout(() => {
         if (isYouTubeMode && displayMode === 'video') {
           initializeYouTubePlayer();
@@ -326,11 +319,10 @@ export default function EnhancedShadowingPlayer({
   };
 
   const handleYouTubeStateChange = (event: any) => {
-    console.log('[YT STATE]', event.data, 'isInRepeatMode:', isInRepeatMode, 'isHandlingRepeatEnd:', isHandlingRepeatEnd, 'repeatCount:', repeatCount);
-    
+
     // Ignore state changes while handling repeat end or in repeat mode
     if (isHandlingRepeatEnd || (repeatCount > 1)) {
-      console.log('[YT STATE] Ignoring state change due to repeat mode');
+
       return;
     }
     
@@ -355,7 +347,7 @@ export default function EnhancedShadowingPlayer({
   const startYouTubeSync = () => {
     // Guard: never run sync while in repeat mode
     if (isInRepeatMode || repeatCount > 1 || isPausingForRepeat || currentRepeat > 0) {
-      console.log('[SYNC] Skipping sync - in repeat mode');
+
       return;
     }
 
@@ -363,7 +355,6 @@ export default function EnhancedShadowingPlayer({
       clearInterval(syncIntervalRef.current);
     }
 
-    console.log('[SYNC] Starting YouTube sync');
     // In normal mode, just track position for UI updates
     syncIntervalRef.current = setInterval(() => {
       if (youtubePlayerRef.current && youtubePlayerRef.current.getCurrentTime && isYouTubeReady) {
@@ -387,7 +378,7 @@ export default function EnhancedShadowingPlayer({
   const updateCurrentLineByTime = (currentTime: number) => {
     // During repeat mode, don't allow automatic line changes
     if (isInRepeatMode || repeatCount > 1 || isPausingForRepeat || currentRepeat > 0) {
-      console.log('[UPDATE] Skipping line update - in repeat mode');
+
       return;
     }
     
@@ -400,7 +391,7 @@ export default function EnhancedShadowingPlayer({
     
     // Only update if we found a valid line and it's different from current
     if (activeIndex !== -1 && activeIndex !== session.currentLineIndex) {
-      console.log(`[UPDATE] Changing line from ${session.currentLineIndex + 1} to ${activeIndex + 1}`);
+
       onLineChange(activeIndex);
     } else if (activeIndex === -1 && currentTime > 0) {
       // If no line matches, find the closest previous line
@@ -409,7 +400,7 @@ export default function EnhancedShadowingPlayer({
       );
       if (closestIndex !== -1 && closestIndex !== session.currentLineIndex) {
         // We're between lines, stay on the last completed line
-        console.log(`[UPDATE] Moving to closest line: ${closestIndex + 1}`);
+
         onLineChange(closestIndex);
       }
     }
@@ -444,33 +435,31 @@ export default function EnhancedShadowingPlayer({
   const handleLineComplete = () => {
     const currentRep = currentRepeatRef.current;
     const nextRepeat = currentRep + 1;
-    console.log(`[COMPLETE] Line ${session.currentLineIndex + 1} - Completed repeat ${currentRep + 1}/${repeatCount}`);
-    console.log(`[COMPLETE] Next repeat would be: ${nextRepeat}, repeatCount: ${repeatCount}`);
-    
+
     // Stop any ongoing sync to prevent advancing to next line
     stopYouTubeSync();
     
     if (nextRepeat < repeatCount) {
       // More repeats to go
-      console.log(`[COMPLETE] Setting up repeat ${nextRepeat + 1} after ${pauseBetweenRepeats}ms pause`);
+
       setCurrentRepeat(nextRepeat);
       setActiveRepeatNumber(nextRepeat + 1);
       setIsPausingForRepeat(true);
       
       repeatTimeoutRef.current = setTimeout(() => {
-        console.log(`[COMPLETE] Timeout fired, starting repeat ${nextRepeat + 1}`);
+
         playCurrentLine();
       }, pauseBetweenRepeats);
     } else {
       // All repeats done
-      console.log(`[COMPLETE] All ${repeatCount} repeats done for line ${session.currentLineIndex + 1}`);
+
       setCurrentRepeat(0);
       setActiveRepeatNumber(1);
       setIsInRepeatMode(false); // Clear repeat mode flag
       
       // Check if we should auto-advance to next line
       if (autoAdvance && session.currentLineIndex < activeTranscript.length - 1) {
-        console.log(`[COMPLETE] Auto-advancing to next line...`);
+
         // Add a small delay before advancing
         setTimeout(() => {
           onLineChange(session.currentLineIndex + 1);
@@ -490,7 +479,7 @@ export default function EnhancedShadowingPlayer({
 
     // Use the ref which always has the current value
     const repeatNum = currentRepeatRef.current + 1;
-    console.log(`[PLAY] Line ${session.currentLineIndex + 1}, repeat ${repeatNum}/${repeatCount}`);
+
     setIsPausingForRepeat(false);
     
     // Set repeat mode flag when starting with repeats
@@ -527,7 +516,7 @@ export default function EnhancedShadowingPlayer({
             
             // If we've reached or passed the end time, pause
             if (currentTime >= currentLine.endTime - 0.1) { // Small buffer for accuracy
-              console.log(`[MONITOR] Reached end of line, pausing...`);
+
               clearInterval(checkInterval);
               repeatMonitorRef.current = null;
               setIsHandlingRepeatEnd(true); // Flag to prevent state change interference
@@ -687,7 +676,6 @@ export default function EnhancedShadowingPlayer({
     }
   };
 
-
   return (
     <div className="space-y-4">
       {/* Video/Audio Display */}
@@ -728,7 +716,7 @@ export default function EnhancedShadowingPlayer({
                 showNotification({ title: 'Video format not supported', message: 'Showing fallback player with controls.', type: 'warning' });
               }}
               onLoadedMetadata={() => {
-                console.log('Video metadata loaded successfully');
+
                 setVideoError(false); // Reset error if video loads successfully
               }}
               controls={false} // We use our own controls
@@ -747,8 +735,8 @@ export default function EnhancedShadowingPlayer({
       {/* Fallback Video Player with Native Controls */}
       {isLocalVideo && showVideo && displayMode === 'video' && session.videoUrl && session.videoUrl.startsWith('blob:') && videoError && (
         <div className="bg-card rounded-lg shadow-sm border border-border p-4">
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-amber-800">
+          <div className="bg-warning/10 border border-warning/20 rounded-lg p-3 mb-4">
+            <p className="text-sm text-warning-foreground">
               Using browser's native video player. Some shadowing features may be limited.
             </p>
           </div>
@@ -763,20 +751,18 @@ export default function EnhancedShadowingPlayer({
         </div>
       )}
 
-      
-      {/* Current Line Display */}
-      <div className="bg-card rounded-lg shadow-sm border border-border p-6 relative">
-        {/* Settings Button - Top Right - More Prominent */}
+      {/* Settings Button - Outside transcript container */}
+      <div className="flex justify-end mb-2 relative">
         <button
           onClick={() => setShowSettings(!showSettings)}
-          className="absolute top-4 right-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all group"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-all group"
           aria-label="Settings"
           title="Click for playback settings and AI transcript toggle"
         >
-          <Settings className="w-4 h-4 text-primary group-hover:rotate-45 transition-transform" />
-          <span className="text-sm font-medium text-primary">Settings</span>
+          <Settings className="w-4 h-4 text-foreground group-hover:rotate-45 transition-transform" />
+          <span className="text-sm font-medium text-foreground">Settings</span>
         </button>
-        
+
         {/* Settings Dropdown Modal */}
         {showSettings && (
           <>
@@ -787,7 +773,7 @@ export default function EnhancedShadowingPlayer({
             />
             
             {/* Settings Dropdown */}
-            <div className="absolute top-12 right-4 w-80 bg-card rounded-lg shadow-lg border border-border p-4 z-50 max-h-[80vh] overflow-y-auto">
+            <div className="absolute right-0 top-full mt-2 w-80 bg-card rounded-lg shadow-lg border border-border p-4 z-50 max-h-[80vh] overflow-y-auto">
               <h3 className="font-medium text-foreground mb-4 flex items-center gap-2">
                 <Settings className="w-4 h-4" />
                 Settings
@@ -928,7 +914,7 @@ export default function EnhancedShadowingPlayer({
                       <button
                         onClick={() => setUseFormattedTranscript(!useFormattedTranscript)}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          useFormattedTranscript ? 'bg-primary' : 'bg-amber-500'
+                          useFormattedTranscript ? 'bg-primary' : 'bg-muted'
                         }`}
                         role="switch"
                         aria-checked={useFormattedTranscript}
@@ -990,25 +976,31 @@ export default function EnhancedShadowingPlayer({
             </div>
           </>
         )}
+      </div>
+        
+      {/* Current Line Display */}
+      <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+        {/* AI Icon row */}
+        {currentLine?.text && (
+          <div className="flex justify-start mb-4">
+            <AIExplanationTrigger
+              text={cleanRomaji(currentLine.text)}
+              contextType="sentence"
+              size="lg"
+            />
+          </div>
+        )}
         
         <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-2">
+          <div className="py-8 px-4">
             <p 
-              className="text-2xl font-medium text-foreground mb-2 japanese-text"
+              className="text-2xl font-medium text-foreground japanese-text"
               dangerouslySetInnerHTML={{ 
                 __html: showFurigana 
                   ? currentLineFurigana 
                   : cleanRomaji(currentLine?.text || '')
               }}
             />
-            {currentLine?.text && (
-              <AIExplanationTrigger
-                text={cleanRomaji(currentLine.text)}
-                contextType="sentence"
-                className="mb-2"
-                size="md"
-              />
-            )}
           </div>
           <p className="text-sm text-muted-foreground">
             Line {session.currentLineIndex + 1} of {activeTranscript.length}

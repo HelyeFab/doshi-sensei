@@ -51,7 +51,7 @@ export function withErrorHandling(handler: ApiHandler): ApiHandler {
     try {
       // Log request in development
       if (process.env.NODE_ENV === 'development') {
-        console.log(`[API] ${request.method} ${path}`);
+
       }
 
       // Create timeout promise (9 seconds for Netlify's 10-second limit)

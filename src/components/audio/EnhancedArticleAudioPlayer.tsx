@@ -180,7 +180,7 @@ export default function EnhancedArticleAudioPlayer({ article }: ArticleAudioPlay
           setLoadingStatus('Playing cached audio');
           return;
         } catch (error) {
-          console.warn('Cached audio failed, regenerating...', error);
+
           delete audioCache.current[cacheKey];
         }
       }

@@ -9,9 +9,7 @@ export async function POST() {
     
     // For now, we'll just return success
     // The client-side AchievementManager will handle cache clearing
-    
-    console.log('🔄 Achievement cache refresh requested');
-    
+
     return NextResponse.json({ 
       success: true, 
       message: 'Cache refresh triggered',

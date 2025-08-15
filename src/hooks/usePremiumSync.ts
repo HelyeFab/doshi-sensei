@@ -123,13 +123,13 @@ export function usePremiumSync(): UsePremiumSyncReturn {
           await (registration as any).sync.register('premium-content-sync');
           // Only log in development
           if (process.env.NODE_ENV === 'development') {
-            console.log('Premium sync registered with service worker');
+
           }
         } catch (error) {
           // Sync registration can fail for various reasons (no network, browser restrictions)
           // This is not a critical error, so we just silently continue
           if (process.env.NODE_ENV === 'development') {
-            console.warn('Failed to register sync:', error);
+
           }
         }
       }
@@ -153,7 +153,7 @@ export function usePremiumSync(): UsePremiumSyncReturn {
     }
 
     if (syncStatus === 'syncing') {
-      console.log('Sync already in progress');
+
       return;
     }
 
@@ -175,13 +175,7 @@ export function usePremiumSync(): UsePremiumSyncReturn {
         localStorage.setItem(`lastSyncTime_${user.uid}`, Date.now().toString());
         
         // Log sync results
-        console.log('Sync completed:', {
-          resourcesSynced: result.resourcesSynced,
-          downloaded: result.resourcesDownloaded,
-          uploaded: result.resourcesUploaded,
-          conflicts: result.conflicts,
-          duration: `${result.syncDuration}ms`
-        });
+
       } else {
         setSyncStatus('error');
         setSyncError(result.error || 'Sync failed');

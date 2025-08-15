@@ -181,7 +181,7 @@ export class ResourceCacheManager {
       AdjectiveCache.clearCache(),
       AudioCache.clearCache()
     ]);
-    console.log('[ResourceCacheManager] Cleared all caches');
+
   }
 
   /**

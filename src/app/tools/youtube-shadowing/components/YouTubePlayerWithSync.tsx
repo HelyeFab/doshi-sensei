@@ -81,7 +81,7 @@ export default function YouTubePlayerWithSync({
 
   const handlePlayerReady = () => {
     setIsReady(true);
-    console.log('YouTube player ready');
+
   };
 
   const handleStateChange = (event: any) => {

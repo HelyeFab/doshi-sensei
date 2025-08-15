@@ -83,8 +83,7 @@ async function playGameAudioViaFetch(audioPath: string, originalAudio: HTMLAudio
     originalAudio.loop = loop;
     
     await originalAudio.play();
-    console.log(`[Game Audio] Successfully playing via fetch: ${audioPath}`);
-    
+
     // Clean up blob URL when done (if not looping)
     if (!loop) {
       originalAudio.addEventListener('ended', () => {

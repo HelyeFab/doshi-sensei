@@ -107,7 +107,7 @@ export async function extractUrlMetadata(url: string) {
             extractedData.image = data.thumbnail_url || '';
           }
         } catch (error) {
-          console.warn('Failed to fetch YouTube metadata:', error);
+
         }
       }
     }
@@ -163,7 +163,7 @@ export async function extractUrlMetadata(url: string) {
         }
         extractedData.description = urlObj.hostname;
       } catch (error) {
-        console.warn('Failed to extract general URL metadata:', error);
+
       }
     }
     

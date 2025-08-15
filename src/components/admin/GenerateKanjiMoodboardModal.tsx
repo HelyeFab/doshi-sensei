@@ -38,8 +38,7 @@ export default function GenerateKanjiMoodboardModal({
     setIsGenerating(true);
 
     try {
-      console.log('Generating moodboard with:', { theme, jlptLevel, kanjiCount, customTags });
-      
+
       const response = await fetch('/api/admin/generate-kanji-moodboard', {
         method: 'POST',
         headers: {
@@ -54,26 +53,22 @@ export default function GenerateKanjiMoodboardModal({
         })
       });
 
-      console.log('Response status:', response.status, response.statusText);
-
       if (!response.ok) {
         let errorMessage = 'Failed to generate moodboard';
         try {
           const error = await response.json();
-          console.log('Error response:', error);
+
           errorMessage = error.error || errorMessage;
         } catch (e) {
           // If response isn't JSON, use status text
-          console.log('Failed to parse error response:', e);
+
           errorMessage = response.statusText || errorMessage;
         }
         throw new Error(errorMessage);
       }
 
       const moodboardData = await response.json();
-      
-      console.log('Generated moodboard data:', moodboardData);
-      
+
       if (!moodboardData.kanjiList || !Array.isArray(moodboardData.kanjiList)) {
         throw new Error('Invalid response format: missing kanjiList');
       }
@@ -99,9 +94,7 @@ export default function GenerateKanjiMoodboardModal({
           createdAt: new Date(),
           updatedAt: new Date()
         };
-        
-        console.log('Transformed mood board for story generation:', transformedMoodBoard);
-        
+
         try {
           const storyResponse = await fetch('/api/admin/generate-moodboard-story', {
             method: 'POST',

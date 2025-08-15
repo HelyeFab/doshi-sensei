@@ -71,17 +71,15 @@ export class TranscriptCacheManager {
       const normalizedUrl = decodeURIComponent(params.videoUrl);
       
       // Extract YouTube video ID
-      console.log('🆔 [CACHE] Original URL:', params.videoUrl);
-      console.log('🆔 [CACHE] Normalized URL:', normalizedUrl);
-      console.log('🆔 [CACHE] Extracting video ID from normalized URL...');
+
       const videoId = this.extractYouTubeVideoId(normalizedUrl);
-      console.log('🆔 [CACHE] Extracted video ID:', videoId);
+
       if (videoId) {
         const contentId = `youtube_${videoId}`;
-        console.log('🆔 [CACHE] Generated content ID:', contentId);
+
         return contentId;
       } else {
-        console.log('❌ [CACHE] Failed to extract video ID, falling back to hash');
+
         // Fallback to a hash of the URL if we can't extract the ID
         let hash = 0;
         for (let i = 0; i < normalizedUrl.length; i++) {
@@ -90,7 +88,7 @@ export class TranscriptCacheManager {
           hash = hash & hash;
         }
         const fallbackId = `youtube_fallback_${Math.abs(hash).toString(16)}`;
-        console.log('🆔 [CACHE] Generated fallback content ID:', fallbackId);
+
         return fallbackId;
       }
     }
@@ -114,8 +112,7 @@ export class TranscriptCacheManager {
    * Handles all common YouTube URL formats
    */
   private static extractYouTubeVideoId(url: string): string | null {
-    console.log('🔧 [CACHE] Extracting video ID from:', url);
-    
+
     // Clean the URL first - remove any trailing slashes or query parameters after the video ID
     const cleanUrl = url.trim();
     
@@ -140,12 +137,11 @@ export class TranscriptCacheManager {
     for (const pattern of patterns) {
       const match = cleanUrl.match(pattern);
       if (match && match[1]) {
-        console.log('✅ [CACHE] Extracted video ID:', match[1], 'using pattern:', pattern.source);
+
         return match[1];
       }
     }
-    
-    console.log('❌ [CACHE] Failed to extract video ID from URL:', url);
+
     return null;
   }
 
@@ -154,10 +150,7 @@ export class TranscriptCacheManager {
    */
   static async getCachedTranscript(contentId: string): Promise<CachedTranscript | null> {
     try {
-      console.log('🔍 [CACHE] Looking up transcript in Firestore');
-      console.log('🔍 [CACHE] Collection:', this.COLLECTION_NAME);
-      console.log('🔍 [CACHE] Document ID:', contentId);
-      
+
       // Ensure Firestore is available - REQUIRED
       if (!db) {
         console.error('❌ [CACHE] CRITICAL: Firestore not initialized - caching is mandatory');
@@ -168,8 +161,7 @@ export class TranscriptCacheManager {
       const docSnap = await getDoc(docRef);
 
       if (!docSnap.exists()) {
-        console.log('❌ [CACHE] Document does not exist in Firestore');
-        console.log('❌ [CACHE] Tried to find:', contentId);
+
         return null;
       }
 
@@ -180,7 +172,7 @@ export class TranscriptCacheManager {
       if (createdAt) {
         const ageInDays = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
         if (ageInDays > this.CACHE_DURATION_DAYS) {
-          console.log('Cached transcript expired');
+
           return null;
         }
       }
@@ -191,15 +183,6 @@ export class TranscriptCacheManager {
         accessCount: increment(1)
       });
 
-      console.log('✅ [CACHE] Found cached transcript!');
-      console.log('✅ [CACHE] Document data:', {
-        id: data.id,
-        contentId: data.contentId,
-        videoUrl: data.videoUrl,
-        videoTitle: data.videoTitle,
-        transcriptLength: data.transcript?.length,
-        accessCount: data.accessCount + 1
-      });
       return data;
     } catch (error: any) {
       console.error('❌ [CACHE] Error getting cached transcript:', error?.message || error);
@@ -236,10 +219,7 @@ export class TranscriptCacheManager {
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
         console.log(`💾 [CACHE] Saving transcript to Firestore (attempt ${attempt}/${MAX_RETRIES})`);
-        console.log('💾 [CACHE] Document ID:', params.contentId);
-        console.log('💾 [CACHE] Video URL:', params.videoUrl);
-        console.log('💾 [CACHE] Video Title:', params.videoTitle);
-        
+
         // Check Firestore availability
         if (!db) {
           throw new Error('Firestore is required but not initialized');
@@ -255,37 +235,43 @@ export class TranscriptCacheManager {
           });
         }
         
+        // Build cache data carefully to avoid undefined values
         const cacheData: any = {
           id: params.contentId,
           contentId: params.contentId,
           contentType: params.contentType,
-          videoUrl: params.videoUrl,
-          videoTitle: params.videoTitle,
-          transcript: params.transcript,
-          language: params.language,
+          transcript: params.transcript || [],
+          language: params.language || 'ja',
           createdAt: serverTimestamp(),
           lastAccessed: serverTimestamp(),
           accessCount: 1
         };
         
         // Only add optional fields if they're defined (Firestore doesn't accept undefined values)
-        if (params.duration !== undefined) {
+        if (params.videoUrl !== undefined && params.videoUrl !== null) {
+          cacheData.videoUrl = params.videoUrl;
+        }
+        if (params.videoTitle !== undefined && params.videoTitle !== null) {
+          cacheData.videoTitle = params.videoTitle;
+        }
+        if (params.duration !== undefined && params.duration !== null) {
           cacheData.duration = params.duration;
         }
-        if (params.userId !== undefined) {
+        if (params.userId !== undefined && params.userId !== null) {
           cacheData.createdBy = params.userId;
         }
         if (Object.keys(cleanMetadata).length > 0) {
           cacheData.metadata = cleanMetadata;
         }
+        
+        // Validate required fields
+        if (!cacheData.contentId || !cacheData.contentType) {
+          throw new Error('Missing required fields: contentId or contentType');
+        }
 
         const docRef = doc(db, this.COLLECTION_NAME, params.contentId);
         await setDoc(docRef, cacheData);
 
-        console.log('✅ [CACHE] Transcript saved to cache successfully');
-        console.log('✅ [CACHE] Saved with Document ID:', params.contentId);
-        console.log('✅ [CACHE] Content type:', params.contentType);
-        console.log('✅ [CACHE] Video title:', params.videoTitle);
         return; // Success - exit the function
       } catch (error: any) {
         console.error(`❌ [CACHE] Error saving transcript (attempt ${attempt}/${MAX_RETRIES}):`, error?.message || error);
@@ -293,11 +279,21 @@ export class TranscriptCacheManager {
         // If this is the last attempt, throw the error
         if (attempt === MAX_RETRIES) {
           console.error('❌ [CACHE] All retry attempts exhausted');
-          throw new Error(`Failed to save transcript to cache after ${MAX_RETRIES} attempts: ${error?.message || error}`);
+          // Include more context about the error
+          const errorMessage = error?.message || String(error);
+          if (errorMessage.includes('permission') || errorMessage.includes('unauthorized')) {
+            throw new Error(`Firestore permission denied. Please ensure you are logged in.`);
+          } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+            throw new Error(`Network error while saving to cache. Please check your connection.`);
+          } else if (errorMessage.includes('undefined') || errorMessage.includes('null')) {
+            throw new Error(`Invalid data: Some required fields are missing.`);
+          } else {
+            throw new Error(`Failed to save transcript to cache: ${errorMessage}`);
+          }
         }
         
         // Wait before retrying
-        console.log(`🔄 [CACHE] Retrying save in ${RETRY_DELAY}ms...`);
+
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       }
     }
@@ -314,11 +310,7 @@ export class TranscriptCacheManager {
       if (!db) {
         throw new Error('Firestore is required but not initialized');
       }
-      
-      console.log('💾 [CACHE] Updating with formatted transcript');
-      console.log('💾 [CACHE] Document ID:', contentId);
-      console.log('💾 [CACHE] Formatted lines:', formattedTranscript.length);
-      
+
       const docRef = doc(db, this.COLLECTION_NAME, contentId);
       
       await updateDoc(docRef, {
@@ -327,8 +319,7 @@ export class TranscriptCacheManager {
         'metadata.formattingModel': 'gpt-4',
         'metadata.wasFormatted': true
       });
-      
-      console.log('✅ [CACHE] Formatted transcript saved successfully');
+
     } catch (error) {
       console.error('❌ [CACHE] Failed to save formatted transcript:', error);
       throw error;
@@ -341,20 +332,17 @@ export class TranscriptCacheManager {
   static async deleteCachedTranscript(contentId: string): Promise<void> {
     try {
       if (!db) {
-        console.warn('⚠️ [CACHE] Firestore not initialized, cannot delete transcript');
+
         return;
       }
-      
-      console.log('🗑️ [CACHE] Attempting to delete cached transcript');
-      console.log('🗑️ [CACHE] Document ID:', contentId);
-      
+
       const { deleteDoc } = await import('firebase/firestore');
       const docRef = doc(db, this.COLLECTION_NAME, contentId);
       
       // Try to delete regardless of whether document exists
       // (deleteDoc is idempotent - won't error if doc doesn't exist)
       await deleteDoc(docRef);
-      console.log('✅ [CACHE] Cached transcript deleted successfully');
+
     } catch (error) {
       console.error('❌ [CACHE] Failed to delete cached transcript:', error);
       // Don't throw - this is a non-critical operation
@@ -384,26 +372,20 @@ export class TranscriptCacheManager {
    */
   static async debugListAllCachedTranscripts(): Promise<void> {
     if (process.env.NODE_ENV !== 'development') {
-      console.log('Debug function only available in development mode');
+
       return;
     }
     
     try {
-      console.log('🔍 [CACHE DEBUG] Fetching all cached transcripts...');
+
       const { getDocs, collection: firestoreCollection } = await import('firebase/firestore');
       const querySnapshot = await getDocs(firestoreCollection(db, this.COLLECTION_NAME));
-      
-      console.log(`🔍 [CACHE DEBUG] Found ${querySnapshot.size} cached transcripts:`);
-      
+
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log(`💾 Document ID: ${doc.id}`);
-        console.log(`   - Video URL: ${data.videoUrl}`);
-        console.log(`   - Video Title: ${data.videoTitle}`);
-        console.log(`   - Content Type: ${data.contentType}`);
-        console.log(`   - Access Count: ${data.accessCount}`);
+
         console.log(`   - Created At: ${data.createdAt?.toDate?.()?.toISOString()}`);
-        console.log('---');
+
       });
     } catch (error) {
       console.error('❌ [CACHE DEBUG] Error listing cached transcripts:', error);

@@ -67,7 +67,6 @@ export async function saveReadingRoutesProgress(
     // Track with new analytics
     const accuracy = result.totalQuestions > 0 ? (result.correctAnswers / result.totalQuestions) * 100 : 0;
     analyticsTracker.trackGameComplete('reading_routes', result.score, accuracy);
-    console.log('[ReadingRoutes] Analytics tracked:', { game: 'reading_routes', score: result.score, accuracy });
 
     // Track analytics event
     if (userId) {

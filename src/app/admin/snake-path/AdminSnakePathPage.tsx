@@ -32,7 +32,6 @@ const DEFAULT_POSITIONS = [
   { x: 49.0, y: 2010 },
 ];
 
-
 type DeviceType = 'mobile' | 'tablet' | 'desktop' | 'bigscreen';
 
 interface PathNode {
@@ -143,25 +142,19 @@ function SnakePathEditor() {
   };
 
   const exportPositions = () => {
-    console.log('// Responsive Snake Path Positions:');
-    console.log('export const RESPONSIVE_POSITIONS = {');
-    
+
     (Object.keys(responsivePositions) as DeviceType[]).forEach(device => {
-      console.log(`  ${device}: [`);
+
       responsivePositions[device].forEach((pos, i) => {
         console.log(`    { x: ${pos.x.toFixed(1)}, y: ${pos.y} }, // ${nodes[i]?.title || `Node ${i}`}`);
       });
-      console.log('  ],');
+
     });
-    
-    console.log('};');
-    
-    console.log('\n// For ProductionSnakePath.tsx:');
-    console.log('const PRODUCTION_POSITIONS = [');
+
     currentPositions.forEach((pos, i) => {
       console.log(`  { x: ${pos.x.toFixed(1)}, y: ${pos.y} }, // ${nodes[i]?.title || `Node ${i}`}`);
     });
-    console.log('];');
+
   };
 
   const handleSaveClick = () => {
@@ -212,7 +205,7 @@ function SnakePathEditor() {
         }, 100);
         
         // Still export to console as backup
-        console.log('=== BACKUP: Snake Path Positions ===');
+
         exportPositions();
         return;
       }
@@ -248,7 +241,7 @@ function SnakePathEditor() {
       }
 
       // Also export to console as backup
-      console.log('=== BACKUP: Snake Path Positions ===');
+
       exportPositions();
     } catch (error) {
       console.error('Error saving positions:', error);

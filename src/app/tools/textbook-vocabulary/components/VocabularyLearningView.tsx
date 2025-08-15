@@ -79,12 +79,9 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
   const currentTextbook = TEXTBOOK_CONFIG.textbooks[textbook as keyof typeof TEXTBOOK_CONFIG.textbooks];
 
   const handleStartStudy = async (cards: VocabularyItem[]) => {
-    console.log('Starting study session with cards:', cards);
-    
+
     // Debug checkAndTrack
-    console.log('checkAndTrack prop:', checkAndTrack);
-    console.log('checkAndTrack type:', typeof checkAndTrack);
-    
+
     if (!checkAndTrack || typeof checkAndTrack !== 'function') {
       console.error('checkAndTrack is not a function or is undefined');
       showError('Configuration Error', 'Access control is not properly configured. Please refresh the page.');
@@ -94,7 +91,7 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
     // FIRST check access and track usage
     const canAccess = await checkAndTrack('textbook_vocabulary');
     if (!canAccess) {
-      console.log('Access denied - limit reached');
+
       return; // Modal shown automatically by checkAndTrack
     }
     
@@ -105,7 +102,7 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
       
       // Start the study session
       await startStudySession(cards, textbook);
-      console.log('Study session started, view mode will be set by useEffect');
+
     } catch (error) {
       console.error('Failed to start study session:', error);
       showError(ERROR_MESSAGES.SESSION_START_FAILED.title, ERROR_MESSAGES.SESSION_START_FAILED.message);
@@ -147,20 +144,14 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
   // Watch for study queue changes and switch to study view
   useEffect(() => {
     if (studyQueue.length > 0 && viewMode !== 'study') {
-      console.log('Study queue populated, switching to study view');
+
       setViewMode('study');
     }
   }, [studyQueue.length, viewMode]);
 
   // Debug log for view mode and study queue
   useEffect(() => {
-    console.log('Current state:', { 
-      viewMode, 
-      studyQueueLength: studyQueue.length, 
-      isStudying,
-      currentCardIndex,
-      shouldShowStudyView: viewMode === 'study' && studyQueue.length > 0 && currentCardIndex < studyQueue.length
-    });
+
   }, [viewMode, studyQueue.length, isStudying, currentCardIndex]);
 
   if (loading) {

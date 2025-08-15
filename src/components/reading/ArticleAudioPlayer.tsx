@@ -124,7 +124,6 @@ export function ArticleAudioPlayer({ article, onClose }: ArticleAudioPlayerProps
         }
       );
 
-      console.log(`✅ Preloaded audio for ${sentences.length} sentences`);
     } catch (error) {
       console.error('Error preloading audio:', error);
     } finally {

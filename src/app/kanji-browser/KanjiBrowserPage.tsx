@@ -298,10 +298,7 @@ export default function KanjiBrowserPage() {
       jlptLevel: kanji.jlpt,
       source: "kanji_browser",
     });
-    console.log("📊 [Analytics] Kanji viewed:", {
-      kanji: kanji.character,
-      level: kanji.jlpt,
-    });
+
   };
 
   const handleKanjiSave = (kanji: Kanji) => {

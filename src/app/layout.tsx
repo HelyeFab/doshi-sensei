@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { CombinedAuthProvider } from "@/contexts/CombinedAuthProvider";
-import { CombinedUIProvider } from "@/contexts/CombinedUIProvider";
-import { CombinedFeatureProvider } from "@/contexts/CombinedFeatureProvider";
-import { NotificationServiceProvider } from "@/contexts/NotificationServiceContext";
-import { ToastProvider } from "@/components/ui/Toast";
-import { EnhancedToastProvider } from "@/components/ui/EnhancedToast";
+import { OptimizedProviders } from "@/contexts/OptimizedProviders";
 import { UnifiedNotificationProvider } from "@/components/UnifiedNotificationProvider";
 import { PWAErrorBoundary } from "@/components/PWAErrorBoundary";
 import { IOSInstallGuide } from "@/components/IOSInstallGuide";
@@ -19,7 +14,6 @@ import FloatingDonateButton from "@/components/FloatingDonateButton";
 import PWAWrapper from "@/components/PWAWrapper";
 import { OnboardingWrapper } from "@/components/onboarding/OnboardingWrapper";
 import CompanionTrigger from "@/components/CompanionTrigger";
-import { VirtualCompanionProvider } from "@/contexts/VirtualCompanionContext";
 import GlobalVirtualCompanion from "@/components/GlobalVirtualCompanion";
 import { DevHelper } from '@/components/DevHelper';
 import { AchievementToastManager } from '@/components/achievements/AchievementToast';
@@ -29,7 +23,6 @@ import { FastRefreshLogger } from '@/components/FastRefreshLogger';
 import { NavigationErrorBoundary } from './NavigationErrorBoundary';
 import { PersistentLogger } from '@/components/PersistentLogger';
 import { PrewarmingScript } from '@/components/PrewarmingScript';
-import { QuickContextProvider } from '@/components/QuickContext';
 import NextAuthProvider from '@/components/providers/NextAuthProvider';
 import DisableReactDevTools from '@/components/DisableReactDevTools';
 
@@ -304,27 +297,24 @@ export default function RootLayout({
       >
         <EnvProvider>
           <NextAuthProvider>
-            <CombinedUIProvider>
-              <CombinedAuthProvider>
-                <CombinedFeatureProvider>
-                  <NotificationServiceProvider>
-                    <VirtualCompanionProvider>
-                    <PWAWrapper>
-                      <OnboardingWrapper>
-                        <AchievementToastManager>
-                          <QuickContextProvider>
-                            <ToastProvider>
-                              <EnhancedToastProvider>
-                                <div className="min-h-screen bg-background text-foreground">
-                                <FastRefreshLogger />
-                                {process.env.NODE_ENV === 'development' && <PersistentLogger />}
+            <OptimizedProviders>
+              <PWAWrapper>
+                <OnboardingWrapper>
+                  <AchievementToastManager>
+                    <div className="min-h-screen bg-background text-foreground">
+                                {process.env.NODE_ENV === 'development' && (
+                                  <>
+                                    <FastRefreshLogger />
+                                    <PersistentLogger />
+                                    <PerformanceMonitor />
+                                  </>
+                                )}
                                 <PWAErrorBoundary>
                                   <UnifiedNotificationProvider />
                                 </PWAErrorBoundary>
                                 <IOSInstallGuide />
                                 <DisableReactDevTools />
                                 <LazyInitializers />
-                                <PerformanceMonitor />
                                 <NavigationErrorBoundary>
                                   <div className="mobile-nav-padding">
                                     {children}
@@ -339,17 +329,10 @@ export default function RootLayout({
                                 <DevHelper />
                                 <PWARecovery />
                                 </div>
-                              </EnhancedToastProvider>
-                            </ToastProvider>
-                          </QuickContextProvider>
-                        </AchievementToastManager>
-                      </OnboardingWrapper>
-                    </PWAWrapper>
-                    </VirtualCompanionProvider>
-                  </NotificationServiceProvider>
-                </CombinedFeatureProvider>
-              </CombinedAuthProvider>
-            </CombinedUIProvider>
+                  </AchievementToastManager>
+                </OnboardingWrapper>
+              </PWAWrapper>
+            </OptimizedProviders>
           </NextAuthProvider>
         </EnvProvider>
       </body>

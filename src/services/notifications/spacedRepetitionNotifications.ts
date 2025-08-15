@@ -108,7 +108,7 @@ class SpacedRepetitionNotificationService {
         const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
         
         if (!vapidPublicKey) {
-          console.warn('VAPID public key not configured');
+
           return null;
         }
         

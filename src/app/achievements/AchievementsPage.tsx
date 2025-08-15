@@ -326,7 +326,7 @@ export default function AchievementsPage() {
                 isUnlocked: achievement.isUnlocked,
               }))}
               onAchievementClick={(achievement) => {
-                console.log("Achievement clicked:", achievement);
+
               }}
               size="md"
               animated={true}
@@ -352,7 +352,7 @@ export default function AchievementsPage() {
             <MultiLevelAchievementGrid
               achievements={multiLevelAchievements}
               onAchievementClick={(achievement) => {
-                console.log("Multi-level achievement clicked:", achievement);
+
               }}
               animated={true}
             />

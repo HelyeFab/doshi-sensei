@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { JapaneseWord, ConjugationForms } from '@/types';
-import { ConjugationEngine } from '@/utils/conjugation';
+import { JapaneseWord } from '@/types';
+import { ExtendedConjugationForms } from '@/types/conjugation-extended';
+import { ExtendedConjugationEngine } from '@/utils/conjugation-extended';
 
 export interface AnimatedWordProps {
   word: JapaneseWord;
@@ -13,10 +14,10 @@ export interface AnimatedWordProps {
 export function AnimatedWord({ word, onAnimationComplete, className }: AnimatedWordProps) {
   const [phase, setPhase] = useState<'word' | 'processing' | 'results'>('word');
   const [visibleConjugations, setVisibleConjugations] = useState<string[]>([]);
-  const [conjugations, setConjugations] = useState<ConjugationForms | null>(null);
+  const [conjugations, setConjugations] = useState<ExtendedConjugationForms | null>(null);
 
   useEffect(() => {
-    const conjugationResult = ConjugationEngine.conjugate(word);
+    const conjugationResult = ExtendedConjugationEngine.conjugate(word);
     setConjugations(conjugationResult);
   }, [word]);
 

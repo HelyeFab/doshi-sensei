@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     
     if (specificId) {
       // Check specific article
-      console.log(`Checking specific article: ${specificId}`);
+
       const articleDoc = await getDoc(doc(db, 'articles', specificId));
       
       if (!articleDoc.exists()) {

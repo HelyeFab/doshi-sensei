@@ -7,7 +7,6 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import { usePathname, useRouter } from 'next/navigation';
 
 // Log after imports
-console.log('[NavigationContext] Imports completed');
 
 // Define types inline to avoid import errors
 interface NavigationEntry {
@@ -85,8 +84,7 @@ export function NavigationProvider({
   enablePersistence = true,
   debug = false
 }: NavigationProviderProps) {
-  console.log('[NavigationContext] NavigationProvider rendering');
-  
+
   const pathname = usePathname();
   const router = useRouter();
   const [state, setState] = useState<NavigationState>(() => {
@@ -183,7 +181,7 @@ export function NavigationProvider({
     });
     
     if (debug) {
-      console.log('[Navigation] Pushed:', entry);
+
     }
   }, [maxStackSize, debug]);
   
@@ -203,7 +201,7 @@ export function NavigationProvider({
     });
     
     if (debug && poppedEntry) {
-      console.log('[Navigation] Popped:', poppedEntry);
+
     }
     
     return poppedEntry;
@@ -233,7 +231,7 @@ export function NavigationProvider({
     });
     
     if (debug) {
-      console.log('[Navigation] Replaced:', entry);
+
     }
   }, [debug]);
   
@@ -253,7 +251,7 @@ export function NavigationProvider({
     });
     
     if (debug) {
-      console.log('[Navigation] Cleared stack');
+
     }
   }, [debug]);
   
@@ -303,7 +301,7 @@ export function NavigationProvider({
     statePreservation.save(currentEntry.id, stateToSave);
     
     if (debug) {
-      console.log('[Navigation] Preserved state for:', currentEntry.path);
+
     }
   }, [currentEntry, debug]);
   
@@ -314,7 +312,7 @@ export function NavigationProvider({
     const savedState = statePreservation.restore(currentEntry.id);
     
     if (debug && savedState) {
-      console.log('[Navigation] Restored state for:', currentEntry.path);
+
     }
     
     return savedState;
@@ -434,7 +432,7 @@ function NavigationDebugger({ stack, currentIndex }: { stack: NavigationEntry[],
 
 // Custom hook to use navigation context
 export function useNavigation() {
-  console.log('[NavigationContext] useNavigation called');
+
   console.trace('useNavigation call trace:');
   
   const context = useContext(NavigationContext);

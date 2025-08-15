@@ -49,7 +49,7 @@ export default function MoodBoardPage() {
             
             // Track in new analytics system
             trackArticleView('moodboards', boardId);
-            console.log('📊 [Analytics] Moodboard view tracked:', { boardId, title: boardData.title });
+
           } else {
           setNotFound(true);
         }

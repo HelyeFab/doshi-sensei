@@ -8,8 +8,7 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('Generate character model sheet endpoint called');
-  
+
   try {
     if (!process.env.OPEN_AI_API_KEY) {
       return NextResponse.json({ 
@@ -54,9 +53,6 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
 
     // Generate character model sheet prompt
     const modelSheetPrompt = generateCharacterSheetPrompt(characterProfile);
-    
-    console.log('Generating character model sheet for:', character.name);
-    console.log('Character profile:', characterProfile);
 
     try {
       const response = await openai.images.generate({
@@ -75,8 +71,6 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       if (!imageUrl) {
         throw new Error('No image URL returned from OpenAI');
       }
-
-      console.log('Model sheet generated successfully for:', character.name);
 
       return NextResponse.json({
         success: true,

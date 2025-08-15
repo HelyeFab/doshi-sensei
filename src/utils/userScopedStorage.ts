@@ -52,7 +52,7 @@ export class UserScopedStorage {
   static async clearUserData(storeName: string, userId: string | null): Promise<void> {
     // This would need to be implemented to iterate through all keys
     // For now, we'll log a warning
-    console.warn(`Clear user data requested for store: ${storeName}, user: ${userId}`);
+
   }
 
   /**

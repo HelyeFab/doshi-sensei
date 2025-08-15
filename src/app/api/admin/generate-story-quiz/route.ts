@@ -103,7 +103,7 @@ Requirements:
     let quizData;
     try {
       const content = quizResponse.choices[0].message.content || '{"questions": []}';
-      console.log('Raw quiz response:', content);
+
       quizData = JSON.parse(content);
     } catch (parseError) {
       console.error('Failed to parse quiz JSON:', parseError);

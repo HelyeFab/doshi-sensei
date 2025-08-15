@@ -100,7 +100,7 @@ class SmartAudioCacheService {
         await this.playLocalTTS(text);
         return;
       } catch (error) {
-        console.warn('Local TTS failed, falling back to network:', error);
+
       }
     }
 

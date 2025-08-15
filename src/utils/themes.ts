@@ -178,7 +178,7 @@ export function generateThemeVariables(scheme: ColorScheme, mode: ThemeMode = 'l
 
   // Fallback to default if scheme not found
   if (!palette) {
-    console.warn(`Color scheme '${scheme}' not found, falling back to 'default'`);
+
     return generateThemeVariables('default', mode);
   }
 
@@ -389,7 +389,7 @@ export function getThemePreview(scheme: ColorScheme): { primary: string; seconda
 
   // Fallback to default if scheme not found
   if (!palette) {
-    console.warn(`Color scheme '${scheme}' not found for preview, falling back to 'default'`);
+
     return getThemePreview('default');
   }
 

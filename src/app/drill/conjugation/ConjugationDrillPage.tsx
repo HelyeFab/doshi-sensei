@@ -2,12 +2,25 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { JapaneseWord, DrillQuestion, ConjugationForms, WordList } from '@/types';
-import { ConjugationEngine, getRandomConjugationForm, generateQuestionStem } from '@/utils/conjugation';
+import { JapaneseWord, DrillQuestion, WordList } from '@/types';
+import { ExtendedConjugationForms } from '@/types/conjugation-extended';
+import { ExtendedConjugationEngine, getRandomConjugationForm as getRandomForm, generateQuestionStem as generateStem } from '@/utils/conjugation-extended';
 import { useStrings } from '@/contexts/LanguageContext';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
+
+// Wrapper functions for compatibility
+const getRandomConjugationForm = (word: JapaneseWord, conjugations: ExtendedConjugationForms) => {
+  const form = getRandomForm(word.type);
+  const value = conjugations[form];
+  return { form, value };
+};
+
+const generateQuestionStem = (form: keyof ExtendedConjugationForms, word: JapaneseWord) => {
+  return generateStem(word, form);
+};
+
 import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -156,19 +169,55 @@ export default function ConjugationDrillPage() {
     const questionsPerWord = 3;
 
     words.forEach(word => {
-      const conjugations = ConjugationEngine.conjugate(word);
+      const conjugations = ExtendedConjugationEngine.conjugate(word);
       
       for (let i = 0; i < questionsPerWord; i++) {
         const { form, value } = getRandomConjugationForm(word, conjugations);
         
         if (value && value !== 'N/A') {
-          const allForms = ConjugationEngine.getAllPossibleForms(conjugations);
-          const otherOptions = allForms
-            .filter((f: string) => f !== value)
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 3);
+          const allForms = ExtendedConjugationEngine.getAllPossibleForms(conjugations);
+          
+          // Filter out the correct answer and empty forms
+          const validDistractors = allForms.filter((f: string) => 
+            f && f !== value && f !== '' && f !== 'N/A'
+          );
+          
+          // Smart distractor selection: avoid too similar forms
+          const distractors: string[] = [];
+          const usedPatterns = new Set<string>();
+          
+          // Shuffle candidates
+          const candidates = [...validDistractors].sort(() => Math.random() - 0.5);
+          
+          for (const candidate of candidates) {
+            if (distractors.length >= 3) break;
+            
+            // Create a simple pattern to detect similar forms
+            // Remove common endings to group similar forms
+            const pattern = candidate
+              .replace(/です$/, '')
+              .replace(/でした$/, '')
+              .replace(/ません$/, '')
+              .replace(/ませんでした$/, '')
+              .replace(/だろう$/, '')
+              .replace(/でしょう$/, '');
+            
+            // Skip if we already have a similar form
+            if (!usedPatterns.has(pattern) && candidate !== value) {
+              distractors.push(candidate);
+              usedPatterns.add(pattern);
+            }
+          }
+          
+          // If we don't have enough diverse distractors, fill with random ones
+          while (distractors.length < 3 && validDistractors.length > distractors.length) {
+            const randomDistractor = validDistractors[Math.floor(Math.random() * validDistractors.length)];
+            if (!distractors.includes(randomDistractor)) {
+              distractors.push(randomDistractor);
+            }
+          }
 
-          const options = [value, ...otherOptions].sort(() => Math.random() - 0.5);
+          const options = [value, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
 
           drillQuestions.push({
             word,

@@ -33,7 +33,6 @@ export class KanjiCache {
    */
   static async cacheKanji(kanji: Kanji, userType: UserType): Promise<void> {
     try {
-      console.log(`[KanjiCache] Caching kanji: ${kanji.character}`);
 
       // Download and cache audio if available
       const audioBlob = kanji.audioUrl
@@ -50,9 +49,9 @@ export class KanjiCache {
       // Check if eviction is needed (kanji has unlimited storage for free/premium)
       const needsEviction = await evictionEngine.requiresEviction('kanji', userType, size);
       if (needsEviction) {
-        console.log(`[KanjiCache] Eviction needed for user type: ${userType}`);
+
         const evictionResult = await evictionEngine.enforceLimit('kanji', userType);
-        console.log(`[KanjiCache] Evicted ${evictionResult.evictedCount} kanji, freed ${evictionResult.freedBytes} bytes`);
+
       }
 
       // Create cached kanji
@@ -88,7 +87,6 @@ export class KanjiCache {
       // Store in cache
       await EnhancedStorageManager2.cacheResource(cachedKanji, userType);
 
-      console.log(`[KanjiCache] Successfully cached kanji: ${kanji.character}`);
     } catch (error) {
       console.error(`[KanjiCache] Failed to cache kanji ${kanji.character}:`, error);
       throw error;
@@ -108,13 +106,13 @@ export class KanjiCache {
       const cached = await EnhancedStorageManager2.getCachedResource('kanji', character);
 
       if (cached && !this.isStale(cached)) {
-        console.log(`[KanjiCache] Serving kanji from cache: ${character}`);
+
         return this.hydrateCachedKanji(cached);
       }
 
       // Fall back to network if fetch function provided
       if (fetchFn) {
-        console.log(`[KanjiCache] Fetching kanji from network: ${character}`);
+
         const kanji = await fetchFn();
 
         // Cache in background only if userType is provided
@@ -127,7 +125,7 @@ export class KanjiCache {
 
       // Return stale cache if no fetch function
       if (cached) {
-        console.log(`[KanjiCache] Serving stale kanji from cache: ${character}`);
+
         return this.hydrateCachedKanji(cached);
       }
 
@@ -142,7 +140,6 @@ export class KanjiCache {
    * Cache multiple kanji at once (batch operation)
    */
   static async cacheKanjiSet(kanjiList: Kanji[], userType: UserType): Promise<void> {
-    console.log(`[KanjiCache] Caching ${kanjiList.length} kanji`);
 
     // Process in batches to avoid overwhelming the storage
     const BATCH_SIZE = 10;
@@ -164,14 +161,12 @@ export class KanjiCache {
       }
     }
 
-    console.log(`[KanjiCache] Successfully cached ${kanjiList.length} kanji`);
   }
 
   /**
    * Pre-cache related kanji based on JLPT level or frequency
    */
   static async preCacheRelated(currentKanji: string, relatedKanji: string[]): Promise<void> {
-    console.log(`[KanjiCache] Pre-caching ${relatedKanji.length} related kanji`);
 
     // Use requestIdleCallback for non-blocking pre-caching
     if ('requestIdleCallback' in window) {
@@ -181,7 +176,7 @@ export class KanjiCache {
             // Try to fetch and cache each related kanji
             // This would typically call an API to get kanji data
             // For now, we'll just log the intention
-            console.log(`[KanjiCache] Would pre-cache kanji: ${kanjiChar}`);
+
           } catch (error) {
             console.error(`[KanjiCache] Failed to pre-cache kanji ${kanjiChar}:`, error);
           }
@@ -243,7 +238,7 @@ export class KanjiCache {
   static async clearCache(): Promise<void> {
     try {
       await EnhancedStorageManager2.clearResourcesByType('kanji');
-      console.log('[KanjiCache] Cleared all cached kanji');
+
     } catch (error) {
       console.error('[KanjiCache] Failed to clear cache:', error);
       throw error;

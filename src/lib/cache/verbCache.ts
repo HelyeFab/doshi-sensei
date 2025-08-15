@@ -33,7 +33,6 @@ export class VerbCache {
    */
   static async cacheVerb(verb: Verb, userType: UserType): Promise<void> {
     try {
-      console.log(`[VerbCache] Caching verb: ${verb.word}`);
 
       // Download and cache audio if available
       const audioBlob = verb.audioUrl
@@ -78,7 +77,6 @@ export class VerbCache {
       // Store in cache
       await EnhancedStorageManager2.cacheResource(cachedVerb, userType);
 
-      console.log(`[VerbCache] Successfully cached verb: ${verb.word}`);
     } catch (error) {
       console.error(`[VerbCache] Failed to cache verb ${verb.word}:`, error);
       throw error;
@@ -98,13 +96,13 @@ export class VerbCache {
       const cached = await EnhancedStorageManager2.getCachedResource('verb', word);
 
       if (cached && !this.isStale(cached)) {
-        console.log(`[VerbCache] Serving verb from cache: ${word}`);
+
         return this.hydrateCachedVerb(cached);
       }
 
       // Fall back to network if fetch function provided
       if (fetchFn) {
-        console.log(`[VerbCache] Fetching verb from network: ${word}`);
+
         const verb = await fetchFn();
 
         // Cache in background only if userType is provided
@@ -117,7 +115,7 @@ export class VerbCache {
 
       // Return stale cache if no fetch function
       if (cached) {
-        console.log(`[VerbCache] Serving stale verb from cache: ${word}`);
+
         return this.hydrateCachedVerb(cached);
       }
 
@@ -132,7 +130,6 @@ export class VerbCache {
    * Cache multiple verbs at once (batch operation)
    */
   static async cacheVerbSet(verbList: Verb[], userType: UserType): Promise<void> {
-    console.log(`[VerbCache] Caching ${verbList.length} verbs`);
 
     // Process in batches to avoid overwhelming the storage
     const BATCH_SIZE = 10;
@@ -154,7 +151,6 @@ export class VerbCache {
       }
     }
 
-    console.log(`[VerbCache] Successfully cached ${verbList.length} verbs`);
   }
 
   /**
@@ -195,7 +191,6 @@ export class VerbCache {
    * Pre-cache related verbs based on type or JLPT level
    */
   static async preCacheRelated(currentVerb: string, relatedVerbs: string[]): Promise<void> {
-    console.log(`[VerbCache] Pre-caching ${relatedVerbs.length} related verbs`);
 
     // Use requestIdleCallback for non-blocking pre-caching
     if ('requestIdleCallback' in window) {
@@ -205,7 +200,7 @@ export class VerbCache {
             // Try to fetch and cache each related verb
             // This would typically call an API to get verb data
             // For now, we'll just log the intention
-            console.log(`[VerbCache] Would pre-cache verb: ${verbWord}`);
+
           } catch (error) {
             console.error(`[VerbCache] Failed to pre-cache verb ${verbWord}:`, error);
           }
@@ -265,7 +260,7 @@ export class VerbCache {
   static async clearCache(): Promise<void> {
     try {
       await EnhancedStorageManager2.clearResourcesByType('verb');
-      console.log('[VerbCache] Cleared all cached verbs');
+
     } catch (error) {
       console.error('[VerbCache] Failed to clear cache:', error);
       throw error;

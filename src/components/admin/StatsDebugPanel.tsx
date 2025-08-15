@@ -44,7 +44,6 @@ export function AdminStatsDebugPanel() {
       a.click();
       URL.revokeObjectURL(url);
 
-      console.log('✅ Debug data exported successfully');
     } catch (err) {
       console.error('Failed to export debug data:', err);
       alert('Failed to export debug data. Check console for details.');

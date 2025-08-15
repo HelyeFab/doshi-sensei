@@ -24,7 +24,7 @@ export function UpgradeSlideUpModal({ isOpen, onClose, message, feature }: Upgra
   useEffect(() => {
     if (isOpen) {
       trackUpgradeModalShown('feature_limit', feature);
-      console.log('📊 [Analytics] Upgrade modal shown:', { trigger: 'feature_limit', feature });
+
     }
   }, [isOpen, feature, trackUpgradeModalShown]);
 
@@ -35,8 +35,7 @@ export function UpgradeSlideUpModal({ isOpen, onClose, message, feature }: Upgra
     try {
       // Track upgrade plan selected
       track('upgrade_plan_selected', { plan, feature });
-      console.log('📊 [Analytics] Upgrade plan selected:', { plan, feature });
-      
+
       const priceId = plan === 'monthly'
         ? STRIPE_CONFIG.priceIds.monthly
         : STRIPE_CONFIG.priceIds.yearly;
@@ -49,7 +48,7 @@ export function UpgradeSlideUpModal({ isOpen, onClose, message, feature }: Upgra
 
   const handleClose = () => {
     track('upgrade_modal_dismissed', { feature });
-    console.log('📊 [Analytics] Upgrade modal dismissed:', { feature });
+
     onClose();
   };
 

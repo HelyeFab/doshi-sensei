@@ -57,7 +57,7 @@ class OfflineQueueService {
   private setupEventListeners(): void {
     // Listen for online event
     window.addEventListener('online', () => {
-      console.log('Connection restored - syncing offline queue');
+
       this.syncQueue();
     });
 
@@ -104,7 +104,7 @@ class OfflineQueueService {
       const addRequest = store.add(request);
 
       addRequest.onsuccess = () => {
-        console.log('Request queued for offline sync:', url);
+
         resolve(request.id);
       };
 
@@ -183,7 +183,6 @@ class OfflineQueueService {
 
     try {
       const requests = await this.getQueuedRequests();
-      console.log(`Syncing ${requests.length} queued requests`);
 
       for (const request of requests) {
         try {
@@ -195,7 +194,7 @@ class OfflineQueueService {
 
           if (response.ok) {
             await this.removeFromQueue(request.id);
-            console.log(`Successfully synced request: ${request.url}`);
+
           } else if (response.status >= 400 && response.status < 500) {
             // Client error - don't retry
             await this.removeFromQueue(request.id);
@@ -277,7 +276,7 @@ class OfflineQueueService {
       const clearRequest = store.clear();
 
       clearRequest.onsuccess = () => {
-        console.log('Offline queue cleared');
+
         resolve();
       };
 

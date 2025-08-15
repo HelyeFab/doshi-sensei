@@ -26,9 +26,7 @@ export async function getServerDynamicRulesAdmin(forceRefresh: boolean = false):
       console.log('📦 Returning cached rules (age: ' + (Date.now() - rulesCache.timestamp) + 'ms)');
       return rulesCache.data;
     }
-    
-    console.log('🔄 Loading dynamic rules using Firebase Admin SDK...');
-    
+
     // Get Firebase Admin instance
     const admin = await getFirebaseAdmin();
     const db = admin.firestore;
@@ -40,16 +38,12 @@ export async function getServerDynamicRulesAdmin(forceRefresh: boolean = false):
     if (rulesDoc.exists) {
       const data = rulesDoc.data();
       console.log('✅ Successfully loaded dynamic rules from Firestore (Admin SDK)');
-      console.log(`📅 Last updated: ${data.lastUpdated}`);
-      console.log(`🔢 Version: ${data.version}`);
-      
+
       // Log raw Firebase data for debugging
-      console.log('🔍 Raw Firebase data for monthly/yearly YouTube limits:');
+
       const monthlyRule = data.rules?.find((r: any) => r.userTypes?.includes('monthly'));
       const yearlyRule = data.rules?.find((r: any) => r.userTypes?.includes('yearly'));
-      console.log('Monthly rule YouTube limit:', monthlyRule?.limits?.daily?.youtube_shadowing);
-      console.log('Yearly rule YouTube limit:', yearlyRule?.limits?.daily?.youtube_shadowing);
-      
+
       // Log YouTube shadowing limits specifically
       const rules = data.rules as EntitlementRule[];
       rules.forEach(rule => {
@@ -63,7 +57,7 @@ export async function getServerDynamicRulesAdmin(forceRefresh: boolean = false):
       
       return rules;
     } else {
-      console.log('📄 No dynamic rules found in Firestore, using defaults');
+
       return DEFAULT_RULES;
     }
   } catch (error) {
@@ -77,5 +71,5 @@ export async function getServerDynamicRulesAdmin(forceRefresh: boolean = false):
  */
 export function clearRulesCache() {
   rulesCache = null;
-  console.log('🧽 Rules cache cleared');
+
 }

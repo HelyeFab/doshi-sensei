@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
+const { filterArticles } = require('./article-quick-validation');
 
 // Function to get Unsplash image
 async function getUnsplashImage(keyword = 'japan news') {
@@ -70,6 +71,7 @@ async function launchBrowser() {
   // For local testing, try regular puppeteer first
   try {
     const puppeteerRegular = require('puppeteer');
+const { filterArticles, quickValidate } = require('./article-quick-validation');
     return await puppeteerRegular.launch({
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -263,10 +265,20 @@ async function saveArticlesToFirebase(articles) {
     throw new Error('Firebase not initialized');
   }
 
+  // Filter out invalid articles before saving
+  const validArticles = filterArticles(articles);
+  console.log(`📊 After validation: ${validArticles.length} valid articles (filtered ${articles.length - validArticles.length})`);
+  
+  if (validArticles.length === 0) {
+    console.log('⚠️ No valid articles to save');
+    return false;
+  }
+  
+  // Only save valid articles
   const batch = db.batch();
   const articlesRef = db.collection('articles');
-
-  for (const article of articles) {
+  
+  for (const article of validArticles) {
     const docRef = articlesRef.doc(article.id);
     batch.set(docRef, {
       ...article,
@@ -274,9 +286,9 @@ async function saveArticlesToFirebase(articles) {
       scrapedAt: admin.firestore.Timestamp.fromDate(article.scrapedAt)
     });
   }
-
+  
   await batch.commit();
-  console.log(`✅ Successfully saved ${articles.length} articles to Firebase`);
+  console.log(`✅ Successfully saved ${validArticles.length} articles to Firebase`);
   return true;
 }
 

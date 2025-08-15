@@ -1,5 +1,6 @@
 // Enhanced scheduled scraper that uses all improved scrapers
 const admin = require('firebase-admin');
+const { filterArticles, quickValidate } = require('./article-quick-validation');
 
 // Global variables for Firebase
 let firebaseInitialized = false;

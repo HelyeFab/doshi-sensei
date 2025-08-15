@@ -104,12 +104,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       } else {
         // Check if adding this would exceed the limit
         const totalSelected = newSelection.size + selectedKatakana.size;
-        console.log('KanaDrop selection debug:', {
-          hiraganaSize: newSelection.size,
-          katakanaSize: selectedKatakana.size,
-          totalSelected,
-          adding: kanaId
-        });
+
         if (totalSelected >= 10) {
           showNotification({
             title: 'Maximum Reached',
@@ -188,9 +183,9 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
   // Start countdown when modal opens
   useEffect(() => {
-    console.log('[KanaDrop] Modal state:', { isOpen, isPlaying: gameState.isPlaying, showVictory });
+
     if (isOpen && !gameState.isPlaying && !showVictory) {
-      console.log('[KanaDrop] Starting countdown...');
+
       setCountdown(GAME_CONSTANTS.COUNTDOWN_DURATION);
     }
   }, [isOpen, gameState.isPlaying, showVictory]);
@@ -227,7 +222,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
         }));
         // Play start sound
         audioManager.playSound('start').catch(() => {
-          console.warn('[KanaDrop] Failed to play start sound');
+
         });
       } else {
         setCountdown(countdown - 1);
@@ -246,13 +241,6 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
   // Track game completion when game ends (both win and lose)
   useEffect(() => {
-    console.log('[KanaDrop] Game state changed:', {
-      isPlaying: gameState.isPlaying,
-      startTime: gameState.startTime,
-      score: gameState.score,
-      lastGameScore,
-      hasIncrementedUsage
-    });
 
     if (!gameState.isPlaying && gameState.startTime > 0 && !hasIncrementedUsage) {
       const timePlayed = Date.now() - gameState.startTime;
@@ -280,7 +268,6 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
         
         // Track with new analytics (no accuracy metric for this game)
         trackGameComplete('kana_drop', finalScore);
-        console.log('[KanaDrop] Analytics tracked:', { game: 'kana_drop', score: finalScore });
 
         setHasIncrementedUsage(true);
         setLastGameScore(0); // Reset for next game
@@ -323,7 +310,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
       // Play victory sound
       getGameAudioManager().playSound('victory').catch(() => {
-        console.warn('[KanaDrop] Failed to play victory sound');
+
       });
     }
   }, [gameState.score, gameState.isPlaying, gameState.startTime, gameState.clicks, hasIncrementedUsage]);
@@ -369,7 +356,6 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
   // Handle end game button click
   const handleEndGame = () => {
-    console.log('[KanaDrop] End game button clicked');
 
     // Track the game if it's been playing for more than 5 seconds
     if (gameState.startTime > 0 && !hasIncrementedUsage) {
@@ -377,10 +363,6 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       const finalScore = gameState.score || lastGameScore;
 
       if (timePlayed > 5000) {
-        console.log('[KanaDrop] Tracking game before closing:', {
-          score: finalScore,
-          timePlayed: Math.round(timePlayed / 1000)
-        });
 
         trackGamePlayed('kana-drop', finalScore).catch(error => {
           console.error('Failed to track game completion:', error);
@@ -512,7 +494,6 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
       });
     }, 1000);
   }, [checkAndTrack, onClose]);
-
 
   if (!isOpen) return null;
 
@@ -729,7 +710,6 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
           exit={{ scale: 0.9, opacity: 0 }}
           className="relative w-full h-full md:w-[900px] md:h-[700px] bg-background rounded-lg shadow-2xl overflow-hidden flex flex-col"
         >
-
 
           {/* Game controls - Close/Pause and Mute buttons */}
           {!showVictory && (

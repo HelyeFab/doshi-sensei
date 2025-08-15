@@ -34,7 +34,7 @@ const initialState: StudySessionState = {
 function studySessionReducer(state: StudySessionState, action: StudySessionAction): StudySessionState {
   switch (action.type) {
     case 'START_SESSION':
-      console.log('Reducer: Starting session with', action.payload.cards.length, 'cards');
+
       return {
         ...state,
         studyQueue: action.payload.cards,
@@ -45,7 +45,7 @@ function studySessionReducer(state: StudySessionState, action: StudySessionActio
       };
     
     case 'ADVANCE_CARD':
-      console.log('Reducer: Advancing card from index', state.currentCardIndex, 'to', state.currentCardIndex + 1);
+
       return {
         ...state,
         currentCardIndex: state.currentCardIndex + 1,
@@ -53,7 +53,7 @@ function studySessionReducer(state: StudySessionState, action: StudySessionActio
       };
     
     case 'END_SESSION':
-      console.log('Reducer: Ending session');
+
       return {
         ...state,
         studyQueue: [],
@@ -94,23 +94,22 @@ export function useStudySession(): UseStudySessionReturn {
 
   // Debug: Log when studyQueue changes
   useEffect(() => {
-    console.log('useStudySession: studyQueue changed, length:', state.studyQueue.length);
+
   }, [state.studyQueue.length]);
   
   const startStudySession = useCallback(async (cards: VocabularyItem[], textbook: string) => {
-    console.log('useStudySession: Starting session with cards:', cards.length);
+
     try {
       // Start a new study session first
       const newSessionId = await vocabStorage.startStudySession(textbook);
-      console.log('useStudySession: Session created with ID:', newSessionId);
-      
+
       // Use reducer for reliable state updates
-      console.log('useStudySession: Dispatching START_SESSION');
+
       dispatch({ 
         type: 'START_SESSION', 
         payload: { cards, sessionId: newSessionId } 
       });
-      console.log('useStudySession: START_SESSION dispatched successfully');
+
     } catch (error) {
       console.error('Failed to start study session:', error);
       throw error; // Re-throw for error handling in component
@@ -126,8 +125,7 @@ export function useStudySession(): UseStudySessionReturn {
           endTime: new Date()
         });
       }
-      
-      console.log('endSession: Dispatching END_SESSION');
+
       dispatch({ type: 'END_SESSION' });
     } catch (error) {
       console.error('Failed to end session:', error);
@@ -139,21 +137,18 @@ export function useStudySession(): UseStudySessionReturn {
   const completeCard = useCallback(async (quality: number) => {
     // Use the ref to get the latest state
     const currentState = stateRef.current;
-    console.log('completeCard: Starting with quality:', quality, 'currentCardIndex:', currentState.currentCardIndex, 'studyQueue.length:', currentState.studyQueue.length);
-    
+
     if (currentState.currentCardIndex >= currentState.studyQueue.length) {
-      console.log('completeCard: currentCardIndex >= studyQueue.length, returning');
+
       return;
     }
     
     const currentCard = currentState.studyQueue[currentState.currentCardIndex];
-    console.log('completeCard: Processing card:', currentCard.japanese);
-    
+
     try {
       // Process the review with spaced repetition
       await spacedRepetition.processReview(currentCard.id, quality, currentCard);
-      console.log('completeCard: Spaced repetition processed');
-      
+
       // Update session stats
       const newStats = {
         studied: currentState.sessionStats.studied + 1,
@@ -171,10 +166,9 @@ export function useStudySession(): UseStudySessionReturn {
       
       // Check if this was the last card
       const isLastCard = currentState.currentCardIndex === currentState.studyQueue.length - 1;
-      console.log('completeCard: isLastCard:', isLastCard, 'currentIndex:', currentState.currentCardIndex, 'queueLength:', currentState.studyQueue.length);
-      
+
       if (isLastCard) {
-        console.log('completeCard: Last card completed, updating stats and ending session');
+
         // First update the stats in state
         dispatch({ type: 'ADVANCE_CARD', payload: { newStats } });
         // Small delay to ensure state update completes
@@ -182,7 +176,7 @@ export function useStudySession(): UseStudySessionReturn {
           await endSession();
         }, 100);
       } else {
-        console.log('completeCard: Moving to next card, new index will be:', currentState.currentCardIndex + 1);
+
         dispatch({ type: 'ADVANCE_CARD', payload: { newStats } });
       }
     } catch (error) {

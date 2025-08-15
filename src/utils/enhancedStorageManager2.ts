@@ -215,7 +215,7 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
    * Get all resources of a specific type
    */
   static async getResourcesByType(type: string): Promise<CachedResource[]> {
-    console.log(`[Storage] getResourcesByType called for type: ${type}`);
+
     try {
       const resources: CachedResource[] = [];
 
@@ -223,9 +223,7 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
       const allItems = await performDBOperation('apiCache', 'readonly', (store) => 
         store.getAll()
       );
-      
-      console.log(`[Storage] Filtering ${allItems.length} items for type: ${type}`);
-      
+
       for (const item of allItems) {
         if (item && item.endpoint === type) {
           const resource = this.transformToCachedResource(item);
@@ -234,8 +232,6 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
           }
         }
       }
-      
-      console.log(`[Storage] Found ${resources.length} resources of type: ${type}`);
 
       return resources;
     } catch (error) {

@@ -8,8 +8,6 @@ if (!process.env.OPEN_AI_API_KEY) {
   console.error('OPEN_AI_API_KEY is not set in environment variables');
 }
 
-console.log('Initializing OpenAI with API key:', process.env.OPEN_AI_API_KEY ? 'Key exists' : 'Key missing');
-
 // Content safety guidelines
 const CONTENT_GUIDELINES = `
 IMPORTANT CONTENT GUIDELINES:
@@ -71,7 +69,7 @@ export const maxDuration = 60; // 60 seconds for Netlify Functions
 // MODIFIED: This endpoint now ONLY generates character sheets
 // Outline generation moved to separate endpoint for better timeout handling
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
-  console.log('Generate character sheet endpoint called');
+
   try {
     // Check if OpenAI API key is configured
     if (!process.env.OPEN_AI_API_KEY) {
@@ -147,8 +145,6 @@ Return minimal JSON:
   },
   "visualStyle": "simple anime style"
 }`;
-
-      console.log('Generating characters with lightweight prompt...');
 
       const characterResponse = await openai.chat.completions.create({
         model: 'gpt-4o-mini',

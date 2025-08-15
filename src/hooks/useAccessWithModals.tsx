@@ -52,12 +52,7 @@ export function useAccessWithModals(): UseAccessWithModalsReturn {
           
           // Track limit reached
           trackLimitReached(featureId);
-          console.log('📊 [Analytics] Feature limit reached:', { 
-            feature: featureId, 
-            usage: result.usage, 
-            limit: result.limit 
-          });
-          
+
           setShowUpgradeModal(true);
           break;
           

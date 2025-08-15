@@ -10,14 +10,12 @@ const RULES_DOC_ID = 'entitlement_rules_v1';
 const rateLimitMiddleware = createRateLimitMiddleware(updateLimitRateLimiter);
 
 export async function POST(request: NextRequest) {
-  console.log('🚀 Update limit API called');
+
   try {
     // Get request body
     const body: UpdateLimitRequest = await request.json();
     const { userType, featureId, limitType, newValue } = body;
-    
-    console.log('📝 Updating limit:', { userType, featureId, limitType, newValue });
-    
+
     // Verify authentication
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -27,9 +25,9 @@ export async function POST(request: NextRequest) {
     const token = authHeader.substring(7);
     
     // Get Firebase Admin instance
-    console.log('🔐 Getting Firebase Admin instance...');
+
     const admin = await getFirebaseAdmin();
-    console.log('✅ Firebase Admin obtained');
+
     const decodedToken = await admin.auth().verifyIdToken(token);
 
     // Check if user is admin (matching pattern from other admin routes)
@@ -83,9 +81,7 @@ export async function POST(request: NextRequest) {
     
     // Update the specific limit
     rule.limits[limitType][featureId] = newValue;
-    
-    console.log(`✅ Updated ${userType} ${limitType} ${featureId} to ${newValue}`);
-    
+
     // Save back to Firestore
     await rulesDocRef.set({
       rules: updatedRules,
@@ -95,8 +91,7 @@ export async function POST(request: NextRequest) {
     
     // Clear the server-side cache to ensure fresh data on next read
     clearRulesCache();
-    console.log('🧽 Cleared server rules cache after update');
-    
+
     const response: UpdateLimitResponse = {
       success: true, 
       message: `Updated ${featureId} limit for ${userType} to ${newValue}`,

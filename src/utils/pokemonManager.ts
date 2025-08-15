@@ -262,9 +262,9 @@ class PokemonManager {
 
         // Force sync - Updating Firebase
         await updateDoc(userDocRef, updateData);
-        console.log(`Successfully synced ${localPokemon.length} Pokemon to cloud for ${userEmail}`);
+
       } else {
-        console.log('No Pokemon to sync to cloud');
+
       }
     } catch (error) {
       console.error('Force sync failed:', error);

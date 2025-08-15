@@ -79,7 +79,7 @@ export class TTSManager {
       console.log('✅ ElevenLabs TTS initialized (fallback provider)');
     }
     if (!this.elevenLabsApiKey && !this.googleApiKey) {
-      console.warn('⚠️ No TTS API keys found');
+
     }
   }
 
@@ -124,7 +124,7 @@ export class TTSManager {
         });
         results.elevenlabs = response.ok;
         if (response.ok) {
-          console.log('✅ ElevenLabs API key is valid');
+
         } else {
           console.error('❌ ElevenLabs API key test failed:', response.status);
         }
@@ -150,7 +150,7 @@ export class TTSManager {
         });
         results.google = response.ok;
         if (response.ok) {
-          console.log('✅ Google TTS API key is valid');
+
         } else {
           console.error('❌ Google TTS API key test failed:', response.status);
         }
@@ -197,12 +197,12 @@ export class TTSManager {
       const kanaAudioPath = await getKanaAudioPath(text);
       if (kanaAudioPath) {
         try {
-          console.log(`🎵 [TTS] Found local kana audio for: "${text}"`);
+
           await playKanaAudioWithRetry(kanaAudioPath, 2); // Allow 2 retries
-          console.log(`✅ [TTS] Successfully played local kana audio: "${text}"`);
+
           return;
         } catch (error) {
-          console.warn(`⚠️ [TTS] Local kana audio failed for "${text}", using TTS API:`, error);
+
           // Continue to TTS API fallback
         }
       }
@@ -212,17 +212,16 @@ export class TTSManager {
         const kanjiAudioPath = await getKanjiAudioPath(text);
         if (kanjiAudioPath) {
           try {
-            console.log(`🎌 [TTS] Using LOCAL kanji audio instead of API for: "${text}"`);
-            console.log(`📁 [TTS] Audio file path: ${kanjiAudioPath}`);
+
             await playKanjiAudioWithRetry(kanjiAudioPath, 2); // Use retry mechanism
-            console.log(`✅ [TTS] Successfully played local kanji audio: "${text}"`);
+
             return;
           } catch (error) {
-            console.warn(`⚠️ [TTS] Failed to play local kanji audio for "${text}", falling back to TTS API:`, error);
+
             // Continue to TTS API fallback
           }
         } else {
-          console.log(`📡 [TTS] No local kanji audio for "${text}", will use API`);
+
         }
       }
       
@@ -231,12 +230,12 @@ export class TTSManager {
         // Use Google TTS for kana, kanji, vocabulary, and games
         if (context.includes('kanji') || context === 'vocabulary' || context.includes('game') || context === 'kana') {
           forceProvider = 'google';
-          console.log(`🎯 Using Google TTS for context: ${context}`);
+
         }
         // Use ElevenLabs for articles, stories, and shadowing
         else if (context === 'article-reading' || context === 'story' || context === 'shadowing') {
           forceProvider = 'elevenlabs';
-          console.log(`🎯 Using ElevenLabs TTS for context: ${context}`);
+
         }
       }
       
@@ -246,11 +245,11 @@ export class TTSManager {
       // If provider is forced to ElevenLabs, skip Google
       if (forceProvider === 'elevenlabs' && this.elevenLabsApiKey) {
         try {
-          console.log('🎤 Using forced ElevenLabs TTS...');
+
           audioBlob = await this.generateElevenLabsAudio(text, voice);
           provider = 'elevenlabs';
         } catch (elevenLabsError) {
-          console.warn('⚠️ ElevenLabs TTS failed:', elevenLabsError);
+
         }
       }
       // Try Google TTS first if available and not forced to ElevenLabs
@@ -260,7 +259,7 @@ export class TTSManager {
           audioBlob = await this.generateGoogleAudio(text, voice);
           provider = 'google';
         } catch (googleError) {
-          console.warn('⚠️ Google TTS failed, falling back to ElevenLabs:', googleError);
+
         }
       }
       
@@ -271,7 +270,7 @@ export class TTSManager {
           audioBlob = await this.generateElevenLabsAudio(text, voice);
           provider = 'elevenlabs';
         } catch (elevenLabsError) {
-          console.warn('⚠️ ElevenLabs TTS failed, falling back to Web Speech:', elevenLabsError);
+
         }
       }
       
@@ -289,7 +288,7 @@ export class TTSManager {
             if (this.currentAudio === audio) {
               this.currentAudio = null;
             }
-            console.log(`✅ Successfully played audio via ${provider}`);
+
             resolve();
           });
 
@@ -309,7 +308,7 @@ export class TTSManager {
         });
       } else {
         // Final fallback to Web Speech API
-        console.log('🎤 Using Web Speech API as final fallback...');
+
         await this.fallbackToWebSpeech(text, speed);
       }
     } catch (error) {
@@ -456,7 +455,7 @@ export class TTSManager {
 
         speechSynthesis.speak(utterance);
       } else {
-        console.warn('Speech synthesis not supported in this browser');
+
         reject(new Error('Speech synthesis not supported'));
       }
     });
@@ -501,7 +500,7 @@ export class TTSManager {
    */
   static async getElevenLabsVoices(): Promise<ElevenLabsVoice[]> {
     if (!this.elevenLabsApiKey) {
-      console.warn('ElevenLabs API key not found');
+
       return [];
     }
 
@@ -542,7 +541,7 @@ export class TTSManager {
    */
   static async getElevenLabsUsage(): Promise<any> {
     if (!this.elevenLabsApiKey) {
-      console.warn('ElevenLabs API key not found');
+
       return null;
     }
 
@@ -558,11 +557,7 @@ export class TTSManager {
       }
 
       const data = await response.json();
-      console.log('ElevenLabs Usage:', {
-        character_count: data.subscription.character_count,
-        character_limit: data.subscription.character_limit,
-        remaining: data.subscription.character_limit - data.subscription.character_count,
-      });
+
       return data;
     } catch (error) {
       console.error('Error fetching ElevenLabs usage:', error);
@@ -585,9 +580,7 @@ export class TTSManager {
     const voiceName = provider === 'elevenlabs' 
       ? this.elevenLabsVoices[voice]
       : (voice === 'male' ? 'ja-JP-Neural2-C' : 'ja-JP-Neural2-B');
-    
-    console.log(`📦 Preloading article audio using ${provider}...`);
-    
+
     let completed = 0;
     for (const sentence of sentences) {
       try {
@@ -605,7 +598,6 @@ export class TTSManager {
       }
     }
   }
-
 
   /**
    * Get TTS cache statistics

@@ -237,7 +237,7 @@ export default function AdminYouTubeSeriesPage() {
       
       if (response.ok) {
         const result = await response.json();
-        console.log('Sync successful:', result);
+
         await loadChannels();
         alert(`Successfully synced ${result.channelTitle}! Added ${result.videosAdded} videos, updated ${result.videosUpdated}.`);
       } else {

@@ -20,7 +20,7 @@ export function DeferredInitializers() {
     if ('requestIdleCallback' in window) {
       const idleCallbackId = window.requestIdleCallback(() => {
         setShouldInitialize(true);
-      }, { timeout: 1000 }); // Max 1 second wait
+      }, { timeout: 3000 }); // Max 3 seconds wait - give navigation priority
       
       return () => {
         if ('cancelIdleCallback' in window) {
@@ -31,7 +31,7 @@ export function DeferredInitializers() {
       // Fallback for browsers without requestIdleCallback
       const timeoutId = setTimeout(() => {
         setShouldInitialize(true);
-      }, 500); // Wait 500ms
+      }, 1500); // Wait 1.5 seconds - give navigation priority
       
       return () => clearTimeout(timeoutId);
     }

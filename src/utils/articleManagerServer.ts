@@ -34,13 +34,12 @@ export class ArticleManagerServer {
   // Get article statistics
   static async getArticleStats(admin: any): Promise<ArticleStats> {
     try {
-      console.log('Getting article stats from Firebase Admin...');
+
       const db = this.getDb(admin);
       const articlesRef = db.collection('articles');
 
       // Get all active articles
       const now = Timestamp.now();
-      console.log('Querying active articles with timestamp:', now);
 
       // First try to get all articles to see if the collection exists
       let snapshot;
@@ -50,12 +49,12 @@ export class ArticleManagerServer {
           .where('expiresAt', '>', now)
           .get();
       } catch (queryError) {
-        console.log('Complex query failed, trying simpler query:', queryError);
+
         // If the complex query fails, try to get all articles without filters
         try {
           snapshot = await articlesRef.get();
         } catch (fallbackError) {
-          console.log('Fallback query also failed:', fallbackError);
+
           // Return empty snapshot if all queries fail
           snapshot = {
             size: 0,
@@ -65,7 +64,6 @@ export class ArticleManagerServer {
         }
       }
 
-      console.log(`Found ${snapshot.size} active articles`);
       const articles = snapshot.docs.map(doc => doc.data() as NewsArticle);
 
     // Calculate statistics
@@ -135,7 +133,6 @@ export class ArticleManagerServer {
 
     stats.averageReadingTime = articles.length > 0 ? Math.round(totalReadingTime / articles.length) : 0;
 
-    console.log('Article stats calculated successfully:', stats);
     return stats;
     } catch (error) {
       console.error('Error in getArticleStats:', error);
@@ -148,8 +145,6 @@ export class ArticleManagerServer {
     const db = this.getDb(admin);
     const articlesRef = db.collection('articles');
 
-    console.log('🧹 Starting cleanup of expired articles...');
-
     const now = Timestamp.now();
     let snapshot;
     try {
@@ -158,7 +153,7 @@ export class ArticleManagerServer {
         .where('isArchived', '==', false)
         .get();
     } catch (queryError) {
-      console.log('Complex query failed in cleanup, trying simpler query:', queryError);
+
       // If the complex query fails, return 0
       return 0;
     }
@@ -172,16 +167,15 @@ export class ArticleManagerServer {
       // If article is bookmarked, move to archive instead of deleting
       if (article.bookmarkedBy && article.bookmarkedBy.length > 0) {
         batch.update(docSnapshot.ref, { isArchived: true });
-        console.log(`📦 Archived bookmarked article: ${article.title}`);
+
       } else {
         batch.delete(docSnapshot.ref);
         deletedCount++;
-        console.log(`🗑️ Deleted expired article: ${article.title}`);
+
       }
     });
 
     await batch.commit();
-    console.log(`✅ Cleanup complete: ${deletedCount} articles deleted, ${snapshot.size - deletedCount} archived`);
 
     return deletedCount;
   }

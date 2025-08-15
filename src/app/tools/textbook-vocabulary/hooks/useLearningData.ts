@@ -40,7 +40,7 @@ export function useLearningData(sourceId: string, lesson?: number) {
             const kanaModule = await import(`@/data/textbook-vocabulary/${sourceId}/kana.json`); // Assuming kana.json exists
             items = kanaModule.default;
           } catch (err) {
-            console.warn(`'kana.json' not found for source ${sourceId}, attempting to load 'all.json'.`);
+
             try {
               const allModule = await import(`@/data/textbook-vocabulary/${sourceId}/all.json`);
               items = allModule.default;
@@ -57,7 +57,7 @@ export function useLearningData(sourceId: string, lesson?: number) {
             const lessonModule = await import(`@/data/textbook-vocabulary/${sourceId}/lesson-${lesson}.json`);
             items = lessonModule.default;
           } catch (err) {
-            console.warn(`Lesson ${lesson} not found for source ${sourceId}, attempting to load all.`);
+
             // Fallback to loading all if specific lesson fails
             try {
               const allModule = await import(`@/data/textbook-vocabulary/${sourceId}/all.json`);

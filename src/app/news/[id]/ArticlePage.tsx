@@ -55,7 +55,7 @@ export default function ArticlePage() {
             }
 
             // Load article from Firebase
-            console.log('[ArticlePage] Loading article:', articleId);
+
             const loadedArticle = await getArticleById(articleId);
 
             if (!loadedArticle) {
@@ -63,13 +63,6 @@ export default function ArticlePage() {
                 router.push('/news');
                 return;
             }
-
-            console.log('[ArticlePage] Article loaded:', {
-                id: loadedArticle.id,
-                hasContent: !!loadedArticle.content,
-                contentLength: loadedArticle.content?.length || 0,
-                title: loadedArticle.title
-            });
 
             setArticle(loadedArticle);
             // Usage tracking is handled automatically by checkAndTrack

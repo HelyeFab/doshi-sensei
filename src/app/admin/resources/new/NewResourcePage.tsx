@@ -149,11 +149,8 @@ export default function NewResourcePage() {
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
-    console.log('File selected:', file);
-    console.log('User:', user);
-
     if (!file) {
-      console.log('No file selected');
+
       return;
     }
 
@@ -176,7 +173,6 @@ export default function NewResourcePage() {
 
     try {
       setUploadingImage(true);
-      console.log('Starting image upload...');
 
       // Get user token for authorization
       const token = await user.getIdToken();
@@ -195,7 +191,6 @@ export default function NewResourcePage() {
       });
 
       const data = await response.json();
-      console.log('Upload response:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Upload failed');
@@ -211,7 +206,7 @@ export default function NewResourcePage() {
 
       // Show success message if using fallback
       if (data.message) {
-        console.log(data.message);
+
       }
     } catch (error: any) {
       console.error('Error uploading image:', error);

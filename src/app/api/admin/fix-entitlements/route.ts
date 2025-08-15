@@ -25,8 +25,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
-    console.log('🔧 Fixing entitlements structure...');
-    
     // Get Firestore instance
     const db = admin.firestore();
     const rulesDocRef = db.doc(`config/${RULES_DOC_ID}`);
@@ -98,9 +96,7 @@ export async function POST(request: NextRequest) {
     
     // Clear cache to ensure fresh data
     clearRulesCache();
-    
-    console.log('✅ Entitlements structure fixed successfully');
-    
+
     return NextResponse.json({
       success: true,
       message: 'Entitlements structure fixed and saved',

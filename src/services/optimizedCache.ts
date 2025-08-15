@@ -192,7 +192,7 @@ export async function warmCache() {
         await cache.put(route, response);
       }
     } catch (error) {
-      console.log(`Failed to warm cache for ${route}:`, error);
+
     }
   }
 }

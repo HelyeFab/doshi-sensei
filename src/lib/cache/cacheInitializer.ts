@@ -15,22 +15,18 @@ export class CacheInitializer {
     }
     
     try {
-      console.log('[CacheInitializer] Starting initialization...');
-      
+
       // Initialize enhanced storage manager
       await EnhancedStorageManager2.initialize();
       
       // Initialize ArticleIndexedDB
       await ArticleIndexedDB.initialize();
-      console.log('[CacheInitializer] ArticleIndexedDB initialized');
-      console.log('[CacheInitializer] Enhanced storage manager initialized');
-      
+
       // Register service worker
       if ('serviceWorker' in navigator) {
         register({
           onSuccess: (registration) => {
-            console.log('[CacheInitializer] Service worker registered successfully');
-            
+
             // Request persistent storage for premium users
             const isPremium = localStorage.getItem('userType') === 'premium';
             if (isPremium) {
@@ -38,7 +34,7 @@ export class CacheInitializer {
             }
           },
           onUpdate: (registration) => {
-            console.log('[CacheInitializer] Service worker update available');
+
             // Could show a notification to user about update
           },
           onError: (error) => {
@@ -54,7 +50,7 @@ export class CacheInitializer {
       await this.preCacheEssentials();
       
       this.initialized = true;
-      console.log('[CacheInitializer] Initialization complete');
+
     } catch (error) {
       console.error('[CacheInitializer] Initialization failed:', error);
       // App should still work without caching
@@ -67,7 +63,7 @@ export class CacheInitializer {
   private static async preCacheEssentials(): Promise<void> {
     // Currently no essential resources to pre-cache
     // This method is kept for future use when we have critical assets
-    console.log('[CacheInitializer] Pre-cache essentials skipped - no critical assets defined');
+
   }
   
   /**
@@ -77,14 +73,13 @@ export class CacheInitializer {
     // Clean up expired cache every hour
     setInterval(async () => {
       try {
-        console.log('[CacheInitializer] Running periodic cleanup...');
-        
+
         // Get storage stats
         const stats = await EnhancedStorageManager2.getStorageStats('free');
         
         // If storage is getting full, clean up old items
         if (stats.percentage > 80) {
-          console.log('[CacheInitializer] Storage usage high, cleaning up...');
+
           // Cleanup logic would be implemented here
         }
       } catch (error) {

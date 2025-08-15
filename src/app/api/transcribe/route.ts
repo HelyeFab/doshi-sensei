@@ -4,8 +4,7 @@ const OPENAI_API_KEY = process.env.OPEN_AI_API_KEY;
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('Transcribe API called');
-    
+
     // Check if API key is configured
     if (!OPENAI_API_KEY) {
       console.error('OpenAI API key not found in environment variables');
@@ -14,8 +13,6 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-    
-    console.log('OpenAI API key found, length:', OPENAI_API_KEY.length);
 
     const { audioUrl, audioBlob, language = 'ja' } = await request.json();
 
@@ -54,13 +51,28 @@ export async function POST(request: NextRequest) {
     } else {
       // Handle base64 audio blob
       try {
-        const base64Data = audioBlob.split(',')[1];
+        // Extract MIME type from data URL if present
+        let mimeType = 'audio/mpeg';
+        if (audioBlob.includes('data:')) {
+          const mimeMatch = audioBlob.match(/data:([^;]+);/);
+          if (mimeMatch) {
+            mimeType = mimeMatch[1];
+          }
+        }
+        
+        const base64Data = audioBlob.split(',')[1] || audioBlob;
         const binaryData = Buffer.from(base64Data, 'base64');
-        audioData = new Blob([binaryData], { type: 'audio/mp3' });
+        audioData = new Blob([binaryData], { type: mimeType });
+        
+        console.log('Processed audio blob:', {
+          mimeType,
+          size: audioData.size,
+          sizeInMB: (audioData.size / (1024 * 1024)).toFixed(2)
+        });
       } catch (error) {
         console.error('Error processing audio blob:', error);
         return NextResponse.json(
-          { error: 'Failed to process audio data' },
+          { error: 'Failed to process audio data. Please ensure the file is a valid audio format.' },
           { status: 400 }
         );
       }
@@ -76,7 +88,13 @@ export async function POST(request: NextRequest) {
 
     // Create form data for OpenAI API
     const formData = new FormData();
-    formData.append('file', audioData, 'audio.mp3');
+    // Detect the audio type from the blob or use a generic one
+    const audioType = audioData.type || 'audio/mpeg';
+    const extension = audioType.includes('webm') ? 'webm' : 
+                     audioType.includes('wav') ? 'wav' : 
+                     audioType.includes('m4a') ? 'm4a' : 
+                     audioType.includes('ogg') ? 'ogg' : 'mp3';
+    formData.append('file', audioData, `audio.${extension}`);
     formData.append('model', 'whisper-1');
     formData.append('language', language);
     formData.append('response_format', 'verbose_json');
@@ -116,8 +134,21 @@ export async function POST(request: NextRequest) {
           { status: 429 }
         );
       } else if (whisperResponse.status === 400) {
+        // Parse the specific error from OpenAI
+        let userFriendlyMessage = 'Unable to process the audio file. ';
+        
+        if (errorMessage.includes('Invalid file format')) {
+          userFriendlyMessage = 'The audio format is not supported. Please try converting to MP3, M4A, or WAV format. Supported formats: flac, m4a, mp3, mp4, mpeg, mpga, oga, ogg, wav, webm.';
+        } else if (errorMessage.includes('too short') || errorMessage.includes('duration')) {
+          userFriendlyMessage = 'The audio is too short or silent. Please ensure the audio contains speech and is at least 1 second long.';
+        } else if (errorMessage.includes('too long')) {
+          userFriendlyMessage = 'The audio file is too long. Please split it into shorter segments (max 10 minutes).';
+        } else {
+          userFriendlyMessage += errorMessage;
+        }
+        
         return NextResponse.json(
-          { error: `Bad request: ${errorMessage}` },
+          { error: userFriendlyMessage },
           { status: 400 }
         );
       }

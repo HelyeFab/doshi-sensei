@@ -45,7 +45,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
   // Check for game over condition
   useEffect(() => {
     if (gameState.score <= -50 && gameState.isPlaying) {
-      console.log('[KanaDrop] Game Over! Score too low');
+
       audioManager.playSound('gameOver');
       audioManager.stopBackgroundMusic();
       onGameStateUpdate({ isPlaying: false });
@@ -92,8 +92,6 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
     const currentGameState = gameStateRef.current;
     let newObject: FallingObjectType;
 
-    console.log('[KanaDrop] Spawning object, selectedKana:', currentGameState.selectedKana.length);
-
     // 40% target kana, 30% wrong kana, 30% distractor
     const rand = Math.random();
     if (rand < 0.4 && currentGameState.selectedKana.length > 0) {
@@ -108,14 +106,13 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
         y: 0,
         speed: currentGameState.gameSpeed
       };
-      console.log('[KanaDrop] Spawned target kana:', randomKana.kana);
+
     } else if (rand < 0.7) {
       // Wrong kana (not in selectedKana)
       // Extract base IDs from selectedKana (remove '-hiragana' and '-katakana' suffixes)
       const selectedBaseIds = currentGameState.selectedKana.map(k => k.id.replace(/-(hiragana|katakana)$/, ''));
       const wrongKanaList = getBasicKana().filter(k => !selectedBaseIds.includes(k.id));
-      console.log('[KanaDrop] Selected base IDs:', selectedBaseIds);
-      console.log('[KanaDrop] Wrong kana pool size:', wrongKanaList.length);
+
       if (wrongKanaList.length > 0) {
         const randomWrongKana = wrongKanaList[Math.floor(Math.random() * wrongKanaList.length)];
         newObject = {
@@ -132,7 +129,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
           y: 0,
           speed: currentGameState.gameSpeed
         };
-        console.log('[KanaDrop] Spawned wrong kana:', randomWrongKana.hiragana);
+
       } else {
         // fallback to distractor
         const randomImage = DISTRACTOR_IMAGES[Math.floor(Math.random() * DISTRACTOR_IMAGES.length)];
@@ -157,10 +154,9 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
         y: 0,
         speed: currentGameState.gameSpeed
       };
-      console.log('[KanaDrop] Spawned distractor:', randomImage);
+
     }
 
-    console.log('[KanaDrop] Adding object to game state:', newObject);
     onGameStateUpdate(prev => ({
       ...prev,
       fallingObjects: [...prev.fallingObjects, newObject]
@@ -265,7 +261,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
 
     // Spawn new objects
     if (now - lastSpawnRef.current > SPAWN_INTERVAL) {
-      console.log('[KanaDrop] Game loop: spawning object, interval:', SPAWN_INTERVAL);
+
       if (spawnObjectRef.current) {
         spawnObjectRef.current();
       }
@@ -294,18 +290,13 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
 
   // Start/stop game loop
   useEffect(() => {
-    console.log('[KanaDrop] Game loop effect:', {
-      isPlaying: gameState.isPlaying,
-      isPaused: gameState.isPaused,
-      selectedKana: gameState.selectedKana.length
-    });
 
     if (gameState.isPlaying && !gameState.isPaused) {
-      console.log('[KanaDrop] Starting game loop');
+
       gameLoopRef.current = requestAnimationFrame(gameLoop);
     } else {
       if (gameLoopRef.current) {
-        console.log('[KanaDrop] Stopping game loop');
+
         cancelAnimationFrame(gameLoopRef.current);
       }
     }
@@ -326,11 +317,7 @@ export default function GameCanvas({ gameState, onGameStateUpdate }: GameCanvasP
     );
 
     if (newSpeed !== gameState.gameSpeed) {
-      console.log('[KanaDrop] Updating game speed:', {
-        currentSpeed: gameState.gameSpeed,
-        newSpeed: newSpeed,
-        score: gameState.score
-      });
+
       onGameStateUpdate({ gameSpeed: newSpeed });
     }
   }, [gameState.score, gameState.gameSpeed, onGameStateUpdate]);

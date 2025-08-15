@@ -46,12 +46,10 @@ export class ArticlePostProcessor {
    */
   startBackgroundProcessing(intervalMs: number = 300000) { // Default: 5 minutes
     if (this.processInterval) {
-      console.log('📊 [POST-PROCESSOR] Background processing already running');
+
       return;
     }
 
-    console.log('📊 [POST-PROCESSOR] Starting background processing');
-    
     // Process immediately on start
     this.processUnvalidatedArticles();
     
@@ -68,7 +66,7 @@ export class ArticlePostProcessor {
     if (this.processInterval) {
       clearInterval(this.processInterval);
       this.processInterval = null;
-      console.log('📊 [POST-PROCESSOR] Background processing stopped');
+
     }
   }
 
@@ -77,8 +75,7 @@ export class ArticlePostProcessor {
    */
   async processArticle(articleId: string): Promise<boolean> {
     try {
-      console.log(`📊 [POST-PROCESSOR] Processing article: ${articleId}`);
-      
+
       // Fetch the article from Firestore
       const articlesRef = collection(db, 'articles');
       const q = query(articlesRef, where('__name__', '==', articleId), limit(1));
@@ -94,7 +91,7 @@ export class ArticlePostProcessor {
 
       // Skip if already validated
       if (article.aiValidated) {
-        console.log(`📊 [POST-PROCESSOR] Article already validated: ${articleId}`);
+
         return true;
       }
 
@@ -130,7 +127,7 @@ export class ArticlePostProcessor {
         updateData.content = validationResult.enhancedContent;
         updateData.aiEnhanced = true;
         updateData.originalContent = article.content; // Keep original for reference
-        console.log(`✅ [POST-PROCESSOR] Article enhanced: ${articleId}`);
+
       }
 
       // Step 3: Generate cover image if needed and quality is acceptable
@@ -143,15 +140,14 @@ export class ArticlePostProcessor {
         if (coverResult?.imageUrl) {
           updateData.image = coverResult.imageUrl;
           updateData.imageSource = coverResult.method;
-          console.log(`🎨 [POST-PROCESSOR] Cover image generated: ${articleId}`);
+
         }
       }
 
       // Update the article in Firestore
       const articleRef = doc(db, 'articles', articleId);
       await updateDoc(articleRef, updateData);
-      
-      console.log(`✅ [POST-PROCESSOR] Article processed successfully: ${articleId}`);
+
       return true;
 
     } catch (error) {
@@ -165,15 +161,14 @@ export class ArticlePostProcessor {
    */
   async processUnvalidatedArticles(batchSize: number = 5) {
     if (this.isProcessing) {
-      console.log('📊 [POST-PROCESSOR] Already processing articles');
+
       return;
     }
 
     this.isProcessing = true;
 
     try {
-      console.log('📊 [POST-PROCESSOR] Checking for unvalidated articles...');
-      
+
       // Query for unvalidated articles (newest first)
       const articlesRef = collection(db, 'articles');
       const q = query(
@@ -186,12 +181,10 @@ export class ArticlePostProcessor {
       const snapshot = await getDocs(q);
       
       if (snapshot.empty) {
-        console.log('📊 [POST-PROCESSOR] No unvalidated articles found');
+
         return;
       }
 
-      console.log(`📊 [POST-PROCESSOR] Found ${snapshot.size} unvalidated articles`);
-      
       // Process articles in parallel (but limit concurrency)
       const processingPromises = snapshot.docs.map(doc => 
         this.processArticle(doc.id)
@@ -201,9 +194,7 @@ export class ArticlePostProcessor {
       
       const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
       const failed = results.filter(r => r.status === 'rejected' || !r.value).length;
-      
-      console.log(`📊 [POST-PROCESSOR] Batch complete: ${successful} successful, ${failed} failed`);
-      
+
     } catch (error) {
       console.error('Error processing unvalidated articles:', error);
     } finally {

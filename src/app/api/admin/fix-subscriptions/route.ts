@@ -35,9 +35,7 @@ export async function POST(request: NextRequest) {
     const snapshot = await usersRef
       .where('subscription.status', '==', 'active')
       .get();
-    
-    console.log(`Found ${snapshot.size} users with active subscriptions`);
-    
+
     let fixed = 0;
     const batch = db.batch();
     
@@ -65,7 +63,7 @@ export async function POST(request: NextRequest) {
     
     if (fixed > 0) {
       await batch.commit();
-      console.log(`Fixed ${fixed} subscriptions`);
+
     }
     
     return NextResponse.json({

@@ -19,7 +19,7 @@ export function LoginPromptModal({ isOpen, onClose, message, feature }: LoginPro
   useEffect(() => {
     if (isOpen) {
       track('login_modal_shown', { feature });
-      console.log('📊 [Analytics] Login modal shown:', { feature });
+
     }
   }, [isOpen, feature, track]);
 
@@ -28,14 +28,12 @@ export function LoginPromptModal({ isOpen, onClose, message, feature }: LoginPro
   const handleLogin = async () => {
     try {
       track('registration_started', { method: 'google', feature });
-      console.log('📊 [Analytics] Registration/login started:', { method: 'google', feature });
-      
+
       await signInWithGoogle();
       
       // Track successful registration/login
       track('registration_completed', { method: 'google', feature });
-      console.log('📊 [Analytics] Registration/login completed:', { method: 'google', feature });
-      
+
       onClose();
     } catch (error) {
       // Login failed
@@ -60,7 +58,7 @@ export function LoginPromptModal({ isOpen, onClose, message, feature }: LoginPro
             <button
               onClick={() => {
                 track('login_modal_dismissed', { feature });
-                console.log('📊 [Analytics] Login modal dismissed:', { feature });
+
                 onClose();
               }}
               className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"

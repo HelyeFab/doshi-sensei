@@ -64,7 +64,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
         if (savedSettings) {
           // Ensure theme is explicitly set if saved
           if (savedSettings.theme && savedSettings.theme !== 'system') {
-            console.log(`[Settings] Loading saved theme from IndexedDB: ${savedSettings.theme}`);
+
           }
           setSettings(savedSettings);
         } else {
@@ -73,8 +73,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
           if (localStorageSettings) {
             try {
               const parsedSettings = JSON.parse(localStorageSettings) as AppSettings;
-              console.log(`[Settings] Migrating settings from localStorage to IndexedDB`);
-              
+
               // Save to IndexedDB
               await SettingsManager.saveSettings(parsedSettings);
               setSettings(parsedSettings);
@@ -108,7 +107,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       SettingsManager.saveSettings(newSettings)
         .then(() => {
           if (key === 'theme') {
-            console.log(`[Settings] Saved theme preference to IndexedDB: ${value}`);
+
           }
         })
         .catch(error => {
@@ -126,7 +125,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     // Save to IndexedDB
     SettingsManager.saveSettings(defaultSettings)
       .then(() => {
-        console.log('[Settings] Reset settings saved to IndexedDB');
+
       })
       .catch(error => {
         console.error('Error saving reset settings to IndexedDB:', error);

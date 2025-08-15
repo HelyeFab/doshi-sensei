@@ -100,11 +100,6 @@ class AnalyticsTracker {
       });
     }
 
-    console.log('📊 [Analytics] Initialized:', {
-      userType: this.userType,
-      sessionId: this.sessionId,
-      userId: this.userId ? 'set' : 'anonymous'
-    });
   }
 
   /**
@@ -112,7 +107,7 @@ class AnalyticsTracker {
    */
   track(type: AnalyticsEventType, data: Record<string, any> = {}): void {
     if (!this.isInitialized) {
-      console.warn('📊 [Analytics] Not initialized, skipping event:', type);
+
       return;
     }
 
@@ -144,14 +139,10 @@ class AnalyticsTracker {
 
     // Prevent queue overflow
     if (this.eventQueue.length > this.MAX_QUEUE_SIZE) {
-      console.warn('📊 [Analytics] Queue overflow, dropping oldest events');
+
       this.eventQueue = this.eventQueue.slice(-this.MAX_QUEUE_SIZE);
     }
 
-    console.log('📊 [Analytics] Event tracked:', type, {
-      queueSize: this.eventQueue.length,
-      data
-    });
   }
 
   /**
@@ -251,7 +242,7 @@ class AnalyticsTracker {
       await this.syncToFirebase(events);
       // Only log Firebase sync for authenticated users
       if (this.userId && this.userType !== 'guest') {
-        console.log(`📊 [Analytics] Flushed ${events.length} events to Firebase`);
+
       }
     } catch (error) {
       // Only log errors for authenticated users
@@ -271,12 +262,12 @@ class AnalyticsTracker {
   private async syncToFirebase(events: AnalyticsEvent[]): Promise<void> {
     // Skip Firebase sync for guest users
     if (!this.userId || this.userType === 'guest') {
-      console.log('📊 [Analytics] Skipping Firebase sync for guest user');
+
       return;
     }
     
     if (!db) {
-      console.warn('📊 [Analytics] Firebase not initialized');
+
       return;
     }
 

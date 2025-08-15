@@ -27,7 +27,7 @@ async function loadKanjiAudioIndex(): Promise<KanjiAudioIndex | null> {
       return audioIndexCache;
     }
   } catch (error) {
-    console.warn('Failed to load kanji audio index:', error);
+
   }
 
   return null;
@@ -39,7 +39,7 @@ async function loadKanjiAudioIndex(): Promise<KanjiAudioIndex | null> {
 export async function getKanjiAudioPath(kanji: string, level?: JLPTLevel): Promise<string | null> {
   const audioIndex = await loadKanjiAudioIndex();
   if (!audioIndex) {
-    console.log(`[Kanji Audio] No audio index found`);
+
     return null;
   }
 
@@ -57,7 +57,6 @@ export async function getKanjiAudioPath(kanji: string, level?: JLPTLevel): Promi
     }
   }
 
-  console.log(`[Kanji Audio] No local audio found for kanji: "${kanji}"`);
   return null;
 }
 
@@ -87,7 +86,6 @@ export async function getOnyomiAudioPath(kanji: string, reading: string, level?:
     }
   }
 
-  console.log(`[Kanji Audio] No local onyomi audio for: "${kanji}" "${reading}"`);
   return null;
 }
 
@@ -117,7 +115,6 @@ export async function getKunyomiAudioPath(kanji: string, reading: string, level?
     }
   }
 
-  console.log(`[Kanji Audio] No local kunyomi audio for: "${kanji}" "${reading}"`);
   return null;
 }
 
@@ -125,8 +122,7 @@ export async function getKunyomiAudioPath(kanji: string, reading: string, level?
  * Play kanji audio from local file
  */
 export async function playKanjiAudio(audioPath: string): Promise<void> {
-  console.log(`[Kanji Audio] Playing local audio file: ${audioPath}`);
-  
+
   // Try to bypass service worker for local audio files
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     // Add a cache-buster to force bypassing service worker cache
@@ -162,7 +158,7 @@ function playKanjiAudioDirect(audioPath: string): Promise<void> {
       audio.play()
         .then(() => {
           hasPlayed = true;
-          console.log(`[Kanji Audio] Started playing: ${audioPath}`);
+
         })
         .catch((err) => {
           console.error(`[Kanji Audio] Play failed:`, err);
@@ -172,20 +168,20 @@ function playKanjiAudioDirect(audioPath: string): Promise<void> {
     
     // Add event listeners
     audio.addEventListener('loadstart', () => {
-      console.log(`[Kanji Audio] Started loading: ${audioPath}`);
+
       startLoadTimeout();
     });
     
     audio.addEventListener('loadeddata', () => {
-      console.log(`[Kanji Audio] Audio data loaded: ${audioPath}`);
+
     });
     
     audio.addEventListener('canplay', () => {
-      console.log(`[Kanji Audio] Audio can play: ${audioPath}`);
+
     });
     
     audio.addEventListener('ended', () => {
-      console.log(`[Kanji Audio] Finished playing: ${audioPath}`);
+
       clearTimeout(loadTimeout);
       resolve();
     });
@@ -211,7 +207,7 @@ function playKanjiAudioDirect(audioPath: string): Promise<void> {
         
         // For network errors, this is expected due to service worker
         if (audioError.code === 2) {
-          console.info(`[Kanji Audio] This is expected - will retry with different method`);
+
         }
       }
       
@@ -288,7 +284,7 @@ export async function playKanjiAudioWithRetry(audioPath: string, maxRetries: num
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       if (attempt > 0) {
-        console.log(`[Kanji Audio] Retry attempt ${attempt} for: ${audioPath}`);
+
         // Wait a bit before retrying
         await new Promise(resolve => setTimeout(resolve, 500 * attempt));
       }
@@ -306,7 +302,7 @@ export async function playKanjiAudioWithRetry(audioPath: string, maxRetries: num
       if (attempt === 0) {
         console.info(`[Kanji Audio] First attempt failed (expected with service worker):`, (error as Error).message);
       } else {
-        console.warn(`[Kanji Audio] Attempt ${attempt + 1} failed:`, error);
+
       }
     }
   }

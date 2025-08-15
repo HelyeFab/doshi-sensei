@@ -48,7 +48,7 @@ export async function trackEvent(
         // Already handled by analyticsTracker session management
         break;
       default:
-        console.warn('Unknown legacy event type:', eventType);
+
     }
   } catch (error) {
     console.error('Error tracking analytics event:', error);
@@ -67,8 +67,7 @@ export async function getAnalyticsData(options: {
   userId?: string;
   limitCount?: number;
 } = {}): Promise<AnalyticsEvent[]> {
-  console.warn('⚠️ getAnalyticsData is deprecated. Old analytics collection will be removed. Use admin analytics pages instead.');
-  
+
   // Return empty array to prevent errors during migration
   return [];
 }
@@ -83,8 +82,7 @@ export async function getTodayAnalytics(): Promise<{
   moodBoardViews: number;
   uniqueUsers: number;
 }> {
-  console.warn('⚠️ getTodayAnalytics is deprecated. Use admin analytics pages for real-time data.');
-  
+
   // Return zeros to prevent errors during migration
   return {
     drillsCompleted: 0,
@@ -99,7 +97,7 @@ export async function getTodayAnalytics(): Promise<{
  * @deprecated This function reads from the old analytics collection. Use admin analytics pages instead.
  */
 export async function getMostPopularMoodBoard(days: number = 7): Promise<string> {
-  console.warn('⚠️ getMostPopularMoodBoard is deprecated. Use admin analytics pages for real-time data.');
+
   return 'No data';
 }
 
@@ -108,7 +106,7 @@ export async function getMostPopularMoodBoard(days: number = 7): Promise<string>
  * @deprecated This function reads from the old analytics collection. Use admin analytics pages instead.
  */
 export async function getAverageSessionDuration(days: number = 7): Promise<number> {
-  console.warn('⚠️ getAverageSessionDuration is deprecated. Use admin analytics pages for real-time data.');
+
   return 0;
 }
 
@@ -139,12 +137,12 @@ export const Analytics = {
   // Track session start - now handled automatically by analyticsTracker
   trackSessionStart: (userId?: string, sessionData: Record<string, any> = {}) => {
     // Session management is now automatic in the new system
-    console.log('Session tracking is now automatic in the new analytics system');
+
   },
 
   // Track session end - now handled automatically by analyticsTracker
   trackSessionEnd: (userId?: string, sessionData: Record<string, any> = {}) => {
     // Session management is now automatic in the new system
-    console.log('Session tracking is now automatic in the new analytics system');
+
   },
 };

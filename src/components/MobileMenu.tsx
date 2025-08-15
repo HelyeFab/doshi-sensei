@@ -73,8 +73,6 @@ export default function MobileMenu() {
               src="/menu.svg"
               alt="Menu"
               className="w-6 h-6"
-              onLoad={() => console.log('📱 Menu SVG loaded from:', window.location.origin + '/menu.svg')}
-              onError={() => console.log('❌ Menu SVG failed to load from:', window.location.origin + '/menu.svg')}
             />
           </div>
         </button>

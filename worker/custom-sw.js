@@ -4,6 +4,38 @@
 // Version management - change this on deploy to bust caches
 const SW_VERSION = 'v2.1.0-stable';
 
+// Clear old caches on activation
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames
+          .filter(cacheName => {
+            // Delete old version caches
+            return cacheName.startsWith('workbox-') && 
+                   !cacheName.includes(SW_VERSION);
+          })
+          .map(cacheName => {
+            console.log('[SW] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          })
+      );
+    }).then(() => {
+      console.log('[SW] Version', SW_VERSION, 'activated');
+      // Take control immediately
+      return self.clients.claim();
+    })
+  );
+});
+
+// Skip waiting when new version is available
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[SW] Skip waiting triggered');
+    self.skipWaiting();
+  }
+});
+
 // next-pwa will inject Workbox here when building
 // The workbox global will be available after injection
 

@@ -37,8 +37,6 @@ export default function CompanionTrigger() {
             alt="Virtual Companion"
             className="w-full h-full object-contain"
             style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))' }}
-            onLoad={() => console.log('🦒 Virtual Companion SVG loaded from:', window.location.origin + '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/007-giraffe.svg')}
-            onError={() => console.log('❌ Virtual Companion SVG failed to load from:', window.location.origin + '/flat-icons/8376275-wild-animals-flat-1-of-1/svg/007-giraffe.svg')}
           />
         </div>
 

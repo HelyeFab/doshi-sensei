@@ -60,6 +60,18 @@ const sidebarCategories: SidebarCategory[] = [
     label: 'Content Management',
     items: [
       {
+        id: 'blog' as AdminSection,
+        labelKey: 'blog',
+        iconKey: 'blog',
+        href: '/admin/blog',
+      },
+      {
+        id: 'media' as AdminSection,
+        labelKey: 'media',
+        iconKey: 'media',
+        href: '/admin/media',
+      },
+      {
         id: 'mood-boards' as AdminSection,
         labelKey: 'moodBoards',
         iconKey: 'moodBoards',
@@ -148,12 +160,6 @@ const sidebarCategories: SidebarCategory[] = [
         href: '/admin/achievements',
       },
       {
-        id: 'snake-path' as AdminSection,
-        labelKey: 'snakePath',
-        iconKey: 'snakePath',
-        href: '/admin/snake-path',
-      },
-      {
         id: 'mockup-generator' as AdminSection,
         labelKey: 'mockupGenerator',
         iconKey: 'mockupGenerator',
@@ -188,7 +194,9 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   // Helper to get translated label for an item
   const getItemLabel = (labelKey: string) => {
     return strings.navigation?.admin?.[labelKey]?.label || 
-           (labelKey === 'debug' ? 'Debug Tools' : 
+           (labelKey === 'blog' ? 'Blog' :
+            labelKey === 'media' ? 'Media Library' :
+            labelKey === 'debug' ? 'Debug Tools' : 
             labelKey === 'snakePath' ? 'Snake Path' : 
             labelKey === 'analytics' ? 'Analytics' : 
             labelKey === 'kpiDashboard' ? 'KPI Dashboard' : 
@@ -209,7 +217,9 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   // Helper to get icon for an item
   const getItemIcon = (iconKey: string) => {
     return strings.navigation?.admin?.[iconKey]?.icon || 
-          (iconKey === 'debug' ? '🐛' : 
+          (iconKey === 'blog' ? '📰' :
+           iconKey === 'media' ? '🖼️' :
+           iconKey === 'debug' ? '🐛' : 
            iconKey === 'snakePath' ? '🐍' : 
            iconKey === 'analytics' ? '📊' : 
            iconKey === 'kpiDashboard' ? '📈' : 

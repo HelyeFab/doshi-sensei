@@ -50,7 +50,12 @@
       "WebSearch",
       "Bash(npx terso:*)",
       "Bash(npm uninstall:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(npm i:*)",
+      "Bash(gsutil cors:*)",
+      "Bash(firebase projects:list:*)",
+      "Bash(gsutil ls:*)",
+      "Bash(gcloud config set:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

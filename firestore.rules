@@ -198,12 +198,24 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Resources collection (blog posts and learning resources)
+    // Resources collection (learning resources)
     match /resources/{resourceId} {
       // Allow anyone to read published resources
       allow read: if resource == null || resource.data.status == 'published' || isAdmin();
 
       // Only admin can create, update, or delete resources
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Blog posts collection - SEO-focused content
+    match /blogPosts/{postId} {
+      // Allow anyone to read published posts or if scheduled and past publish date
+      allow read: if resource == null || 
+        resource.data.status == 'published' || 
+        (resource.data.status == 'scheduled' && resource.data.publishDate <= request.time) ||
+        isAdmin();
+
+      // Only admin can create, update, or delete blog posts
       allow create, update, delete: if isAdmin();
     }
 

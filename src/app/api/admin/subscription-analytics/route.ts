@@ -120,7 +120,9 @@ export async function GET(request: NextRequest) {
               monthlyAmount,
               priceId: price.id,
               productName: (price.product as any)?.name || 'Unknown',
-              currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000).toISOString()
+              currentPeriodEnd: stripeSubscription.current_period_end 
+                ? new Date(stripeSubscription.current_period_end * 1000).toISOString()
+                : null
             });
           }
         } catch (stripeError: any) {

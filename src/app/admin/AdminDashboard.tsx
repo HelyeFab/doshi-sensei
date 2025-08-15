@@ -79,11 +79,17 @@ export default function AdminDashboard() {
       case 'articles':
         router.push('/admin/articles');
         break;
-      case 'create-blog':
+      case 'create-resource':
         router.push('/admin/resources/new');
         break;
-      case 'manage-blogs':
+      case 'manage-resources':
         router.push('/admin/resources');
+        break;
+      case 'create-blog':
+        router.push('/admin/blog/new');
+        break;
+      case 'manage-blog':
+        router.push('/admin/blog');
         break;
       case 'youtube-series':
         router.push('/admin/youtube-series');
@@ -178,16 +184,28 @@ export default function AdminDashboard() {
               onClick={() => handleQuickAction('bugs')}
             />
             <QuickAction
-              title={strings.admin.createBlogPost}
-              description={strings.admin.createBlogPostDescription}
+              title={strings.admin.createResource}
+              description={strings.admin.createResourceDescription}
+              icon="📄"
+              onClick={() => handleQuickAction('create-resource')}
+            />
+            <QuickAction
+              title={strings.admin.manageResources}
+              description={strings.admin.manageResourcesDescription}
+              icon="📚"
+              onClick={() => handleQuickAction('manage-resources')}
+            />
+            <QuickAction
+              title="Create Blog Post"
+              description="Write and publish blog articles"
               icon="✍️"
               onClick={() => handleQuickAction('create-blog')}
             />
             <QuickAction
-              title={strings.admin.manageBlogs}
-              description={strings.admin.manageBlogsDescription}
-              icon="📚"
-              onClick={() => handleQuickAction('manage-blogs')}
+              title="Manage Blog"
+              description="Edit and manage blog posts"
+              icon="📰"
+              onClick={() => handleQuickAction('manage-blog')}
             />
             <QuickAction
               title="YouTube Series"

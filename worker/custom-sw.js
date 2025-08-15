@@ -4,9 +4,6 @@
 // Version management - change this on deploy to bust caches
 const SW_VERSION = 'v2.1.0-stable';
 
-// Import version management
-importScripts('/service-worker-update.js');
-
 // next-pwa will inject Workbox here when building
 // The workbox global will be available after injection
 

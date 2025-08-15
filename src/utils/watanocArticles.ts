@@ -66,18 +66,18 @@ export async function getWatanocArticles(forceRefresh: boolean = false, page?: n
     const articlesCollection = collection(db, 'articles');
     let articlesQuery;
     if (page && pageSize) {
-      // Paginated query - ONLY visible articles
+      // Paginated query with visibility filter
       articlesQuery = query(
         articlesCollection,
-        where('visible', '==', true),  // Only show validated or 98%+ Japanese articles
+        where('visible', '==', true),
         orderBy('scrapedAt', 'desc'),
         limit(page * pageSize)
       );
     } else {
-      // No limit: fetch all visible articles
+      // No limit: fetch all articles with visibility filter
       articlesQuery = query(
         articlesCollection,
-        where('visible', '==', true),  // Only show validated or 98%+ Japanese articles
+        where('visible', '==', true),
         orderBy('scrapedAt', 'desc')
       );
     }

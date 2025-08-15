@@ -65,6 +65,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "visible",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "scrapedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "articles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "difficulty",
           "order": "ASCENDING"
         },
@@ -78,6 +92,42 @@
       "collectionGroup": "articles",
       "queryScope": "COLLECTION",
       "fields": [
+        {
+          "fieldPath": "category",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "scrapedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "articles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "visible",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "difficulty",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "scrapedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "articles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "visible",
+          "order": "ASCENDING"
+        },
         {
           "fieldPath": "category",
           "order": "ASCENDING"

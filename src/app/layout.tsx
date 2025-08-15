@@ -208,6 +208,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* CSS MIME Type Fix - Must load first */}
+        <script src="/css-mime-fix.js" defer />
+        
         {/* PWA Manifest and Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="application-name" content="Dōshi Sensei" />

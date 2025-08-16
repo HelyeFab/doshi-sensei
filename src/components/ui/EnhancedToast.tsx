@@ -412,8 +412,15 @@ export function EnhancedToast({
         key={`${id}-${style}-${type}`}
         {...getAnimationProps()}
         style={getContainerStyle()}
+        onClick={(e) => {
+          // Only dismiss if clicking on the banner itself, not on action buttons
+          const target = e.target as HTMLElement;
+          if (!target.closest('button')) {
+            onClose?.();
+          }
+        }}
       >
-        <div style={getContentStyle()}>
+        <div style={{...getContentStyle(), cursor: 'pointer'}}>
           <div style={getBannerContentStyle()}>
             <div style={getIconStyle()}>
               {getIcon()}

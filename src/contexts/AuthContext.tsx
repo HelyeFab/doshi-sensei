@@ -155,9 +155,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const provider = new GoogleAuthProvider();
     // Force account selection even if user is already signed in to Google
     provider.setCustomParameters({
-      prompt: 'select_account'
+      prompt: 'select_account',
+      // Add popup settings to reduce COOP errors
+      auth_type: 'rerequest',
+      access_type: 'offline'
     });
+    
+    // Suppress COOP warnings in development
+    const originalWarn = console.warn;
+    const originalError = console.error;
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      console.warn = (...args) => {
+        if (args[0]?.includes?.('Cross-Origin-Opener-Policy')) return;
+        originalWarn.apply(console, args);
+      };
+      console.error = (...args) => {
+        if (args[0]?.includes?.('Cross-Origin-Opener-Policy')) return;
+        originalError.apply(console, args);
+      };
+    }
+    
     const result = await signInWithPopup(auth, provider);
+    
+    // Restore console methods
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      console.warn = originalWarn;
+      console.error = originalError;
+    }
 
     // Create/update user document in Firestore
     if (result.user) {

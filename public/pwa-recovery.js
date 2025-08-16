@@ -146,17 +146,35 @@
   }
   
   // Also check for specific error patterns in console
-  const originalError = console.error;
+  const originalError = console.error.bind(console);
   console.error = function(...args) {
-    const message = args.join(' ');
-    if (
-      message.includes('ChunkLoadError') ||
-      message.includes('Loading chunk') ||
-      message.includes('Unexpected token') ||
-      message.includes('Failed to fetch')
-    ) {
-      console.warn('[PWA Recovery] Detected potential cache issue. Run window.pwaRecovery() to fix.');
+    try {
+      // Safely convert args to string
+      const message = args.map(arg => {
+        if (typeof arg === 'string') return arg;
+        if (arg === null) return 'null';
+        if (arg === undefined) return 'undefined';
+        if (typeof arg === 'object') {
+          try {
+            return JSON.stringify(arg);
+          } catch {
+            return String(arg);
+          }
+        }
+        return String(arg);
+      }).join(' ');
+      
+      if (
+        message.includes('ChunkLoadError') ||
+        message.includes('Loading chunk') ||
+        message.includes('Unexpected token') ||
+        message.includes('Failed to fetch')
+      ) {
+        console.warn('[PWA Recovery] Detected potential cache issue. Run window.pwaRecovery() to fix.');
+      }
+    } catch (e) {
+      // If anything fails, just pass through to original
     }
-    originalError.apply(console, args);
+    return originalError(...args);
   };
 })();

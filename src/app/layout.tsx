@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from 'next/script';
 import "./globals.css";
 import { OptimizedProviders } from "@/contexts/OptimizedProviders";
 import { UnifiedNotificationProvider } from "@/components/UnifiedNotificationProvider";
@@ -208,8 +209,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* CSS MIME Type Fix - Must load first */}
-        <script src="/css-mime-fix.js" defer />
+        {/* CSS MIME Type Fix moved to body to avoid extension interference */}
         
         {/* PWA Manifest and Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
@@ -281,11 +281,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
 
         
-        {/* PWA Manager - Intelligent Service Worker Management */}
-        <script src="/pwa-manager.js" defer />
-        
-        {/* PWA Recovery Script - Handles chunk loading errors */}
-        <script src="/pwa-recovery.js" defer />
+        {/* PWA scripts moved to body to avoid extension interference */}
         
         {/* PWA Service Worker Update Manager */}
 
@@ -298,6 +294,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} ${savoyeFont.variable} ${manrope.variable} antialiased min-h-screen`}
         suppressHydrationWarning
       >
+        {/* Critical scripts loaded with Next.js Script to avoid hydration issues */}
+        <Script src="/css-mime-fix.js" strategy="afterInteractive" />
+        <Script src="/pwa-manager.js" strategy="afterInteractive" />
+        <Script src="/pwa-recovery.js" strategy="afterInteractive" />
+        
         <EnvProvider>
           <NextAuthProvider>
             <OptimizedProviders>
@@ -308,8 +309,8 @@ export default function RootLayout({
                                 {process.env.NODE_ENV === 'development' && (
                                   <>
                                     <FastRefreshLogger />
-                                    <PersistentLogger />
-                                    <PerformanceMonitor />
+                                    {/* <PersistentLogger /> */}
+                                    {/* <PerformanceMonitor /> */}
                                   </>
                                 )}
                                 <PWAErrorBoundary>

@@ -14,6 +14,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 import { kanaData, getBasicKana } from '@/data/kanaData';
 import { KanaChar } from '@/components/games/KanaDropGame/types';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import { SelectionActionBar } from '@/components/ui/SelectionActionBar';
 
 // Structured Data for Katakana Page
 const katakanaStructuredData = {
@@ -208,45 +209,23 @@ export default function KatakanaPage() {
             </button>
           </div>
 
-          {/* Selection Controls */}
-          <div className="mb-6 bg-card rounded-lg border border-border p-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  onClick={handleSelectAll}
-                  className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium text-sm"
-                >
-                  Select All
-                </button>
-                <button
-                  onClick={handleClearSelection}
-                  className="px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90 transition-colors font-medium text-sm"
-                >
-                  Clear Selection
-                </button>
-              </div>
-              <button
-                onClick={handleStudyClick}
-                disabled={selectedKatakana.size === 0}
-                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Study Selected ({selectedKatakana.size})
-              </button>
-            </div>
-          </div>
-
-          {/* Show Romaji Toggle */}
-          <div className="mb-6 flex justify-center">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showRomaji}
-                onChange={(e) => setShowRomaji(e.target.checked)}
-                className="rounded border-border"
-              />
-              <span className="text-sm text-foreground">Show Romaji</span>
-            </label>
-          </div>
+          {/* Selection Action Bar */}
+          <SelectionActionBar
+            onSelectBasic={() => {
+              const basicKana = getBasicKana().filter(k => k.type === 'katakana');
+              setSelectedKatakana(new Set(basicKana.map(k => k.id)));
+            }}
+            onSelectAll={handleSelectAll}
+            onClearSelection={handleClearSelection}
+            showToggle={true}
+            toggleLabel="Romaji"
+            toggleValue={showRomaji}
+            onToggleChange={setShowRomaji}
+            actionLabel="Study"
+            actionDisabled={selectedKatakana.size === 0}
+            onAction={handleStudyClick}
+            selectionCount={selectedKatakana.size}
+          />
 
           {/* Katakana Chart */}
           <KanaChart

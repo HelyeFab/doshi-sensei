@@ -39,8 +39,9 @@ export function SEOLogger({
     // Extract canonical URL
     const canonical = document.querySelector('link[rel="canonical"]')?.getAttribute('href');
     
-    // Log SEO data to browser console
-
+    // Log SEO data to browser console (disabled to reduce console noise)
+    // Uncomment the following if you need to debug SEO metadata:
+    /*
     console.log({
       path: pathname,
       title,
@@ -48,6 +49,7 @@ export function SEOLogger({
       keywords: keywords.length > 0 ? keywords : '(none)',
       canonical
     });
+    */
 
     // Log structured data if present
     if (structuredData) {

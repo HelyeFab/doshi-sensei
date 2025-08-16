@@ -15,7 +15,7 @@
     if (tagName.toLowerCase() === 'script') {
       const originalSetAttribute = element.setAttribute;
       element.setAttribute = function(name, value) {
-        if (name === 'src' && value && value.includes('.css')) {
+        if (name === 'src' && value && typeof value === 'string' && value.includes('.css')) {
           // Don't load CSS files as scripts - silently ignore
           return;
         }
@@ -31,7 +31,7 @@
     const observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
         mutation.addedNodes.forEach(function(node) {
-          if (node.tagName === 'SCRIPT' && node.src && node.src.includes('.css')) {
+          if (node.tagName === 'SCRIPT' && node.src && typeof node.src === 'string' && node.src.includes('.css')) {
             node.remove();
           }
         });

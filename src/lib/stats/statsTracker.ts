@@ -294,7 +294,7 @@ export class StatsTracker {
             // Save cloud stats locally
             await this.saveToIndexedDB();
           } else if (cloudStats) {
-            console.log('📊 [StatsTracker] Keeping current stats (newer than cloud)');
+            // console.log('📊 [StatsTracker] Keeping current stats (newer than cloud)');
           }
         }
       }
@@ -605,13 +605,13 @@ export class StatsTracker {
         getDoc(doc(db, 'userStats', this.currentUser.uid, 'current', 'activities'))
       ]);
       
-      console.log('✅ [StatsTracker] Verification - docs exist:', {
-        summary: summaryDoc.exists(),
-        activities: activitiesDoc.exists()
-      });
+      // console.log('✅ [StatsTracker] Verification - docs exist:', {
+      //   summary: summaryDoc.exists(),
+      //   activities: activitiesDoc.exists()
+      // });
       
       if (activitiesDoc.exists()) {
-        console.log('📋 [StatsTracker] Activities in Firebase:', activitiesDoc.data());
+        // console.log('📋 [StatsTracker] Activities in Firebase:', activitiesDoc.data());
       }
     } catch (error) {
       console.error('❌ [StatsTracker] Error saving to cloud:', error);
@@ -952,7 +952,7 @@ export class StatsTracker {
     const yesterday = this.getDateString(Date.now() - 24 * 60 * 60 * 1000);
     let checkDate = today;
 
-    console.log(`📊 [StatsTracker] Checking streak from today (${today}) backwards...`);
+    // console.log(`📊 [StatsTracker] Checking streak from today (${today}) backwards...`);
     
     // First check if user has activity today
     if (activityDates.has(today)) {

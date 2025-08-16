@@ -1,25 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { TranscriptLine } from '@/app/tools/youtube-shadowing/YouTubeShadowing';
+import { TranscriptCacheManager } from '@/utils/transcriptCache';
 
 const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_API_KEY,
 });
-
-// Helper to interpolate timestamps for split segments
-function interpolateTimestamps(
-  originalStart: number,
-  originalEnd: number,
-  segments: string[]
-): { startTime: number; endTime: number }[] {
-  const duration = originalEnd - originalStart;
-  const segmentDuration = duration / segments.length;
-  
-  return segments.map((_, index) => ({
-    startTime: originalStart + (segmentDuration * index),
-    endTime: originalStart + (segmentDuration * (index + 1))
-  }));
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +16,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { transcript, videoTitle, language = 'ja' } = await request.json();
+    const { contentId, transcript, videoTitle, language = 'ja' } = await request.json();
 
     if (!transcript || !Array.isArray(transcript)) {
       return NextResponse.json(
@@ -39,173 +25,174 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Don't format if transcript is already well-segmented
-    const avgLineLength = transcript.reduce((sum, line) => sum + line.text.length, 0) / transcript.length;
+    console.log(`🤖 [AI FORMAT] Starting formatting for ${transcript.length} segments`);
 
-    // For very short transcripts (< 5 lines), always skip formatting
-    // For medium length (5-50 lines), format if lines are long
-    // For long transcripts (> 50 lines), always try to format
-    const shouldFormat = transcript.length < 5 ? false :
-                         transcript.length > 50 ? true :
-                         avgLineLength > 40;
-    
-    if (!shouldFormat) {
-
+    // Don't format very short transcripts
+    if (transcript.length < 3) {
+      console.log('📊 [AI FORMAT] Transcript too short, skipping formatting');
       return NextResponse.json({ 
         formattedTranscript: transcript,
-        wasFormatted: false 
+        wasFormatted: false,
+        success: true 
       });
     }
 
-    // Process in chunks to avoid token limits
-    const CHUNK_SIZE = 30; // Process 30 lines at a time to stay under token limits
-    const chunks = [];
-    for (let i = 0; i < transcript.length; i += CHUNK_SIZE) {
-      chunks.push(transcript.slice(i, i + CHUNK_SIZE));
-    }
+    // STEP 1: Combine all transcript segments into continuous text
+    // This is crucial - we need to see the full context to split properly
+    const fullText = transcript.map(line => line.text).join('');
+    const totalDuration = transcript[transcript.length - 1].endTime - transcript[0].startTime;
+    
+    console.log(`📊 [AI FORMAT] Combined text length: ${fullText.length} characters`);
 
-    const allFormattedSegments: TranscriptLine[] = [];
-    let globalNewId = 1;
-
-    const systemPrompt = `You are an expert Japanese language educator specializing in shadowing practice optimization.
-Your task is to reformat Japanese transcripts to make them ideal for language learning through shadowing.
+    const systemPrompt = `You are an expert Japanese language educator specializing in shadowing practice.
+Your task is to split Japanese text into segments ideal for shadowing practice.
 
 CRITICAL RULES:
-1. Break long sentences at natural pause points while preserving meaning
-2. Keep grammatical units together (don't split particles from their words)
-3. Target 15-35 characters per line for optimal shadowing
-4. Preserve the natural flow and rhythm of speech
-5. Each line should be a complete thought or grammatical unit when possible
-6. For songs/poetry, respect the artistic line breaks but still ensure readability
-7. NEVER add romaji, romanization, or English translations
-8. Output ONLY Japanese text (kanji, hiragana, katakana)
-9. Remove any romaji if present in the input
+1. NEVER split です/ます/でした/ました/だ/だった from their stems
+   - WRONG: "これはももさんのお話" | "です"
+   - CORRECT: "これはももさんのお話です"
+2. NEVER split particles from preceding words
+3. Keep grammatical units complete
+4. Each segment should be 10-30 characters ideally
+5. PRIORITIZE grammatical correctness over length
 
 OUTPUT FORMAT:
-Return a JSON array where each element has:
-- "originalIndex": the [index] of the original line this came from
-- "text": the formatted Japanese text ONLY (no romaji, no translations)
-- "segments": number of segments this was split into (1 if not split)
+Return a JSON object with a "segments" array.
+Each segment should be a complete, grammatically correct phrase.
 
-EXAMPLES:
-Input: "まだこの世界は mada kono sekai wa 僕を飼いならしてたいみたいだ"
-Output: [
-  {"originalIndex": 0, "text": "まだこの世界は", "segments": 2},
-  {"originalIndex": 0, "text": "僕を飼いならしてたいみたいだ", "segments": 2}
-]
+Example Input: "これはももさんのお話ですももさんは日本人ですカフェで働いています"
+Example Output:
+{
+  "segments": [
+    "これはももさんのお話です",
+    "ももさんは日本人です", 
+    "カフェで働いています"
+  ]
+}`;
 
-IMPORTANT: Output must contain ONLY Japanese characters. Remove all romaji and English.`;
+    const userPrompt = `Split this continuous Japanese text into segments for shadowing practice.
+The text has NO punctuation, so you must identify natural break points based on grammar.
 
-    // Process each chunk separately
-    for (let chunkIdx = 0; chunkIdx < chunks.length; chunkIdx++) {
-      const chunk = chunks[chunkIdx];
-      const chunkStartIdx = chunkIdx * CHUNK_SIZE;
-      
-      console.log(`📊 [AI FORMAT] Processing chunk ${chunkIdx + 1}/${chunks.length} (lines ${chunkStartIdx} to ${chunkStartIdx + chunk.length - 1})`);
-      
-      // Prepare chunk transcript for GPT-4
-      const chunkText = chunk.map((line, idx) => 
-        `[${chunkStartIdx + idx}] ${line.text}`
-      ).join('\n');
+Text: ${fullText}
 
-      const userPrompt = `Format this Japanese transcript for optimal shadowing practice:
+Remember:
+- NEVER break です/ます/だ from their stems
+- Each segment must be grammatically complete
+- Aim for 10-30 characters per segment
+- If unsure, keep phrases together`;
 
-${videoTitle && chunkIdx === 0 ? `Video Title: ${videoTitle}\n` : ''}
-Transcript (part ${chunkIdx + 1}/${chunks.length}):
-${chunkText}
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        temperature: 0.2, // Lower temperature for more consistent splitting
+        max_tokens: 3000,
+        response_format: { type: "json_object" }
+      });
 
-Break up any long run-on sentences into natural, meaningful segments that are easy to shadow.`;
+      const response = JSON.parse(completion.choices[0].message.content || '{"segments": []}');
+      const aiSegments = response.segments || [];
 
-      try {
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt }
-          ],
-          temperature: 0.3,
-          max_tokens: 2000, // Reduced to ensure we don't hit limits
-          response_format: { type: "json_object" }
-        });
-
-        const response = JSON.parse(completion.choices[0].message.content || '{"segments": []}');
-        
-        // Group segments by original index for timestamp interpolation
-        const segmentsByOriginal = new Map<number, any[]>();
-        
-        (response.segments || response).forEach((segment: any) => {
-          const origIdx = segment.originalIndex;
-          if (!segmentsByOriginal.has(origIdx)) {
-            segmentsByOriginal.set(origIdx, []);
-          }
-          segmentsByOriginal.get(origIdx)!.push(segment);
-        });
-        
-        // Create formatted transcript with interpolated timestamps for this chunk
-        segmentsByOriginal.forEach((segments, origIdx) => {
-          if (origIdx >= 0 && origIdx < transcript.length) {
-            const original = transcript[origIdx];
-            const timestamps = interpolateTimestamps(
-              original.startTime,
-              original.endTime,
-              segments.map(s => s.text)
-            );
-            
-            segments.forEach((segment, idx) => {
-              allFormattedSegments.push({
-                id: `formatted_${globalNewId++}`,
-                text: segment.text,
-                startTime: timestamps[idx].startTime,
-                endTime: timestamps[idx].endTime,
-                words: segment.text.split(/[\s、。！？]/g).filter(w => w.length > 0)
-              });
-            });
-          }
-        });
-      } catch (chunkError: any) {
-        console.error(`Error processing chunk ${chunkIdx + 1}:`, chunkError);
-        // If a chunk fails, add the original lines as fallback
-        chunk.forEach((line) => {
-          allFormattedSegments.push({
-            id: `formatted_${globalNewId++}`,
-            text: line.text,
-            startTime: line.startTime,
-            endTime: line.endTime,
-            words: line.words || line.text.split(/[\s、。！？]/g).filter(w => w.length > 0)
-          });
+      if (aiSegments.length === 0) {
+        console.log('⚠️ [AI FORMAT] No segments returned by AI');
+        return NextResponse.json({ 
+          formattedTranscript: transcript,
+          wasFormatted: false,
+          success: false 
         });
       }
-    }
-    
-    // If formatting failed or produced no results, return original
-    if (allFormattedSegments.length === 0) {
 
+      console.log(`✅ [AI FORMAT] AI split text into ${aiSegments.length} segments`);
+
+      // STEP 2: Map AI segments back to timestamps
+      // We'll distribute timestamps proportionally based on character count
+      const formattedTranscript: TranscriptLine[] = [];
+      const startTime = transcript[0].startTime;
+      const timePerChar = totalDuration / fullText.length;
+      
+      let currentTime = startTime;
+      
+      aiSegments.forEach((segmentText: string, index: number) => {
+        const segmentDuration = segmentText.length * timePerChar;
+        
+        formattedTranscript.push({
+          id: `formatted_${index + 1}`,
+          text: segmentText,
+          startTime: currentTime,
+          endTime: currentTime + segmentDuration,
+          words: segmentText.split(/[\s、。！？]/g).filter(w => w.length > 0)
+        });
+        
+        currentTime += segmentDuration;
+      });
+
+      // Log sample for debugging
+      console.log('📋 Sample formatted segments:');
+      formattedTranscript.slice(0, 5).forEach((seg, i) => {
+        console.log(`  ${i + 1}. [${seg.startTime.toFixed(2)}s - ${seg.endTime.toFixed(2)}s] ${seg.text}`);
+      });
+
+      // Check for grammar violations
+      const violations = formattedTranscript.filter(seg => 
+        seg.text.match(/^(です|ます|でした|ました|だ|だった)/) ||
+        seg.text.match(/の$|が$|を$|に$|は$/)
+      );
+
+      if (violations.length > 0) {
+        console.warn(`⚠️ [AI FORMAT] Found ${violations.length} potential grammar violations`);
+        violations.slice(0, 3).forEach(v => {
+          console.warn(`  - "${v.text}"`);
+        });
+      }
+
+      // Save the formatted transcript to cache if contentId is provided
+      if (contentId) {
+        try {
+          await TranscriptCacheManager.updateWithFormattedTranscript(
+            contentId,
+            formattedTranscript
+          );
+          console.log(`✅ [AI FORMAT] Saved formatted transcript to cache for ${contentId}`);
+        } catch (cacheError) {
+          console.error('Failed to save formatted transcript to cache:', cacheError);
+        }
+      }
+
+      return NextResponse.json({
+        formattedTranscript,
+        wasFormatted: true,
+        success: true,
+        stats: {
+          originalLines: transcript.length,
+          formattedLines: formattedTranscript.length,
+          violations: violations.length
+        }
+      });
+
+    } catch (aiError: any) {
+      console.error('AI processing error:', aiError);
+      
+      if (aiError?.status === 429) {
+        return NextResponse.json(
+          { error: 'Rate limit exceeded. Please try again later.' },
+          { status: 429 }
+        );
+      }
+      
+      // Return original on AI failure
       return NextResponse.json({ 
         formattedTranscript: transcript,
-        wasFormatted: false 
+        wasFormatted: false,
+        success: false,
+        error: 'AI processing failed' 
       });
     }
-
-    return NextResponse.json({
-      formattedTranscript: allFormattedSegments,
-      wasFormatted: true,
-      stats: {
-        originalLines: transcript.length,
-        formattedLines: allFormattedSegments.length,
-        avgOriginalLength: Math.round(transcript.reduce((sum, line) => sum + line.text.length, 0) / transcript.length),
-        avgFormattedLength: Math.round(allFormattedSegments.reduce((sum, line) => sum + line.text.length, 0) / allFormattedSegments.length)
-      }
-    });
 
   } catch (error: any) {
     console.error('Transcript formatting error:', error);
-    
-    if (error?.status === 429) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Please try again later.' },
-        { status: 429 }
-      );
-    }
     
     return NextResponse.json(
       { error: 'Failed to format transcript' },

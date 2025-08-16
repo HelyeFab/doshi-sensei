@@ -316,13 +316,39 @@ export class TranscriptCacheManager {
       await updateDoc(docRef, {
         formattedTranscript,
         'metadata.formattedAt': serverTimestamp(),
-        'metadata.formattingModel': 'gpt-4',
+        'metadata.formattingModel': 'gpt-4o-mini',
         'metadata.wasFormatted': true
       });
 
     } catch (error) {
       console.error('❌ [CACHE] Failed to save formatted transcript:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Clear the formatted transcript to force regeneration
+   * Useful when AI formatting rules have been improved
+   */
+  static async clearFormattedTranscript(contentId: string): Promise<void> {
+    try {
+      if (!db) {
+        console.log('[CACHE] Firestore not initialized, skipping clear');
+        return;
+      }
+
+      const docRef = doc(db, this.COLLECTION_NAME, contentId);
+      
+      await updateDoc(docRef, {
+        formattedTranscript: null,
+        'metadata.wasFormatted': false,
+        'metadata.formattedAt': null
+      });
+
+      console.log(`✅ [CACHE] Cleared formatted transcript for ${contentId}`);
+    } catch (error) {
+      console.error('❌ [CACHE] Failed to clear formatted transcript:', error);
+      // Don't throw - this is a non-critical operation
     }
   }
 

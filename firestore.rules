@@ -12,9 +12,7 @@ service cloud.firestore {
       let userData = get(/databases/$(database)/documents/users/$(userId)).data;
       return userData.subscription != null &&
         userData.subscription.status == 'active' &&
-        userData.subscription.plan in ['monthly', 'yearly'] ||
-        (userData.subscriptionStatus == 'active' &&
-         userData.subscriptionType in ['monthly', 'yearly']);
+        userData.subscription.plan in ['monthly', 'yearly'];
     }
 
     // Helper function to validate bookmark structure
@@ -647,8 +645,12 @@ service cloud.firestore {
       
       // Allow anyone to update access count, last accessed time, and formatted transcript
       allow update: if
-        request.resource.data.accessCount == resource.data.accessCount + 1 &&
-        request.resource.data.lastAccessed is timestamp;
+        // Allow incrementing access count
+        (request.resource.data.accessCount == resource.data.accessCount + 1 &&
+         request.resource.data.lastAccessed is timestamp) ||
+        // OR allow adding formatted transcript without changing access count
+        (request.resource.data.accessCount == resource.data.accessCount &&
+         request.resource.data.keys().hasAny(['formattedTranscript', 'metadata']));
       
       // Allow deletion by admin, creator, or any authenticated user 
       // (since transcripts are community-shared resources)
@@ -923,9 +925,10 @@ service cloud.firestore {
     // User Edited Transcripts - Premium users can edit transcripts
     match /userEditedTranscripts/{documentId} {
       // Premium users can read their own edited transcripts
+      // Allow read if document doesn't exist (for checking before create) or if user owns it
       allow read: if request.auth != null && 
-        resource.data.userId == request.auth.uid &&
-        isPremiumUser(request.auth.uid);
+        isPremiumUser(request.auth.uid) &&
+        (resource == null || resource.data.userId == request.auth.uid);
       
       // Premium users can create edited transcripts with validation
       allow create: if request.auth != null && 
@@ -1049,6 +1052,24 @@ service cloud.firestore {
       
       // Only admin can delete
       allow delete: if isAdmin();
+    }
+
+    // Practice History collection - track YouTube shadowing practice
+    match /users/{userId}/practiceHistory/{itemId} {
+      // Users can read their own practice history
+      allow read: if request.auth != null && 
+        request.auth.uid == userId;
+      
+      // Users can create/update their own practice history
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['videoUrl', 'videoTitle', 'lastPracticed']) &&
+        request.resource.data.videoUrl is string &&
+        request.resource.data.videoTitle is string;
+      
+      // Users can delete their own practice history
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId;
     }
 
     // Bug Reports collection - for bug tracking and user feedback

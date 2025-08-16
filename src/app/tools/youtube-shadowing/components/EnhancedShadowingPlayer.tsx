@@ -410,7 +410,17 @@ export default function EnhancedShadowingPlayer({
     if (!audioRef.current || !currentLine || isPausingForRepeat) return;
 
     const currentTime = audioRef.current.currentTime;
-    if (currentTime >= currentLine.endTime) {
+    
+    // Calculate effective end time considering next line
+    const nextLineIndex = session.currentLineIndex + 1;
+    const nextLine = nextLineIndex < activeTranscript.length ? activeTranscript[nextLineIndex] : null;
+    let effectiveEndTime = currentLine.endTime;
+    
+    if (nextLine && Math.abs(nextLine.startTime - currentLine.endTime) < 0.5) {
+      effectiveEndTime = nextLine.startTime - 0.05;
+    }
+    
+    if (currentTime >= effectiveEndTime) {
       audioRef.current.pause();
       handleLineComplete();
     }
@@ -422,7 +432,16 @@ export default function EnhancedShadowingPlayer({
     const currentTime = localVideoRef.current.currentTime;
     updateCurrentLineByTime(currentTime);
     
-    if (currentTime >= currentLine.endTime && repeatCount > 1) {
+    // Calculate effective end time considering next line
+    const nextLineIndex = session.currentLineIndex + 1;
+    const nextLine = nextLineIndex < activeTranscript.length ? activeTranscript[nextLineIndex] : null;
+    let effectiveEndTime = currentLine.endTime;
+    
+    if (nextLine && Math.abs(nextLine.startTime - currentLine.endTime) < 0.5) {
+      effectiveEndTime = nextLine.startTime - 0.05;
+    }
+    
+    if (currentTime >= effectiveEndTime && repeatCount > 1) {
       localVideoRef.current.pause();
       handleLineComplete();
     }
@@ -512,10 +531,25 @@ export default function EnhancedShadowingPlayer({
           
           try {
             const currentTime = youtubePlayerRef.current.getCurrentTime();
-            console.log(`[MONITOR] Time: ${currentTime.toFixed(2)}, End: ${currentLine.endTime}`);
             
-            // If we've reached or passed the end time, pause
-            if (currentTime >= currentLine.endTime - 0.1) { // Small buffer for accuracy
+            // Calculate the actual end time we should use
+            // Check if there's a next line that starts very close to our end time
+            const nextLineIndex = session.currentLineIndex + 1;
+            const nextLine = nextLineIndex < activeTranscript.length ? activeTranscript[nextLineIndex] : null;
+            
+            let effectiveEndTime = currentLine.endTime;
+            
+            // If there's a next line and it starts within 0.5 seconds of our end time,
+            // use the next line's start time as our end point to avoid overlap
+            if (nextLine && Math.abs(nextLine.startTime - currentLine.endTime) < 0.5) {
+              effectiveEndTime = nextLine.startTime - 0.05; // Stop just before next line starts
+              console.log(`[MONITOR] Adjusting end time from ${currentLine.endTime} to ${effectiveEndTime} (next line starts at ${nextLine.startTime})`);
+            }
+            
+            console.log(`[MONITOR] Time: ${currentTime.toFixed(2)}, End: ${effectiveEndTime.toFixed(2)}`);
+            
+            // If we've reached or passed the effective end time, pause
+            if (currentTime >= effectiveEndTime - 0.1) { // Small buffer for accuracy
 
               clearInterval(checkInterval);
               repeatMonitorRef.current = null;
@@ -524,10 +558,10 @@ export default function EnhancedShadowingPlayer({
               // First pause the video
               youtubePlayerRef.current.pauseVideo();
               
-              // Then seek to exact end time after a small delay
+              // Then seek to exact effective end time after a small delay
               setTimeout(() => {
                 if (youtubePlayerRef.current) {
-                  youtubePlayerRef.current.seekTo(currentLine.endTime, true);
+                  youtubePlayerRef.current.seekTo(effectiveEndTime, true);
                   
                   // Wait for seek to complete then handle line completion
                   setTimeout(() => {

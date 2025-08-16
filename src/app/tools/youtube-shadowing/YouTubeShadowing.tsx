@@ -776,6 +776,16 @@ export default function YouTubeShadowing() {
                         contentType={getContentType()}
                         videoUrl={session.videoUrl}
                         videoTitle={session.videoTitle}
+                        onTranscriptRegenerated={(newTranscript) => {
+                          // Update the session with the new transcript
+                          updateSession({ 
+                            ...session, 
+                            transcript: newTranscript,
+                            currentLineIndex: 0 // Reset to beginning
+                          });
+                          // Stay on transcript view to see the changes
+                          setShowShadowingMode(false);
+                        }}
                       />
                     </motion.div>
                   )}

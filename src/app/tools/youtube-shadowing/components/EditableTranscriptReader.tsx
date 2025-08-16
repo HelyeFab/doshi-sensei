@@ -13,6 +13,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { UserEditedTranscriptsManager } from '@/utils/userEditedTranscripts';
 import { motion, AnimatePresence } from 'framer-motion';
 import RegenerateTranscript from './RegenerateTranscript';
+import { TranscriptCacheManager } from '@/utils/transcriptCache';
 
 interface EditableTranscriptReaderProps {
   transcript: TranscriptLine[];
@@ -25,6 +26,7 @@ interface EditableTranscriptReaderProps {
   contentType: 'youtube' | 'audio' | 'video';
   videoUrl?: string;
   videoTitle?: string;
+  onTranscriptRegenerated?: (transcript: TranscriptLine[]) => void;
 }
 
 export default function EditableTranscriptReader({
@@ -37,7 +39,8 @@ export default function EditableTranscriptReader({
   contentId,
   contentType,
   videoUrl,
-  videoTitle
+  videoTitle,
+  onTranscriptRegenerated
 }: EditableTranscriptReaderProps) {
   const { user } = useAuth();
   const strings = useStrings();
@@ -288,44 +291,76 @@ export default function EditableTranscriptReader({
     }
   };
 
-  const handleTranscriptRegenerated = (newTranscript: TranscriptLine[], provider: string) => {
+  const [regenerationSuccess, setRegenerationSuccess] = useState(false);
 
+  const handleTranscriptRegenerated = async (newTranscript: TranscriptLine[], provider: string) => {
+    console.log('Transcript regenerated with provider:', provider);
+    
+    // Update local state with the formatted transcript
     setEditedTranscript(newTranscript);
+    setHasEdits(false);
+    
+    // The transcript is already formatted by RegenerateTranscript component
+    // No need to clear formatted transcript as it's already been updated
+    
+    // Call parent callback if provided
+    if (onTranscriptRegenerated) {
+      onTranscriptRegenerated(newTranscript);
+    }
+    
+    // Show success message
     setShowRegenerateModal(false);
-    // Show a success message or update the UI to indicate the transcript was regenerated
+    setRegenerationSuccess(true);
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+      setRegenerationSuccess(false);
+    }, 3000);
   };
 
   return (
     <div className="space-y-4">
+      {/* Success Message */}
+      <AnimatePresence>
+        {regenerationSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4"
+          >
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <p className="text-sm text-green-800 dark:text-green-200 font-medium">
+                Transcript regenerated and formatted successfully! The sentences are now properly split for shadowing.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Edit Controls */}
       {isPremium && (
         <div className="bg-card rounded-lg shadow-sm border border-border p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleEditToggle}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  editMode 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-secondary hover:bg-secondary/80'
-                }`}
-              >
-                {editMode ? 'Exit Edit Mode' : 'Edit Transcript'}
-              </button>
-              
-              {hasEdits && !editMode && (
-                <span className="text-sm text-muted-foreground">
-                  (Using edited version)
-                </span>
-              )}
-            </div>
-            
-            {editMode && (
-              <div className="flex items-center gap-2">
+          {!editMode ? (
+            /* Normal Mode - Centered buttons */
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex items-center justify-center gap-3 w-full">
+                <button
+                  onClick={handleEditToggle}
+                  className="flex-1 max-w-xs px-4 py-2 rounded-lg font-medium bg-secondary hover:bg-secondary/80 transition-all"
+                >
+                  Edit Transcript
+                </button>
+                
+                {/* Regenerate Button - Now visible outside edit mode for YouTube videos */}
                 {videoUrl && (
                   <button
                     onClick={() => setShowRegenerateModal(true)}
-                    className="px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600 font-medium flex items-center gap-2"
+                    className="flex-1 max-w-xs px-4 py-2 rounded-lg bg-amber-500 text-white hover:bg-amber-600 font-medium flex items-center justify-center gap-2"
+                    title="Clear cached transcript and regenerate with improved formatting"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -333,31 +368,50 @@ export default function EditableTranscriptReader({
                     Regenerate
                   </button>
                 )}
+              </div>
+              
+              {hasEdits && (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">
+                    (Using edited version)
+                  </span>
+                  <button
+                    onClick={handleResetToOriginal}
+                    className="text-sm text-destructive hover:underline"
+                  >
+                    Reset to Original
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Edit Mode - Responsive layout */
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button
+                  onClick={handleEditToggle}
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg font-medium bg-primary text-primary-foreground transition-all"
+                >
+                  Exit Edit Mode
+                </button>
+                
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 font-medium"
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 font-medium"
                 >
                   Cancel
                 </button>
+                
                 <button
                   onClick={handleSave}
                   disabled={saving || !hasChanges()}
-                  className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-medium disabled:opacity-50"
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 font-medium disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
-            )}
-            
-            {hasEdits && !editMode && (
-              <button
-                onClick={handleResetToOriginal}
-                className="text-sm text-destructive hover:underline"
-              >
-                Reset to Original
-              </button>
-            )}
-          </div>
+            </div>
+          )}
           
           {editMode && (
             <div className="mt-3 text-sm text-muted-foreground">

@@ -181,6 +181,7 @@ async function formatTranscriptWithAI(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        contentId,
         transcript,
         videoTitle,
         language: 'ja'
@@ -195,20 +196,8 @@ async function formatTranscriptWithAI(
     const data = await response.json();
     
     if (data.formattedTranscript && data.wasFormatted) {
-
-      // Update cache with formatted version if contentId provided
-      if (contentId) {
-        try {
-          await TranscriptCacheManager.updateWithFormattedTranscript(
-            contentId,
-            data.formattedTranscript
-          );
-
-        } catch (cacheError) {
-          console.error('Failed to save formatted transcript to cache:', cacheError);
-        }
-      }
-      
+      console.log(`✅ [EXTRACT] Successfully formatted transcript with ${data.formattedTranscript.length} segments`);
+      // Cache update is now handled in the format-transcript API
       return data.formattedTranscript;
     }
     
@@ -257,7 +246,7 @@ function extractVideoIdFromUrl(url: string): string | null {
 
 export async function POST(request: NextRequest) {
   try {
-    const { url, provider = 'auto', forceRegenerate = false, apiKey } = await request.json();
+    const { url, provider = 'auto', forceRegenerate = false, forceReformat = false, apiKey } = await request.json();
     
     if (!url || !isValidYouTubeUrl(url)) {
       return NextResponse.json(

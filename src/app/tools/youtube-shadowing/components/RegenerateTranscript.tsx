@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { RefreshCw, Sparkles, Server, Globe, AlertCircle, Loader2, Check } from 'lucide-react';
 import { TranscriptLine } from '../YouTubeShadowing';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TranscriptCacheManager } from '@/utils/transcriptCache';
 
 interface RegenerateTranscriptProps {
   videoUrl: string;
@@ -21,14 +22,13 @@ type Provider = {
   cons: string[];
   requiresAuth?: boolean;
   requiresApiKey?: boolean;
-  cost?: string;
 };
 
 const providers: Provider[] = [
   {
     id: 'supadata',
-    name: 'SupaData AI (Recommended)',
-    description: 'Our primary provider with excellent Japanese support (we pay for each request)',
+    name: 'SupaData AI',
+    description: 'Primary provider with excellent Japanese support',
     icon: <Sparkles className="w-5 h-5" />,
     pros: [
       'Excellent Japanese caption support',
@@ -37,10 +37,9 @@ const providers: Provider[] = [
       'Cached for community benefit'
     ],
     cons: [
-      'Costs us money per request',
-      'May fail on very new videos'
-    ],
-    cost: 'Free to you (we pay)'
+      'May fail on very new videos',
+      'Rate limited during peak times'
+    ]
   },
   {
     id: 'youtube-native',
@@ -57,7 +56,6 @@ const providers: Provider[] = [
       'May be auto-generated (lower quality)',
       'Can be blocked by YouTube'
     ],
-    cost: 'Free'
   },
   {
     id: 'youtube-transcript-io',
@@ -74,13 +72,12 @@ const providers: Provider[] = [
       'Limited free tier (25/month)',
       'May have rate limits'
     ],
-    cost: 'Free tier: 25/mo',
     requiresApiKey: true
   },
   {
     id: 'whisper',
     name: 'OpenAI Whisper (Audio)',
-    description: 'AI transcription from video audio (we pay OpenAI for processing)',
+    description: 'AI transcription from video audio',
     icon: <RefreshCw className="w-5 h-5" />,
     pros: [
       'Works on any video',
@@ -88,12 +85,10 @@ const providers: Provider[] = [
       'Creates transcript when none exists'
     ],
     cons: [
-      'Slower processing',
+      'Slower processing (30-60 seconds)',
       'Requires audio extraction',
-      'May miss on-screen text',
-      'Costs us money per minute'
-    ],
-    cost: 'Free to you (we pay ~$0.006/min)'
+      'May miss on-screen text'
+    ]
   }
 ];
 
@@ -195,11 +190,52 @@ export default function RegenerateTranscript({
       const data = await response.json();
       
       if (data.success && data.transcript && data.transcript.length > 0) {
-        setRegenerationStatus('Transcript regenerated successfully!');
-        setTimeout(() => {
-          onTranscriptRegenerated(data.transcript, selectedProvider);
-          onClose?.();
-        }, 1000);
+        // Generate proper content ID for YouTube videos
+        const contentId = TranscriptCacheManager.generateContentId({
+          type: 'youtube',
+          videoUrl: videoUrl
+        });
+        
+        // Trigger AI formatting for the new transcript
+        setRegenerationStatus('Formatting transcript for optimal shadowing...');
+        
+        try {
+          const formatResponse = await fetch('/api/ai/format-transcript', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contentId: contentId,
+              transcript: data.transcript,
+              language: 'ja'
+            })
+          });
+
+          let formattedTranscript = data.transcript;
+          
+          if (formatResponse.ok) {
+            const formatData = await formatResponse.json();
+            if (formatData.success && formatData.formattedTranscript) {
+              formattedTranscript = formatData.formattedTranscript;
+              console.log('✅ Successfully applied AI formatting to regenerated transcript');
+            }
+          } else {
+            console.warn('⚠️ AI formatting failed, using raw transcript');
+          }
+          
+          setRegenerationStatus('Transcript regenerated successfully!');
+          setTimeout(() => {
+            onTranscriptRegenerated(formattedTranscript, selectedProvider);
+            onClose?.();
+          }, 1000);
+        } catch (formatError) {
+          console.error('Failed to format transcript:', formatError);
+          // Still use the unformatted transcript if formatting fails
+          setRegenerationStatus('Transcript regenerated successfully!');
+          setTimeout(() => {
+            onTranscriptRegenerated(data.transcript, selectedProvider);
+            onClose?.();
+          }, 1000);
+        }
       } else {
         throw new Error(data.message || 'No transcript found');
       }
@@ -275,19 +311,12 @@ export default function RegenerateTranscript({
                     </div>
                   )}
 
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-muted rounded-lg flex items-center justify-center text-primary">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-muted rounded-lg flex items-center justify-center text-primary">
                       {provider.icon}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-semibold text-foreground">{provider.name}</h4>
-                        {provider.cost && (
-                          <span className="text-xs bg-muted px-2 py-1 rounded-full">
-                            {provider.cost}
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-foreground mb-1">{provider.name}</h4>
                       <p className="text-sm text-muted-foreground mb-3">
                         {provider.description}
                       </p>
@@ -385,11 +414,11 @@ export default function RegenerateTranscript({
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg"
+                className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg"
               >
                 <div className="flex items-center gap-3">
-                  <Loader2 className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin" />
-                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <Loader2 className="w-5 h-5 text-amber-600 dark:text-amber-400 animate-spin" />
+                  <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
                     {regenerationStatus}
                   </p>
                 </div>
@@ -398,18 +427,18 @@ export default function RegenerateTranscript({
           </AnimatePresence>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-border">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
             <button
               onClick={onClose}
               disabled={isRegenerating}
-              className="px-4 py-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+              className="flex-1 sm:flex-initial px-6 py-2.5 border border-border rounded-lg text-foreground hover:bg-muted transition-colors disabled:opacity-50 font-medium"
             >
               Cancel
             </button>
             <button
               onClick={handleRegenerate}
               disabled={isRegenerating || !selectedProvider}
-              className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="flex-1 sm:flex-initial px-6 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-medium"
             >
               {isRegenerating ? (
                 <>

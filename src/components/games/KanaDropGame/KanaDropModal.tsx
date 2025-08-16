@@ -625,69 +625,60 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
   if (showHowToPlay) {
     return (
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              onClose();
-            }
-          }}
-        >
-                    <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="relative w-full h-full md:w-[800px] md:h-[600px] bg-background rounded-lg shadow-2xl overflow-hidden flex flex-col"
-          >
-                        <div className="p-8 text-center">
-              <h2 className="text-3xl font-bold mb-4">How to Play Kana Drop</h2>
-              <ul className="text-lg text-muted-foreground mb-6 space-y-2 text-left max-w-md mx-auto">
-                <li>• Score <span className="font-bold text-primary">100 points</span> to win!</li>
-                <li>• Click any falling kana that matches your selected characters.</li>
-                <li>• Avoid clicking distractors (images or symbols).</li>
-                <li>• Each correct kana: <span className="text-green-600 font-bold">+5</span> points</li>
-                <li>• Each distractor: <span className="text-orange-600 font-bold">-5</span> points</li>
-                <li>• Each wrong kana: <span className="text-red-600 font-bold">-10</span> points</li>
-              </ul>
-              {effectiveSelectedKana.length > 0 ? (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-3">Your Selected Kana:</h3>
-                  <div className="flex justify-center gap-3 flex-wrap">
-                    {effectiveSelectedKana.map((kana) => (
-                      <div key={kana.id} className="bg-card rounded-lg p-3 border border-border">
-                        <div className="text-2xl japanese-text">{kana.kana}</div>
-                        <div className="text-sm text-muted-foreground">{kana.romaji}</div>
-                      </div>
-                    ))}
+      <SlideUpModal
+        isOpen={true}
+        onClose={onClose}
+        title="How to Play Kana Drop"
+        height="auto"
+        showHandle={false}
+        showCloseButton={true}
+      >
+        <div className="p-6 text-center">
+          <ul className="text-lg text-muted-foreground mb-6 space-y-2 text-left max-w-md mx-auto">
+            <li>• Score <span className="font-bold text-primary">100 points</span> to win!</li>
+            <li>• Click any falling kana that matches your selected characters.</li>
+            <li>• Avoid clicking distractors (images or symbols).</li>
+            <li>• Each correct kana: <span className="text-green-600 font-bold">+5</span> points</li>
+            <li>• Each distractor: <span className="text-orange-600 font-bold">-5</span> points</li>
+            <li>• Each wrong kana: <span className="text-red-600 font-bold">-10</span> points</li>
+          </ul>
+          
+          {effectiveSelectedKana.length > 0 ? (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-3">Your Selected Kana:</h3>
+              <div className="flex justify-center gap-3 flex-wrap max-h-40 overflow-y-auto p-2">
+                {effectiveSelectedKana.map((kana) => (
+                  <div key={kana.id} className="bg-card rounded-lg p-3 border border-border">
+                    <div className="text-2xl japanese-text">{kana.kana}</div>
+                    <div className="text-sm text-muted-foreground">{kana.romaji}</div>
                   </div>
-                </div>
-              ) : (
-                <div className="mb-6 p-4 bg-orange-100 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg">
-                  <p className="text-orange-700 dark:text-orange-300 text-center">
-                    No kana selected! The game will use a default set of basic hiragana characters.
-                  </p>
-                </div>
-              )}
-              <button
-                onClick={handleStartGame}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors mt-4"
-              >
-                Start Game
-              </button>
-              <button
-                onClick={onClose}
-                className="ml-3 px-6 py-3 bg-muted text-foreground rounded-lg font-semibold text-lg hover:bg-muted/90 transition-colors mt-4"
-              >
-                Cancel
-              </button>
+                ))}
+              </div>
             </div>
-          </motion.div>
-        </motion.div>
-      </AnimatePresence>
+          ) : (
+            <div className="mb-6 p-4 bg-orange-100 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg">
+              <p className="text-orange-700 dark:text-orange-300 text-center">
+                No kana selected! The game will use a default set of basic hiragana characters.
+              </p>
+            </div>
+          )}
+          
+          <div className="flex justify-center gap-3">
+            <button
+              onClick={handleStartGame}
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors"
+            >
+              Start Game
+            </button>
+            <button
+              onClick={onClose}
+              className="px-6 py-3 bg-muted text-foreground rounded-lg font-semibold text-lg hover:bg-muted/90 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </SlideUpModal>
     );
   }
 

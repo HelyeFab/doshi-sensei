@@ -13,11 +13,11 @@ class KanjiPreloader {
 
   // JLPT level mapping for file paths
   private JLPT_FILES = {
-    'N5': '/api/kanji/jlpt_5/',
-    'N4': '/api/kanji/jlpt_4/',
-    'N3': '/api/kanji/jlpt_3/',
-    'N2': '/api/kanji/jlpt_2/',
-    'N1': '/api/kanji/jlpt_1/'
+    'N5': '/api/kanji/jlpt_5',
+    'N4': '/api/kanji/jlpt_4',
+    'N3': '/api/kanji/jlpt_3',
+    'N2': '/api/kanji/jlpt_2',
+    'N1': '/api/kanji/jlpt_1'
   };
 
   private constructor() {}

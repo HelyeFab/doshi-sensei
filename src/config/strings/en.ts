@@ -104,6 +104,11 @@ export const en = {
         icon: "/flat-icons/ui/Shadowing/facebook.svg",
         description: "Track channels & auto-import"
       },
+      dailyReviews: {
+        title: "Daily Reviews",
+        icon: "📅",
+        description: "SRS kanji practice"
+      },
       hiragana: {
         title: "Hiragana",
         icon: "あ",

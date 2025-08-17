@@ -5,6 +5,9 @@ import { Kanji } from '@/types';
 import { KanjiTTSButton } from '@/components/ui/TTSButton';
 import StrokeOrderModal from './StrokeOrderModal';
 import SlideUpModal from '@/components/SlideUpModal';
+import { useKanjiReviews } from '@/hooks/useKanjiReviews';
+import { LoginPromptModal } from '@/components/LoginPromptModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface KanjiModalProps {
   kanji: Kanji;
@@ -25,8 +28,19 @@ export default function KanjiModal({
   isSelectedForStudy = false,
   onToggleStudy
 }: KanjiModalProps) {
+  const { user } = useAuth();
   const [showStudyDropdown, setShowStudyDropdown] = useState(false);
   const [showStrokeOrder, setShowStrokeOrder] = useState(false);
+  const [showLoginModalForSave, setShowLoginModalForSave] = useState(false);
+  const { 
+    isInReviews, 
+    addToReviews, 
+    removeFromReviews, 
+    loading: reviewsLoading,
+    showLoginModal: showLoginModalForReviews,
+    setShowLoginModal: setShowLoginModalForReviews
+  } = useKanjiReviews();
+  const kanjiIsInReviews = isInReviews(kanji.kanji);
   // TTS functionality now handled by KanjiTTSButton component
 
   return (
@@ -37,21 +51,10 @@ export default function KanjiModal({
         height="90%"
         showHandle={false}
       >
-        <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900 dark:via-indigo-800 dark:to-purple-900 p-6 relative rounded-t-3xl">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow-md"
-          aria-label="Close modal"
-        >
-          <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
+        <div className="p-6 relative rounded-t-3xl">
         {/* Header */}
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+          <h2 className="text-2xl font-bold text-card-foreground">
             Kanji Details
           </h2>
         </div>
@@ -67,10 +70,10 @@ export default function KanjiModal({
               {/* Stroke Order Button */}
               <button
                 onClick={() => setShowStrokeOrder(true)}
-                className="absolute -right-12 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-white/50 dark:bg-gray-800/50 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-colors group shadow-sm"
+                className="absolute -right-12 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors group shadow-sm"
                 title="View stroke order"
               >
-                <svg className="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" 
                   />
@@ -78,13 +81,7 @@ export default function KanjiModal({
               </button>
             </div>
             <div className="flex items-center justify-center gap-2">
-              <span className={`px-2 py-1 text-xs rounded border ${
-                kanji.jlpt === 'N5' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                kanji.jlpt === 'N4' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                kanji.jlpt === 'N3' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
-                kanji.jlpt === 'N2' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' :
-                'bg-red-500/10 text-red-400 border-red-500/20'
-              }`}>
+              <span className="px-2 py-1 text-xs rounded border bg-primary/10 text-primary border-primary/20">
                 {kanji.jlpt}
               </span>
             </div>
@@ -136,7 +133,7 @@ export default function KanjiModal({
                   kanji.kunyomi.map((reading, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-2 px-3 py-1 bg-purple-500/10 text-purple-600 border border-purple-500/20 rounded-md text-sm japanese-text"
+                      className="flex items-center gap-2 px-3 py-1 bg-accent/10 text-accent-foreground border border-accent/20 rounded-md text-sm japanese-text"
                     >
                       <span>{reading}</span>
                       <KanjiTTSButton 
@@ -159,7 +156,7 @@ export default function KanjiModal({
           <div className="mb-6">
             <button
               onClick={() => setShowStudyDropdown(!showStudyDropdown)}
-              className="w-full flex items-center justify-between p-3 rounded-lg bg-white/50 dark:bg-gray-800/50 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all shadow-sm"
+              className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-all shadow-sm"
             >
               <span className="text-sm font-medium text-muted-foreground">Options</span>
               <svg 
@@ -174,7 +171,7 @@ export default function KanjiModal({
             
             {/* Dropdown Content */}
             {showStudyDropdown && (
-              <div className="mt-2 p-3 bg-white/30 dark:bg-gray-800/30 rounded-lg backdrop-blur-sm space-y-2">
+              <div className="mt-2 p-3 bg-muted/30 rounded-lg backdrop-blur-sm space-y-2">
                 {/* Study Session Option */}
                 {onToggleStudy && (
                   <button
@@ -189,7 +186,7 @@ export default function KanjiModal({
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                         isSelectedForStudy
                           ? 'bg-accent border-accent'
-                          : 'border-muted-foreground'
+                          : 'border-primary/60 bg-background'
                       }`}>
                         {isSelectedForStudy && (
                           <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,14 +209,68 @@ export default function KanjiModal({
                   </button>
                 )}
                 
+                {/* Daily Reviews Option */}
+                <button
+                  onClick={async () => {
+                    if (kanjiIsInReviews) {
+                      await removeFromReviews(kanji.kanji);
+                    } else {
+                      await addToReviews(kanji);
+                    }
+                  }}
+                  disabled={reviewsLoading}
+                  className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${
+                    kanjiIsInReviews
+                      ? 'bg-primary/10 text-primary'
+                      : 'hover:bg-muted/50'
+                  } ${reviewsLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                      kanjiIsInReviews
+                        ? 'bg-primary border-primary'
+                        : 'border-primary/60 bg-background'
+                    }`}>
+                      {kanjiIsInReviews && (
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-medium">
+                        {kanjiIsInReviews ? 'In Daily Reviews' : 'Add to Daily Reviews'}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {kanjiIsInReviews 
+                          ? 'This kanji is in your review queue' 
+                          : 'Practice with spaced repetition'}
+                      </div>
+                    </div>
+                  </div>
+                  <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {kanjiIsInReviews ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    )}
+                  </svg>
+                </button>
+                
                 {/* Save to Lists Option */}
                 <button
-                  onClick={onSave}
+                  onClick={() => {
+                    if (!user) {
+                      setShowLoginModalForSave(true);
+                    } else {
+                      onSave();
+                    }
+                  }}
                   className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-all"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded border-2 border-muted-foreground flex items-center justify-center">
-                      <svg className="w-3 h-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-5 h-5 rounded border-2 border-primary/60 bg-background flex items-center justify-center">
+                      <svg className="w-3 h-3 text-primary/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
                     </div>
@@ -247,6 +298,22 @@ export default function KanjiModal({
       onClose={() => setShowStrokeOrder(false)}
       kanji={kanji.kanji}
       meaning={kanji.meaning}
+    />
+
+    {/* Login Modal for Daily Reviews */}
+    <LoginPromptModal
+      isOpen={showLoginModalForReviews}
+      onClose={() => setShowLoginModalForReviews(false)}
+      message="Please log in to add kanji to Daily Reviews"
+      feature="daily_reviews"
+    />
+
+    {/* Login Modal for Save to Lists */}
+    <LoginPromptModal
+      isOpen={showLoginModalForSave}
+      onClose={() => setShowLoginModalForSave(false)}
+      message="Please log in to save kanji to your lists"
+      feature="save_kanji"
     />
     </>
   );

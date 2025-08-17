@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Force Service Worker Cleanup</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #cc0000;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Force Service Worker Cleanup</h1>
+    <p>This will completely remove all service workers and caches, then reload with the new safe version.</p>
+    
+    <button onclick="forceCleanup()">Force Complete Cleanup</button>
+    <button onclick="emergencyCleanup()">Emergency Nuclear Option</button>
+    
+    <div id="status" class="status">Ready to clean...</div>
+    
+    <script>
+    async function forceCleanup() {
+        const status = document.getElementById('status');
+        status.innerHTML = 'Starting cleanup process...<br>';
+        
+        try {
+            // Step 1: Unregister ALL service workers
+            status.innerHTML += '1. Unregistering service workers...<br>';
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for(let registration of registrations) {
+                    const success = await registration.unregister();
+                    status.innerHTML += `   - Unregistered: ${registration.scope} (${success ? 'success' : 'failed'})<br>`;
+                }
+            }
+            
+            // Step 2: Clear ALL caches
+            status.innerHTML += '2. Clearing all caches...<br>';
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                for(const cacheName of cacheNames) {
+                    await caches.delete(cacheName);
+                    status.innerHTML += `   - Deleted cache: ${cacheName}<br>`;
+                }
+            }
+            
+            // Step 3: Clear IndexedDB
+            status.innerHTML += '3. Clearing IndexedDB...<br>';
+            const databases = await indexedDB.databases();
+            for (const db of databases) {
+                indexedDB.deleteDatabase(db.name);
+                status.innerHTML += `   - Deleted database: ${db.name}<br>`;
+            }
+            
+            // Step 4: Clear localStorage and sessionStorage
+            status.innerHTML += '4. Clearing storage...<br>';
+            localStorage.clear();
+            sessionStorage.clear();
+            status.innerHTML += '   - Cleared localStorage and sessionStorage<br>';
+            
+            // Step 5: Force reload without cache
+            status.innerHTML += '<br><span class="success">✅ Cleanup complete! Reloading in 2 seconds...</span>';
+            
+            setTimeout(() => {
+                // Force reload bypassing cache
+                window.location.href = window.location.origin + '?cachebust=' + Date.now();
+            }, 2000);
+            
+        } catch (error) {
+            status.innerHTML += `<br><span class="error">❌ Error: ${error.message}</span>`;
+        }
+    }
+    
+    async function emergencyCleanup() {
+        if (!confirm('This will completely reset everything. Are you sure?')) return;
+        
+        const status = document.getElementById('status');
+        status.innerHTML = '<span class="error">EMERGENCY CLEANUP ACTIVATED</span><br>';
+        
+        // Nuclear option - clear EVERYTHING
+        try {
+            // Unregister all service workers
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(registrations.map(r => r.unregister()));
+            }
+            
+            // Delete all caches
+            if ('caches' in window) {
+                const names = await caches.keys();
+                await Promise.all(names.map(name => caches.delete(name)));
+            }
+            
+            // Clear all storage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Clear cookies for localhost
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            // Clear IndexedDB
+            if (window.indexedDB) {
+                const databases = await indexedDB.databases();
+                databases.forEach(db => indexedDB.deleteDatabase(db.name));
+            }
+            
+            status.innerHTML += 'Everything cleared. Performing hard reload...<br>';
+            
+            // Hard reload with cache bypass
+            setTimeout(() => {
+                window.location.replace(window.location.origin);
+            }, 1000);
+            
+        } catch (e) {
+            status.innerHTML += `Failed: ${e.message}<br>`;
+            // Last resort
+            window.location.href = window.location.origin + '?nocache=' + Math.random();
+        }
+    }
+    
+    // Also make functions available globally
+    window.forceCleanup = forceCleanup;
+    window.emergencyCleanup = emergencyCleanup;
+    </script>
+</body>
+</html>

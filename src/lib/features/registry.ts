@@ -468,7 +468,7 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
   },
 
-  // Kanji Mastery
+  // Kanji Mastery System Features
   'kanji_mastery': {
     id: 'kanji_mastery',
     name: 'Kanji Mastery',
@@ -479,6 +479,61 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     requiresAuth: false,
     requiresSubscription: false,
     status: 'active'
+  },
+
+  'daily_reviews': {
+    id: 'daily_reviews',
+    name: 'Daily Reviews',
+    description: 'Daily SRS reviews for kanji mastery',
+    category: 'learning',
+    icon: '📅',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+    metadata: {
+      maxReviewsPerSession: { guest: 20, free: 50, premium: -1 },
+      features: {
+        guest: ['basic_srs'],
+        free: ['basic_srs', 'progress_tracking'],
+        premium: ['basic_srs', 'progress_tracking', 'adaptive_intervals', 'cloud_sync']
+      }
+    }
+  },
+
+  'adaptive_practice': {
+    id: 'adaptive_practice',
+    name: 'Adaptive Practice',
+    description: 'Personalized practice based on your weaknesses',
+    category: 'learning',
+    icon: '🎯',
+    limitType: 'daily',
+    requiresAuth: true,
+    requiresSubscription: false,
+    status: 'active',
+    metadata: {
+      features: {
+        free: ['weakness_detection', 'basic_adaptation'],
+        premium: ['weakness_detection', 'full_adaptation', 'ai_optimization', 'detailed_analytics']
+      }
+    }
+  },
+
+  'leech_treatment': {
+    id: 'leech_treatment',
+    name: 'Leech Treatment',
+    description: 'Special practice for problematic kanji',
+    category: 'learning',
+    icon: '🐛',
+    limitType: 'none', // Unlimited for premium
+    requiresAuth: true,
+    requiresSubscription: true,
+    status: 'active',
+    metadata: {
+      features: {
+        premium: ['leech_detection', 'custom_exercises', 'mnemonic_generation', 'progress_tracking']
+      }
+    }
   },
 
   // QuickContext - Context-aware learning assistant

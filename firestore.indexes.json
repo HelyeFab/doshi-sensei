@@ -285,7 +285,43 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "nextReview",
+          "fieldPath": "mastery.level",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "kanjiProgress",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "leech.isLeech",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "leech.severity",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "kanjiProgress",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "fsrs.state",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "fsrs.dueDate",
           "order": "ASCENDING"
         }
       ]
@@ -299,17 +335,13 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "jlptLevel",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "nextReview",
-          "order": "ASCENDING"
+          "fieldPath": "updatedAt",
+          "order": "DESCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "kanjiProgress",
+      "collectionGroup": "studySessions",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -317,7 +349,53 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "lastReviewed",
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "studySessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "completedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "learningProfiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "updatedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leeches",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "analysis.severity",
           "order": "DESCENDING"
         }
       ]

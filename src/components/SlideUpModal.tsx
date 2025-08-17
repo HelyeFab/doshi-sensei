@@ -8,7 +8,13 @@ interface SlideUpModalProps {
   onClose: () => void;
   children?: React.ReactNode;
   title?: string;
+  subtitle?: string;
   height?: 'full' | 'auto' | '90%' | '80%' | '70%' | '60%' | '50%';
+  /**
+   * @deprecated Avoid using handles - they're a legacy mobile pattern.
+   * Modern UX prefers clear close buttons and gestures without visual handles.
+   * @default false
+   */
   showHandle?: boolean;
   closeOnOutsideClick?: boolean;
   className?: string;
@@ -21,6 +27,7 @@ export default function SlideUpModal({
   onClose,
   children,
   title,
+  subtitle,
   height = '90%',
   showHandle = false,
   closeOnOutsideClick = true,
@@ -115,7 +122,12 @@ export default function SlideUpModal({
         {/* Header */}
         {title && (
           <div className="modal-header flex items-center justify-between px-6 py-4 border-b border-border">
-            <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+            <div>
+              <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+              {subtitle && (
+                <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+              )}
+            </div>
             {showCloseButton && (
               <button
                 onClick={onClose}

@@ -55,7 +55,11 @@
       "Bash(gsutil cors:*)",
       "Bash(firebase projects:list:*)",
       "Bash(gsutil ls:*)",
-      "Bash(gcloud config set:*)"
+      "Bash(gcloud config set:*)",
+      "Bash(npx firebase deploy:*)",
+      "Bash(mv:*)",
+      "Bash(open clear-pwa-cache.html)",
+      "Bash(npm run typecheck:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

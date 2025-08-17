@@ -17,7 +17,7 @@ import KanjiManager from "@/utils/kanjiManager";
 import StudyListManager from "@/utils/studyListManager";
 import KanjiListManager from "@/utils/kanjiListManager";
 import KanjiModal from "@/components/kanji/KanjiModal";
-import KanjiStudyModal from "@/components/kanji-moods/KanjiStudyModal";
+import KanjiStudyModal from "@/components/kanji-moods/KanjiStudyModalV2";
 import KanjiQuestTutorialModal from "@/components/games/KanjiQuestTutorialModal";
 import KanjiLearningSessionModal from "./KanjiLearningSessionModal";
 import { useNotification } from "@/contexts/NotificationContext";
@@ -26,6 +26,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useStrings } from "@/contexts/LanguageContext";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { BookOpen } from "lucide-react";
+import { useKanjiReviews } from "@/hooks/useKanjiReviews";
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -77,6 +78,7 @@ export default function KanjiBrowserPage() {
   const strings = useStrings();
   const { track } = useAnalytics();
   const [showInstructions, setShowInstructions] = useState(false);
+  const { kanjiInReviews } = useKanjiReviews();
 
   const [kanjiData, setKanjiData] = useState<KanjiByLevel>({});
   const [loading, setLoading] = useState(true);
@@ -375,20 +377,29 @@ export default function KanjiBrowserPage() {
           <button
             onClick={() => handleKanjiClick(kanjiItem)}
             className={`
-              relative w-full aspect-square flex items-center justify-center text-2xl font-medium rounded-lg border-2 transition-all hover:scale-105 overflow-hidden japanese-text font-ja
+              relative w-full aspect-square flex items-center justify-center text-2xl font-medium rounded-lg border-2 transition-all hover:scale-105 overflow-hidden
               ${
                 savedKanjiSet.has(kanjiItem.kanji)
                   ? "bg-primary/10 border-primary text-primary"
                   : "bg-card border-border text-card-foreground hover:bg-muted"
               }
             `}
-            data-quickcontext="true"
+            style={{ fontFamily: '"Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic Pro", "Meiryo", sans-serif' }}
           >
             {kanjiItem.kanji}
 
             {/* Saved indicator */}
             {savedKanjiSet.has(kanjiItem.kanji) && (
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"></div>
+            )}
+
+            {/* Daily Reviews indicator */}
+            {kanjiInReviews.has(kanjiItem.kanji) && (
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center" title="In Daily Reviews">
+                <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
             )}
           </button>
 
@@ -497,8 +508,11 @@ export default function KanjiBrowserPage() {
             <div className="mt-4">
               <button
                 onClick={() => setShowInstructions(!showInstructions)}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary/20 transition-all font-medium"
               >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 <span>How to use this tool</span>
                 <svg
                   className={`w-4 h-4 transition-transform ${
@@ -518,64 +532,89 @@ export default function KanjiBrowserPage() {
               </button>
 
               {showInstructions && (
-                <div className="mt-3 p-4 bg-muted/30 rounded-lg text-left max-w-2xl mx-auto">
-                  <p className="text-muted-foreground mb-3">
-                    <strong>How to use this tool:</strong> Click any kanji to
-                    see its meanings, readings, and stroke order. Use the purple
-                    corner checkbox to select up to 10 kanji for focused study
-                    sessions. Start with N5 level and gradually work your way up
-                    as you build confidence.
-                  </p>
-                  <p className="text-sm text-muted-foreground italic">
-                    💡 Pro tip: Focus on learning 5-10 new kanji per day.
-                    Quality over quantity leads to better retention!
-                  </p>
+                <div className="mt-4 p-5 bg-card border border-border rounded-lg text-left max-w-3xl mx-auto">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">📚 How to Use the Kanji Browser</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">🔍 Browse & Explore</h4>
+                      <p className="text-muted-foreground text-sm">
+                        Click any kanji to view its meanings, readings (on'yomi and kun'yomi), and stroke order. 
+                        Start with N5 level for beginners and progress through N4, N3, N2, to N1 for advanced learners.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">📅 Daily Reviews (NEW!)</h4>
+                      <p className="text-muted-foreground text-sm">
+                        Add kanji to your Daily Reviews for long-term retention using spaced repetition (SRS). 
+                        Click any kanji, open Options, and select "Add to Daily Reviews". The system will automatically 
+                        schedule reviews at optimal intervals. Look for the blue checkmark (✓) on kanji already in your reviews.
+                      </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">📖 Study Mode</h4>
+                        <p className="text-muted-foreground text-sm">
+                          Select up to 10 kanji using the corner checkbox, then click "Study" for an interactive 
+                          practice session with multiple-choice questions and instant feedback.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">🎓 Learn Mode</h4>
+                        <p className="text-muted-foreground text-sm">
+                          Click "Learn" on any JLPT level for a structured lesson introducing new kanji with 
+                          mnemonics, examples, and guided practice.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                      <p className="text-sm text-primary font-medium">
+                        💡 Pro Tip: Combine all three methods! Use Learn for new kanji, Study for practice, 
+                        and Daily Reviews for long-term mastery. Aim for 5-10 new kanji per day.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Study Buttons */}
+          {/* Custom Selection Action Bar - Only show when kanji are selected */}
           {studySelection.size > 0 && (
-            <div className="flex flex-row gap-2 flex-wrap justify-center mb-4">
-              <button
-                onClick={() => setShowStudyModal(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm text-sm font-medium"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-                <span>
-                  {strings.kanjiBrowser.studyButton} ({studySelection.size}/
-                  {strings.kanjiBrowser.studyLimit})
-                </span>
-              </button>
-              {studySelection.size >= 3 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Show tutorial modal first
-                    setShowKanjiQuestTutorial(true);
-                  }}
-                  className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm text-sm font-medium"
-                >
-                  <img src="/pokeball.png" alt="Pokéball" className="w-4 h-4" />
-                  <span>
-                    {strings.kanjiBrowser.battleButton} ({studySelection.size}{" "}
-                    {strings.kanjiBrowser.kanji})
-                  </span>
-                </button>
-              )}
+            <div className="mb-6">
+              <div className="bg-card dark:bg-card rounded-2xl shadow-lg border border-border dark:border-border p-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  {/* Study button - always visible when selection exists */}
+                  <button
+                    type="button"
+                    onClick={() => setShowStudyModal(true)}
+                    className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span>
+                      {strings.kanjiBrowser.studyButton || "Study"} ({studySelection.size})
+                    </span>
+                  </button>
+
+                  {/* Battle button - show when 3+ kanji selected */}
+                  {studySelection.size >= 3 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowKanjiQuestTutorial(true)}
+                      className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm font-medium"
+                    >
+                      <img src="/pokeball.png" alt="Pokéball" className="w-4 h-4" />
+                      <span>
+                        {strings.kanjiBrowser.battleButton || "Battle"} ({studySelection.size})
+                      </span>
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -838,7 +877,8 @@ export default function KanjiBrowserPage() {
               }
             }}
             boardId="kanji-browser-study"
-            boardTitle={strings.kanjiBrowser.kanjiStudySession}
+            boardTitle={strings.kanjiBrowser.kanjiStudySession || "Kanji Study Session"}
+            kanjiData={kanjiData} // Pass full kanji data for distractors
             kanjiList={Array.from(studySelection).map((kanjiChar) => {
               // Find the full kanji object from our data
               let found: Kanji | undefined;

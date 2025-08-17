@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear PWA Cache</title>
+</head>
+<body>
+    <h1>PWA Cache Cleaner</h1>
+    <button onclick="clearAll()">Clear All Caches & Service Workers</button>
+    <div id="status"></div>
+    
+    <script>
+    async function clearAll() {
+        const status = document.getElementById('status');
+        
+        try {
+            // Unregister all service workers
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for(let registration of registrations) {
+                await registration.unregister();
+            }
+            status.innerHTML += '<p>✅ Service workers unregistered</p>';
+            
+            // Clear all caches
+            const cacheNames = await caches.keys();
+            await Promise.all(
+                cacheNames.map(cacheName => caches.delete(cacheName))
+            );
+            status.innerHTML += '<p>✅ Caches cleared</p>';
+            
+            // Clear localStorage and sessionStorage
+            localStorage.clear();
+            sessionStorage.clear();
+            status.innerHTML += '<p>✅ Storage cleared</p>';
+            
+            status.innerHTML += '<p style="color: green; font-weight: bold;">All cleared! Please refresh the page.</p>';
+            
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+            
+        } catch (error) {
+            status.innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+        }
+    }
+    </script>
+</body>
+</html>

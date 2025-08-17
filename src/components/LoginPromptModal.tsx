@@ -35,15 +35,24 @@ export function LoginPromptModal({ isOpen, onClose, message, feature }: LoginPro
       track('registration_completed', { method: 'google', feature });
 
       onClose();
-    } catch (error) {
-      // Login failed
+    } catch (error: any) {
+      // Check if user simply closed the popup - this is not an error
+      if (error?.code === 'auth/popup-closed-by-user' || 
+          error?.code === 'auth/cancelled-popup-request' ||
+          error?.code === 'auth/popup-blocked') {
+        // User cancelled the login - this is a normal action
+        track('registration_cancelled', { method: 'google', feature });
+        return;
+      }
+      
+      // Only track and log actual errors
       track('registration_failed', { method: 'google', feature, error: error.message });
       console.error('📊 [Analytics] Registration/login failed:', error);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[10000]">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
         <div className="text-center">
           <div className="text-4xl mb-4">🔑</div>

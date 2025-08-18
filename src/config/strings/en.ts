@@ -50,7 +50,7 @@ export const en = {
         description: "Browse words"
       },
       kanji: {
-        title: "Kanji",
+        title: "Kanji Browser",
         icon: "漢",
         description: "Study kanji"
       },
@@ -103,11 +103,6 @@ export const en = {
         title: "YouTube Series",
         icon: "/flat-icons/ui/Shadowing/facebook.svg",
         description: "Track channels & auto-import"
-      },
-      dailyReviews: {
-        title: "Daily Reviews",
-        icon: "📅",
-        description: "SRS kanji practice"
       },
       hiragana: {
         title: "Hiragana",

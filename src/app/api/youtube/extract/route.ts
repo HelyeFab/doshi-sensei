@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import ytdl from '@distube/ytdl-core';
 import axios from 'axios';
+import OpenAI from 'openai';
 import { TranscriptCacheManager } from '@/utils/transcriptCache';
 import { getSubtitles } from 'youtube-captions-scraper';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPEN_AI_API_KEY,
+});
 
 // YouTube Data API v3 endpoint
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
@@ -170,38 +175,66 @@ async function formatTranscriptWithAI(
   contentId?: string
 ): Promise<any[] | null> {
   try {
-
-    console.log('🤖 [AI] Transcript details:', {
-      lineCount: transcript.length,
-      totalChars: transcript.reduce((sum, line) => sum + line.text.length, 0),
-      avgLineLength: transcript.reduce((sum, line) => sum + line.text.length, 0) / transcript.length
-    });
-    
-    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/ai/format-transcript`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contentId,
-        transcript,
-        videoTitle,
-        language: 'ja'
-      })
-    });
-    
-    if (!response.ok) {
-      console.error('AI formatting failed:', response.status);
+    // Skip if no API key or transcript too short
+    if (!process.env.OPEN_AI_API_KEY || transcript.length < 3) {
+      console.log('🤖 [AI] Skipping formatting - no API key or transcript too short');
       return null;
     }
+
+    console.log('🤖 [AI] Starting direct OpenAI formatting for', transcript.length, 'segments');
     
-    const data = await response.json();
+    // Combine all segments into continuous text
+    const fullText = transcript.map(line => line.text).join('');
+    const totalDuration = transcript[transcript.length - 1].endTime - transcript[0].startTime;
     
-    if (data.formattedTranscript && data.wasFormatted) {
-      console.log(`✅ [EXTRACT] Successfully formatted transcript with ${data.formattedTranscript.length} segments`);
-      // Cache update is now handled in the format-transcript API
-      return data.formattedTranscript;
-    }
+    const systemPrompt = `You are an expert Japanese language educator. Split this Japanese text into natural segments for shadowing practice.
+
+RULES:
+1. Split at natural sentence boundaries (。、！、？)
+2. Each segment should be 3-8 seconds long ideally
+3. Keep complete thoughts together
+4. Fix any transcription errors
+5. Return ONLY a JSON array of strings, no other text
+
+Example output: ["おはようございます", "今日はいい天気ですね", "一緒に勉強しましょう"]`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: fullText }
+      ],
+      temperature: 0.3,
+      max_tokens: 4000
+    });
+
+    const responseText = completion.choices[0].message.content?.trim();
+    if (!responseText) return null;
     
-    return null;
+    // Parse the segments from AI response
+    const segments = JSON.parse(responseText);
+    if (!Array.isArray(segments)) return null;
+    
+    // Calculate timing for each segment proportionally
+    const avgTimePerChar = totalDuration / fullText.length;
+    let currentTime = transcript[0].startTime;
+    
+    const formattedTranscript = segments.map((text, index) => {
+      const duration = text.length * avgTimePerChar;
+      const segment = {
+        id: String(index + 1),
+        text: text,
+        startTime: currentTime,
+        endTime: currentTime + duration,
+        words: [text]
+      };
+      currentTime += duration;
+      return segment;
+    });
+    
+    console.log(`✅ [AI] Successfully formatted ${formattedTranscript.length} segments`);
+    return formattedTranscript;
+    
   } catch (error) {
     console.error('❌ [AI] Error formatting transcript:', error);
     return null;

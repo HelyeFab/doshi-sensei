@@ -70,6 +70,7 @@ export default function DrillPage() {
   const { trackDrillComplete } = useAnalytics();
   const { updateProgress } = useAchievements();
   const strings = useStrings();
+  const [showInstructions, setShowInstructions] = useState(false);
 
   // Conjugation drill state
   const [questions, setQuestions] = useState<DrillQuestion[]>([]);
@@ -728,9 +729,127 @@ export default function DrillPage() {
                   <h2 className="text-2xl font-semibold mb-2 text-card-foreground">
                     Conjugation Practice
                   </h2>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground mb-4">
                     Master Japanese verb and adjective conjugations
                   </p>
+                  
+                  {/* How to Use Section */}
+                  <button
+                    onClick={() => setShowInstructions(!showInstructions)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary/20 transition-all font-medium"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>How to use Drills</span>
+                    <svg
+                      className={`w-4 h-4 transition-transform ${
+                        showInstructions ? "rotate-180" : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {showInstructions && (
+                    <div className="mt-4 p-5 bg-card border border-border rounded-lg text-left max-w-3xl mx-auto">
+                      <h3 className="text-lg font-semibold text-foreground mb-4">🎯 Test Your Conjugation Skills with Interactive Drills</h3>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">🎮 How Drills Work</h4>
+                          <p className="text-muted-foreground text-sm">
+                            Drills are multiple-choice quizzes that test your ability to conjugate verbs and adjectives. 
+                            Each question shows a word and asks you to select the correct conjugation form from 5 options. 
+                            You get immediate feedback - correct answers turn green, wrong ones show red with the correct 
+                            answer revealed. Track your score and progress through each session.
+                          </p>
+                        </div>
+
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">⚙️ Drill Settings</h4>
+                          <p className="text-muted-foreground text-sm">
+                            <strong>Daily Goal:</strong> Set how many questions per session (5-50). Start with 10 for quick practice.<br/>
+                            <strong>Word Types:</strong> Focus on verbs only, adjectives only, or practice both together.<br/>
+                            <strong>Auto-advance:</strong> Enable to automatically move to the next question after answering.<br/>
+                            <strong>Show Rules:</strong> Toggle conjugation rules and explanations during practice.
+                          </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-medium text-foreground mb-2">📚 Practice Modes</h4>
+                            <p className="text-muted-foreground text-sm">
+                              <strong>Random Words:</strong> Practice with common verbs and adjectives from our database<br/>
+                              <strong>Your Lists:</strong> Drill words you've saved to custom study lists<br/>
+                              <strong>Mixed Practice:</strong> Combine multiple lists for comprehensive review
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <h4 className="font-medium text-foreground mb-2">📊 Question Types</h4>
+                            <p className="text-muted-foreground text-sm">
+                              Common forms tested: Present, Past, Negative, Te-form, Polite forms<br/>
+                              Advanced forms: Potential, Passive, Causative, Conditional<br/>
+                              Each session mixes different conjugation types for variety
+                            </p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">🏆 Progress Tracking</h4>
+                          <p className="text-muted-foreground text-sm">
+                            Your drill scores are tracked to measure improvement over time. Each completed session 
+                            contributes to your daily streak and achievement progress. Review your accuracy trends 
+                            in the stats section to identify conjugation patterns that need more practice.
+                          </p>
+                        </div>
+
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">💡 Learning Strategy</h4>
+                          <p className="text-muted-foreground text-sm">
+                            Start with 10-question sessions focusing on one verb type. Master basic forms (present, past, 
+                            negative, te-form) before tackling advanced conjugations. When you consistently score above 80%, 
+                            increase difficulty by mixing verb types or adding more questions. Use "Your Lists" mode to 
+                            drill recently learned words from lessons.
+                          </p>
+                        </div>
+
+                        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                          <p className="text-sm text-destructive font-medium flex items-center gap-2">
+                            <span className="text-lg">⚠️</span>
+                            <span>
+                              <strong>Common Pitfalls:</strong> Don't rush! Read each option carefully - similar forms like 
+                              passive (られる) and potential (られる/える) can be confusing. Watch for て vs で in te-forms. 
+                              Pay attention to whether the question asks for polite or plain form.
+                            </span>
+                          </p>
+                        </div>
+
+                        <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                          <p className="text-sm text-primary font-medium">
+                            💡 <strong>Pro Tips:</strong>
+                          </p>
+                          <ul className="mt-1 ml-5 text-sm text-primary list-disc">
+                            <li>Practice daily - even 5 minutes maintains your conjugation skills</li>
+                            <li>Focus on your mistakes - review incorrect answers carefully</li>
+                            <li>Create themed lists (e.g., "motion verbs", "emotion adjectives") for targeted practice</li>
+                            <li>Use the preview feature to see all conjugations before starting</li>
+                            <li>Challenge yourself with speed runs once you're comfortable</li>
+                            <li>Free users: 3 drills/day, Premium: unlimited drills with detailed analytics</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Mobile Settings Dropdown */}

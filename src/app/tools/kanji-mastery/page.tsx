@@ -39,6 +39,7 @@ export default function KanjiMasteryDashboard() {
   });
   
   const [showWarning, setShowWarning] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
     // Check if session size exceeds recommended limit
@@ -60,13 +61,6 @@ export default function KanjiMasteryDashboard() {
     router.replace(`/tools/kanji-mastery/learn?${params}`);
   };
 
-  const handleReviewSession = async () => {
-    // Check access
-    const canUse = await checkAndTrack('kanji_mastery');
-    if (!canUse) return;
-    
-    router.replace('/tools/kanji-mastery/review');
-  };
 
   const getMaxSessionSize = () => {
     if (isPremium) return 50;
@@ -102,6 +96,126 @@ export default function KanjiMasteryDashboard() {
             </div>
           </div>
         )}
+
+        {/* How to Use Section */}
+        <div className="px-4 mb-6">
+          <div className="text-center">
+            <button
+              onClick={() => setShowInstructions(!showInstructions)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary/20 transition-all font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>How to use Kanji Mastery</span>
+              <svg
+                className={`w-4 h-4 transition-transform ${
+                  showInstructions ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            {showInstructions && (
+              <div className="mt-4 p-5 bg-card border border-border rounded-lg text-left max-w-3xl mx-auto">
+                <h3 className="text-lg font-semibold text-foreground mb-4">🎯 Master Kanji with Scientific Spaced Repetition</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-foreground mb-2">📚 Getting Started</h4>
+                    <p className="text-muted-foreground text-sm">
+                      Kanji Mastery uses the FSRS (Free Spaced Repetition Scheduler) algorithm - the same scientifically-proven system used by Anki. 
+                      Start by selecting your study mode (JLPT Level, School Grade, or Mixed), then choose how many kanji to study per session (5-50).
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-foreground mb-2">🎲 How Kanji Are Selected</h4>
+                    <p className="text-muted-foreground text-sm">
+                      <strong>For Learning Sessions (Drill Mode):</strong> The system randomly shuffles all kanji from your selected JLPT level 
+                      or grade and picks the number you requested. This ensures variety and prevents predictable patterns. Each selected kanji 
+                      is then enriched with real example sentences from Tatoeba and JMDict databases.
+                    </p>
+                    <p className="text-muted-foreground text-sm mt-2">
+                      <strong>For Review Sessions (Coming Soon):</strong> The FSRS algorithm will prioritize kanji based on:
+                    </p>
+                    <ul className="mt-1 ml-4 text-muted-foreground text-sm list-disc">
+                      <li>Overdue items (sorted by how overdue they are)</li>
+                      <li>Kanji due within the next 24 hours</li>
+                      <li>Your past performance and retention rate</li>
+                      <li>Optimal spacing intervals to maximize memory retention</li>
+                    </ul>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">🧪 Drill Mode</h4>
+                      <p className="text-muted-foreground text-sm">
+                        Learn new kanji with comprehensive explanations including meanings, on'yomi/kun'yomi readings, 
+                        example sentences from real Japanese sources, and stroke order animations. Mark kanji as "easy" 
+                        when you've mastered them.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">🎨 Free Study</h4>
+                      <p className="text-muted-foreground text-sm">
+                        Browse and study any kanji at your own pace without tracking. Perfect for reviewing specific 
+                        kanji or exploring characters outside your current level. No session limits apply here.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-foreground mb-2">📊 Progress Tracking</h4>
+                    <p className="text-muted-foreground text-sm">
+                      Your progress is automatically saved and synced (premium users get cloud sync). The system tracks:
+                    </p>
+                    <ul className="mt-2 ml-4 text-muted-foreground text-sm list-disc">
+                      <li>Mastery level (0-100%) for each kanji</li>
+                      <li>Retention rate based on your review performance</li>
+                      <li>Optimal review intervals calculated by FSRS</li>
+                      <li>Study time and session statistics</li>
+                      <li>Separate tracking for recognition, production, and writing modes</li>
+                    </ul>
+                  </div>
+
+                  <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <p className="text-sm text-destructive font-medium flex items-center gap-2">
+                      <span className="text-lg">⚠️</span>
+                      <span>
+                        <strong>Optimal Learning:</strong> Studies show that 10-20 kanji per session maximizes retention. 
+                        Studying more than 20 at once significantly reduces how well you remember them. Quality over quantity!
+                      </span>
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                    <p className="text-sm text-primary font-medium">
+                      💡 <strong>Pro Tips:</strong>
+                    </p>
+                    <ul className="mt-1 ml-5 text-sm text-primary list-disc">
+                      <li>Start with 5-10 kanji per session and gradually increase</li>
+                      <li>Study daily for best results - even 5 minutes helps!</li>
+                      <li>Use the "mark as easy" feature for kanji you already know well</li>
+                      <li>Combine with the Kanji Browser for additional practice</li>
+                      <li>Free users get {userType === 'guest' ? '10' : '20'} kanji per session, Premium users get up to 50</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Main Content */}
         <div className="px-4 space-y-6">
@@ -251,23 +365,6 @@ export default function KanjiMasteryDashboard() {
                 </div>
               </button>
 
-              {/* Review Mode */}
-              <button
-                onClick={handleReviewSession}
-                className="w-full text-left p-4 border border-border rounded-lg hover:border-primary hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-foreground">📚 Review Mode</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Review kanji due for spaced repetition
-                    </p>
-                  </div>
-                  <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </button>
 
               {/* Free Study */}
               <button

@@ -26,7 +26,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useStrings } from "@/contexts/LanguageContext";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { BookOpen } from "lucide-react";
-import { useKanjiReviews } from "@/hooks/useKanjiReviews";
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -78,7 +77,6 @@ export default function KanjiBrowserPage() {
   const strings = useStrings();
   const { track } = useAnalytics();
   const [showInstructions, setShowInstructions] = useState(false);
-  const { kanjiInReviews } = useKanjiReviews();
 
   const [kanjiData, setKanjiData] = useState<KanjiByLevel>({});
   const [loading, setLoading] = useState(true);
@@ -394,13 +392,6 @@ export default function KanjiBrowserPage() {
             )}
 
             {/* Daily Reviews indicator */}
-            {kanjiInReviews.has(kanjiItem.kanji) && (
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center" title="In Daily Reviews">
-                <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            )}
           </button>
 
           {/* Theme-aware corner selection indicator for study - Outside the button */}
@@ -533,49 +524,89 @@ export default function KanjiBrowserPage() {
 
               {showInstructions && (
                 <div className="mt-4 p-5 bg-card border border-border rounded-lg text-left max-w-3xl mx-auto">
-                  <h3 className="text-lg font-semibold text-foreground mb-4">📚 How to Use the Kanji Browser</h3>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">📚 Browse & Master Japanese Kanji</h3>
                   
                   <div className="space-y-4">
                     <div>
-                      <h4 className="font-medium text-foreground mb-2">🔍 Browse & Explore</h4>
+                      <h4 className="font-medium text-foreground mb-2">🎯 Getting Started</h4>
                       <p className="text-muted-foreground text-sm">
-                        Click any kanji to view its meanings, readings (on'yomi and kun'yomi), and stroke order. 
-                        Start with N5 level for beginners and progress through N4, N3, N2, to N1 for advanced learners.
+                        The Kanji Browser organizes 2,136+ kanji by JLPT levels (N5-N1). Each level builds on the previous one - 
+                        N5 contains the most essential kanji for beginners, while N1 includes advanced characters for near-native proficiency. 
+                        Click any level to expand and view its kanji collection.
                       </p>
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-foreground mb-2">📅 Daily Reviews (NEW!)</h4>
+                      <h4 className="font-medium text-foreground mb-2">🔍 Search & Explore</h4>
                       <p className="text-muted-foreground text-sm">
-                        Add kanji to your Daily Reviews for long-term retention using spaced repetition (SRS). 
-                        Click any kanji, open Options, and select "Add to Daily Reviews". The system will automatically 
-                        schedule reviews at optimal intervals. Look for the blue checkmark (✓) on kanji already in your reviews.
+                        Use the search bar to find kanji by character, meaning, or reading. For example, search "water" to find 水, 
+                        or "みず" to find kanji with that reading. Click any kanji to see detailed information including meanings, 
+                        on'yomi/kun'yomi readings, stroke order animations, and example vocabulary.
                       </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <h4 className="font-medium text-foreground mb-2">📖 Study Mode</h4>
+                        <h4 className="font-medium text-foreground mb-2">✅ Quick Study Selection</h4>
                         <p className="text-muted-foreground text-sm">
-                          Select up to 10 kanji using the corner checkbox, then click "Study" for an interactive 
-                          practice session with multiple-choice questions and instant feedback.
+                          Click the corner checkbox on any kanji to add it to your study selection (max 10). 
+                          Selected kanji appear with a checkmark. Once selected, use the "Study" button for 
+                          interactive practice with multiple-choice questions testing meanings and readings.
                         </p>
                       </div>
                       
                       <div>
-                        <h4 className="font-medium text-foreground mb-2">🎓 Learn Mode</h4>
+                        <h4 className="font-medium text-foreground mb-2">🎓 Structured Learning</h4>
                         <p className="text-muted-foreground text-sm">
-                          Click "Learn" on any JLPT level for a structured lesson introducing new kanji with 
-                          mnemonics, examples, and guided practice.
+                          Click "Learn" on any JLPT level for guided lessons. The system introduces kanji 
+                          progressively with mnemonics, stroke order practice, and contextual examples 
+                          from real Japanese sentences.
                         </p>
                       </div>
                     </div>
 
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">💾 Save & Organize</h4>
+                      <p className="text-muted-foreground text-sm">
+                        Click any kanji and select "Save" to add it to your personal lists. Saved kanji appear with 
+                        a blue dot indicator. Create custom flashcard lists for focused review sessions or organize 
+                        kanji by themes (e.g., nature, emotions, daily life). Free users can save up to 50 kanji, 
+                        Premium users have unlimited saves with cloud sync.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">🎮 Gamified Learning</h4>
+                      <p className="text-muted-foreground text-sm">
+                        Select 3+ kanji and click "Battle" to play Kanji Quest - a Pokémon-style game where 
+                        kanji become creatures you battle by answering questions correctly. Perfect for making 
+                        repetitive practice more engaging and memorable.
+                      </p>
+                    </div>
+
+                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                      <p className="text-sm text-destructive font-medium flex items-center gap-2">
+                        <span className="text-lg">⚠️</span>
+                        <span>
+                          <strong>Study Smart:</strong> Research shows studying 5-10 kanji per day with consistent review 
+                          yields better retention than cramming. Focus on mastering kanji in context with vocabulary rather 
+                          than isolated memorization.
+                        </span>
+                      </p>
+                    </div>
+
                     <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
                       <p className="text-sm text-primary font-medium">
-                        💡 Pro Tip: Combine all three methods! Use Learn for new kanji, Study for practice, 
-                        and Daily Reviews for long-term mastery. Aim for 5-10 new kanji per day.
+                        💡 <strong>Pro Tips:</strong>
                       </p>
+                      <ul className="mt-1 ml-5 text-sm text-primary list-disc">
+                        <li>Start with N5 and master it completely before moving to N4</li>
+                        <li>Focus on kanji that appear in vocabulary you're learning</li>
+                        <li>Use the stroke order viewer to practice writing</li>
+                        <li>Review saved kanji daily using spaced repetition</li>
+                        <li>Connect similar-looking kanji to avoid confusion</li>
+                        <li>Free users can browse all kanji, Premium users get unlimited saves & advanced features</li>
+                      </ul>
                     </div>
                   </div>
                 </div>

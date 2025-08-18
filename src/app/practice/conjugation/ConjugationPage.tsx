@@ -86,6 +86,7 @@ export default function ConjugationPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showRules, setShowRules] = useState(false);
   const [showFurigana, setShowFurigana] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
   const [wordTypeFilter, setWordTypeFilter] = useState<
     "all" | "verbs" | "adjectives"
   >("all");
@@ -222,6 +223,129 @@ export default function ConjugationPage() {
               {strings.practice?.conjugationIntro ||
                 "Master Japanese verb and adjective conjugations through interactive practice. Explore all forms including tense, politeness, and special constructions like passive and causative."}
             </p>
+            
+            {/* How to Use Section */}
+            <div className="mb-8 text-center">
+              <button
+                onClick={() => setShowInstructions(!showInstructions)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary/20 transition-all font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>How to use Conjugation Practice</span>
+                <svg
+                  className={`w-4 h-4 transition-transform ${
+                    showInstructions ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {showInstructions && (
+                <div className="mt-4 p-5 bg-card border border-border rounded-lg text-left max-w-3xl mx-auto">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">🎯 Master Japanese Conjugations with Interactive Practice</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">📚 What You Can Practice</h4>
+                      <p className="text-muted-foreground text-sm">
+                        Our conjugation engine handles all Japanese verb types (Ichidan, Godan, Irregular) and adjectives 
+                        (i-adjectives, na-adjectives). View over 100+ conjugation forms including present, past, negative, 
+                        polite, te-form, potential, passive, causative, conditional, volitional, and more. Each form includes 
+                        audio pronunciation and contextual usage examples.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">🔍 Finding Words to Practice</h4>
+                      <p className="text-muted-foreground text-sm">
+                        Start with common verbs like 食べる (taberu - to eat), 行く (iku - to go), or する (suru - to do). 
+                        Search in Japanese (kanji/kana), romaji, or English. Filter by verb types or adjectives to focus 
+                        your practice. Words are color-coded: Ichidan (blue), Godan (green), Irregular (red), 
+                        i-adjectives (purple), na-adjectives (orange).
+                      </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">👁️ View Modes</h4>
+                        <p className="text-muted-foreground text-sm">
+                          <strong>Essential Only:</strong> Shows 20 most common forms for daily conversation<br/>
+                          <strong>Complete View:</strong> Displays all 100+ conjugation forms<br/>
+                          <strong>Comprehensive View:</strong> Organized table with ALL forms grouped by category
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">📖 Understanding Forms</h4>
+                        <p className="text-muted-foreground text-sm">
+                          Each conjugation shows the Japanese form with audio button. 
+                          Essential forms are marked with ★ stars. Toggle "Conjugation Rules" 
+                          to see step-by-step formation patterns for each verb type.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">🎓 Verb Type Guide</h4>
+                      <p className="text-muted-foreground text-sm">
+                        <strong>Ichidan (る-verbs):</strong> End in -eru/-iru, simpler conjugation (食べる, 見る)<br/>
+                        <strong>Godan (う-verbs):</strong> End in -u/-ku/-gu/-su/-tsu/-nu/-bu/-mu/-ru, complex patterns (行く, 読む)<br/>
+                        <strong>Irregular:</strong> する (to do) and 来る (to come) have unique patterns<br/>
+                        <strong>i-adjectives:</strong> End in い, conjugate like verbs (高い, 美しい)<br/>
+                        <strong>na-adjectives:</strong> Use だ/です for conjugation (静か, 便利)
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">💡 Learning Strategy</h4>
+                      <p className="text-muted-foreground text-sm">
+                        Start with Essential forms - master present, past, negative, and te-form first. These cover 80% 
+                        of daily conversation. Practice one verb type at a time to recognize patterns. Compare similar 
+                        verbs (食べる vs 飲む) to understand type differences. Use audio for every form to improve 
+                        pronunciation and recognition.
+                      </p>
+                    </div>
+
+                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                      <p className="text-sm text-destructive font-medium flex items-center gap-2">
+                        <span className="text-lg">⚠️</span>
+                        <span>
+                          <strong>Common Mistakes:</strong> Don't confuse Ichidan verbs ending in -iru/-eru with Godan 
+                          verbs (帰る is Godan, not Ichidan). Te-form rules vary by ending - memorize the patterns. 
+                          Potential and Passive forms are identical for Ichidan verbs but different for Godan.
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                      <p className="text-sm text-primary font-medium">
+                        💡 <strong>Pro Tips:</strong>
+                      </p>
+                      <ul className="mt-1 ml-5 text-sm text-primary list-disc">
+                        <li>Save frequently used verbs to custom lists for quick access</li>
+                        <li>Practice conjugating verbs aloud while viewing forms</li>
+                        <li>Focus on one conjugation type per study session</li>
+                        <li>Use Comprehensive View to see all forms at once for pattern recognition</li>
+                        <li>Test yourself: hide the screen and conjugate from memory</li>
+                        <li>Free users can view all conjugations, Premium users can save unlimited word lists</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <p className="text-muted-foreground mb-8 text-center">
               {strings.practice?.selectWord ||
                 "Select a verb or adjective to practice"}

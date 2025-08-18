@@ -9,8 +9,7 @@ import {
 import { 
   PrecisionTimeManager, TimeSegment, ABRepeatConfig 
 } from '@/utils/precisionTimeManager';
-import { TranscriptLine } from '../YouTubeShadowing';
-import { generateFuriganaWithCache } from '@/utils/furigana';
+import { TranscriptLine, ShadowingSession } from '../YouTubeShadowing';
 import { cn } from '@/lib/utils';
 
 declare global {
@@ -21,18 +20,20 @@ declare global {
 }
 
 interface HighFidelityShadowingPlayerProps {
-  videoId: string;
-  transcript: TranscriptLine[];
-  onProgress?: (progress: number) => void;
+  session: ShadowingSession;
+  onLineChange: (index: number) => void;
+  showVideo?: boolean;
   showFurigana?: boolean;
+  onToggleFurigana?: () => void;
   className?: string;
 }
 
 export default function HighFidelityShadowingPlayer({
-  videoId,
-  transcript,
-  onProgress,
+  session,
+  onLineChange,
+  showVideo = true,
   showFurigana = true,
+  onToggleFurigana,
   className
 }: HighFidelityShadowingPlayerProps) {
   // YouTube Player
@@ -51,7 +52,7 @@ export default function HighFidelityShadowingPlayer({
   const transcriptContainerRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   
-  // A/B Repeat State
+  // Auto-Repeat State
   const [abRepeat, setAbRepeat] = useState<ABRepeatConfig>({
     startTime: 0,
     endTime: 0,
@@ -60,45 +61,92 @@ export default function HighFidelityShadowingPlayer({
     pauseDuration: 1500,
     isActive: false
   });
-  const [isSettingABPoints, setIsSettingABPoints] = useState<'A' | 'B' | null>(null);
+  const [autoRepeatMode, setAutoRepeatMode] = useState(false);
+  const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0);
   const repeatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Precision Time Manager
   const timeManagerRef = useRef<PrecisionTimeManager>(new PrecisionTimeManager());
   
+  // Extract video ID from URL
+  const videoId = useMemo(() => {
+    if (!session?.videoUrl) return null;
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/shorts\/([^&\n?#]+)/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = session.videoUrl.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
+  }, [session?.videoUrl]);
+  
   // Convert transcript to TimeSegments
   const segments: TimeSegment[] = useMemo(() => 
-    transcript.map(line => ({
+    session?.transcript?.map(line => ({
       id: line.id,
       startTime: line.startTime,
       endTime: line.endTime,
       text: line.text
-    })), [transcript]
+    })) || [], [session?.transcript]
   );
   
-  // Initialize YouTube Player
+  // Initialize YouTube Player with production-ready error handling
   useEffect(() => {
-    if (!window.YT) {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-      
-      window.onYouTubeIframeAPIReady = initializePlayer;
-    } else {
-      initializePlayer();
-    }
+    if (!videoId) return;
+    
+    let mounted = true;
+    let apiLoadTimeout: NodeJS.Timeout;
+    
+    const loadYouTubeAPI = () => {
+      if (!window.YT) {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        tag.async = true;
+        
+        // Set up timeout for API load
+        apiLoadTimeout = setTimeout(() => {
+          if (mounted && !window.YT) {
+            console.warn('[PLAYER] YouTube API load timeout - using fallback player');
+            setIsPlayerReady(true); // Enable manual controls
+          }
+        }, 5000);
+        
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+        
+        window.onYouTubeIframeAPIReady = () => {
+          clearTimeout(apiLoadTimeout);
+          if (mounted) {
+            initializePlayer();
+          }
+        };
+      } else {
+        initializePlayer();
+      }
+    };
+    
+    loadYouTubeAPI();
     
     return () => {
+      mounted = false;
+      clearTimeout(apiLoadTimeout);
       if (playerRef.current) {
-        playerRef.current.destroy();
+        try {
+          playerRef.current.destroy();
+        } catch (e) {
+          // Ignore cleanup errors
+        }
+        playerRef.current = null;
       }
       timeManagerRef.current.destroy();
     };
   }, [videoId]);
   
   const initializePlayer = useCallback(() => {
-    if (!playerContainerRef.current || playerRef.current) return;
+    if (!playerContainerRef.current || playerRef.current || !videoId) return;
     
     playerRef.current = new window.YT.Player(playerContainerRef.current, {
       videoId,
@@ -128,30 +176,7 @@ export default function HighFidelityShadowingPlayer({
     timeManagerRef.current.setPlayer(() => 
       playerRef.current?.getCurrentTime() || 0
     );
-    
-    // Register time update callback
-    const unsubscribe = timeManagerRef.current.onTimeUpdate((time) => {
-      setCurrentTime(time);
-      
-      // Update active segment
-      const activeSegment = timeManagerRef.current.findActiveSegment(segments, time);
-      if (activeSegment && activeSegment.id !== activeSegmentId) {
-        setActiveSegmentId(activeSegment.id);
-        if (autoScroll) {
-          scrollToActiveSegment(activeSegment.id);
-        }
-      }
-      
-      // Handle A/B repeat
-      if (abRepeat.isActive && timeManagerRef.current.isSegmentComplete(time, abRepeat.endTime)) {
-        handleRepeatEnd();
-      }
-      
-      onProgress?.(time);
-    });
-    
-    return () => unsubscribe();
-  }, [segments, activeSegmentId, autoScroll, abRepeat, onProgress]);
+  }, []);
   
   const handlePlayerStateChange = useCallback((event: any) => {
     if (event.data === window.YT.PlayerState.PLAYING) {
@@ -169,12 +194,39 @@ export default function HighFidelityShadowingPlayer({
   const togglePlayPause = useCallback(() => {
     if (!playerRef.current) return;
     
+    console.log('[PLAY/PAUSE] Current state:', isPlaying ? 'PLAYING' : 'PAUSED');
+    console.log('[PLAY/PAUSE] Auto-repeat mode:', autoRepeatMode);
+    console.log('[PLAY/PAUSE] A/B repeat active:', abRepeat.isActive);
+    
     if (isPlaying) {
+      console.log('[PLAY/PAUSE] Pausing playback');
       playerRef.current.pauseVideo();
+      // Clear any pending repeats
+      if (repeatTimeoutRef.current) {
+        clearTimeout(repeatTimeoutRef.current);
+        repeatTimeoutRef.current = null;
+      }
     } else {
+      console.log('[PLAY/PAUSE] Starting playback');
+      // If in auto-repeat mode and no active repeat, set up for current segment
+      if (autoRepeatMode && !abRepeat.isActive && activeSegmentId) {
+        const activeSegment = segments.find(s => s.id === activeSegmentId);
+        if (activeSegment) {
+          console.log('[PLAY/PAUSE] Setting up auto-repeat for current segment');
+          console.log(`[PLAY/PAUSE] Segment: ${activeSegment.startTime} - ${activeSegment.endTime}`);
+          setAbRepeat({
+            startTime: activeSegment.startTime,
+            endTime: activeSegment.endTime,
+            currentRepeat: 0,
+            totalRepeats: abRepeat.totalRepeats,
+            pauseDuration: abRepeat.pauseDuration,
+            isActive: true
+          });
+        }
+      }
       playerRef.current.playVideo();
     }
-  }, [isPlaying]);
+  }, [isPlaying, autoRepeatMode, abRepeat, activeSegmentId, segments]);
   
   const seekTo = useCallback((time: number) => {
     if (!playerRef.current) return;
@@ -191,71 +243,88 @@ export default function HighFidelityShadowingPlayer({
     seekTo(newTime);
   }, [currentTime, duration, seekTo]);
   
-  // A/B Repeat Functions
-  const setAPoint = useCallback(() => {
-    setAbRepeat(prev => ({
-      ...prev,
-      startTime: currentTime,
-      isActive: false
-    }));
-    setIsSettingABPoints('B');
-  }, [currentTime]);
-  
-  const setBPoint = useCallback(() => {
-    if (currentTime > abRepeat.startTime) {
-      setAbRepeat(prev => ({
-        ...prev,
-        endTime: currentTime,
-        isActive: true,
-        currentRepeat: 0
-      }));
-      setIsSettingABPoints(null);
-      seekTo(abRepeat.startTime);
-      playerRef.current?.playVideo();
+  // Handle auto-repeat mode segment completion
+  const handleAutoRepeatSegmentEnd = useCallback((segmentIndex: number) => {
+    console.log('[AUTO-REPEAT] handleAutoRepeatSegmentEnd called for segment:', segmentIndex);
+    
+    // Immediately pause to prevent progression
+    if (playerRef.current) {
+      console.log('[AUTO-REPEAT] Pausing video');
+      playerRef.current.pauseVideo();
     }
-  }, [currentTime, abRepeat.startTime, seekTo]);
-  
-  const toggleABRepeat = useCallback(() => {
-    if (isSettingABPoints === 'A') {
-      setAPoint();
-    } else if (isSettingABPoints === 'B') {
-      setBPoint();
-    } else if (abRepeat.isActive) {
-      // Cancel repeat
-      setAbRepeat(prev => ({ ...prev, isActive: false, currentRepeat: 0 }));
+    
+    const currentRep = abRepeat.currentRepeat + 1;
+    console.log(`[AUTO-REPEAT] Completed repeat ${abRepeat.currentRepeat + 1} of ${abRepeat.totalRepeats}`);
+    
+    if (currentRep < abRepeat.totalRepeats) {
+      // More repeats for this segment
+      console.log(`[AUTO-REPEAT] Setting up repeat ${currentRep + 1}`);
+      setAbRepeat(prev => ({ ...prev, currentRepeat: currentRep }));
+      
+      // Clear any existing timeout
       if (repeatTimeoutRef.current) {
         clearTimeout(repeatTimeoutRef.current);
       }
-    } else {
-      // Start setting A point
-      setIsSettingABPoints('A');
-    }
-  }, [isSettingABPoints, abRepeat.isActive, setAPoint, setBPoint]);
-  
-  const handleRepeatEnd = useCallback(() => {
-    playerRef.current?.pauseVideo();
-    
-    const nextRepeat = abRepeat.currentRepeat + 1;
-    
-    if (nextRepeat < abRepeat.totalRepeats) {
-      setAbRepeat(prev => ({ ...prev, currentRepeat: nextRepeat }));
       
-      // Pause between repeats
+      console.log(`[AUTO-REPEAT] Waiting ${abRepeat.pauseDuration}ms before repeat`);
       repeatTimeoutRef.current = setTimeout(() => {
-        seekTo(timeManagerRef.current.calculateRepeatSeek(abRepeat));
-        playerRef.current?.playVideo();
+        // Seek back to start of current segment
+        if (playerRef.current && segments[segmentIndex]) {
+          console.log(`[AUTO-REPEAT] Seeking back to ${segments[segmentIndex].startTime}`);
+          playerRef.current.seekTo(segments[segmentIndex].startTime, true);
+          // Small delay to ensure seek completes
+          setTimeout(() => {
+            console.log('[AUTO-REPEAT] Resuming playback');
+            playerRef.current?.playVideo();
+          }, 100);
+        }
       }, abRepeat.pauseDuration);
     } else {
-      // All repeats complete
-      setAbRepeat(prev => ({ ...prev, isActive: false, currentRepeat: 0 }));
+      // All repeats done, move to next segment
+      const nextIndex = segmentIndex + 1;
+      console.log(`[AUTO-REPEAT] All repeats done. Moving to segment ${nextIndex}`);
+      
+      if (nextIndex < segments.length) {
+        // Reset for next segment
+        console.log('[AUTO-REPEAT] Resetting for next segment');
+        setAbRepeat(prev => ({ 
+          ...prev, 
+          isActive: false, 
+          currentRepeat: 0 
+        }));
+        
+        // Clear any existing timeout
+        if (repeatTimeoutRef.current) {
+          clearTimeout(repeatTimeoutRef.current);
+        }
+        
+        // Small pause before next segment
+        repeatTimeoutRef.current = setTimeout(() => {
+          if (playerRef.current && segments[nextIndex]) {
+            console.log(`[AUTO-REPEAT] Seeking to next segment at ${segments[nextIndex].startTime}`);
+            playerRef.current.seekTo(segments[nextIndex].startTime, true);
+            // Small delay to ensure seek completes
+            setTimeout(() => {
+              console.log('[AUTO-REPEAT] Starting playback of next segment');
+              playerRef.current?.playVideo();
+            }, 100);
+          }
+        }, 500);
+      } else {
+        // Reached end of transcript
+        console.log('[AUTO-REPEAT] Reached end of transcript. Stopping auto-repeat.');
+        setAutoRepeatMode(false);
+        setAbRepeat(prev => ({ ...prev, isActive: false, currentRepeat: 0 }));
+      }
     }
-  }, [abRepeat, seekTo]);
+  }, [abRepeat.currentRepeat, abRepeat.totalRepeats, abRepeat.pauseDuration, segments]);
   
   // Transcript Interaction
-  const handleSegmentClick = useCallback((segment: TimeSegment) => {
+  const handleSegmentClick = useCallback((segment: TimeSegment, index: number) => {
     seekTo(segment.startTime);
     setActiveSegmentId(segment.id);
-  }, [seekTo]);
+    onLineChange(index);
+  }, [seekTo, onLineChange]);
   
   const scrollToActiveSegment = useCallback((segmentId: string) => {
     if (!transcriptContainerRef.current) return;
@@ -288,12 +357,105 @@ export default function HighFidelityShadowingPlayer({
   // Settings Panel
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
   
+  // Set up time tracking listener
+  useEffect(() => {
+    if (!isPlayerReady) return;
+    
+    let lastSegmentId: string | null = null;
+    let lastLoggedTime = 0;
+    
+    const unsubscribe = timeManagerRef.current.onTimeUpdate((time) => {
+      setCurrentTime(time);
+      
+      // Update active segment
+      const activeSegment = timeManagerRef.current.findActiveSegment(segments, time);
+      if (activeSegment) {
+        const segmentIndex = segments.findIndex(s => s.id === activeSegment.id);
+        
+        // Check if segment actually changed
+        if (activeSegment.id !== lastSegmentId) {
+          console.log(`[AUTO-REPEAT] Segment changed to: ${activeSegment.id}, Index: ${segmentIndex}`);
+          console.log(`[AUTO-REPEAT] Segment time: ${activeSegment.startTime} - ${activeSegment.endTime}`);
+          
+          lastSegmentId = activeSegment.id;
+          setActiveSegmentId(activeSegment.id);
+          setCurrentSegmentIndex(segmentIndex);
+          
+          if (autoScroll) {
+            scrollToActiveSegment(activeSegment.id);
+          }
+          
+          // In auto-repeat mode, ALWAYS update the A/B repeat for the new segment
+          if (autoRepeatMode) {
+            console.log('[AUTO-REPEAT] Updating repeat for new segment');
+            console.log(`[AUTO-REPEAT] Setting new bounds: ${activeSegment.startTime} - ${activeSegment.endTime}`);
+            console.log(`[AUTO-REPEAT] Total repeats: ${abRepeat.totalRepeats}, Pause: ${abRepeat.pauseDuration}ms`);
+            setAbRepeat(prev => ({
+              startTime: activeSegment.startTime,
+              endTime: activeSegment.endTime,
+              currentRepeat: 0,
+              totalRepeats: prev.totalRepeats,
+              pauseDuration: prev.pauseDuration,
+              isActive: true
+            }));
+          }
+        }
+        
+        // Check if we're near the end of segment - add more detailed logging
+        const timeToEnd = abRepeat.endTime - time;
+        if (autoRepeatMode && abRepeat.isActive) {
+          // Log every 0.5 seconds to see progress
+          if (Math.floor(time * 2) !== Math.floor(lastLoggedTime * 2)) {
+            console.log(`[AUTO-REPEAT] Progress: Time=${time.toFixed(2)}, End=${abRepeat.endTime.toFixed(2)}, TimeToEnd=${timeToEnd.toFixed(2)}`);
+            lastLoggedTime = time;
+          }
+          
+          if (timeToEnd < 0.2 && timeToEnd > -0.1) {
+            console.log(`[AUTO-REPEAT] ⚠️ NEAR END - Time: ${time.toFixed(2)}, End: ${abRepeat.endTime.toFixed(2)}, Diff: ${timeToEnd.toFixed(3)}`);
+          }
+        }
+        
+        // Handle auto-repeat mode segment completion
+        if (autoRepeatMode && abRepeat.isActive && timeManagerRef.current.isSegmentComplete(time, abRepeat.endTime)) {
+          console.log(`[AUTO-REPEAT] 🔴 SEGMENT COMPLETE! Time: ${time}, End: ${abRepeat.endTime}`);
+          console.log(`[AUTO-REPEAT] Current repeat: ${abRepeat.currentRepeat}/${abRepeat.totalRepeats}`);
+          handleAutoRepeatSegmentEnd(segmentIndex);
+        }
+      }
+      
+    });
+    
+    return () => unsubscribe();
+  }, [isPlayerReady, segments, autoScroll, abRepeat, autoRepeatMode, handleAutoRepeatSegmentEnd, scrollToActiveSegment]);
+  
+  // Don't render if no session or transcript
+  if (!session || !session.transcript || session.transcript.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64 text-gray-500">
+        No transcript available
+      </div>
+    );
+  }
+  
   return (
     <div className={cn("flex flex-col lg:flex-row gap-4 h-full", className)}>
       {/* Video Player Section */}
       <div className="flex-1 flex flex-col">
         <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-          <div ref={playerContainerRef} className="absolute inset-0" />
+          {/* YouTube API container or fallback iframe */}
+          {isPlayerReady && !playerRef.current && videoId ? (
+            // Fallback to simple iframe if API fails
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1`}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          ) : (
+            <div ref={playerContainerRef} className="absolute inset-0" />
+          )}
           
           {/* Loading Overlay */}
           {!isPlayerReady && (
@@ -343,36 +505,31 @@ export default function HighFidelityShadowingPlayer({
                 className="absolute left-0 top-0 h-full bg-blue-500 transition-all duration-100"
                 style={{ width: `${(currentTime / duration) * 100}%` }}
               />
-              {/* A/B Repeat Range */}
-              {abRepeat.isActive && (
-                <div 
-                  className="absolute top-0 h-full bg-yellow-300/50"
-                  style={{ 
-                    left: `${(abRepeat.startTime / duration) * 100}%`,
-                    width: `${((abRepeat.endTime - abRepeat.startTime) / duration) * 100}%`
-                  }}
-                />
-              )}
             </div>
           </div>
           
-          {/* A/B Repeat Controls */}
+          {/* Auto-Repeat Controls */}
           <div className="flex items-center justify-between">
+            {/* Auto-Repeat Mode Button */}
             <button
-              onClick={toggleABRepeat}
+              onClick={() => {
+                const newMode = !autoRepeatMode;
+                console.log('[AUTO-REPEAT] Mode toggled:', newMode ? 'ON' : 'OFF');
+                setAutoRepeatMode(newMode);
+                if (newMode) {
+                  // Reset when enabling auto-repeat
+                  console.log('[AUTO-REPEAT] Resetting A/B repeat state');
+                  setAbRepeat(prev => ({ ...prev, isActive: false, currentRepeat: 0 }));
+                }
+              }}
               className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors",
-                abRepeat.isActive ? "bg-yellow-100 text-yellow-700" : 
-                isSettingABPoints ? "bg-blue-100 text-blue-700" : 
-                "bg-gray-100 hover:bg-gray-200"
+                autoRepeatMode ? "bg-green-100 text-green-700" : "bg-gray-100 hover:bg-gray-200"
               )}
             >
               <Repeat className="w-4 h-4" />
               <span className="text-sm">
-                {isSettingABPoints === 'A' ? 'Set A Point' :
-                 isSettingABPoints === 'B' ? 'Set B Point' :
-                 abRepeat.isActive ? `Repeat ${abRepeat.currentRepeat + 1}/${abRepeat.totalRepeats}` :
-                 'A/B Repeat'}
+                {autoRepeatMode ? `Auto-Repeat ON (${abRepeat.currentRepeat + 1}/${abRepeat.totalRepeats})` : 'Auto-Repeat Each Line'}
               </span>
             </button>
             
@@ -489,11 +646,11 @@ export default function HighFidelityShadowingPlayer({
           className="flex-1 overflow-y-auto p-4 space-y-2"
           onWheel={() => setAutoScroll(false)} // Disable auto-scroll on manual scroll
         >
-          {segments.map((segment) => (
+          {segments.map((segment, index) => (
             <motion.div
               key={segment.id}
               id={`segment-${segment.id}`}
-              onClick={() => handleSegmentClick(segment)}
+              onClick={() => handleSegmentClick(segment, index)}
               className={cn(
                 "p-3 rounded-lg cursor-pointer transition-all",
                 activeSegmentId === segment.id 
@@ -511,13 +668,7 @@ export default function HighFidelityShadowingPlayer({
                   "flex-1 leading-relaxed transition-all",
                   activeSegmentId === segment.id ? "text-gray-900 font-medium" : "text-gray-700"
                 )}>
-                  {showFurigana ? (
-                    <span dangerouslySetInnerHTML={{ 
-                      __html: generateFuriganaWithCache(segment.text) 
-                    }} />
-                  ) : (
-                    segment.text
-                  )}
+                  {segment.text}
                 </p>
               </div>
             </motion.div>

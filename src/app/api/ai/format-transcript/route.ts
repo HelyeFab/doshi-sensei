@@ -107,26 +107,81 @@ Remember:
 
       console.log(`✅ [AI FORMAT] AI split text into ${aiSegments.length} segments`);
 
-      // STEP 2: Map AI segments back to timestamps
-      // We'll distribute timestamps proportionally based on character count
+      // STEP 2: Map AI segments back to ORIGINAL timestamps
+      // Find where each AI segment actually appears in the original text
+      // and use those exact timestamps (or interpolate only when necessary)
       const formattedTranscript: TranscriptLine[] = [];
-      const startTime = transcript[0].startTime;
-      const timePerChar = totalDuration / fullText.length;
       
-      let currentTime = startTime;
+      // Now map each AI segment to its actual timestamp
+      let currentCharPos = 0;
       
       aiSegments.forEach((segmentText: string, index: number) => {
-        const segmentDuration = segmentText.length * timePerChar;
+        // Find where this segment starts in the original text
+        const segmentStartPos = fullText.indexOf(segmentText, currentCharPos);
+        
+        if (segmentStartPos === -1) {
+          console.warn(`⚠️ [AI FORMAT] Could not find segment in original: "${segmentText.substring(0, 20)}..."`);
+          return;
+        }
+        
+        const segmentEndPos = segmentStartPos + segmentText.length;
+        
+        // Find which original segments this AI segment spans
+        let startTime = transcript[0].startTime;
+        let endTime = transcript[0].endTime;
+        let foundStart = false;
+        let foundEnd = false;
+        
+        // Find the EXACT original segment where this AI text starts
+        let charCounter = 0;
+        for (let i = 0; i < transcript.length; i++) {
+          const origSegment = transcript[i];
+          const segmentStart = charCounter;
+          const segmentEnd = charCounter + origSegment.text.length;
+          
+          // If the AI segment starts within this original segment
+          if (!foundStart && segmentStartPos >= segmentStart && segmentStartPos < segmentEnd) {
+            // Check if it starts at the beginning of the original segment
+            if (segmentStartPos === segmentStart) {
+              // Use the exact original timestamp
+              startTime = origSegment.startTime;
+            } else {
+              // It starts mid-segment, so interpolate
+              const posInSegment = segmentStartPos - segmentStart;
+              const ratio = posInSegment / origSegment.text.length;
+              startTime = origSegment.startTime + (origSegment.endTime - origSegment.startTime) * ratio;
+            }
+            foundStart = true;
+          }
+          
+          // If the AI segment ends within this original segment
+          if (!foundEnd && segmentEndPos > segmentStart && segmentEndPos <= segmentEnd) {
+            // Check if it ends at the end of the original segment
+            if (segmentEndPos === segmentEnd) {
+              // Use the exact original timestamp
+              endTime = origSegment.endTime;
+            } else {
+              // It ends mid-segment, so interpolate
+              const posInSegment = segmentEndPos - segmentStart;
+              const ratio = posInSegment / origSegment.text.length;
+              endTime = origSegment.startTime + (origSegment.endTime - origSegment.startTime) * ratio;
+            }
+            foundEnd = true;
+          }
+          
+          if (foundStart && foundEnd) break;
+          charCounter += origSegment.text.length;
+        }
         
         formattedTranscript.push({
           id: `formatted_${index + 1}`,
           text: segmentText,
-          startTime: currentTime,
-          endTime: currentTime + segmentDuration,
+          startTime: startTime,
+          endTime: endTime,
           words: segmentText.split(/[\s、。！？]/g).filter(w => w.length > 0)
         });
         
-        currentTime += segmentDuration;
+        currentCharPos = segmentEndPos;
       });
 
       // Log sample for debugging
@@ -134,6 +189,13 @@ Remember:
       formattedTranscript.slice(0, 5).forEach((seg, i) => {
         console.log(`  ${i + 1}. [${seg.startTime.toFixed(2)}s - ${seg.endTime.toFixed(2)}s] ${seg.text}`);
       });
+      
+      // Log original vs formatted comparison
+      console.log('🔍 Original vs Formatted timing comparison:');
+      console.log(`  Original first segment: [${transcript[0].startTime.toFixed(2)}s] "${transcript[0].text.substring(0, 30)}..."`);
+      console.log(`  Formatted first segment: [${formattedTranscript[0]?.startTime.toFixed(2)}s] "${formattedTranscript[0]?.text.substring(0, 30)}..."`);
+      console.log(`  Original total segments: ${transcript.length}`);
+      console.log(`  Formatted total segments: ${formattedTranscript.length}`);
 
       // Check for grammar violations
       const violations = formattedTranscript.filter(seg => 

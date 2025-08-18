@@ -59,7 +59,10 @@
       "Bash(npx firebase deploy:*)",
       "Bash(mv:*)",
       "Bash(open clear-pwa-cache.html)",
-      "Bash(npm run typecheck:*)"
+      "Bash(npm run typecheck:*)",
+      "Bash(sudo rm:*)",
+      "Bash(python3:*)",
+      "Bash(npm run:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

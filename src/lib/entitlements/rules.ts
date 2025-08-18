@@ -12,7 +12,7 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
   {
     id: 'guest_basic',
     userTypes: ['guest'],
-    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods', 'view_stroke_order', 'youtube_shadowing', 'ai_explanations', 'textbook_vocabulary', 'learn_kanji', 'daily_reviews', 'view_leaderboard', 'share_content', 'use_general_learning_module'],
+    permissions: ['play_games', 'do_drills', 'read_articles', 'read_stories', 'kanji_moods', 'view_stroke_order', 'youtube_shadowing', 'ai_explanations', 'textbook_vocabulary', 'learn_kanji', 'view_leaderboard', 'share_content', 'use_general_learning_module'],
     limits: {
       daily: {
         drill_practice: 3,
@@ -37,7 +37,6 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         textbook_vocabulary: 20,
         word_learning_session: 0, // No access for guests (requires auth)
         kanji_mastery: 5, // 5 kanji per day for guests
-        daily_reviews: 1, // 1 review session per day for guests
         adaptive_practice: 0, // No adaptive practice for guests (requires auth)
         leech_treatment: 0, // No leech treatment for guests (premium only)
         quick_context: 0, // No access for guests as requested
@@ -65,7 +64,6 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
       'textbook_vocabulary',
       'do_learning_sessions', // This permission seems to be for 'word_learning_session'
       'learn_kanji', // This permission might be for 'kanji_mastery' or similar
-      'daily_reviews', // Daily SRS reviews
       'adaptive_practice', // Adaptive practice based on weaknesses
       'view_leaderboard',
       'share_content',
@@ -97,7 +95,6 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         textbook_vocabulary: 50,
         word_learning_session: 5, // 5 learning sessions per day for free users
         kanji_mastery: 10, // 10 kanji per day for free users
-        daily_reviews: 1, // 1 review session per day for free users
         adaptive_practice: 2, // 2 adaptive practice sessions for free users
         leech_treatment: 0, // No leech treatment for free users (premium only)
         quick_context: 10, // 10 uses per day for free users as requested
@@ -144,7 +141,6 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         textbook_vocabulary: -1, // Unlimited textbook vocabulary
         word_learning_session: -1, // Unlimited learning sessions for premium
         kanji_mastery: -1, // Unlimited kanji mastery for premium
-        daily_reviews: -1, // Unlimited review sessions for premium
         adaptive_practice: -1, // Unlimited adaptive practice for premium
         leech_treatment: -1, // Unlimited leech treatment for premium
         quick_context: -1, // Unlimited for premium as requested
@@ -191,7 +187,6 @@ export const ENTITLEMENT_RULES: EntitlementRule[] = [
         textbook_vocabulary: -1, // Unlimited textbook vocabulary
         word_learning_session: -1, // Unlimited learning sessions for premium
         kanji_mastery: -1, // Unlimited kanji mastery for premium
-        daily_reviews: -1, // Unlimited review sessions for premium
         adaptive_practice: -1, // Unlimited adaptive practice for premium
         leech_treatment: -1, // Unlimited leech treatment for premium
         quick_context: -1, // Unlimited for premium as requested

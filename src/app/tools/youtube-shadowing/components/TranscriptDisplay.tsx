@@ -157,8 +157,12 @@ export default function TranscriptDisplay({
             hasFormattedVersion: !!cachedTranscript.formattedTranscript
           };
           
+          // Use AI-formatted transcript if available, otherwise fall back to raw
+          const transcriptToUse = cachedTranscript.formattedTranscript || cachedTranscript.transcript;
+          console.log(`[TRANSCRIPT-CACHE] Using ${cachedTranscript.formattedTranscript ? 'AI-formatted' : 'raw'} transcript with ${transcriptToUse.length} segments`);
+          
           setStatus('completed');
-          onTranscriptLoaded(cachedTranscript.transcript, cachedTranscript.videoTitle, enrichedMetadata);
+          onTranscriptLoaded(transcriptToUse, cachedTranscript.videoTitle, enrichedMetadata);
           window.removeEventListener('error', handleError);
           return;
         } else {
@@ -196,7 +200,7 @@ export default function TranscriptDisplay({
 
               }
               
-              // Save to cache for future use
+              // Save to cache for future use - include both raw and formatted transcripts
 
               await TranscriptCacheManager.saveTranscriptToCache({
                 contentId,
@@ -204,6 +208,7 @@ export default function TranscriptDisplay({
                 videoUrl: videoUrl,
                 videoTitle: data.videoTitle || 'Untitled',
                 transcript: data.transcript,
+                formattedTranscript: data.formattedTranscript,  // Add the AI-formatted version
                 language: data.language || 'ja',
                 duration: data.duration,
                 userId: user?.uid,
@@ -218,8 +223,12 @@ export default function TranscriptDisplay({
                 hasFormattedVersion: data.hasFormattedVersion
               };
               
+              // Use AI-formatted transcript if available, otherwise fall back to raw
+              const transcriptToUse = data.formattedTranscript || data.transcript;
+              console.log(`[TRANSCRIPT] Using ${data.formattedTranscript ? 'AI-formatted' : 'raw'} transcript with ${transcriptToUse.length} segments`);
+              
               setStatus('completed');
-              onTranscriptLoaded(data.transcript, data.videoTitle, enrichedMetadata);
+              onTranscriptLoaded(transcriptToUse, data.videoTitle, enrichedMetadata);
               return;
             } else {
               // No captions found
@@ -416,6 +425,7 @@ export default function TranscriptDisplay({
               `YouTube Video` : 
               (fileInfo?.name || 'Untitled'),
             transcript: data.transcript,
+            formattedTranscript: data.formattedTranscript,  // Add the AI-formatted version for audio/video files too
             language: data.language || 'ja',
             userId: user.uid,
             metadata

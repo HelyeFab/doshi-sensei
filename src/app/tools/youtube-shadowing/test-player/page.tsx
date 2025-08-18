@@ -42,16 +42,23 @@ export default function TestPlayerPage() {
     setError('');
     
     try {
+      // Add forceRegenerate parameter to bypass cache and get fresh AI-formatted transcript
       const response = await fetch('/api/youtube/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: videoUrl })
+        body: JSON.stringify({ 
+          url: videoUrl,
+          forceRegenerate: true  // Force fresh extraction to get AI-formatted version
+        })
       });
       
       const data = await response.json();
       
       if (data.success && data.transcript) {
-        setTranscript(data.transcript);
+        // Use AI-formatted transcript if available, otherwise fall back to raw
+        const transcriptToUse = data.formattedTranscript || data.transcript;
+        console.log(`[TEST-PLAYER] Using ${data.formattedTranscript ? 'AI-formatted' : 'raw'} transcript with ${transcriptToUse.length} segments`);
+        setTranscript(transcriptToUse);
       } else {
         setError(data.error || 'Failed to extract transcript');
       }
@@ -145,14 +152,24 @@ export default function TestPlayerPage() {
             </div>
             
             <HighFidelityShadowingPlayer
-              videoId={videoId}
-              transcript={transcript}
-              onProgress={(time) => {
-                // You can track progress here for analytics
-                console.log('Progress:', time);
+              session={{
+                videoUrl: videoUrl,
+                transcript: transcript,
+                currentLineIndex: 0
+              }}
+              onLineChange={(index) => {
+                // Track line changes if needed
+                console.log('Line changed to:', index);
               }}
               showFurigana={true}
             />
+            
+            {/* Transcript Version Indicator */}
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-700">
+                <span className="font-semibold">Transcript Version:</span> Check console for AI-formatted vs raw indicator
+              </p>
+            </div>
             
             {/* Feature Highlights */}
             <div className="mt-6 p-4 bg-blue-50 rounded-lg">

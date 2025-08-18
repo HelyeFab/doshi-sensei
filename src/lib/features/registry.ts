@@ -481,25 +481,6 @@ export const FEATURE_REGISTRY: FeatureRegistry = {
     status: 'active'
   },
 
-  'daily_reviews': {
-    id: 'daily_reviews',
-    name: 'Daily Reviews',
-    description: 'Daily SRS reviews for kanji mastery',
-    category: 'learning',
-    icon: '📅',
-    limitType: 'daily',
-    requiresAuth: false,
-    requiresSubscription: false,
-    status: 'active',
-    metadata: {
-      maxReviewsPerSession: { guest: 20, free: 50, premium: -1 },
-      features: {
-        guest: ['basic_srs'],
-        free: ['basic_srs', 'progress_tracking'],
-        premium: ['basic_srs', 'progress_tracking', 'adaptive_intervals', 'cloud_sync']
-      }
-    }
-  },
 
   'adaptive_practice': {
     id: 'adaptive_practice',

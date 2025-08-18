@@ -9,7 +9,6 @@ import { SaveWordModal } from '@/components/drill/SaveWordModal';
 import { JapaneseWord } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import SlideUpModal from '@/components/SlideUpModal';
-import { useKanjiReviews } from '@/hooks/useKanjiReviews';
 import { LoginPromptModal } from '@/components/LoginPromptModal';
 
 interface KanjiModalProps {
@@ -36,15 +35,6 @@ export default function KanjiModal({
   const { speak: speakKanji, isLoading: isKanjiTTSLoading, isPlaying: isKanjiPlaying } = useKanjiTTS();
   const { speak: speakSentence, state: { isLoading: isSentenceTTSLoading, isPlaying: isSentencePlaying } } = useTTS();
   const { user } = useAuth();
-  const { 
-    isInReviews, 
-    addToReviews, 
-    removeFromReviews, 
-    loading: reviewsLoading,
-    showLoginModal: showLoginModalForReviews,
-    setShowLoginModal: setShowLoginModalForReviews
-  } = useKanjiReviews();
-  const kanjiIsInReviews = kanji ? isInReviews(kanji.char) : false;
 
   // Process examples with furigana when needed
   useEffect(() => {
@@ -295,59 +285,6 @@ export default function KanjiModal({
           
           {/* Action Buttons */}
           <div className="space-y-3">
-            {/* Daily Reviews button */}
-            <button
-              onClick={async () => {
-                if (kanjiIsInReviews) {
-                  await removeFromReviews(kanji.char);
-                } else {
-                  // Convert KanjiItem to Kanji type for the addToReviews function
-                  await addToReviews({
-                    kanji: kanji.char,
-                    meaning: kanji.meaning,
-                    jlpt: `N${kanji.difficulty}` as any, // Approximate JLPT level from difficulty
-                    onyomi: kanji.readings.on,
-                    kunyomi: kanji.readings.kun,
-                    strokes: 0, // Not available in this component
-                    radical: ''
-                  });
-                }
-              }}
-              disabled={reviewsLoading}
-              className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] ${
-                kanjiIsInReviews
-                  ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-700 dark:text-blue-300 hover:from-blue-500/30 hover:to-indigo-500/30'
-                  : 'bg-gradient-to-r from-purple-500/20 to-indigo-500/20 text-purple-700 dark:text-purple-300 hover:from-purple-500/30 hover:to-indigo-500/30'
-              } ${reviewsLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              {reviewsLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {kanjiIsInReviews ? 'Removing...' : 'Adding...'}
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  {kanjiIsInReviews ? (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      In Daily Reviews
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      Add to Daily Reviews
-                    </>
-                  )}
-                </span>
-              )}
-            </button>
             
             {/* Mark as learned button */}
             <button
@@ -397,13 +334,6 @@ export default function KanjiModal({
         />
       )}
 
-      {/* Login Modal for Daily Reviews */}
-      <LoginPromptModal
-        isOpen={showLoginModalForReviews}
-        onClose={() => setShowLoginModalForReviews(false)}
-        message="Please log in to add kanji to Daily Reviews"
-        feature="daily_reviews"
-      />
     </>
   );
 }

@@ -50,6 +50,7 @@ export class PrecisionTimeManager {
    */
   startSync(): void {
     if (this.animationFrameId !== null) return;
+    console.log('[TIME-MANAGER] Starting sync loop');
     this.syncLoop();
   }
   
@@ -73,6 +74,11 @@ export class PrecisionTimeManager {
     }
     
     const currentTime = this.playerGetTime();
+    
+    // Log every second for debugging
+    if (Math.floor(currentTime) !== Math.floor(this.lastSyncTime)) {
+      console.log(`[TIME-MANAGER] Current time: ${currentTime.toFixed(2)}`);
+    }
     
     // Only trigger callbacks if time changed significantly (avoid micro-updates)
     if (Math.abs(currentTime - this.lastSyncTime) >= this.SEEK_PRECISION) {
@@ -133,7 +139,11 @@ export class PrecisionTimeManager {
    * Check if current time reached segment end (with precision tolerance)
    */
   isSegmentComplete(currentTime: number, endTime: number): boolean {
-    return currentTime >= (endTime - this.SYNC_THRESHOLD);
+    const result = currentTime >= (endTime - this.SYNC_THRESHOLD);
+    if (result) {
+      console.log(`[TIME-MANAGER] Segment complete check: current=${currentTime.toFixed(3)}, end=${endTime.toFixed(3)}, threshold=${this.SYNC_THRESHOLD}, COMPLETE=${result}`);
+    }
+    return result;
   }
   
   /**

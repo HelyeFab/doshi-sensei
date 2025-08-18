@@ -170,9 +170,50 @@ export class FirebasePracticeHistoryStorage {
     const docRef = doc(db, COLLECTION_NAME, docId);
     
     try {
-      await deleteDoc(docRef);
-    } catch (error) {
+      // Ensure authentication is ready
+      const currentUser = await waitForAuth();
+      
+      if (!currentUser || currentUser.uid !== this.userId) {
+        console.error('Authentication mismatch during delete!', {
+          currentUserId: currentUser?.uid,
+          expectedUserId: this.userId
+        });
+        throw new Error('Authentication mismatch - cannot delete from Firebase');
+      }
+      
+      // Get fresh token to ensure auth is current
+      await getFreshIdToken();
+      
+      // First, verify the document exists and belongs to the user
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        
+        // Verify ownership before attempting delete
+        if (data.userId !== this.userId) {
+          console.error('Ownership mismatch!', {
+            documentUserId: data.userId,
+            currentUserId: this.userId
+          });
+          throw new Error('Cannot delete practice history item - ownership mismatch');
+        }
+        
+        // Now safe to delete
+        await deleteDoc(docRef);
+        console.log(`Successfully deleted practice history for video: ${videoId}`);
+      } else {
+        console.log(`Practice history item not found for video: ${videoId}, nothing to delete`);
+      }
+    } catch (error: any) {
       console.error('Error deleting practice history item:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      
+      if (error.code === 'permission-denied') {
+        console.error('Permission denied - check Firestore rules and authentication');
+      }
+      
       throw error;
     }
   }

@@ -5,7 +5,6 @@ import { Kanji } from '@/types';
 import { KanjiTTSButton } from '@/components/ui/TTSButton';
 import StrokeOrderModal from './StrokeOrderModal';
 import SlideUpModal from '@/components/SlideUpModal';
-import { useKanjiReviews } from '@/hooks/useKanjiReviews';
 import { LoginPromptModal } from '@/components/LoginPromptModal';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -32,15 +31,6 @@ export default function KanjiModal({
   const [showStudyDropdown, setShowStudyDropdown] = useState(false);
   const [showStrokeOrder, setShowStrokeOrder] = useState(false);
   const [showLoginModalForSave, setShowLoginModalForSave] = useState(false);
-  const { 
-    isInReviews, 
-    addToReviews, 
-    removeFromReviews, 
-    loading: reviewsLoading,
-    showLoginModal: showLoginModalForReviews,
-    setShowLoginModal: setShowLoginModalForReviews
-  } = useKanjiReviews();
-  const kanjiIsInReviews = isInReviews(kanji.kanji);
   // TTS functionality now handled by KanjiTTSButton component
 
   return (
@@ -208,55 +198,6 @@ export default function KanjiModal({
                     </svg>
                   </button>
                 )}
-                
-                {/* Daily Reviews Option */}
-                <button
-                  onClick={async () => {
-                    if (kanjiIsInReviews) {
-                      await removeFromReviews(kanji.kanji);
-                    } else {
-                      await addToReviews(kanji);
-                    }
-                  }}
-                  disabled={reviewsLoading}
-                  className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${
-                    kanjiIsInReviews
-                      ? 'bg-primary/10 text-primary'
-                      : 'hover:bg-muted/50'
-                  } ${reviewsLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                      kanjiIsInReviews
-                        ? 'bg-primary border-primary'
-                        : 'border-primary/60 bg-background'
-                    }`}>
-                      {kanjiIsInReviews && (
-                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="text-left">
-                      <div className="text-sm font-medium">
-                        {kanjiIsInReviews ? 'In Daily Reviews' : 'Add to Daily Reviews'}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {kanjiIsInReviews 
-                          ? 'This kanji is in your review queue' 
-                          : 'Practice with spaced repetition'}
-                      </div>
-                    </div>
-                  </div>
-                  <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {kanjiIsInReviews ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    )}
-                  </svg>
-                </button>
-                
                 {/* Save to Lists Option */}
                 <button
                   onClick={() => {
@@ -300,13 +241,6 @@ export default function KanjiModal({
       meaning={kanji.meaning}
     />
 
-    {/* Login Modal for Daily Reviews */}
-    <LoginPromptModal
-      isOpen={showLoginModalForReviews}
-      onClose={() => setShowLoginModalForReviews(false)}
-      message="Please log in to add kanji to Daily Reviews"
-      feature="daily_reviews"
-    />
 
     {/* Login Modal for Save to Lists */}
     <LoginPromptModal

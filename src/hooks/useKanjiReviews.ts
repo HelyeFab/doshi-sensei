@@ -7,7 +7,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 import { reviewQueueService } from '@/services/kanji-mastery/reviewQueueService';
-import { dataSyncService } from '@/services/kanji-mastery/dataSyncService';
+import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { Kanji } from '@/types';
 
 interface UseKanjiReviewsReturn {
@@ -33,9 +34,18 @@ export function useKanjiReviews(): UseKanjiReviewsReturn {
       if (!user?.uid) return;
       
       try {
-        // Get all kanji currently in the review system
-        const existingCards = await dataSyncService.getUserCards(user.uid);
-        const kanjiSet = new Set(existingCards.map(card => card.char));
+        // Get all kanji currently in the review system from Firestore
+        const progressRef = collection(db, 'users', user.uid, 'kanjiProgress');
+        const snapshot = await getDocs(progressRef);
+        
+        const kanjiSet = new Set<string>();
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.kanjiChar) {
+            kanjiSet.add(data.kanjiChar);
+          }
+        });
+        
         setKanjiInReviews(kanjiSet);
       } catch (error) {
         console.error('Failed to load existing kanji:', error);
@@ -112,8 +122,10 @@ export function useKanjiReviews(): UseKanjiReviewsReturn {
 
     setLoading(true);
     try {
-      // Remove from the review system
-      await dataSyncService.deleteCard(user.uid, kanjiChar);
+      // Remove from the review system - delete the progress document
+      const progressId = `${user.uid}_${kanjiChar}`;
+      const progressRef = doc(db, 'users', user.uid, 'kanjiProgress', progressId);
+      await deleteDoc(progressRef);
 
       // Update local state
       setKanjiInReviews(prev => {

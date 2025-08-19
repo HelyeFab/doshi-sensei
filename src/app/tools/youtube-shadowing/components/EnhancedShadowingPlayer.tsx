@@ -11,6 +11,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 import { AIExplanationTrigger } from '@/components/AIExplanation';
 import { generateFuriganaWithCache } from '@/utils/furigana';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GrammarHighlightedText, GrammarLegend } from '@/components/reading/GrammarHighlightedText';
 import { 
   PrecisionTimeManager, TimeSegment, ABRepeatConfig 
 } from '@/utils/precisionTimeManager';
@@ -29,6 +30,10 @@ interface EnhancedShadowingPlayerProps {
   showVideo?: boolean;
   showFurigana?: boolean;
   onToggleFurigana?: () => void;
+  showGrammar?: boolean;
+  onToggleGrammar?: () => void;
+  grammarMode?: 'none' | 'all' | 'content' | 'grammar';
+  onGrammarModeChange?: (mode: 'none' | 'all' | 'content' | 'grammar') => void;
   className?: string;
 }
 
@@ -38,6 +43,10 @@ export default function EnhancedShadowingPlayer({
   showVideo = true,
   showFurigana = true,
   onToggleFurigana,
+  showGrammar = false,
+  onToggleGrammar,
+  grammarMode = 'content',
+  onGrammarModeChange,
   className 
 }: EnhancedShadowingPlayerProps) {
   const { user } = useAuth();
@@ -63,6 +72,7 @@ export default function EnhancedShadowingPlayer({
   const [isInRepeatMode, setIsInRepeatMode] = useState(false);
   const [isHandlingRepeatEnd, setIsHandlingRepeatEnd] = useState(false);
   const [useFormattedTranscript, setUseFormattedTranscript] = useState(true); // Always prefer AI transcripts
+  const [showGrammarLegend, setShowGrammarLegend] = useState(false);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   
   // Precision Time Management
@@ -1119,6 +1129,85 @@ export default function EnhancedShadowingPlayer({
                       />
                     </button>
                   </div>
+
+                  {/* Grammar Highlighting Toggle */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex-1 pr-3">
+                      <label className="text-sm font-medium text-foreground block">Grammar Colors</label>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Highlight parts of speech with colors
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => onToggleGrammar?.()}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        showGrammar ? 'bg-primary' : 'bg-muted'
+                      }`}
+                      role="switch"
+                      aria-checked={showGrammar}
+                      aria-label="Toggle grammar highlighting"
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          showGrammar ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Grammar Mode Selection */}
+                  {showGrammar && (
+                    <div className="mb-3 pl-3">
+                      <label className="text-xs text-muted-foreground block mb-2">Highlight Mode:</label>
+                      <div className="grid grid-cols-2 gap-1">
+                        <button
+                          onClick={() => onGrammarModeChange?.('all')}
+                          className={`px-2 py-1 rounded text-xs ${
+                            grammarMode === 'all'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                        >
+                          All Words
+                        </button>
+                        <button
+                          onClick={() => onGrammarModeChange?.('content')}
+                          className={`px-2 py-1 rounded text-xs ${
+                            grammarMode === 'content'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                        >
+                          Content Words
+                        </button>
+                        <button
+                          onClick={() => onGrammarModeChange?.('grammar')}
+                          className={`px-2 py-1 rounded text-xs ${
+                            grammarMode === 'grammar'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                        >
+                          Grammar Only
+                        </button>
+                        <button
+                          onClick={() => setShowGrammarLegend(!showGrammarLegend)}
+                          className={`px-2 py-1 rounded text-xs col-span-2 ${
+                            showGrammarLegend
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                          }`}
+                        >
+                          {showGrammarLegend ? 'Hide' : 'Show'} Legend
+                        </button>
+                      </div>
+                      {showGrammarLegend && (
+                        <div className="mt-3 p-2 bg-muted/30 rounded">
+                          <GrammarLegend />
+                        </div>
+                      )}
+                    </div>
+                  )}
                   
                   {/* AI-Formatted Transcript Toggle - Always visible when available */}
                   {hasFormattedTranscript && (
@@ -1215,14 +1304,25 @@ export default function EnhancedShadowingPlayer({
         
         <div className="text-center mb-6">
           <div className="py-8 px-4">
-            <p 
-              className="text-2xl font-medium text-foreground japanese-text"
-              dangerouslySetInnerHTML={{ 
-                __html: showFurigana 
-                  ? currentLineFurigana 
-                  : cleanRomaji(currentLine?.text || '')
-              }}
-            />
+            {showGrammar ? (
+              <div className="text-2xl font-medium text-foreground">
+                <GrammarHighlightedText
+                  text={cleanRomaji(currentLine?.text || '')}
+                  highlightMode={grammarMode}
+                  showFurigana={showFurigana}
+                  className="text-2xl"
+                />
+              </div>
+            ) : (
+              <p 
+                className="text-2xl font-medium text-foreground japanese-text"
+                dangerouslySetInnerHTML={{ 
+                  __html: showFurigana 
+                    ? currentLineFurigana 
+                    : cleanRomaji(currentLine?.text || '')
+                }}
+              />
+            )}
           </div>
           <p className="text-sm text-muted-foreground">
             Line {session.currentLineIndex + 1} of {activeTranscript.length}
@@ -1335,12 +1435,21 @@ export default function EnhancedShadowingPlayer({
                 <span className="text-xs text-gray-500 mt-1">
                   {timeManagerRef.current.formatTime(segment.startTime)}
                 </span>
-                <p className={cn(
+                <div className={cn(
                   "flex-1 leading-relaxed transition-all",
                   activeSegmentId === segment.id ? "text-gray-900 font-medium" : "text-gray-700"
                 )}>
-                  {cleanRomaji(segment.text)}
-                </p>
+                  {showGrammar ? (
+                    <GrammarHighlightedText
+                      text={cleanRomaji(segment.text)}
+                      highlightMode={grammarMode}
+                      showFurigana={showFurigana}
+                      className="text-base"
+                    />
+                  ) : (
+                    <p>{cleanRomaji(segment.text)}</p>
+                  )}
+                </div>
               </div>
             </motion.div>
           ))}

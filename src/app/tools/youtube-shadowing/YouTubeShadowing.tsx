@@ -20,8 +20,6 @@ import ShadowingPlayer from './components/ShadowingPlayer';
 import YouTubePlayer from './components/YouTubePlayer';
 import EditableTranscriptReader from './components/EditableTranscriptReader';
 import EnhancedShadowingPlayer from './components/EnhancedShadowingPlayer';
-import AudioUploader from './components/AudioUploader';
-import VideoUploader from './components/VideoUploader';
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
 
 const pageStructuredData = {
@@ -73,6 +71,7 @@ export default function YouTubeShadowing() {
   const [error, setError] = useState<string | null>(null);
   const [showFurigana, setShowFurigana] = useState(true);
   const [showGrammar, setShowGrammar] = useState(false);
+  const [grammarMode, setGrammarMode] = useState<'none' | 'all' | 'content' | 'grammar'>('content');
   const [showShadowingMode, setShowShadowingMode] = useState(true);
   const previousUrlsRef = useRef<{ videoUrl?: string; audioUrl?: string }>({});
 
@@ -370,6 +369,34 @@ export default function YouTubeShadowing() {
         title={strings.youtubeShadowing?.title || "YouTube Shadowing"}
       />
       
+      {/* How to use Shadowing */}
+      <div className="px-4 mb-6">
+        <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-xl">🎥</span>
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground mb-3 text-lg">How to Use Shadowing</h3>
+              <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside mb-4">
+                <li>Paste a YouTube URL and click "Extract Audio" to get started</li>
+                <li>Wait for the AI to generate Japanese subtitles (usually 20-30 seconds)</li>
+                <li>Use the player controls to practice: play, pause, and repeat sentences</li>
+                <li>Click on any line to jump to that part of the video</li>
+              </ol>
+              <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
+                <span className="text-base mt-0.5">💡</span>
+                <p className="text-sm text-foreground">
+                  <span className="font-medium">Quick tip:</span> To change playback settings, pause the video first. Settings can't be adjusted during playback.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       {/* Usage Display */}
       {userType !== 'guest' && (
         <div className="px-4 mb-4">
@@ -440,34 +467,6 @@ export default function YouTubeShadowing() {
                 </div>
               </motion.div>
 
-              {/* Popular Videos Button */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.15 }}
-                className="mb-6"
-              >
-                <SmartNavigationLink
-                  href="/popular-videos"
-                  className="block w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
-                  title="Browse Popular Videos"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="text-4xl">🔥</div>
-                      <div>
-                        <h3 className="text-xl font-bold mb-1">Most Popular Videos</h3>
-                        <p className="text-white/80 text-sm">
-                          Skip the wait! Practice with videos already transcribed by the community
-                        </p>
-                      </div>
-                    </div>
-                    <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </SmartNavigationLink>
-              </motion.div>
 
               {/* Input Section */}
               <motion.div
@@ -510,86 +509,6 @@ export default function YouTubeShadowing() {
                 )}
               </motion.div>
 
-              {/* Alternative Upload Options */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                {/* Audio Upload */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="relative"
-                >
-                  <div className="absolute -top-3 left-6 bg-background px-3 z-10">
-                    <span className="text-sm font-medium text-muted-foreground">Or upload audio</span>
-                  </div>
-                  <div className="border-2 border-dashed border-border rounded-2xl p-6 hover:border-primary/50 transition-colors">
-                    <AudioUploader 
-                      onAudioReady={async (audioUrl, title) => {
-                        // Check if user has access to use this feature
-                        const canUse = await checkAndTrack('youtube_shadowing');
-                        
-                        if (!canUse) {
-                          // Access denied - modal will be shown automatically
-                          // Clean up the blob URL if created
-                          if (audioUrl.startsWith('blob:')) {
-                            URL.revokeObjectURL(audioUrl);
-                          }
-                          return;
-                        }
-                        
-                        updateSession({
-                          videoUrl: '',
-                          audioUrl,
-                          videoTitle: title,
-                          transcript: [],
-                          currentLineIndex: 0
-                        });
-                      }}
-                    />
-                  </div>
-                </motion.div>
-
-                {/* Video Upload */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="relative"
-                >
-                  <div className="absolute -top-3 left-6 bg-background px-3 z-10">
-                    <span className="text-sm font-medium text-muted-foreground">Or upload video</span>
-                  </div>
-                  <div className="border-2 border-dashed border-border rounded-2xl p-6 hover:border-primary/50 transition-colors">
-                    <VideoUploader 
-                      onVideoReady={async (videoUrl, audioUrl, title, fileInfo) => {
-                        // Check if user has access to use this feature
-                        const canUse = await checkAndTrack('youtube_shadowing');
-                        
-                        if (!canUse) {
-                          // Access denied - modal will be shown automatically
-                          // Clean up the blob URLs if created
-                          if (videoUrl.startsWith('blob:')) {
-                            URL.revokeObjectURL(videoUrl);
-                          }
-                          if (audioUrl?.startsWith('blob:')) {
-                            URL.revokeObjectURL(audioUrl);
-                          }
-                          return;
-                        }
-                        
-                        updateSession({
-                          videoUrl,
-                          audioUrl,
-                          videoTitle: title,
-                          transcript: [],
-                          currentLineIndex: 0,
-                          fileInfo
-                        });
-                      }}
-                    />
-                  </div>
-                </motion.div>
-              </div>
 
               {/* Popular Videos CTA */}
               <motion.div
@@ -802,6 +721,10 @@ export default function YouTubeShadowing() {
                         showVideo={true}
                         showFurigana={showFurigana}
                         onToggleFurigana={() => setShowFurigana(!showFurigana)}
+                        showGrammar={showGrammar}
+                        onToggleGrammar={() => setShowGrammar(!showGrammar)}
+                        grammarMode={grammarMode}
+                        onGrammarModeChange={setGrammarMode}
                       />
                     </motion.div>
                   )}

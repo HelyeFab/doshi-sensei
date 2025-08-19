@@ -23,6 +23,15 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
   const { settings } = useSettings();
   const { showError, ErrorNotificationDialog } = useErrorNotification();
 
+  // Safety check for undefined item
+  if (!item) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
   // Reset card state when item changes (moving to next card)
   useEffect(() => {
     setRevealed(false);
@@ -46,12 +55,20 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
 
       // Determine text to speak based on item type and settings
       let textToSpeak = '';
-      if (item.itemType === 'vocabulary' || item.itemType === 'kanji') {
-        textToSpeak = item.reading || item.text; // Use reading (kana/onyomi/kunyomi) or the text itself
-      } else if (item.itemType === 'hiragana' || item.itemType === 'katakana') {
-        textToSpeak = item.reading || item.text; // Use romaji or the character itself
+      
+      // Check if it's a LearningItem with itemType
+      if ('itemType' in item) {
+        if (item.itemType === 'vocabulary' || item.itemType === 'kanji') {
+          textToSpeak = item.reading || item.text;
+        } else if (item.itemType === 'hiragana' || item.itemType === 'katakana') {
+          textToSpeak = item.reading || item.text;
+        } else {
+          textToSpeak = item.text;
+        }
       } else {
-        textToSpeak = item.text; // Fallback to primary text
+        // It's a VocabularyItem from textbook-vocabulary (no itemType field)
+        // Use 'reading' if available, otherwise use 'japanese' field
+        textToSpeak = (item as any).reading || (item as any).japanese || (item as any).text || '';
       }
 
       // TTSManager automatically uses the best source in this order:
@@ -85,16 +102,23 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
 
   // Memoize the display of different item types to avoid re-renders
   const renderItemContent = useMemo(() => {
+    // Handle both LearningItem and VocabularyItem types
+    const text = (item as any).text || (item as any).japanese || '';
+    const reading = item.reading || '';
+    const meaning = item.meaning || '';
+    const jlptLevel = (item as any).jlptLevel;
+    const partOfSpeech = (item as any).partOfSpeech;
+    
     // Determine if furigana should be shown
-    const showFurigana = settings.showFurigana && item.reading && item.reading !== item.text;
+    const showFurigana = settings.showFurigana && reading && reading !== text;
 
     return (
       <>
         {/* JLPT Level Badge - Top Left (only for applicable item types) */}
-        {item.itemType === 'vocabulary' && 'jlptLevel' in item && item.jlptLevel && (
+        {jlptLevel && (
           <div className="absolute top-4 left-4">
             <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full">
-              {item.jlptLevel}
+              {jlptLevel}
             </span>
           </div>
         )}
@@ -105,24 +129,24 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
             <div className="text-4xl md:text-5xl font-bold text-foreground japanese-text font-ja" data-quickcontext="true">
               {showFurigana ? (
                 <ruby>
-                  {item.text}
-                  <rt className="text-lg text-muted-foreground">{item.reading}</rt>
+                  {text}
+                  <rt className="text-lg text-muted-foreground">{reading}</rt>
                 </ruby>
               ) : (
-                item.text
+                text
               )}
             </div>
 
             {/* Show reading separately if not showing furigana */}
-            {!showFurigana && item.reading && (
-              <div className="text-xl text-muted-foreground japanese-text font-ja" data-quickcontext="true">{item.reading}</div>
+            {!showFurigana && reading && (
+              <div className="text-xl text-muted-foreground japanese-text font-ja" data-quickcontext="true">{reading}</div>
             )}
           </div>
 
           {/* Part of Speech (conditionally shown) */}
-          {mode === 'learn' && item.itemType === 'vocabulary' && 'partOfSpeech' in item && Array.isArray(item.partOfSpeech) && item.partOfSpeech.length > 0 && (
+          {mode === 'learn' && partOfSpeech && Array.isArray(partOfSpeech) && partOfSpeech.length > 0 && (
             <div className="flex gap-2 justify-center">
-              {item.partOfSpeech.map((pos, idx) => (
+              {partOfSpeech.map((pos, idx) => (
                 <span
                   key={idx}
                   className="px-2 py-1 bg-muted text-muted-foreground text-sm rounded-md"
@@ -134,7 +158,7 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
           )}
 
           {/* Hint Button (conditionally shown) */}
-          {mode === 'learn' && !showHint && item.meaning && (
+          {mode === 'learn' && !showHint && meaning && (
             <button
               onClick={() => setShowHint(true)}
               className="text-sm text-muted-foreground hover:text-foreground underline"
@@ -144,13 +168,13 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
           )}
 
           {/* Hint Display */}
-          {showHint && item.meaning && (
+          {showHint && meaning && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               className="text-muted-foreground italic"
             >
-              Hint: {item.meaning.substring(0, Math.min(3, item.meaning.length))}...
+              Hint: {meaning.substring(0, Math.min(3, meaning.length))}...
             </motion.div>
           )}
 
@@ -167,12 +191,16 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
   }, [item, revealed, showHint, mode, settings, isPlaying, handlePlayAudio]); // Dependencies for memoization
 
   const renderAnswerContent = useMemo(() => {
+    // Handle both LearningItem and VocabularyItem types
+    const meaning = item.meaning || '';
+    const examples = (item as any).examples;
+    
     return (
       <div className="space-y-6">
         {/* Meaning */}
         <div className="text-center">
           <div className="text-3xl font-bold text-foreground mb-2">
-            {item.meaning}
+            {meaning}
           </div>
 
           {/* Audio Button */}
@@ -190,12 +218,12 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
         </div>
 
         {/* Example Sentences (conditionally shown) */}
-        {'examples' in item && Array.isArray(item.examples) && item.examples.length > 0 && (
+        {examples && Array.isArray(examples) && examples.length > 0 && (
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-muted-foreground text-center">
-              Example{item.examples.length > 1 ? 's' : ''}:
+              Example{examples.length > 1 ? 's' : ''}:
             </h4>
-            {item.examples.map((ex, idx) => (
+            {examples.map((ex, idx) => (
               <div key={idx} className="bg-muted/50 rounded-lg p-4 space-y-2">
                 <div className="text-foreground font-medium">
                   {/* Furigana for examples */}

@@ -1,24 +1,37 @@
 import { NextResponse } from 'next/server';
-import kanjiData3 from '@kanji_data/jlpt_3/jlpt_3.json';
-import kanjiData3_1 from '@kanji_data/jlp_3_1/jlpt_3_1.json';
-import kanjiData3_2 from '@kanji_data/jlpt_3_2/jlpt_3_2.json';
-import kanjiData3_3 from '@kanji_data/jlpt_3_3/jlpt_3_3.json';
+import path from 'path';
+import fs from 'fs';
 
 export async function GET() {
   try {
     const allKanjiData: any[] = [];
     
-    if (Array.isArray(kanjiData3)) {
-      allKanjiData.push(...kanjiData3);
+    // List of all JLPT 3 data directories (fixed typo: jlp_3_1 -> jlpt_3_1)
+    const dataDirs = [
+      'jlpt_3',
+      'jlpt_3_1',
+      'jlpt_3_2',
+      'jlpt_3_3'
+    ];
+    
+    // Also check for the typo version in case the directory exists with that name
+    const typoDir = 'jlp_3_1';
+    const typoPath = path.join(process.cwd(), 'kanji_data', typoDir, 'jlpt_3_1.json');
+    if (fs.existsSync(typoPath)) {
+      dataDirs.push(typoDir);
     }
-    if (Array.isArray(kanjiData3_1)) {
-      allKanjiData.push(...kanjiData3_1);
-    }
-    if (Array.isArray(kanjiData3_2)) {
-      allKanjiData.push(...kanjiData3_2);
-    }
-    if (Array.isArray(kanjiData3_3)) {
-      allKanjiData.push(...kanjiData3_3);
+    
+    // Read each JSON file
+    for (const dir of dataDirs) {
+      const fileName = dir === 'jlp_3_1' ? 'jlpt_3_1.json' : `${dir}.json`;
+      const dataPath = path.join(process.cwd(), 'kanji_data', dir, fileName);
+      if (fs.existsSync(dataPath)) {
+        const fileContents = fs.readFileSync(dataPath, 'utf8');
+        const kanjiData = JSON.parse(fileContents);
+        if (Array.isArray(kanjiData)) {
+          allKanjiData.push(...kanjiData);
+        }
+      }
     }
 
     return NextResponse.json(allKanjiData);

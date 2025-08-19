@@ -60,7 +60,6 @@ export default function HiraganaPage() {
   const { isPremium, userType } = useSubscription2();
   const strings = useStrings();
   const { showNotification } = useNotification();
-  const [showInstructions, setShowInstructions] = useState(false);
 
   // Hiragana states
   const [selectedHiragana, setSelectedHiragana] = useState<Set<string>>(new Set());
@@ -190,130 +189,6 @@ export default function HiraganaPage() {
             {strings.practice?.kanaIntro || "Learn the foundational Japanese writing system. Hiragana is used for native Japanese words and grammar particles."}
           </p>
           
-          {/* How to Use Section */}
-          <div className="mb-8 text-center">
-            <button
-              onClick={() => setShowInstructions(!showInstructions)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary/20 transition-all font-medium"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>How to use Hiragana Chart</span>
-              <svg
-                className={`w-4 h-4 transition-transform ${
-                  showInstructions ? "rotate-180" : ""
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {showInstructions && (
-              <div className="mt-4 p-5 bg-card border border-border rounded-lg text-left max-w-3xl mx-auto">
-                <h3 className="text-lg font-semibold text-foreground mb-4">🎌 Master Hiragana - The Foundation of Japanese Writing</h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-foreground mb-2">📖 What is Hiragana?</h4>
-                    <p className="text-muted-foreground text-sm">
-                      Hiragana (ひらがな) is the fundamental Japanese syllabary consisting of 46 basic characters plus variations. 
-                      It's used for native Japanese words, grammatical particles (は, を, に), verb endings, and words without kanji. 
-                      Every Japanese sentence contains hiragana, making it essential for reading. Unlike English letters that represent 
-                      sounds, each hiragana represents a complete syllable (ka, ki, ku, ke, ko).
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-foreground mb-2">🎯 Interactive Chart Features</h4>
-                    <p className="text-muted-foreground text-sm">
-                      <strong>Audio Pronunciation:</strong> Tap any character to hear native pronunciation<br/>
-                      <strong>Selection Mode:</strong> Click the purple corner checkbox to select characters for practice<br/>
-                      <strong>Row Selection:</strong> Select entire rows (a-row, ka-row, etc.) for systematic learning<br/>
-                      <strong>Romaji Toggle:</strong> Show/hide romanization to test your memory<br/>
-                      <strong>Visual Memory:</strong> Characters are color-coded by row for pattern recognition
-                    </p>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">📚 Study Modes</h4>
-                      <p className="text-muted-foreground text-sm">
-                        <strong>Flashcard Study:</strong> Practice selected characters with flip cards<br/>
-                        <strong>Kana Drop Game:</strong> Catch falling characters in this fun arcade game<br/>
-                        <strong>Writing Practice:</strong> Learn stroke order for proper character formation<br/>
-                        <strong>Recognition Quiz:</strong> Test your ability to identify characters
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">🎓 Learning Path</h4>
-                      <p className="text-muted-foreground text-sm">
-                        <strong>Week 1:</strong> Master the vowels (あいうえお) and k-row<br/>
-                        <strong>Week 2:</strong> Add s-row and t-row (さしすせそ, たちつてと)<br/>
-                        <strong>Week 3:</strong> Learn n-row and h-row<br/>
-                        <strong>Week 4:</strong> Complete remaining rows and dakuten marks
-                      </p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-foreground mb-2">✨ Special Characters</h4>
-                    <p className="text-muted-foreground text-sm">
-                      <strong>Dakuten (゛):</strong> Adds voice to consonants (か→が, し→じ)<br/>
-                      <strong>Handakuten (゜):</strong> Changes h-sounds to p-sounds (は→ぱ)<br/>
-                      <strong>Small characters:</strong> ゃ, ゅ, ょ combine with i-column for blended sounds (きゃ, きゅ, きょ)<br/>
-                      <strong>Small つ:</strong> Indicates a pause or doubles the following consonant<br/>
-                      <strong>Particles:</strong> は (wa), を (wo), へ (e) have special pronunciations when used as particles
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-foreground mb-2">💡 Memory Techniques</h4>
-                    <p className="text-muted-foreground text-sm">
-                      Use visual mnemonics - あ looks like an "a"pple with a leaf, き resembles a "key". Group similar 
-                      shapes together (は, ほ, ま share curves). Practice writing to reinforce muscle memory. Create word 
-                      associations - learn ありがとう (thank you) to remember あ, り, が, と, う at once. Use the row 
-                      pattern - each row follows the same vowel order (a, i, u, e, o).
-                    </p>
-                  </div>
-
-                  <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                    <p className="text-sm text-destructive font-medium flex items-center gap-2">
-                      <span className="text-lg">⚠️</span>
-                      <span>
-                        <strong>Common Mistakes:</strong> Don't confuse similar shapes: ね/れ/わ, る/ろ, は/ほ/ま, ぬ/め. 
-                        Watch for は (ha) pronounced "wa" as a particle. Small ゃゅょ change pronunciation completely 
-                        (きや kiya vs きゃ kya). The character を is only used as a particle, pronounced "o" not "wo".
-                      </span>
-                    </p>
-                  </div>
-
-                  <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
-                    <p className="text-sm text-primary font-medium">
-                      💡 <strong>Pro Tips:</strong>
-                    </p>
-                    <ul className="mt-1 ml-5 text-sm text-primary list-disc">
-                      <li>Master 5 characters daily - you'll know all hiragana in 2 weeks</li>
-                      <li>Practice writing while saying the sound aloud</li>
-                      <li>Read children's books or manga with furigana for practice</li>
-                      <li>Use the Kana Drop game for fun reinforcement</li>
-                      <li>Test yourself by turning off romaji after each row</li>
-                      <li>Free users: Unlimited chart access, Premium: Advanced games and tracking</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
           
           <p className="text-muted-foreground mb-8 text-center">
             Tap any character to hear its pronunciation. Click the purple corner to select for practice.

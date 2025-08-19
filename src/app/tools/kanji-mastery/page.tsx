@@ -8,6 +8,7 @@ import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import KanjiProgressSummary from './components/KanjiProgressSummary';
+import ReviewDueAlert from './components/ReviewDueAlert';
 
 const pageStructuredData = {
   "@context": "https://schema.org",
@@ -22,6 +23,7 @@ interface StudySettings {
   jlptLevel: string;
   gradeLevel: string;
   studyMode: 'jlpt' | 'grade' | 'mixed';
+  learningApproach: 'smart' | 'linear';
 }
 
 export default function KanjiMasteryDashboard() {
@@ -31,41 +33,78 @@ export default function KanjiMasteryDashboard() {
   const { feature, access, remaining } = useFeature('kanji_mastery');
   const { isPremium, userType } = useSubscription2();
   
-  const [settings, setSettings] = useState<StudySettings>({
-    sessionSize: 5,
-    jlptLevel: 'N5',
-    gradeLevel: '1',
-    studyMode: 'jlpt'
-  });
-  
-  const [showWarning, setShowWarning] = useState(false);
-  const [showInstructions, setShowInstructions] = useState(false);
-
-  useEffect(() => {
-    // Check if session size exceeds recommended limit
-    setShowWarning(settings.sessionSize > 20);
-  }, [settings.sessionSize]);
-
-  const handleStartSession = async () => {
-    // Check access
-    const canUse = await checkAndTrack('kanji_mastery');
-    if (!canUse) return;
-    
-    // Navigate to learning flow with settings
-    const params = new URLSearchParams({
-      size: settings.sessionSize.toString(),
-      mode: settings.studyMode,
-      level: settings.studyMode === 'jlpt' ? settings.jlptLevel : settings.gradeLevel
-    });
-    
-    router.replace(`/tools/kanji-mastery/learn?${params}`);
-  };
-
-
+  // Define getMaxSessionSize first
   const getMaxSessionSize = () => {
     if (isPremium) return 50;
     if (userType === 'free') return 20;
     return 10; // guest
+  };
+  
+  // Load saved settings from localStorage
+  const [settings, setSettings] = useState<StudySettings>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('kanjiMasterySettings');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {}
+      }
+    }
+    return {
+      sessionSize: 5,
+      jlptLevel: 'N5',
+      gradeLevel: '1',
+      studyMode: 'jlpt',
+      learningApproach: 'smart'
+    };
+  });
+  
+  const [isStarting, setIsStarting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Save settings to localStorage when they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('kanjiMasterySettings', JSON.stringify(settings));
+    }
+  }, [settings]);
+
+  // Validate session size
+  const isSessionSizeValid = settings.sessionSize >= 1 && settings.sessionSize <= getMaxSessionSize();
+  const showSizeWarning = settings.sessionSize > 20;
+  const showSizeError = settings.sessionSize > getMaxSessionSize();
+
+  const handleStartSession = async () => {
+    if (!isSessionSizeValid) {
+      setError('Please select a valid session size');
+      return;
+    }
+
+    setIsStarting(true);
+    setError(null);
+
+    try {
+      // Check access
+      const canUse = await checkAndTrack('kanji_mastery');
+      if (!canUse) {
+        setIsStarting(false);
+        return;
+      }
+      
+      // Navigate to learning flow with settings
+      const params = new URLSearchParams({
+        size: settings.sessionSize.toString(),
+        mode: settings.studyMode,
+        level: settings.studyMode === 'jlpt' ? settings.jlptLevel : settings.gradeLevel,
+        approach: settings.learningApproach
+      });
+      
+      router.replace(`/tools/kanji-mastery/learn?${params}`);
+    } catch (err) {
+      console.error('Failed to start session:', err);
+      setError('Failed to start session. Please try again.');
+      setIsStarting(false);
+    }
   };
 
   return (
@@ -80,7 +119,8 @@ export default function KanjiMasteryDashboard() {
       <div className="mobile-nav-padding">
         {/* Smart Page Header */}
         <SmartPageHeader 
-          title="Kanji Mastery 🎯"
+          title="Kanji Mastery"
+          subtitle="Learn kanji with spaced repetition"
           showBackButton={true}
         />
 
@@ -97,138 +137,137 @@ export default function KanjiMasteryDashboard() {
           </div>
         )}
 
-        {/* How to Use Section */}
-        <div className="px-4 mb-6">
-          <div className="text-center">
-            <button
-              onClick={() => setShowInstructions(!showInstructions)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary/20 transition-all font-medium"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>How to use Kanji Mastery</span>
-              <svg
-                className={`w-4 h-4 transition-transform ${
-                  showInstructions ? "rotate-180" : ""
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {showInstructions && (
-              <div className="mt-4 p-5 bg-card border border-border rounded-lg text-left max-w-3xl mx-auto">
-                <h3 className="text-lg font-semibold text-foreground mb-4">🎯 Master Kanji with Scientific Spaced Repetition</h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-foreground mb-2">📚 Getting Started</h4>
-                    <p className="text-muted-foreground text-sm">
-                      Kanji Mastery uses the FSRS (Free Spaced Repetition Scheduler) algorithm - the same scientifically-proven system used by Anki. 
-                      Start by selecting your study mode (JLPT Level, School Grade, or Mixed), then choose how many kanji to study per session (5-50).
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-foreground mb-2">🎲 How Kanji Are Selected</h4>
-                    <p className="text-muted-foreground text-sm">
-                      <strong>For Learning Sessions (Drill Mode):</strong> The system randomly shuffles all kanji from your selected JLPT level 
-                      or grade and picks the number you requested. This ensures variety and prevents predictable patterns. Each selected kanji 
-                      is then enriched with real example sentences from Tatoeba and JMDict databases.
-                    </p>
-                    <p className="text-muted-foreground text-sm mt-2">
-                      <strong>For Review Sessions (Coming Soon):</strong> The FSRS algorithm will prioritize kanji based on:
-                    </p>
-                    <ul className="mt-1 ml-4 text-muted-foreground text-sm list-disc">
-                      <li>Overdue items (sorted by how overdue they are)</li>
-                      <li>Kanji due within the next 24 hours</li>
-                      <li>Your past performance and retention rate</li>
-                      <li>Optimal spacing intervals to maximize memory retention</li>
-                    </ul>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">🧪 Drill Mode</h4>
-                      <p className="text-muted-foreground text-sm">
-                        Learn new kanji with comprehensive explanations including meanings, on'yomi/kun'yomi readings, 
-                        example sentences from real Japanese sources, and stroke order animations. Mark kanji as "easy" 
-                        when you've mastered them.
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">🎨 Free Study</h4>
-                      <p className="text-muted-foreground text-sm">
-                        Browse and study any kanji at your own pace without tracking. Perfect for reviewing specific 
-                        kanji or exploring characters outside your current level. No session limits apply here.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-foreground mb-2">📊 Progress Tracking</h4>
-                    <p className="text-muted-foreground text-sm">
-                      Your progress is automatically saved and synced (premium users get cloud sync). The system tracks:
-                    </p>
-                    <ul className="mt-2 ml-4 text-muted-foreground text-sm list-disc">
-                      <li>Mastery level (0-100%) for each kanji</li>
-                      <li>Retention rate based on your review performance</li>
-                      <li>Optimal review intervals calculated by FSRS</li>
-                      <li>Study time and session statistics</li>
-                      <li>Separate tracking for recognition, production, and writing modes</li>
-                    </ul>
-                  </div>
-
-                  <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                    <p className="text-sm text-destructive font-medium flex items-center gap-2">
-                      <span className="text-lg">⚠️</span>
-                      <span>
-                        <strong>Optimal Learning:</strong> Studies show that 10-20 kanji per session maximizes retention. 
-                        Studying more than 20 at once significantly reduces how well you remember them. Quality over quantity!
-                      </span>
-                    </p>
-                  </div>
-
-                  <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
-                    <p className="text-sm text-primary font-medium">
-                      💡 <strong>Pro Tips:</strong>
-                    </p>
-                    <ul className="mt-1 ml-5 text-sm text-primary list-disc">
-                      <li>Start with 5-10 kanji per session and gradually increase</li>
-                      <li>Study daily for best results - even 5 minutes helps!</li>
-                      <li>Use the "mark as easy" feature for kanji you already know well</li>
-                      <li>Combine with the Kanji Browser for additional practice</li>
-                      <li>Free users get {userType === 'guest' ? '10' : '20'} kanji per session, Premium users get up to 50</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Main Content */}
         <div className="px-4 space-y-6">
+          {/* Reviews Due Alert */}
+          <ReviewDueAlert />
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-card rounded-lg shadow-sm border border-border p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <span className="text-lg">📚</span>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Session Size</p>
+                  <p className="text-lg font-semibold text-foreground">{settings.sessionSize} kanji</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-card rounded-lg shadow-sm border border-border p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <span className="text-lg">⏱️</span>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Est. Time</p>
+                  <p className="text-lg font-semibold text-foreground">{settings.sessionSize * 2}-{settings.sessionSize * 3} min</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Linear Progress Indicator (only show in linear mode) */}
+          {settings.learningApproach === 'linear' && (
+            <div className="bg-card rounded-lg shadow-sm border border-border p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-foreground">Linear Progress</span>
+                <span className="text-xs text-muted-foreground">
+                  {(() => {
+                    const storageKey = `kanjiLinearProgress_${settings.jlptLevel}`;
+                    const lastIndex = parseInt(
+                      typeof window !== 'undefined' 
+                        ? localStorage.getItem(storageKey) || '0'
+                        : '0'
+                    );
+                    const total = settings.studyMode === 'jlpt' ? 80 : 100; // N5 has 80 kanji
+                    return `${Math.min(lastIndex, total)}/${total} kanji`;
+                  })()}
+                </span>
+              </div>
+              <div className="w-full bg-muted rounded-full h-2">
+                <div 
+                  className="bg-primary h-2 rounded-full transition-all"
+                  style={{
+                    width: `${(() => {
+                      const storageKey = `kanjiLinearProgress_${settings.jlptLevel}`;
+                      const lastIndex = parseInt(
+                        typeof window !== 'undefined' 
+                          ? localStorage.getItem(storageKey) || '0'
+                          : '0'
+                      );
+                      const total = settings.studyMode === 'jlpt' ? 80 : 100;
+                      return Math.min((lastIndex / total) * 100, 100);
+                    })()}%`
+                  }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Study kanji in traditional order. Progress saves automatically.
+              </p>
+            </div>
+          )}
+
           {/* Session Configuration */}
           <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4">
+            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <span>⚙️</span>
               Configure Your Study Session
             </h2>
             
+            {/* Learning Approach Selection */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Learning Approach
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setSettings({ ...settings, learningApproach: 'smart' })}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors border ${
+                    settings.learningApproach === 'smart'
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80 border-border'
+                  }`}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-lg">🧠</span>
+                    <span>Smart Selection</span>
+                    <span className="text-xs opacity-80">Adaptive learning</span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => setSettings({ ...settings, learningApproach: 'linear' })}
+                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors border ${
+                    settings.learningApproach === 'linear'
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80 border-border'
+                  }`}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-lg">📚</span>
+                    <span>Linear Order</span>
+                    <span className="text-xs opacity-80">Sequential study</span>
+                  </div>
+                </button>
+              </div>
+              {settings.learningApproach === 'smart' && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Prioritizes new kanji, due reviews, and areas you struggle with
+                </p>
+              )}
+              {settings.learningApproach === 'linear' && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Study kanji in traditional order, perfect for textbook learning
+                </p>
+              )}
+            </div>
+
             {/* Study Mode Selection */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">
-                Study Mode
+                Study Level
               </label>
               <div className="grid grid-cols-3 gap-2">
                 <button
@@ -317,72 +356,85 @@ export default function KanjiMasteryDashboard() {
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-1">
                 <span>1</span>
+                <span className="font-medium">Recommended: 5-10</span>
                 <span>{getMaxSessionSize()}</span>
               </div>
               
-              {showWarning && (
+              {showSizeError && (
                 <div className="mt-2 p-3 bg-destructive/10 border-2 border-destructive rounded-lg">
                   <p className="text-sm text-destructive font-semibold flex items-center gap-2">
-                    <span className="text-lg">⚠️</span>
+                    <span>❌</span>
+                    <span>Session size exceeds your limit of {getMaxSessionSize()} kanji.</span>
+                  </p>
+                </div>
+              )}
+              
+              {!showSizeError && showSizeWarning && (
+                <div className="mt-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                  <p className="text-sm text-yellow-600 dark:text-yellow-400 flex items-center gap-2">
+                    <span>⚠️</span>
                     <span>Studying more than 20 kanji per session may reduce retention. Consider smaller, more frequent sessions.</span>
                   </p>
                 </div>
               )}
             </div>
+            
+            {/* Error Display */}
+            {error && (
+              <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                <p className="text-sm text-destructive">{error}</p>
+              </div>
+            )}
 
             {/* Start Button */}
             <button
               onClick={handleStartSession}
-              disabled={remaining === 0}
-              className="w-full py-3 px-4 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
+              disabled={remaining === 0 || isStarting || !isSessionSizeValid}
+              className="w-full py-3 px-4 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Start Learning Session
+              {isStarting ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                  </svg>
+                  <span>Starting Session...</span>
+                </>
+              ) : (
+                <span>Start Learning Session</span>
+              )}
             </button>
           </div>
 
-          {/* Study Modes */}
+
+          {/* How It Works */}
           <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4">
-              Study Modes
+            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <span>💡</span>
+              How It Works
             </h2>
-            
             <div className="space-y-3">
-              {/* Drill Mode */}
-              <button
-                onClick={handleStartSession}
-                className="w-full text-left p-4 border border-border rounded-lg hover:border-primary hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-foreground">🧪 Drill Mode</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Study new kanji with comprehensive explanations
-                    </p>
-                  </div>
-                  <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+              <div className="flex gap-3">
+                <span className="text-primary font-semibold">1.</span>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Configure Your Session</p>
+                  <p className="text-xs text-muted-foreground">Choose JLPT level and number of kanji to study</p>
                 </div>
-              </button>
-
-
-              {/* Free Study */}
-              <button
-                onClick={() => router.replace('/tools/kanji-mastery/browse')}
-                className="w-full text-left p-4 border border-border rounded-lg hover:border-primary hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-foreground">🎨 Free Study</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Browse and study any kanji at your own pace
-                    </p>
-                  </div>
-                  <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+              </div>
+              <div className="flex gap-3">
+                <span className="text-primary font-semibold">2.</span>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Learn with Examples</p>
+                  <p className="text-xs text-muted-foreground">Each kanji comes with vocabulary and sentences</p>
                 </div>
-              </button>
+              </div>
+              <div className="flex gap-3">
+                <span className="text-primary font-semibold">3.</span>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Spaced Repetition</p>
+                  <p className="text-xs text-muted-foreground">AI-powered scheduling optimizes your retention</p>
+                </div>
+              </div>
             </div>
           </div>
 

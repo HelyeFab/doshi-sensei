@@ -76,24 +76,13 @@ export default function SessionCompleteModal({
           </p>
         </div>
 
-        {/* Action Buttons */}
-        <div className="space-y-3">
-          <button
-            onClick={onClose}
-            className="w-full py-3 px-4 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Return to Dashboard
-          </button>
-          <button
-            onClick={() => {
-              // Could implement review session start here
-              onClose();
-            }}
-            className="w-full py-3 px-4 bg-muted text-foreground font-medium rounded-lg hover:bg-muted/80 transition-colors"
-          >
-            Review Previous Kanji
-          </button>
-        </div>
+        {/* Action Button */}
+        <button
+          onClick={onClose}
+          className="w-full py-3 px-4 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          Return to Dashboard
+        </button>
       </div>
     </SlideUpModal>
   );

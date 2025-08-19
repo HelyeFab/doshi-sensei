@@ -7,6 +7,7 @@ import { auth } from '@/lib/firebase';
 import { getFirestore, doc, setDoc, getDoc, getDocs, collection, query, where, orderBy, writeBatch } from 'firebase/firestore';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Card } from 'ts-fsrs';
+import { IndexedDBConnectionManager } from '@/utils/indexedDBConnectionManager';
 
 export interface KanjiProgress {
   id: string; // kanji character
@@ -70,58 +71,55 @@ export interface KanjiSettings {
 class KanjiMasteryIndexedDBStorage {
   private dbName = 'doshi-sensei-kanji-mastery';
   private version = 1;
-  private db: IDBDatabase | null = null;
+  private connectionManager: IndexedDBConnectionManager;
   private firestore = getFirestore();
+  
+  constructor() {
+    this.connectionManager = IndexedDBConnectionManager.getInstance(
+      this.dbName,
+      this.version,
+      this.setupDatabase.bind(this)
+    );
+  }
+
+  private setupDatabase(db: IDBDatabase, oldVersion: number, newVersion: number): void {
+    // Progress store
+    if (!db.objectStoreNames.contains('progress')) {
+      const progressStore = db.createObjectStore('progress', { keyPath: 'id' });
+      progressStore.createIndex('userId', 'userId', { unique: false });
+      progressStore.createIndex('jlptLevel', 'jlptLevel', { unique: false });
+      progressStore.createIndex('nextReview', 'nextReview', { unique: false });
+      progressStore.createIndex('composite', ['userId', 'jlptLevel'], { unique: false });
+    }
+
+    // Study sessions store
+    if (!db.objectStoreNames.contains('sessions')) {
+      const sessionsStore = db.createObjectStore('sessions', { keyPath: 'id' });
+      sessionsStore.createIndex('userId', 'userId', { unique: false });
+      sessionsStore.createIndex('startTime', 'startTime', { unique: false });
+      sessionsStore.createIndex('jlptLevel', 'jlptLevel', { unique: false });
+    }
+
+    // Settings store
+    if (!db.objectStoreNames.contains('settings')) {
+      const settingsStore = db.createObjectStore('settings', { keyPath: 'id' });
+      settingsStore.createIndex('userId', 'userId', { unique: false });
+    }
+  }
 
   async init(): Promise<void> {
-    if (this.db) return;
+    // Ensure connection is established
+    await this.connectionManager.getConnection();
 
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.version);
-
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => {
-        this.db = request.result;
-        resolve();
-      };
-
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-
-        // Progress store
-        if (!db.objectStoreNames.contains('progress')) {
-          const progressStore = db.createObjectStore('progress', { keyPath: 'id' });
-          progressStore.createIndex('userId', 'userId', { unique: false });
-          progressStore.createIndex('jlptLevel', 'jlptLevel', { unique: false });
-          progressStore.createIndex('nextReview', 'nextReview', { unique: false });
-          progressStore.createIndex('composite', ['userId', 'jlptLevel'], { unique: false });
-        }
-
-        // Study sessions store
-        if (!db.objectStoreNames.contains('sessions')) {
-          const sessionsStore = db.createObjectStore('sessions', { keyPath: 'id' });
-          sessionsStore.createIndex('userId', 'userId', { unique: false });
-          sessionsStore.createIndex('startTime', 'startTime', { unique: false });
-          sessionsStore.createIndex('jlptLevel', 'jlptLevel', { unique: false });
-        }
-
-        // Settings store
-        if (!db.objectStoreNames.contains('settings')) {
-          const settingsStore = db.createObjectStore('settings', { keyPath: 'id' });
-          settingsStore.createIndex('userId', 'userId', { unique: false });
-        }
-      };
-    });
+    // Only sync from Firebase if user is authenticated AND premium
+    const userId = this.getUserId();
+    if (userId && await this.isPremiumUser()) {
+      await this.syncFromFirebase();
+    }
   }
 
   private async ensureDb(): Promise<IDBDatabase> {
-    if (!this.db) {
-      await this.init();
-    }
-    if (!this.db) {
-      throw new Error('Failed to initialize IndexedDB');
-    }
-    return this.db;
+    return await this.connectionManager.getConnection();
   }
 
   private getUserId(): string | null {
@@ -138,8 +136,9 @@ class KanjiMasteryIndexedDBStorage {
       if (!userDoc.exists()) return false;
       
       const userData = userDoc.data();
-      return userData.subscriptionStatus === 'active' && 
-             (userData.subscriptionType === 'monthly' || userData.subscriptionType === 'yearly');
+      // Using correct flat structure as per Firebase Functions and SUPERPOWERS-V-III.md
+      return userData.subscription?.status === 'active' && 
+             (userData.subscription?.plan === 'monthly' || userData.subscription?.plan === 'yearly');
     } catch (error) {
       console.error('Error checking premium status:', error);
       return false;
@@ -148,86 +147,96 @@ class KanjiMasteryIndexedDBStorage {
 
   // Progress Management
   async saveProgress(progress: KanjiProgress): Promise<void> {
-    const db = await this.ensureDb();
     const userId = this.getUserId();
     
-    // Only save for authenticated users (free and premium)
-    if (!userId) {
-
-      return;
-    }
-    
+    // Save for all users (guest users get 'guest' as userId)
     const progressWithUser = {
       ...progress,
-      userId,
+      userId: userId || 'guest',
       updatedAt: new Date()
     };
 
-    const transaction = db.transaction(['progress'], 'readwrite');
-    const store = transaction.objectStore('progress');
-    await store.put(progressWithUser);
+    await this.connectionManager.executeTransaction(
+      'progress',
+      'readwrite',
+      async (transaction) => {
+        const store = transaction.objectStore('progress');
+        const request = store.put(progressWithUser);
+        await new Promise((resolve, reject) => {
+          request.onsuccess = resolve;
+          request.onerror = () => reject(request.error);
+        });
+      }
+    );
 
-    // Sync with Firebase for premium users
-    if (await this.isPremiumUser()) {
+    // Only sync with Firebase if user is authenticated AND premium
+    // But don't block saving for guest users
+    if (userId && await this.isPremiumUser()) {
       this.syncProgressToFirebase(progressWithUser);
     }
   }
 
   async getProgress(kanjiId: string): Promise<KanjiProgress | null> {
-    const db = await this.ensureDb();
-    const userId = this.getUserId();
+    const userId = this.getUserId() || 'guest';
     
-    if (!userId) return null;
-    
-    const transaction = db.transaction(['progress'], 'readonly');
-    const store = transaction.objectStore('progress');
-    
-    return new Promise((resolve, reject) => {
-      const request = store.get(kanjiId);
-      request.onsuccess = () => {
-        const result = request.result;
-        if (result && result.userId === userId) {
-          resolve(result);
-        } else {
-          resolve(null);
-        }
-      };
-      request.onerror = () => reject(request.error);
-    });
+    return await this.connectionManager.executeTransaction(
+      'progress',
+      'readonly',
+      async (transaction) => {
+        const store = transaction.objectStore('progress');
+        const request = store.get(kanjiId);
+        
+        return new Promise<KanjiProgress | null>((resolve, reject) => {
+          request.onsuccess = () => {
+            const result = request.result;
+            if (result && result.userId === userId) {
+              resolve(result);
+            } else {
+              resolve(null);
+            }
+          };
+          request.onerror = () => reject(request.error);
+        });
+      }
+    );
   }
 
   async getProgressByJLPT(jlptLevel: string): Promise<KanjiProgress[]> {
-    const db = await this.ensureDb();
-    const userId = this.getUserId();
+    const userId = this.getUserId() || 'guest';
     
-    if (!userId) return [];
-    
-    const transaction = db.transaction(['progress'], 'readonly');
-    const store = transaction.objectStore('progress');
-    const index = store.index('composite');
-    
-    return new Promise((resolve, reject) => {
-      const request = index.getAll([userId, jlptLevel]);
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
+    return await this.connectionManager.executeTransaction(
+      'progress',
+      'readonly',
+      async (transaction) => {
+        const store = transaction.objectStore('progress');
+        const index = store.index('composite');
+        const request = index.getAll([userId, jlptLevel]);
+        
+        return new Promise<KanjiProgress[]>((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result || []);
+          request.onerror = () => reject(request.error);
+        });
+      }
+    );
   }
 
   async getAllProgress(): Promise<KanjiProgress[]> {
-    const db = await this.ensureDb();
-    const userId = this.getUserId();
+    const userId = this.getUserId() || 'guest';
     
-    if (!userId) return [];
-    
-    const transaction = db.transaction(['progress'], 'readonly');
-    const store = transaction.objectStore('progress');
-    const index = store.index('userId');
-    
-    return new Promise((resolve, reject) => {
-      const request = index.getAll(userId);
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
+    return await this.connectionManager.executeTransaction(
+      'progress',
+      'readonly',
+      async (transaction) => {
+        const store = transaction.objectStore('progress');
+        const index = store.index('userId');
+        const request = index.getAll(userId);
+        
+        return new Promise<KanjiProgress[]>((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result || []);
+          request.onerror = () => reject(request.error);
+        });
+      }
+    );
   }
 
   async getProgressIds(): Promise<Set<string>> {
@@ -237,9 +246,7 @@ class KanjiMasteryIndexedDBStorage {
 
   async getDueCards(jlptLevel?: string): Promise<KanjiProgress[]> {
     const db = await this.ensureDb();
-    const userId = this.getUserId();
-    
-    if (!userId) return [];
+    const userId = this.getUserId() || 'guest';
     
     const now = new Date();
     const transaction = db.transaction(['progress'], 'readonly');
@@ -268,11 +275,7 @@ class KanjiMasteryIndexedDBStorage {
   // Study Sessions
   async startStudySession(jlptLevel?: string): Promise<string> {
     const db = await this.ensureDb();
-    const userId = this.getUserId();
-    
-    if (!userId) {
-      throw new Error('Cannot start session: user not authenticated');
-    }
+    const userId = this.getUserId() || 'guest';
     
     const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
@@ -291,8 +294,8 @@ class KanjiMasteryIndexedDBStorage {
     const store = transaction.objectStore('sessions');
     await store.add(session);
     
-    // Sync with Firebase for premium users
-    if (await this.isPremiumUser()) {
+    // Only sync with Firebase if user is authenticated AND premium
+    if (userId !== 'guest' && await this.isPremiumUser()) {
       this.syncSessionToFirebase(session);
     }
     
@@ -314,8 +317,9 @@ class KanjiMasteryIndexedDBStorage {
       const updatedSession = { ...session, ...updates };
       await store.put(updatedSession);
       
-      // Sync with Firebase for premium users
-      if (await this.isPremiumUser()) {
+      // Only sync with Firebase if user is authenticated AND premium
+      const userId = this.getUserId();
+      if (userId && await this.isPremiumUser()) {
         this.syncSessionToFirebase(updatedSession);
       }
     }
@@ -323,9 +327,7 @@ class KanjiMasteryIndexedDBStorage {
 
   async getStudySessions(jlptLevel?: string, limit = 10): Promise<StudySession[]> {
     const db = await this.ensureDb();
-    const userId = this.getUserId();
-    
-    if (!userId) return [];
+    const userId = this.getUserId() || 'guest';
     
     const transaction = db.transaction(['sessions'], 'readonly');
     const store = transaction.objectStore('sessions');
@@ -353,26 +355,25 @@ class KanjiMasteryIndexedDBStorage {
 
   // Settings
   async getSettings(): Promise<KanjiSettings | null> {
-    const db = await this.ensureDb();
-    const userId = this.getUserId();
+    const userId = this.getUserId() || 'guest';
     
-    if (!userId) return null;
-    
-    const transaction = db.transaction(['settings'], 'readonly');
-    const store = transaction.objectStore('settings');
-    
-    return new Promise((resolve, reject) => {
-      const request = store.get(`settings-${userId}`);
-      request.onsuccess = () => resolve(request.result || null);
-      request.onerror = () => reject(request.error);
-    });
+    return await this.connectionManager.executeTransaction(
+      'settings',
+      'readonly',
+      async (transaction) => {
+        const store = transaction.objectStore('settings');
+        const request = store.get(`settings-${userId}`);
+        
+        return new Promise<KanjiSettings | null>((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result || null);
+          request.onerror = () => reject(request.error);
+        });
+      }
+    );
   }
 
   async saveSettings(settings: Partial<KanjiSettings>): Promise<void> {
-    const db = await this.ensureDb();
-    const userId = this.getUserId();
-    
-    if (!userId) return;
+    const userId = this.getUserId() || 'guest';
     
     const currentSettings = await this.getSettings();
     const updatedSettings: KanjiSettings = {
@@ -387,9 +388,19 @@ class KanjiMasteryIndexedDBStorage {
       updatedAt: new Date()
     };
     
-    const transaction = db.transaction(['settings'], 'readwrite');
-    const store = transaction.objectStore('settings');
-    await store.put(updatedSettings);
+    await this.connectionManager.executeTransaction(
+      'settings',
+      'readwrite',
+      async (transaction) => {
+        const store = transaction.objectStore('settings');
+        const request = store.put(updatedSettings);
+        
+        await new Promise((resolve, reject) => {
+          request.onsuccess = resolve;
+          request.onerror = () => reject(request.error);
+        });
+      }
+    );
   }
 
   // Helper Methods
@@ -398,15 +409,32 @@ class KanjiMasteryIndexedDBStorage {
     if (!userId) return;
     
     try {
+      // Create a clean object without undefined values
+      const cleanProgress: any = {
+        id: progress.id,
+        userId: progress.userId,
+        lastReviewed: progress.lastReviewed.toISOString(),
+        nextReview: progress.nextReview.toISOString(),
+        reviewCount: progress.reviewCount,
+        easeFactor: progress.easeFactor,
+        interval: progress.interval,
+        difficulty: progress.difficulty,
+        lapses: progress.lapses,
+        quality: progress.quality,
+        retentionRate: progress.retentionRate,
+        masteryLevel: progress.masteryLevel,
+        createdAt: progress.createdAt.toISOString(),
+        updatedAt: progress.updatedAt.toISOString()
+      };
+      
+      // Only add optional fields if they exist and are not undefined
+      if (progress.jlptLevel !== undefined) cleanProgress.jlptLevel = progress.jlptLevel;
+      if (progress.grade !== undefined) cleanProgress.grade = progress.grade;
+      if (progress.studyModes !== undefined) cleanProgress.studyModes = progress.studyModes;
+      
       await setDoc(
         doc(this.firestore, 'users', userId, 'kanjiProgress', progress.id),
-        {
-          ...progress,
-          lastReviewed: progress.lastReviewed.toISOString(),
-          nextReview: progress.nextReview.toISOString(),
-          createdAt: progress.createdAt.toISOString(),
-          updatedAt: progress.updatedAt.toISOString()
-        }
+        cleanProgress
       );
     } catch (error) {
       console.error('Error syncing to Firebase:', error);
@@ -448,6 +476,110 @@ class KanjiMasteryIndexedDBStorage {
     }
   }
   
+  // Sync data from Firebase to local IndexedDB (for premium users)
+  async syncFromFirebase(): Promise<void> {
+    const userId = this.getUserId();
+    if (!userId || !(await this.isPremiumUser())) return;
+    
+    try {
+      console.log('Syncing Kanji Mastery data from Firebase for premium user...');
+      
+      // Sync progress data
+      const progressCollection = collection(this.firestore, 'users', userId, 'kanjiProgress');
+      const progressSnapshot = await getDocs(progressCollection);
+      
+      if (!progressSnapshot.empty) {
+        const db = await this.ensureDb();
+        const transaction = db.transaction(['progress'], 'readwrite');
+        const store = transaction.objectStore('progress');
+        
+        for (const doc of progressSnapshot.docs) {
+          const data = doc.data();
+          const progress: KanjiProgress = {
+            ...data,
+            id: doc.id,
+            userId,
+            lastReviewed: new Date(data.lastReviewed),
+            nextReview: new Date(data.nextReview),
+            createdAt: new Date(data.createdAt),
+            updatedAt: new Date(data.updatedAt)
+          };
+          
+          // Check if local version is newer
+          const existingProgress = await new Promise<KanjiProgress | null>((resolve) => {
+            const getRequest = store.get(progress.id);
+            getRequest.onsuccess = () => resolve(getRequest.result || null);
+            getRequest.onerror = () => resolve(null);
+          });
+          
+          // Only update if Firebase version is newer or doesn't exist locally
+          if (!existingProgress || existingProgress.updatedAt < progress.updatedAt) {
+            await store.put(progress);
+          }
+        }
+        
+        console.log(`Synced ${progressSnapshot.size} kanji progress records from Firebase`);
+      }
+      
+      // Sync study sessions
+      const sessionsCollection = collection(this.firestore, 'users', userId, 'kanjiStudySessions');
+      const sessionsSnapshot = await getDocs(query(sessionsCollection, orderBy('startTime', 'desc')));
+      
+      if (!sessionsSnapshot.empty) {
+        const db = await this.ensureDb();
+        const transaction = db.transaction(['sessions'], 'readwrite');
+        const store = transaction.objectStore('sessions');
+        
+        for (const doc of sessionsSnapshot.docs) {
+          const data = doc.data();
+          const session: StudySession = {
+            ...data,
+            id: doc.id,
+            userId,
+            startTime: new Date(data.startTime),
+            endTime: data.endTime ? new Date(data.endTime) : undefined
+          };
+          
+          await store.put(session);
+        }
+        
+        console.log(`Synced ${sessionsSnapshot.size} study sessions from Firebase`);
+      }
+      
+    } catch (error) {
+      console.error('Error syncing from Firebase:', error);
+    }
+  }
+  
+  // Manual sync trigger for premium users (both directions)
+  async performFullSync(): Promise<{ success: boolean; message: string }> {
+    const userId = this.getUserId();
+    if (!userId) {
+      return { success: false, message: 'User not authenticated' };
+    }
+    
+    const isPremium = await this.isPremiumUser();
+    if (!isPremium) {
+      return { success: false, message: 'Sync is only available for premium users' };
+    }
+    
+    try {
+      console.log('Starting full Kanji Mastery sync...');
+      
+      // First sync from Firebase to get latest data
+      await this.syncFromFirebase();
+      
+      // Then sync local changes back to Firebase
+      await this.syncAllToFirebase();
+      
+      console.log('Full Kanji Mastery sync completed successfully');
+      return { success: true, message: 'Data synced successfully' };
+    } catch (error) {
+      console.error('Full sync failed:', error);
+      return { success: false, message: 'Sync failed. Please try again later.' };
+    }
+  }
+  
   // Sync all local data to Firebase (for premium users)
   async syncAllToFirebase(): Promise<void> {
     const userId = this.getUserId();
@@ -460,13 +592,31 @@ class KanjiMasteryIndexedDBStorage {
       
       allProgress.forEach(progress => {
         const ref = doc(this.firestore, 'users', userId, 'kanjiProgress', progress.id);
-        batch.set(ref, {
-          ...progress,
+        
+        // Create a clean object without undefined values
+        const cleanProgress: any = {
+          id: progress.id,
+          userId: progress.userId,
           lastReviewed: progress.lastReviewed.toISOString(),
           nextReview: progress.nextReview.toISOString(),
+          reviewCount: progress.reviewCount,
+          easeFactor: progress.easeFactor,
+          interval: progress.interval,
+          difficulty: progress.difficulty,
+          lapses: progress.lapses,
+          quality: progress.quality,
+          retentionRate: progress.retentionRate,
+          masteryLevel: progress.masteryLevel,
           createdAt: progress.createdAt.toISOString(),
           updatedAt: progress.updatedAt.toISOString()
-        });
+        };
+        
+        // Only add optional fields if they exist and are not undefined
+        if (progress.jlptLevel !== undefined) cleanProgress.jlptLevel = progress.jlptLevel;
+        if (progress.grade !== undefined) cleanProgress.grade = progress.grade;
+        if (progress.studyModes !== undefined) cleanProgress.studyModes = progress.studyModes;
+        
+        batch.set(ref, cleanProgress);
       });
       
       await batch.commit();
@@ -544,15 +694,41 @@ class KanjiMasteryIndexedDBStorage {
   }
 
   // Clear all data (for testing/reset)
-  async clearAll(): Promise<void> {
-    const db = await this.ensureDb();
-    const transaction = db.transaction(['progress', 'sessions', 'settings'], 'readwrite');
+  // Update only the nextReview date for testing purposes
+  async updateNextReviewForTesting(kanjiId: string, newNextReview: Date): Promise<void> {
+    const userId = this.getUserId() || 'guest';
     
-    await Promise.all([
-      transaction.objectStore('progress').clear(),
-      transaction.objectStore('sessions').clear(),
-      transaction.objectStore('settings').clear()
-    ]);
+    const existing = await this.getProgress(kanjiId);
+    if (!existing) return;
+    
+    await this.saveProgress({
+      ...existing,
+      nextReview: newNextReview,
+      updatedAt: new Date()
+    });
+  }
+
+  async clearAll(): Promise<void> {
+    await this.connectionManager.executeTransaction(
+      ['progress', 'sessions', 'settings'],
+      'readwrite',
+      async (transaction) => {
+        const promises = [
+          'progress',
+          'sessions',
+          'settings'
+        ].map(storeName => {
+          const store = transaction.objectStore(storeName);
+          const request = store.clear();
+          return new Promise((resolve, reject) => {
+            request.onsuccess = resolve;
+            request.onerror = () => reject(request.error);
+          });
+        });
+        
+        await Promise.all(promises);
+      }
+    );
   }
 
   // Get stats
@@ -565,7 +741,8 @@ class KanjiMasteryIndexedDBStorage {
     const now = new Date();
     const dueCount = progress.filter(p => new Date(p.nextReview) <= now).length;
     const masteredCount = progress.filter(p => p.masteryLevel >= 80).length;
-    const totalReviews = progress.reduce((sum, p) => sum + p.reviewCount, 0);
+    // Fix NaN by ensuring reviewCount is a number (default to 0 if undefined)
+    const totalReviews = progress.reduce((sum, p) => sum + (p.reviewCount || 0), 0);
 
     return {
       totalKanji: progress.length,
@@ -573,7 +750,7 @@ class KanjiMasteryIndexedDBStorage {
       masteredKanji: masteredCount,
       totalReviews,
       averageMastery: progress.length > 0
-        ? Math.round(progress.reduce((sum, p) => sum + p.masteryLevel, 0) / progress.length)
+        ? Math.round(progress.reduce((sum, p) => sum + (p.masteryLevel || 0), 0) / progress.length)
         : 0,
       recentSessions: sessions.slice(0, 5)
     };

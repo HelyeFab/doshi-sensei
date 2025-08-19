@@ -4,7 +4,7 @@ import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
 export async function GET() {
   try {
     // Basic health check
-    const health = {
+    const health: Record<string, any> = {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',

@@ -62,7 +62,9 @@
       "Bash(npm run typecheck:*)",
       "Bash(sudo rm:*)",
       "Bash(python3:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(git branch:*)",
+      "Bash(npx next lint:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

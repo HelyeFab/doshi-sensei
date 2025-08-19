@@ -101,7 +101,7 @@ export default function KanjiProgressSummary() {
         totalKanji: basicStats.totalKanji,
         dueKanji: basicStats.dueKanji,
         masteredKanji: basicStats.masteredKanji,
-        totalReviews: basicStats.totalReviews,
+        totalReviews: sessions.length, // Changed to show number of study sessions
         averageMastery: basicStats.averageMastery,
         currentStreak,
         longestStreak,
@@ -153,7 +153,7 @@ export default function KanjiProgressSummary() {
           <div className="text-2xl font-bold text-foreground">
             {stats?.totalKanji || 0}
           </div>
-          <div className="text-sm text-muted-foreground">Kanji Learned</div>
+          <div className="text-sm text-muted-foreground">Kanji Studied</div>
         </div>
         
         <div className="text-center p-4 bg-muted rounded-lg">
@@ -193,7 +193,7 @@ export default function KanjiProgressSummary() {
             <div className="text-sm font-medium text-foreground">
               {stats.totalReviews}
             </div>
-            <div className="text-xs text-muted-foreground">Total Reviews</div>
+            <div className="text-xs text-muted-foreground">Study Sessions</div>
           </div>
           <div>
             <div className="text-sm font-medium text-foreground">

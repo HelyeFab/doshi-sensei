@@ -114,7 +114,7 @@ class KanjiSpacedRepetitionService {
       grade: kanjiData.grade,
       lastReviewed: now,
       nextReview: nextCard.due,
-      reviewCount: nextCard.reps,
+      reviewCount: (progress?.reviewCount || 0) + 1, // Increment by 1 for each review
       easeFactor: nextCard.stability,
       interval: nextCard.scheduled_days,
       difficulty: nextCard.difficulty,

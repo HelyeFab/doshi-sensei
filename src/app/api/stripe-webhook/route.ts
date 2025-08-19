@@ -381,7 +381,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
           currency: invoice.currency,
           invoiceId: invoice.id,
           invoicePdf: pdfUrl,
-          hostedInvoiceUrl: invoice.hosted_invoice_url,
+          hostedInvoiceUrl: invoice.hosted_invoice_url || undefined,
           paymentMethod: invoiceData.paymentMethod,
           details: {
             invoiceNumber: invoice.number || invoice.id,

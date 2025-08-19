@@ -154,6 +154,8 @@ ENHANCEMENT RULES:
 8. Preserve the article structure (introduction, body, conclusion)
 9. Do not add information not present in the original
 10. Fix any obvious errors or typos
+11. IMPORTANT: REMOVE ALL FURIGANA in parentheses format like 地方(ちほう) or 地方（ちほう）
+12. Return ONLY the kanji/kana text WITHOUT any reading hints in parentheses
 
 Return ONLY the cleaned Japanese text, nothing else.`;
 

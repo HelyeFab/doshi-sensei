@@ -149,14 +149,43 @@
   const originalError = console.error.bind(console);
   console.error = function(...args) {
     try {
-      // Safely convert args to string
+      // Safely convert args to string, handling special cases
       const message = args.map(arg => {
         if (typeof arg === 'string') return arg;
         if (arg === null) return 'null';
         if (arg === undefined) return 'undefined';
+        if (typeof arg === 'number') {
+          // Handle NaN and Infinity properly
+          if (isNaN(arg)) return 'NaN';
+          if (!isFinite(arg)) return 'Infinity';
+          return String(arg);
+        }
         if (typeof arg === 'object') {
+          // Don't try to stringify DOM elements or React components
+          if (arg instanceof Element || arg instanceof HTMLDocument) {
+            return '[DOM Element]';
+          }
+          // Check for React elements (they have $$typeof property)
+          if (arg && arg.$$typeof) {
+            return '[React Element]';
+          }
+          // Check for errors
+          if (arg instanceof Error) {
+            return `${arg.name}: ${arg.message}`;
+          }
           try {
-            return JSON.stringify(arg);
+            // Try to stringify, but with a depth limit to avoid circular references
+            return JSON.stringify(arg, (key, value) => {
+              // Handle NaN in nested objects
+              if (typeof value === 'number' && isNaN(value)) {
+                return 'NaN';
+              }
+              // Limit depth to prevent infinite recursion
+              if (key && typeof value === 'object' && value !== null) {
+                return '[Object]';
+              }
+              return value;
+            });
           } catch {
             return String(arg);
           }

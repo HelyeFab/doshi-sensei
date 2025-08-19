@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { collection, doc, getDoc, setDoc, updateDoc, Timestamp, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
 import axios from 'axios';
+import * as admin from 'firebase-admin';
 
 // YouTube Data API v3 endpoint
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3';
@@ -36,11 +36,20 @@ function parseDuration(duration: string): number {
   return hours * 3600 + minutes * 60 + seconds;
 }
 
+// Initialize Firebase Admin if not already initialized
+if (!admin.apps.length) {
+  try {
+    const serviceAccount = require('../../../../../firebase-service-account.json');
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+  } catch (err) {
+    console.log('Firebase admin already initialized or service account not found');
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
-
-    // Initialize Firebase Admin
-    const admin = await getFirebaseAdmin();
 
     // Check authentication
     const authHeader = request.headers.get('authorization');

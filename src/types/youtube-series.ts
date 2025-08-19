@@ -10,8 +10,24 @@ export interface YouTubeChannel {
   channelId: string; // YouTube channel ID
   channelTitle: string;
   channelUrl: string;
+  
+  // Channel metadata from YouTube API
   thumbnailUrl?: string;
+  bannerUrl?: string;
   description?: string;
+  customUrl?: string;
+  country?: string;
+  publishedAt?: string;
+  
+  // Channel statistics
+  subscriberCount?: number;
+  videoCount?: number;
+  viewCount?: number; // Total channel views
+  
+  // Source tracking (if added via video URL)
+  sourceVideoUrl?: string;
+  sourceVideoId?: string;
+  sourceVideoTitle?: string;
   
   // Monitoring settings
   monitoringEnabled: boolean;
@@ -35,7 +51,7 @@ export interface YouTubeChannel {
   
   // Stats
   videosImported: number;
-  totalViews: number; // Views on imported resources
+  totalViews?: number; // Views on imported resources
   totalShadowingSessions: number;
 }
 

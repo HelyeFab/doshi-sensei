@@ -8,7 +8,7 @@ import { StudyListManager } from '@/utils/studyListManager';
 import { JapaneseWord, StudyList } from '@/types';
 import TTSManager from '@/utils/tts';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAccess } from '@/hooks/useAccess';
+import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import KanjiQuest from '@/components/games/KanjiQuest';
@@ -84,7 +84,7 @@ export default function GamesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack, AccessModals } = useAccessWithModals();
   const { feature: kanjiFeature, access: kanjiAccess, remaining: kanjiRemaining } = useFeature('kanji_quest');
   const { isPremium, userType, subscription } = useSubscription2();
   const { selectedKanji, clearSelectedKanji } = useKanjiSelection();
@@ -214,8 +214,8 @@ export default function GamesPage() {
     }
   ];
 
-  const canPlayMore = isPremium ||
-    (currentGameMode === 'assembly' ? assemblyStats.gamesToday < FREE_USER_DAILY_LIMIT : quizStats.questionsToday < FREE_USER_DAILY_LIMIT);
+  // Remove manual limit checking - let Three-Pillar handle it
+  // The checkAndTrack() function will handle all limit enforcement
 
   // Load quiz stats and Pokémon data on mount
   useEffect(() => {
@@ -517,8 +517,29 @@ export default function GamesPage() {
     }
   };
 
-  const handleGameModeSelect = (gameMode: GameMode) => {
+  const handleGameModeSelect = async (gameMode: GameMode) => {
     if (gameMode.comingSoon) return;
+
+    // Map game mode to feature ID for Three-Pillar Architecture
+    const featureMap: Record<string, string> = {
+      'listening': 'listening_quiz',
+      'assembly': 'word_assembly',
+      'kanji-quest': 'kanji_quest',
+      'kana-drop': 'kana_drop',
+      'sentence-scramble': 'sentence_scramble',
+      'matching': 'matching_game',
+      'stroke-order': 'stroke_order_practice'
+    };
+
+    const featureId = featureMap[gameMode.id];
+    if (!featureId) return;
+
+    // Check access using Three-Pillar Architecture
+    const hasAccess = await checkAndTrack(featureId);
+    if (!hasAccess) {
+      // Access denied - modal will be shown automatically
+      return;
+    }
 
     setCurrentGameMode(gameMode.id);
     setShowGameSelection(false);
@@ -1003,7 +1024,7 @@ export default function GamesPage() {
                     <div className="text-sm text-muted-foreground">
                       {strings.games.dailyLimit}: {currentGameMode === 'assembly' ? assemblyStats.gamesToday : quizStats.questionsToday}/{FREE_USER_DAILY_LIMIT}
                     </div>
-                    {!canPlayMore && (
+                    {false && (
                       <div className="text-xs text-destructive mt-1">
                         {strings.games.upgradeForUnlimited}
                       </div>
@@ -1097,13 +1118,13 @@ export default function GamesPage() {
 
                 <button
                   onClick={handleStartQuiz}
-                  disabled={!canPlayMore || selectedListIds.length === 0 ||
+                  disabled={selectedListIds.length === 0 ||
                     (currentGameMode === 'listening' && savedWords.length < 4) ||
                     (currentGameMode === 'assembly' && savedWords.length === 0) ||
                     (currentGameMode === 'matching' && savedWords.length < 5)}
                   className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-xl font-semibold transition-colors"
                 >
-                  {!canPlayMore ? strings.games.dailyLimit :
+                  {
                     selectedListIds.length === 0 ? strings.games.selectListsFirst :
                       (currentGameMode === 'listening' && savedWords.length < 4) ? strings.games.needMoreWords4 :
                         (currentGameMode === 'assembly' && savedWords.length === 0) ? strings.games.needAtLeast1Word :
@@ -1127,10 +1148,10 @@ export default function GamesPage() {
 
               <button
                 onClick={startNewQuestion}
-                disabled={!canPlayMore}
+                disabled={false}
                 className="px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-xl font-semibold transition-colors"
               >
-                {canPlayMore ? strings.games.startQuiz : strings.games.dailyLimitReached}
+                {strings.games.startQuiz}
               </button>
 
               <div className="mt-6 space-y-2">
@@ -1207,10 +1228,10 @@ export default function GamesPage() {
 
                   <button
                     onClick={handleNextQuestion}
-                    disabled={!canPlayMore}
+                    disabled={false}
                     className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 text-lg font-semibold transition-colors"
                   >
-                    {canPlayMore ? strings.games.states.nextQuestion : strings.games.dailyLimit}
+                    {strings.games.states.nextQuestion}
                   </button>
                 </div>
               )}
@@ -1311,10 +1332,10 @@ export default function GamesPage() {
 
                   <button
                     onClick={handleNextQuestion}
-                    disabled={!canPlayMore}
+                    disabled={false}
                     className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 text-lg font-semibold transition-colors"
                   >
-                    {canPlayMore ? strings.games.states.nextQuestion : strings.games.dailyLimit}
+                    {strings.games.states.nextQuestion}
                   </button>
                 </div>
               )}
@@ -1655,10 +1676,10 @@ export default function GamesPage() {
                   setShowListeningInstructions(false);
                   startNewQuestion();
                 }}
-                disabled={!canPlayMore}
+                disabled={false}
                 className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-lg font-semibold transition-colors"
               >
-                {canPlayMore ? strings.games.startQuiz : strings.games.dailyLimitReached}
+                {strings.games.startQuiz}
               </button>
               
               <button
@@ -1674,6 +1695,9 @@ export default function GamesPage() {
           </div>
         </SlideUpModal>
       </MobileAwareContainer>
+      
+      {/* Three-Pillar Architecture Access Modals */}
+      <AccessModals />
     </div>
   );
 }

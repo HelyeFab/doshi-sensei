@@ -333,7 +333,7 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
 
             <InteractiveCard
               key={studyQueue[currentCardIndex].id}
-              word={studyQueue[currentCardIndex]}
+              item={studyQueue[currentCardIndex]}
               onComplete={handleCardComplete}
               mode="review"
             />

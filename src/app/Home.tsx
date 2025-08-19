@@ -19,6 +19,7 @@ import UserAchievements from '@/components/achievements/UserAchievements';
 import VirtualCompanion from '@/components/VirtualCompanion';
 import { useRouter } from 'next/navigation';
 import InAppNotificationBell from '@/components/notifications/InAppNotificationBell';
+import KanjiReviewDueAlert from './tools/kanji-mastery/components/ReviewDueAlert';
 
 // Import debug utility in development
 // Commented out to fix build issues - uncomment for debugging
@@ -294,6 +295,11 @@ export default function Home() {
         </div>
         <p className="text-xs text-muted-foreground mt-1">{strings.home.dayProgressTooltip}</p>
       </section>
+      
+      {/* Kanji Review Due Alert (only shows when there are due reviews) */}
+      <div className="px-4 pb-4">
+        <KanjiReviewDueAlert />
+      </div>
       
       {/* User Achievements */}
       <UserAchievements />

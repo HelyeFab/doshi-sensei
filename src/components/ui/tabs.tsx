@@ -11,7 +11,9 @@ const TabsContext = createContext<TabsContextType | undefined>(undefined);
 
 interface TabsProps {
   children: React.ReactNode;
-  defaultValue: string;
+  defaultValue?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
   className?: string;
 }
 
@@ -32,8 +34,16 @@ interface TabsContentProps {
   className?: string;
 }
 
-export function Tabs({ children, defaultValue, className = '' }: TabsProps) {
-  const [value, setValue] = useState(defaultValue);
+export function Tabs({ children, defaultValue, value: controlledValue, onValueChange, className = '' }: TabsProps) {
+  const [internalValue, setInternalValue] = useState(defaultValue || '');
+  
+  const value = controlledValue !== undefined ? controlledValue : internalValue;
+  const setValue = (newValue: string) => {
+    if (controlledValue === undefined) {
+      setInternalValue(newValue);
+    }
+    onValueChange?.(newValue);
+  };
   
   return (
     <TabsContext.Provider value={{ value, setValue }}>

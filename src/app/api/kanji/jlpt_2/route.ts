@@ -1,24 +1,29 @@
 import { NextResponse } from 'next/server';
-import kanjiData2 from '@kanji_data/jlpt_2/jlpt_2.json';
-import kanjiData2_1 from '@kanji_data/jlpt_2_1/jlpt_2_1.json';
-import kanjiData2_2 from '@kanji_data/jlpt_2_2/jlpt_2_2.json';
-import kanjiData2_3 from '@kanji_data/jlpt_2_3/jlpt_2_3.json';
+import path from 'path';
+import fs from 'fs';
 
 export async function GET() {
   try {
     const allKanjiData: any[] = [];
     
-    if (Array.isArray(kanjiData2)) {
-      allKanjiData.push(...kanjiData2);
-    }
-    if (Array.isArray(kanjiData2_1)) {
-      allKanjiData.push(...kanjiData2_1);
-    }
-    if (Array.isArray(kanjiData2_2)) {
-      allKanjiData.push(...kanjiData2_2);
-    }
-    if (Array.isArray(kanjiData2_3)) {
-      allKanjiData.push(...kanjiData2_3);
+    // List of all JLPT 2 data directories
+    const dataDirs = [
+      'jlpt_2',
+      'jlpt_2_1',
+      'jlpt_2_2',
+      'jlpt_2_3'
+    ];
+    
+    // Read each JSON file
+    for (const dir of dataDirs) {
+      const dataPath = path.join(process.cwd(), 'kanji_data', dir, `${dir}.json`);
+      if (fs.existsSync(dataPath)) {
+        const fileContents = fs.readFileSync(dataPath, 'utf8');
+        const kanjiData = JSON.parse(fileContents);
+        if (Array.isArray(kanjiData)) {
+          allKanjiData.push(...kanjiData);
+        }
+      }
     }
 
     return NextResponse.json(allKanjiData);

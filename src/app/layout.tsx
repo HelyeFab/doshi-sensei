@@ -298,6 +298,7 @@ export default function RootLayout({
         <Script src="/css-mime-fix.js" strategy="afterInteractive" />
         <Script src="/pwa-manager.js" strategy="afterInteractive" />
         <Script src="/pwa-recovery.js" strategy="afterInteractive" />
+        <Script src="/pwa-health-check.js" strategy="afterInteractive" />
         
         <EnvProvider>
           <NextAuthProvider>

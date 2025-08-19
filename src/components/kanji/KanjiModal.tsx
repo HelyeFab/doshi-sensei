@@ -31,7 +31,41 @@ export default function KanjiModal({
   const [showStudyDropdown, setShowStudyDropdown] = useState(false);
   const [showStrokeOrder, setShowStrokeOrder] = useState(false);
   const [showLoginModalForSave, setShowLoginModalForSave] = useState(false);
+  const [strokeCount, setStrokeCount] = useState<number | null>(null);
   // TTS functionality now handled by KanjiTTSButton component
+
+  // Fetch stroke count from KanjiVG data
+  useEffect(() => {
+    if (isOpen && kanji.kanji) {
+      fetchStrokeCount(kanji.kanji);
+    }
+  }, [isOpen, kanji.kanji]);
+
+  const fetchStrokeCount = async (kanjiChar: string) => {
+    try {
+      // Get Unicode code point
+      const codePoint = kanjiChar.charCodeAt(0).toString(16).padStart(5, '0');
+      
+      // Try to fetch from KanjiVG data
+      const response = await fetch(`/data/kanjivg/${codePoint}.svg`);
+      
+      if (!response.ok) {
+        setStrokeCount(null);
+        return;
+      }
+      
+      const svgText = await response.text();
+      const parser = new DOMParser();
+      const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+      
+      // Count stroke paths
+      const strokePaths = svgDoc.querySelectorAll('path[id*="kvg:"]');
+      setStrokeCount(strokePaths.length);
+    } catch (error) {
+      console.error('Error fetching stroke count:', error);
+      setStrokeCount(null);
+    }
+  };
 
   return (
     <>
@@ -74,6 +108,11 @@ export default function KanjiModal({
               <span className="px-2 py-1 text-xs rounded border bg-primary/10 text-primary border-primary/20">
                 {kanji.jlpt}
               </span>
+              {strokeCount !== null && (
+                <span className="px-2 py-1 text-xs rounded border bg-muted/50 text-muted-foreground border-border">
+                  {strokeCount} strokes
+                </span>
+              )}
             </div>
           </div>
 
@@ -87,7 +126,7 @@ export default function KanjiModal({
           <div className="space-y-4 mb-6">
             {/* Onyomi */}
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">
+              <h3 className="text-sm font-medium text-card-foreground mb-2">
                 音読み (On'yomi) - Chinese Reading
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -95,7 +134,7 @@ export default function KanjiModal({
                   kanji.onyomi.map((reading, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-md text-sm japanese-text"
+                      className="flex items-center gap-2 px-3 py-1 bg-secondary/10 text-secondary-foreground border border-secondary/20 rounded-md text-sm japanese-text"
                     >
                       <span>{reading}</span>
                       <KanjiTTSButton 
@@ -115,7 +154,7 @@ export default function KanjiModal({
 
             {/* Kunyomi */}
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-2">
+              <h3 className="text-sm font-medium text-card-foreground mb-2">
                 訓読み (Kun'yomi) - Japanese Reading
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -123,7 +162,7 @@ export default function KanjiModal({
                   kanji.kunyomi.map((reading, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-2 px-3 py-1 bg-accent/10 text-accent-foreground border border-accent/20 rounded-md text-sm japanese-text"
+                      className="flex items-center gap-2 px-3 py-1 bg-secondary/10 text-secondary-foreground border border-secondary/20 rounded-md text-sm japanese-text"
                     >
                       <span>{reading}</span>
                       <KanjiTTSButton 

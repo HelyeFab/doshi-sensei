@@ -13,6 +13,7 @@ import {
   getReadingSpeedCategory
 } from '@/utils/readingAnalytics';
 import { generateFuriganaForArticle, generateFuriganaForArticleParagraphs, checkFuriganaApiHealth } from '@/utils/furigana';
+import { cleanArticleFurigana } from '@/utils/cleanArticleFurigana';
 import ArticleManager from '@/utils/articleManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -541,7 +542,8 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
   // Render text with vocabulary highlighting and furigana
   const renderTextWithHighlighting = async (text: string): Promise<string> => {
-    let processedText = text;
+    // First clean any existing furigana annotations to prevent duplication
+    let processedText = cleanArticleFurigana(text);
 
     // First add furigana if enabled
     if (settings.showFurigana) {
@@ -624,7 +626,9 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       setContentLoading(true);
 
       try {
-        const paragraphs = article.content.split('\n');
+        // Clean any existing furigana annotations to prevent duplication
+        const cleanedContent = cleanArticleFurigana(article.content);
+        const paragraphs = cleanedContent.split('\n');
 
         // Create cache key based on settings that affect processing
         const cacheKey = `${article.id}-${settings.showFurigana}-${settings.highlightVocabulary}-${settings.highlightMode}`;
@@ -697,8 +701,9 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
               return processedParagraphs;
             }
           } else {
-            // For grammar highlighting, keep paragraphs as plain text
-            return paragraphs;
+            // For grammar highlighting, keep paragraphs as plain text but clean furigana
+            // The GrammarHighlightedText component will handle its own furigana display
+            return paragraphs.map(p => cleanArticleFurigana(p));
           }
         })();
 
@@ -713,8 +718,9 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
 
       } catch (error) {
         console.error('Error processing article content:', error);
-        // Fallback to unprocessed content
-        const fallback = article.content.split('\n');
+        // Fallback to unprocessed content (still clean furigana)
+        const cleanedContent = cleanArticleFurigana(article.content);
+        const fallback = cleanedContent.split('\n');
         setProcessedContent(fallback);
       } finally {
         setContentLoading(false);

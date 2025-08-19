@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     };
     
     // Filter out empty arrays and validate JLPT levels
-    if (options.difficulty?.length === 1 && options.difficulty[0] === '') {
+    if (options.difficulty?.length === 1 && options.difficulty[0] === '' as any) {
       options.difficulty = undefined;
     } else if (options.difficulty) {
       // Filter out any empty strings and validate JLPT levels

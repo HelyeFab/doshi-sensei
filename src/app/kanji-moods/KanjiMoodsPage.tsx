@@ -10,13 +10,18 @@ import { MoodBoard, MoodBoardsProgress } from '@/types/moodBoard';
 import { Search, Filter, X } from 'lucide-react';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import { LoadingHourglassPage } from '@/components/ui/LoadingHourglass';
+import { useAccessWithModals } from '@/hooks/useAccessWithModals';
+import { useFeature } from '@/hooks/useFeature';
 
 export default function KanjiMoodsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { moodBoards, loading } = useMoodBoards();
   const [progress, setProgress] = useState<MoodBoardsProgress>({});
-  const [showInstructions, setShowInstructions] = useState(false);
+  
+  // Three-Pillar Architecture integration
+  const { checkAndTrack, AccessModals } = useAccessWithModals();
+  const { feature, access, remaining } = useFeature('kanji_moods');
 
   // Initialize state from URL params
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
@@ -107,8 +112,13 @@ export default function KanjiMoodsPage() {
     .filter(board => progress[board.id]?.progressPercentage === 100)
     .length;
 
-  const handleBoardClick = (boardId: string) => {
-    router.push(`/kanji-moods/${boardId}`);
+  const handleBoardClick = async (boardId: string) => {
+    // Check access before navigating to the board
+    const hasAccess = await checkAndTrack('kanji_moods');
+    if (hasAccess) {
+      router.push(`/kanji-moods/${boardId}`);
+    }
+    // If no access, the modal will be shown automatically by useAccessWithModals
   };
 
   if (loading) {
@@ -140,117 +150,6 @@ export default function KanjiMoodsPage() {
               making them easier to remember and understand.
             </p>
             
-            {/* How to Use Button */}
-            <div className="mt-6">
-              <button
-                onClick={() => setShowInstructions(!showInstructions)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary/20 transition-all font-medium"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>How to use Kanji Moods</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${
-                    showInstructions ? "rotate-180" : ""
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {showInstructions && (
-                <div className="mt-4 p-5 bg-card border border-border rounded-lg text-left max-w-3xl mx-auto">
-                  <h3 className="text-lg font-semibold text-foreground mb-4">🗺️ Master Kanji Through Thematic Learning</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">🎯 What are Mood Boards?</h4>
-                      <p className="text-muted-foreground text-sm">
-                        Mood boards are curated collections of 5-10 related kanji organized by theme, emotion, or context. 
-                        Unlike traditional JLPT levels, mood boards group kanji that naturally connect - like "Nature" (山 mountain, 
-                        川 river, 森 forest) or "Emotions" (喜 joy, 怒 anger, 哀 sorrow). This thematic approach helps your brain 
-                        create meaningful associations, making kanji easier to remember.
-                      </p>
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">🔍 Browse & Discover</h4>
-                      <p className="text-muted-foreground text-sm">
-                        Use filters to find mood boards by JLPT level, completion status, or search for specific themes. 
-                        Each board shows your progress percentage and the number of kanji you've learned. Boards are 
-                        color-coded by difficulty: green (N5 beginner) to red (N1 advanced).
-                      </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">📚 Study Process</h4>
-                        <ol className="text-muted-foreground text-sm space-y-2">
-                          <li>1. Click a mood board to enter the study view</li>
-                          <li>2. Tap any kanji card to flip and see readings</li>
-                          <li>3. View stroke order and example words</li>
-                          <li>4. Click the circle to mark as learned</li>
-                          <li>5. Complete all kanji to finish the board</li>
-                        </ol>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">🏆 Track Progress</h4>
-                        <p className="text-muted-foreground text-sm">
-                          Your progress is saved locally and persists between sessions. The progress bar 
-                          shows completion percentage, and learned kanji appear with a checkmark. 
-                          Complete boards earn achievements and contribute to your overall kanji mastery stats.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium text-foreground mb-2">🧠 Learning Strategy</h4>
-                      <p className="text-muted-foreground text-sm">
-                        <strong>Context is King:</strong> Study all kanji in a mood board together, not individually. 
-                        Notice patterns - kanji about water often contain 氵, body parts contain 月, and actions contain 手. 
-                        Create mental stories linking the kanji: "I climbed the 山 (mountain), crossed the 川 (river), 
-                        and rested in the 森 (forest)." This narrative approach dramatically improves retention.
-                      </p>
-                    </div>
-
-                    <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                      <p className="text-sm text-destructive font-medium flex items-center gap-2">
-                        <span className="text-lg">⚠️</span>
-                        <span>
-                          <strong>Important:</strong> Don't rush through boards! Spend 5-10 minutes per kanji, 
-                          understanding not just the character but its role in the theme. Quality beats quantity - 
-                          mastering one board deeply is better than skimming through five.
-                        </span>
-                      </p>
-                    </div>
-
-                    <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
-                      <p className="text-sm text-primary font-medium">
-                        💡 <strong>Pro Tips:</strong>
-                      </p>
-                      <ul className="mt-1 ml-5 text-sm text-primary list-disc">
-                        <li>Start with boards matching your current JLPT level</li>
-                        <li>Complete one full board before starting another</li>
-                        <li>Review completed boards weekly to maintain memory</li>
-                        <li>Use the search to find boards matching your interests</li>
-                        <li>Practice writing the kanji while studying for better retention</li>
-                        <li>Progress syncs locally - no account needed to track learning</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         </div>
 
@@ -609,6 +508,9 @@ export default function KanjiMoodsPage() {
       </div>
 
       </MobileAwareContainer>
+      
+      {/* Three-Pillar Architecture Access Modals */}
+      <AccessModals />
     </div>
   );
 }

@@ -118,44 +118,57 @@ export default function AdminYouTubeSeriesPage() {
     setSaving(true);
     
     try {
-      // Check if it's a video URL
-      const videoId = extractVideoIdFromUrl(formData.channelUrl);
-      let finalChannelUrl = formData.channelUrl;
-      let channelInfo = null;
+      // Fetch complete channel information using the new API
+      console.log('Fetching channel info for:', formData.channelUrl);
       
-      if (videoId) {
-        // It's a video URL - fetch channel info from the video
-        const response = await fetch('/api/youtube/v3', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            url: formData.channelUrl,
-            apiKey: 'AIzaSyDfETlyCtkm_-iM8p7G3fCaVqK4bu1wjsg' // Using the API key from env
-          })
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          channelInfo = {
-            channelId: data.video.channelId,
-            channelTitle: data.video.channelTitle,
-            videoId: videoId,
-            videoTitle: data.video.title
-          };
-          // Convert to channel URL
-          finalChannelUrl = `https://youtube.com/channel/${data.video.channelId}`;
-        }
+      // Clean the URL before sending
+      const cleanUrl = formData.channelUrl.trim();
+      console.log('Sending URL to API:', cleanUrl);
+      
+      const response = await fetch('/api/youtube/channel-info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: cleanUrl
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to fetch channel information');
       }
       
-      const channelId = channelInfo?.channelId || extractChannelIdFromUrl(finalChannelUrl);
+      const data = await response.json();
+      console.log('Channel info received:', data);
+      
+      // Build channel data with all the metadata
       const channelData = {
-        channelId,
-        channelUrl: finalChannelUrl,
-        channelTitle: channelInfo?.channelTitle || channelId, // Will be updated when syncing
-        sourceVideoUrl: videoId ? formData.channelUrl : null, // Store original video URL if provided
-        sourceVideoId: videoId,
+        // Core identifiers
+        channelId: data.channel.channelId,
+        channelUrl: data.channel.channelUrl,
+        channelTitle: data.channel.channelTitle,
+        
+        // Channel metadata
+        description: data.channel.description,
+        customUrl: data.channel.customUrl,
+        thumbnailUrl: data.channel.thumbnailUrl,
+        bannerUrl: data.channel.bannerUrl,
+        country: data.channel.country,
+        publishedAt: data.channel.publishedAt,
+        
+        // Statistics
+        subscriberCount: data.channel.subscriberCount,
+        videoCount: data.channel.videoCount,
+        viewCount: data.channel.viewCount,
+        
+        // Source video info (if provided via video URL)
+        sourceVideoUrl: data.sourceVideo ? formData.channelUrl : null,
+        sourceVideoId: data.sourceVideo?.videoId,
+        sourceVideoTitle: data.sourceVideo?.title,
+        
+        // Admin settings
         monitoringEnabled: formData.monitoringEnabled,
         checkInterval: formData.checkInterval,
         autoCreateResource: formData.autoCreateResource,
@@ -164,9 +177,12 @@ export default function AdminYouTubeSeriesPage() {
         isPremiumContent: formData.isPremiumContent,
         autoExtractTranscript: formData.autoExtractTranscript,
         shadowingEnabled: formData.shadowingEnabled,
+        
+        // Initial counters
         videosImported: 0,
-        totalViews: 0,
         totalShadowingSessions: 0,
+        
+        // Timestamps
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
       };
@@ -480,12 +496,81 @@ export default function AdminYouTubeSeriesPage() {
                 <div key={channel.id} className="bg-card rounded-lg border border-border p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-foreground mb-2">
-                        {channel.channelTitle}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {channel.channelUrl}
-                      </p>
+                      <div className="flex items-start gap-4 mb-4">
+                        {/* Channel Thumbnail */}
+                        {channel.thumbnailUrl ? (
+                          <img
+                            src={channel.thumbnailUrl}
+                            alt={channel.channelTitle}
+                            className="w-16 h-16 rounded-full object-cover border-2 border-border"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center border-2 border-border">
+                            <span className="text-2xl">📺</span>
+                          </div>
+                        )}
+                        
+                        {/* Channel Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold text-foreground mb-1">
+                            {channel.channelTitle}
+                          </h3>
+                          {channel.description && (
+                            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                              {channel.description}
+                            </p>
+                          )}
+                          <a
+                            href={channel.channelUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline inline-flex items-center gap-1"
+                          >
+                            {channel.customUrl || channel.channelUrl}
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
+                      
+                      {/* Channel Stats */}
+                      {(channel.subscriberCount > 0 || channel.videoCount > 0 || channel.viewCount > 0) && (
+                        <div className="flex flex-wrap gap-4 mb-3 p-3 bg-muted/50 rounded-lg">
+                          {channel.subscriberCount > 0 && (
+                            <div className="text-sm">
+                              <span className="text-muted-foreground">Subscribers:</span>
+                              <span className="ml-1 font-medium text-foreground">
+                                {channel.subscriberCount >= 1000000 
+                                  ? `${(channel.subscriberCount / 1000000).toFixed(1)}M`
+                                  : channel.subscriberCount >= 1000
+                                  ? `${(channel.subscriberCount / 1000).toFixed(1)}K`
+                                  : channel.subscriberCount.toLocaleString()}
+                              </span>
+                            </div>
+                          )}
+                          {channel.videoCount > 0 && (
+                            <div className="text-sm">
+                              <span className="text-muted-foreground">Videos:</span>
+                              <span className="ml-1 font-medium text-foreground">{channel.videoCount.toLocaleString()}</span>
+                            </div>
+                          )}
+                          {channel.viewCount > 0 && (
+                            <div className="text-sm">
+                              <span className="text-muted-foreground">Total Views:</span>
+                              <span className="ml-1 font-medium text-foreground">
+                                {channel.viewCount >= 1000000000 
+                                  ? `${(channel.viewCount / 1000000000).toFixed(1)}B`
+                                  : channel.viewCount >= 1000000 
+                                  ? `${(channel.viewCount / 1000000).toFixed(1)}M`
+                                  : channel.viewCount >= 1000
+                                  ? `${(channel.viewCount / 1000).toFixed(1)}K`
+                                  : channel.viewCount.toLocaleString()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                       
                       <div className="flex flex-wrap gap-2 mb-3">
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -517,9 +602,12 @@ export default function AdminYouTubeSeriesPage() {
 
                       <div className="text-xs text-muted-foreground space-y-1">
                         <p>Category: {channel.resourceCategory}</p>
-                        <p>Tags: {channel.resourceTags.join(', ') || 'None'}</p>
+                        <p>Tags: {channel.resourceTags?.join(', ') || 'None'}</p>
                         <p>Check every: {channel.checkInterval} hours</p>
-                        <p>Videos imported: {channel.videosImported}</p>
+                        <p>Videos imported: {channel.videosImported || 0}</p>
+                        {channel.sourceVideoTitle && (
+                          <p>Source: {channel.sourceVideoTitle}</p>
+                        )}
                         {channel.lastCheckedAt && (
                           <p>Last checked: {formatDistanceToNow(channel.lastCheckedAt.toDate(), { addSuffix: true })}</p>
                         )}

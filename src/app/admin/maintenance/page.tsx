@@ -13,7 +13,7 @@ interface MaintenanceConfig {
   message: string;
   estimatedTime: string;
   activatedBy?: string;
-  activatedAt?: Date;
+  activatedAt?: string;
 }
 
 export default function AdminMaintenancePage() {

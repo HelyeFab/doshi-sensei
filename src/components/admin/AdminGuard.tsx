@@ -32,8 +32,9 @@ export function AdminGuard({ children }: AdminGuardProps) {
           // Get Firebase ID token
           const token = await user.getIdToken();
           
-          // Verify admin role server-side
-          const response = await fetch('/api/admin/verify-role', {
+          // Verify admin role server-side - use absolute URL to ensure correct path
+          const baseUrl = window.location.origin;
+          const response = await fetch(`${baseUrl}/api/admin/verify-role`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -41,12 +42,19 @@ export function AdminGuard({ children }: AdminGuardProps) {
             body: JSON.stringify({ token }),
           });
 
+          if (!response.ok) {
+            console.error('Admin verification failed:', response.status, response.statusText);
+            const errorText = await response.text();
+            console.error('Error response:', errorText);
+            throw new Error(`Verification failed: ${response.status}`);
+          }
+
           const result = await response.json();
 
           if (result.isAdmin) {
             setIsAdminVerified(true);
           } else {
-
+            console.warn('User is not admin:', user.email);
             router.replace('/');
           }
         } catch (error) {

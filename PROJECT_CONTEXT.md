@@ -94,7 +94,7 @@ After 3 months of intensive development with numerous patches and fixes, the cod
 
 ## File Structure Convention
 ```
-doshi-sensei-clean/
+doshi-sensei/
 ├── app/                    # Next.js app router pages
 ├── components/             # Reusable React components
 ├── lib/                    # Utility functions and helpers

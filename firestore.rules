@@ -1,0 +1,1104 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Admin access - allow full access for admin user
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Helper function to check if user is premium
+    function isPremiumUser(userId) {
+      let userData = get(/databases/$(database)/documents/users/$(userId)).data;
+      return userData.subscription != null &&
+        userData.subscription.status == 'active' &&
+        userData.subscription.plan in ['monthly', 'yearly'];
+    }
+
+    // Helper function to validate bookmark structure
+    function isValidBookmark(data) {
+      return data.keys().hasAll(['userId', 'contentId', 'contentType', 'bookmarkedAt', 'updatedAt']) &&
+        data.contentType in ['article', 'story'] &&
+        data.userId is string &&
+        data.contentId is string &&
+        data.bookmarkedAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    // Helper function to validate reading progress structure
+    function isValidReadingProgress(data) {
+      return data.keys().hasAll(['userId', 'contentId', 'contentType', 'progress', 'updatedAt']) &&
+        data.contentType in ['article', 'story'] &&
+        data.userId is string &&
+        data.contentId is string &&
+        data.progress is number &&
+        data.progress >= 0 &&
+        data.progress <= 100 &&
+        data.updatedAt is timestamp;
+    }
+
+    // Users can only access their own data
+    match /users/{userId} {
+      // Allow admin to read all user data
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+
+      // Allow users to update their own data with validation
+      allow create: if request.auth != null && request.auth.uid == userId;
+
+      allow update: if isAdmin() || (
+        request.auth != null && request.auth.uid == userId &&
+        (
+          // Allow updating only the avatar field
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avatar']) ||
+          // If updating subscription data, validate structure
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscription']) ||
+          (
+            request.resource.data.subscription.keys().hasAll(['subscription', 'limits', 'currentUsage']) &&
+            request.resource.data.subscription.subscription.keys().hasAll(['status', 'plan']) &&
+            request.resource.data.subscription.subscription.plan in ['free', 'monthly', 'yearly'] &&
+            request.resource.data.subscription.subscription.status in ['active', 'inactive', 'canceled', 'past_due', 'trialing'] &&
+            request.resource.data.subscription.limits.keys().hasAll(['maxLists', 'maxDrillsPerDay', 'canSync', 'canSave']) &&
+            request.resource.data.subscription.currentUsage.keys().hasAll(['listsCount', 'drillsToday', 'lastDrillDate']) &&
+            request.resource.data.subscription.currentUsage.listsCount >= 0 &&
+            request.resource.data.subscription.currentUsage.drillsToday >= 0 &&
+            request.resource.data.subscription.currentUsage.drillsToday <= 1000
+          )
+        )
+      );
+
+      allow delete: if isAdmin();
+
+      // Allow access to user's subcollections (wordLists, savedWords, etc.)
+      match /{document=**} {
+        allow read, write: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+      }
+    }
+
+    // Mood boards collection - admin access for management
+    match /moodBoards/{boardId} {
+      // Allow admin full access to mood boards
+      allow read, write: if isAdmin();
+
+      // Allow anyone to read mood boards (guest users included)
+      allow read: if true;
+    }
+
+    // Admin logs collection
+    match /adminLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Admin configuration collection
+    match /admin/{document} {
+      allow read, write: if isAdmin();
+    }
+
+    // Analytics collection - admin-only access for aggregated data
+    match /analytics/{date} {
+      // Only admin can read analytics data
+      allow read: if isAdmin();
+      
+      // No direct client writes allowed (analytics are aggregated server-side)
+      allow write: if false;
+      
+      // Daily aggregated analytics subcollection
+      match /daily/{documentType} {
+        // Admin can read all daily analytics
+        allow read: if isAdmin();
+        
+        // Allow the analytics system to write aggregated data
+        // Note: In production, use a service account or Cloud Function
+        allow write: if request.auth != null;
+      }
+      
+      // Weekly/monthly aggregates
+      match /aggregated/{period} {
+        allow read: if isAdmin();
+        allow write: if request.auth != null;
+      }
+    }
+
+    // Site Analytics collection - admin-only access for aggregated data (new analytics system)
+    match /site-analytics/{date} {
+      // Only admin can read analytics data
+      allow read: if isAdmin();
+      
+      // No direct client writes allowed (analytics are aggregated server-side)
+      allow write: if false;
+      
+      // Daily aggregated analytics subcollection
+      match /daily/{documentType} {
+        // Admin can read all daily analytics
+        allow read: if isAdmin();
+        
+        // Allow the analytics system to write aggregated data
+        // Note: In production, use a service account or Cloud Function
+        allow write: if request.auth != null;
+      }
+      
+      // Weekly/monthly aggregates
+      match /aggregated/{period} {
+        allow read: if isAdmin();
+        allow write: if request.auth != null;
+      }
+    }
+
+    // Webhook events collection - server-side only
+    match /webhook_events/{eventId} {
+      // Only allow server-side access (no client access)
+      allow read, write: if false;
+    }
+
+    // Webhook logs collection - admin read only
+    match /webhook_logs/{logId} {
+      // Only admin can read webhook logs
+      allow read: if isAdmin();
+      // Server-side writes only (no client writes)
+      allow write: if false;
+    }
+
+    // News articles collection - public read access, admin write access
+    match /articles/{articleId} {
+      // Allow anyone to read articles (no authentication required)
+      allow read: if true;
+
+      // Only admin can write articles
+      allow write: if isAdmin();
+
+      // Allow reading subcollections
+      match /{document=**} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+    }
+
+    // News articles collection (alternative collection name)
+    match /news_articles/{articleId} {
+      // Allow anyone to read articles (no authentication required)
+      allow read: if true;
+
+      // Only admin can write articles
+      allow write: if isAdmin();
+
+      // Allow reading subcollections
+      match /{document=**} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+    }
+
+    // Articles metadata collection
+    match /articlesMetadata/stats {
+      // Allow anyone to read article statistics
+      allow read: if true;
+
+      // Only admin can write metadata
+      allow write: if isAdmin();
+    }
+
+    // Resources collection (learning resources)
+    match /resources/{resourceId} {
+      // Allow anyone to read published resources
+      allow read: if resource == null || resource.data.status == 'published' || isAdmin();
+
+      // Only admin can create, update, or delete resources
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Blog posts collection - SEO-focused content
+    match /blogPosts/{postId} {
+      // Allow anyone to read published posts or if scheduled and past publish date
+      allow read: if resource == null || 
+        resource.data.status == 'published' || 
+        (resource.data.status == 'scheduled' && resource.data.publishDate <= request.time) ||
+        isAdmin();
+
+      // Only admin can create, update, or delete blog posts
+      allow create, update, delete: if isAdmin();
+    }
+
+    // YouTube Channels collection for monitoring
+    match /youtubeChannels/{channelId} {
+      // Allow anyone to read channels (public feature)
+      allow read: if true;
+      
+      // Only admin can create channels
+      allow create: if isAdmin();
+      
+      // Only admin can update channels
+      allow update: if isAdmin();
+      
+      // Only admin can delete channels
+      allow delete: if isAdmin();
+    }
+
+    // YouTube Series collection
+    match /youtubeSeries/{seriesId} {
+      // Allow authenticated users to read series
+      allow read: if request.auth != null;
+      
+      // Only admin can manage series
+      allow create, update, delete: if isAdmin();
+    }
+
+    // YouTube Video Resources collection
+    match /youtubeVideoResources/{videoId} {
+      // Allow anyone to read video resources (for shadowing integration)
+      allow read: if true;
+      
+      // Only admin or system can create/update (via Cloud Functions)
+      allow create, update: if isAdmin();
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
+    // YouTube Import Logs collection
+    match /youtubeImportLogs/{logId} {
+      // Only admin can read and write logs
+      allow read, write: if isAdmin();
+    }
+
+    // YouTube Channel Stats collection
+    match /youtubeChannelStats/{statsId} {
+      // Allow authenticated users to read stats
+      allow read: if request.auth != null;
+      
+      // Only system (via Cloud Functions) or admin can write
+      allow write: if isAdmin();
+    }
+
+    // Enhanced user bookmarks collection for articles and stories
+    match /user_bookmarks/{bookmarkId} {
+      // Users can read their own bookmarks
+      allow read: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+
+      // Users can create bookmarks for themselves with validation
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidBookmark(request.resource.data);
+
+      // Users can update/delete their own bookmarks
+      allow update: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid) &&
+        isValidBookmark(request.resource.data);
+
+      allow delete: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
+    // Story bookmarks collection (separate from article bookmarks for organization)
+    match /story_bookmarks/{bookmarkId} {
+      // Users can read their own story bookmarks
+      allow read: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+
+      // Users can create story bookmarks for themselves with validation
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidBookmark(request.resource.data) &&
+        request.resource.data.contentType == 'story';
+
+      // Users can update their own story bookmarks
+      allow update: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid) &&
+        isValidBookmark(request.resource.data) &&
+        request.resource.data.contentType == 'story';
+
+      // Users can delete their own story bookmarks
+      allow delete: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
+    // Reading progress collection for both articles and stories
+    match /reading_progress/{progressId} {
+      // Users can read their own reading progress
+      allow read: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+
+      // Users can create reading progress for themselves with validation
+      allow create: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid &&
+        isValidReadingProgress(request.resource.data);
+
+      // Users can update their own reading progress
+      allow update: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid) &&
+        isValidReadingProgress(request.resource.data);
+
+      // Users can delete their own reading progress
+      allow delete: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
+    // Stories collection
+    match /stories/{storyId} {
+      // Allow anyone to read published stories
+      allow read: if resource == null || resource.data.status == 'published' || isAdmin();
+
+      // Only admin can write stories
+      allow write: if isAdmin();
+    }
+
+    // Story progress tracking (legacy - keeping for backward compatibility)
+    match /storyProgress/{progressId} {
+      // Users can read their own progress
+      allow read: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+
+      // Users can create/update their own progress
+      allow create, update: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid;
+
+      // Users can delete their own progress
+      allow delete: if request.auth != null &&
+        (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
+    // User stats collection (for stories and other features)
+    match /userStats/{userId} {
+      // Users can read their own stats
+      allow read: if request.auth != null &&
+        (isAdmin() || request.auth.uid == userId);
+
+      // Users can create/update their own stats with validation
+      allow create: if request.auth != null &&
+        request.auth.uid == userId;
+        
+      allow update: if request.auth != null &&
+        request.auth.uid == userId &&
+        // Validate stats structure on updates
+        request.resource.data.keys().hasAll(['version', 'userId', 'lastUpdated']) &&
+        request.resource.data.version in ['2.0', '2.1'] &&
+        request.resource.data.userId == userId &&
+        request.resource.data.lastUpdated is timestamp;
+
+      // Only admin can delete stats
+      allow delete: if isAdmin();
+      
+      // New structure: current stats subcollection
+      match /current/{documentType} {
+        // Users can read/write their own current stats documents
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        allow create, update: if request.auth != null &&
+          request.auth.uid == userId;
+        
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
+      
+      // Daily activities subcollection
+      match /dailyActivities/{date} {
+        // Users can read their own daily activities
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        // Users can create/update their own daily activities
+        allow create, update: if request.auth != null &&
+          request.auth.uid == userId &&
+          request.resource.data.keys().hasAll(['date', 'activities', 'summary']) &&
+          request.resource.data.date is string &&
+          request.resource.data.activities is list &&
+          request.resource.data.summary is map;
+        
+        // Users can delete their own old activities
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
+      
+      // Learned items subcollections (new in v2.1)
+      match /learnedItems/kanji/{kanjiId} {
+        // Users can read their own learned kanji
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        // Users can create/update their own learned kanji
+        allow create, update: if request.auth != null &&
+          request.auth.uid == userId &&
+          request.resource.data.keys().hasAll(['character', 'learnedAt']) &&
+          request.resource.data.character is string &&
+          request.resource.data.learnedAt is timestamp;
+        
+        // Users can delete their own learned kanji
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
+      
+      match /learnedItems/words/{wordId} {
+        // Users can read their own learned words
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        // Users can create/update their own learned words
+        allow create, update: if request.auth != null &&
+          request.auth.uid == userId &&
+          request.resource.data.keys().hasAll(['word', 'learnedAt']) &&
+          request.resource.data.word is string &&
+          request.resource.data.learnedAt is timestamp;
+        
+        // Users can delete their own learned words
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
+      
+      // Study sessions subcollection (new in v2.1)
+      match /sessions/{sessionId} {
+        // Users can read their own sessions
+        allow read: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+        
+        // Users can create their own sessions
+        allow create: if request.auth != null &&
+          request.auth.uid == userId &&
+          request.resource.data.keys().hasAll(['startTime', 'endTime', 'activities']) &&
+          request.resource.data.startTime is timestamp &&
+          request.resource.data.endTime is timestamp &&
+          request.resource.data.activities is list;
+        
+        // Users cannot update sessions (immutable)
+        allow update: if false;
+        
+        // Users can delete old sessions
+        allow delete: if request.auth != null &&
+          (isAdmin() || request.auth.uid == userId);
+      }
+    }
+
+    // Premium Sync Collections
+    // User sync document
+    match /userSync/{userId} {
+      // Only premium users can read/write their own sync document
+      allow read, write: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+    
+    // User sync manifest - stores metadata about synced resources
+    match /userSync/{userId}/manifest/data {
+      // Only premium users can read/write their own sync manifest
+      allow read, write: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+    
+    // User synced resources - stores actual cached content
+    match /userSync/{userId}/userResources/{resourceId} {
+      // Only premium users can read their own synced resources
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+      
+      // Premium users can create/update resources with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        // Validate resource structure
+        request.resource.data.keys().hasAll(['resource', 'timestamp']) &&
+        request.resource.data.resource.keys().hasAll(['id', 'type', 'data', 'metadata']) &&
+        request.resource.data.resource.type in ['article', 'story', 'kanji', 'verb', 'adjective', 'audio'] &&
+        request.resource.data.resource.metadata.keys().hasAll(['size', 'cachedAt', 'lastAccessed', 'version', 'checksum']) &&
+        request.resource.data.timestamp is timestamp;
+      
+      // Premium users can delete their own resources
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+    
+    // Sync queue for offline operations
+    match /userSync/{userId}/syncQueue/{queueId} {
+      // Premium users can manage their sync queue
+      allow read, write: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // SRS Data for flashcards - premium feature
+    match /users/{userId}/srsData/{cardId} {
+      // Premium users can read their own SRS data
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+      
+      // Premium users can write their own SRS data with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['interval', 'ease', 'due', 'lapses', 'reviews', 'status', 'lastModified']) &&
+        request.resource.data.interval is number &&
+        request.resource.data.ease is number &&
+        request.resource.data.due is string &&
+        request.resource.data.lapses is number &&
+        request.resource.data.reviews is number &&
+        request.resource.data.status in ['new', 'learning', 'review', 'relearning'] &&
+        request.resource.data.lastModified is string;
+      
+      // Premium users can delete their own SRS data
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Achievement Stats - premium sync feature
+    match /users/{userId}/achievementStats/current {
+      // Premium users can read their own achievement stats
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+      
+      // Premium users can write their own achievement stats with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['currentStreak', 'longestStreak', 'drillsCompleted', 'wordsSaved', 
+          'sentencesRead', 'storiesCompleted', 'gamesPlayed', 'articlesRead', 'flashcardSessions', 
+          'totalXP', 'lastStudyDate', 'totalStudyTime', 'listsCreated', 'kanjiStudied', 'updatedAt']) &&
+        request.resource.data.currentStreak is number &&
+        request.resource.data.longestStreak is number &&
+        request.resource.data.drillsCompleted is number &&
+        request.resource.data.wordsSaved is number &&
+        request.resource.data.sentencesRead is number &&
+        request.resource.data.storiesCompleted is number &&
+        request.resource.data.gamesPlayed is number &&
+        request.resource.data.articlesRead is number &&
+        request.resource.data.flashcardSessions is number &&
+        request.resource.data.totalXP is number &&
+        request.resource.data.lastStudyDate is string &&
+        request.resource.data.totalStudyTime is number &&
+        request.resource.data.listsCreated is number &&
+        request.resource.data.kanjiStudied is number &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Premium users can delete their own achievement stats
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Unlocked Achievements - premium sync feature
+    match /users/{userId}/unlockedAchievements/{achievementId} {
+      // Premium users can read their own unlocked achievements
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+      
+      // Premium users can create/update their own unlocked achievements with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'achievementId', 'unlockedAt', 'progress', 'notificationShown', 'updatedAt']) &&
+        request.resource.data.id is string &&
+        request.resource.data.achievementId is string &&
+        request.resource.data.unlockedAt is string &&
+        request.resource.data.progress is number &&
+        request.resource.data.progress >= 0 &&
+        request.resource.data.progress <= 100 &&
+        request.resource.data.notificationShown is bool &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Premium users can delete their own unlocked achievements
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Translations collection - cached translations from Google Translate
+    match /translations/{translationId} {
+      // Anyone can read cached translations
+      allow read: if true;
+      
+      // Only authenticated users can create translations (when requesting new ones)
+      allow create: if request.auth != null &&
+        request.resource.data.keys().hasAll(['originalText', 'translatedText', 'language', 'createdAt', 'lastAccessed']) &&
+        request.resource.data.originalText is string &&
+        request.resource.data.translatedText is string &&
+        request.resource.data.language is string &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.lastAccessed is timestamp;
+      
+      // Allow updating lastAccessed timestamp only
+      allow update: if request.auth != null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastAccessed']) &&
+        request.resource.data.lastAccessed is timestamp;
+      
+      // Only admin can delete translations
+      allow delete: if isAdmin();
+    }
+
+    // Transcript Cache collection - for YouTube shadowing feature
+    match /transcriptCache/{transcriptId} {
+      // Anyone can read cached transcripts (including guests)
+      allow read: if true;
+      
+      // Anyone can create new transcript cache entries (community feature)
+      // Updated to allow all the fields we're actually using
+      allow create: if
+        request.resource.data.keys().hasAll(['transcript', 'createdAt', 'lastAccessed', 'accessCount', 'contentType']) &&
+        request.resource.data.transcript is list &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.lastAccessed is timestamp &&
+        request.resource.data.accessCount is number &&
+        request.resource.data.contentType in ['youtube', 'audio', 'video'];
+      
+      // Allow anyone to update access count, last accessed time, and formatted transcript
+      allow update: if
+        // Allow incrementing access count
+        (request.resource.data.accessCount == resource.data.accessCount + 1 &&
+         request.resource.data.lastAccessed is timestamp) ||
+        // OR allow adding formatted transcript without changing access count
+        (request.resource.data.accessCount == resource.data.accessCount &&
+         request.resource.data.keys().hasAny(['formattedTranscript', 'metadata']));
+      
+      // Allow deletion by admin, creator, or any authenticated user 
+      // (since transcripts are community-shared resources)
+      allow delete: if isAdmin() || 
+        (request.auth != null && resource.data.createdBy == request.auth.uid) ||
+        (request.auth != null); // Any authenticated user can delete cached transcripts
+    }
+
+    // Config collection - for dynamic entitlement rules
+    match /config/{document} {
+      // EVERYONE can READ config (needed for dynamic rules to work)
+      allow read: if true;
+      
+      // Only admin can write config
+      allow write: if isAdmin();
+    }
+
+    // User Practice History - users can only access their own history
+    match /userPracticeHistory/{document} {
+      // Users can read their own practice history
+      // Allow read if document doesn't exist (for checking before create) or if userId matches
+      // OR if reading for popular videos aggregation (any authenticated user)
+      allow read: if request.auth != null;
+      
+      // Users can create practice history for themselves
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId &&
+        request.resource.data.keys().hasAll(['userId', 'videoId', 'videoUrl', 'videoTitle', 
+          'lastPracticed', 'firstPracticed', 'practiceCount', 'contentType']) &&
+        request.resource.data.userId is string &&
+        request.resource.data.videoId is string &&
+        request.resource.data.videoUrl is string &&
+        request.resource.data.videoTitle is string &&
+        request.resource.data.lastPracticed is timestamp &&
+        request.resource.data.firstPracticed is timestamp &&
+        request.resource.data.practiceCount is number &&
+        request.resource.data.contentType in ['youtube', 'audio', 'video'];
+      
+      // Users can update their own practice history
+      allow update: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can delete their own practice history
+      allow delete: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+    }
+
+    // Kanji Mastery - Premium users can sync their kanji progress
+    match /users/{userId}/kanjiProgress/{kanjiId} {
+      // Premium users can read their own kanji progress
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        (isAdmin() || isPremiumUser(userId));
+      
+      // Premium users can create/update their own kanji progress with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'lastReviewed', 'nextReview', 'reviewCount', 
+          'easeFactor', 'interval', 'difficulty', 'lapses', 'quality', 'retentionRate', 
+          'masteryLevel', 'createdAt', 'updatedAt']) &&
+        request.resource.data.id is string &&
+        request.resource.data.lastReviewed is string &&
+        request.resource.data.nextReview is string &&
+        request.resource.data.reviewCount is number &&
+        request.resource.data.easeFactor is number &&
+        request.resource.data.interval is number &&
+        request.resource.data.difficulty is number &&
+        request.resource.data.lapses is number &&
+        request.resource.data.quality is number &&
+        request.resource.data.retentionRate is number &&
+        request.resource.data.masteryLevel is number &&
+        request.resource.data.createdAt is string &&
+        request.resource.data.updatedAt is string;
+      
+      // Premium users can delete their own kanji progress
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Kanji Study Sessions - Premium users can sync their study sessions
+    match /users/{userId}/kanjiStudySessions/{sessionId} {
+      // Premium users can read their own study sessions
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        (isAdmin() || isPremiumUser(userId));
+      
+      // Premium users can create their own study sessions with validation
+      allow create: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'date', 'kanjiReviewed', 'averageQuality', 'timeSpent']) &&
+        request.resource.data.id is string &&
+        request.resource.data.date is string &&
+        request.resource.data.kanjiReviewed is number &&
+        request.resource.data.averageQuality is number &&
+        request.resource.data.timeSpent is number;
+      
+      // Premium users cannot update sessions (immutable for data integrity)
+      allow update: if false;
+      
+      // Premium users can delete their own old sessions
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Textbook Vocabulary Progress - Premium users can sync their vocabulary progress
+    match /users/{userId}/textbookVocabularyProgress/{vocabularyId} {
+      // Premium users can read their own vocabulary progress
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        (isAdmin() || isPremiumUser(userId));
+      
+      // Premium users can create/update their own vocabulary progress with validation
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'textbook', 'lesson', 'lastReviewed', 
+          'nextReview', 'reviewCount', 'easeFactor', 'interval', 'quality', 
+          'masteryLevel', 'createdAt', 'updatedAt']) &&
+        request.resource.data.id is string &&
+        request.resource.data.textbook is string &&
+        request.resource.data.lesson is number &&
+        request.resource.data.lastReviewed is string &&
+        request.resource.data.nextReview is string &&
+        request.resource.data.reviewCount is number &&
+        request.resource.data.easeFactor is number &&
+        request.resource.data.interval is number &&
+        request.resource.data.quality is number &&
+        request.resource.data.masteryLevel is number &&
+        request.resource.data.createdAt is string &&
+        request.resource.data.updatedAt is string;
+      
+      // Premium users can delete their own vocabulary progress
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Textbook Vocabulary Study Sessions - Premium users can sync their study sessions
+    match /users/{userId}/textbookVocabularyStudySessions/{sessionId} {
+      // Premium users can read their own study sessions
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        (isAdmin() || isPremiumUser(userId));
+      
+      // Premium users can create their own study sessions with validation
+      allow create: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['id', 'date', 'cardsStudied', 'cardsCorrect', 
+          'averageQuality', 'timeSpent', 'textbook']) &&
+        request.resource.data.id is string &&
+        request.resource.data.date is string &&
+        request.resource.data.cardsStudied is number &&
+        request.resource.data.cardsCorrect is number &&
+        request.resource.data.averageQuality is number &&
+        request.resource.data.timeSpent is number &&
+        request.resource.data.textbook is string;
+      
+      // Premium users cannot update sessions (immutable for data integrity)
+      allow update: if false;
+      
+      // Premium users can delete their own old sessions
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
+    // Social Features - User Social Profiles
+    match /userSocial/{userId} {
+      // Anyone can read public profiles
+      allow read: if request.auth != null;
+      
+      // Users can create/update their own social profile
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.userId == userId;
+      
+      // Only admin can delete social profiles
+      allow delete: if isAdmin();
+    }
+
+    // Friend Requests
+    match /friendRequests/{requestId} {
+      // Users can read requests they're involved in
+      allow read: if request.auth != null &&
+        (resource.data.fromUserId == request.auth.uid || 
+         resource.data.toUserId == request.auth.uid ||
+         isAdmin());
+      
+      // Users can create friend requests
+      allow create: if request.auth != null &&
+        request.resource.data.fromUserId == request.auth.uid;
+      
+      // Users involved can update request status
+      allow update: if request.auth != null &&
+        (resource.data.fromUserId == request.auth.uid || 
+         resource.data.toUserId == request.auth.uid);
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
+    // Challenges
+    match /challenges/{challengeId} {
+      // Users can read challenges they're involved in
+      allow read: if request.auth != null &&
+        (resource.data.fromUserId == request.auth.uid || 
+         resource.data.toUserId == request.auth.uid ||
+         isAdmin());
+      
+      // Users can create challenges
+      allow create: if request.auth != null &&
+        request.resource.data.fromUserId == request.auth.uid;
+      
+      // Users involved can update challenge
+      allow update: if request.auth != null &&
+        (resource.data.fromUserId == request.auth.uid || 
+         resource.data.toUserId == request.auth.uid);
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
+    // Time-based stats subcollection
+    match /userStats/{userId}/timeBasedStats/{statDocument} {
+      // Users can read their own time-based stats, all users can read for leaderboard
+      allow read: if request.auth != null;
+      
+      // Only the user can write their own stats
+      allow create, update: if request.auth != null &&
+        request.auth.uid == userId;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
+
+    // Lyrics Cache - cached lyrics from APIs
+    match /lyricsCache/{lyricsId} {
+      // Anyone can read cached lyrics
+      allow read: if true;
+      
+      // Only authenticated users can create lyrics cache entries
+      allow create: if request.auth != null &&
+        request.resource.data.keys().hasAll(['searchQuery', 'artist', 'title', 
+          'lyrics', 'source', 'confidence', 'createdAt', 'lastAccessed', 'accessCount']) &&
+        request.resource.data.searchQuery is string &&
+        request.resource.data.artist is string &&
+        request.resource.data.title is string &&
+        request.resource.data.lyrics is string &&
+        request.resource.data.source in ['genius', 'manual'] &&
+        request.resource.data.confidence is number &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.lastAccessed is timestamp &&
+        request.resource.data.accessCount is number;
+      
+      // Allow updating access count and last accessed
+      allow update: if request.auth != null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accessCount', 'lastAccessed']) &&
+        request.resource.data.accessCount == resource.data.accessCount + 1 &&
+        request.resource.data.lastAccessed is timestamp;
+      
+      // Only admin can delete lyrics cache
+      allow delete: if isAdmin();
+    }
+
+    // User Edited Transcripts - Premium users can edit transcripts
+    match /userEditedTranscripts/{documentId} {
+      // Premium users can read their own edited transcripts
+      // Allow read if document doesn't exist (for checking before create) or if user owns it
+      allow read: if request.auth != null && 
+        isPremiumUser(request.auth.uid) &&
+        (resource == null || resource.data.userId == request.auth.uid);
+      
+      // Premium users can create edited transcripts with validation
+      allow create: if request.auth != null && 
+        isPremiumUser(request.auth.uid) &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['id', 'userId', 'contentId', 'contentType', 
+          'transcript', 'createdAt', 'updatedAt']) &&
+        request.resource.data.id == documentId &&
+        request.resource.data.userId is string &&
+        request.resource.data.contentId is string &&
+        request.resource.data.contentType in ['youtube', 'audio', 'video'] &&
+        request.resource.data.transcript is list &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Premium users can update their own edited transcripts
+      allow update: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        isPremiumUser(request.auth.uid) &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.contentId == resource.data.contentId;
+      
+      // Premium users can delete their own edited transcripts
+      allow delete: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        isPremiumUser(request.auth.uid);
+    }
+
+    // Notification Preferences - users can manage their own notification settings
+    match /notificationPreferences/{userId} {
+      // Users can read their own notification preferences
+      allow read: if request.auth != null && 
+        (request.auth.uid == userId || isAdmin());
+      
+      // Users can create their own notification preferences with validation
+      allow create: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['userId', 'enabled', 'timezone', 'preferences', 
+          'createdAt', 'updatedAt']) &&
+        request.resource.data.userId == userId &&
+        request.resource.data.enabled is bool &&
+        request.resource.data.timezone is string &&
+        request.resource.data.preferences is map &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Users can update their own notification preferences
+      allow update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.userId == userId;
+      
+      // Users can delete their own notification preferences
+      allow delete: if request.auth != null && 
+        (request.auth.uid == userId || isAdmin());
+    }
+
+    // Notification Logs - admin only (functions write to this)
+    match /notificationLogs/{logId} {
+      // Only admin can read notification logs
+      allow read: if isAdmin();
+      
+      // Only Cloud Functions should write (no client writes)
+      allow write: if false;
+    }
+
+    // Referrals collection - for share/referral system
+    match /referrals/{referralId} {
+      // Users can read referrals they created
+      allow read: if request.auth != null &&
+        (resource.data.referrerId == request.auth.uid || isAdmin());
+      
+      // Users can create referrals for themselves
+      allow create: if request.auth != null && 
+        request.resource.data.referrerId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['referrerId', 'referralCode', 'createdAt', 'status']) &&
+        request.resource.data.status == 'active';
+      
+      // Only allow updating stats fields
+      allow update: if request.auth != null &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stats', 'metadata']);
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // Referral conversions - track successful referrals
+    match /referralConversions/{conversionId} {
+      // Users can read conversions they're involved in
+      allow read: if request.auth != null &&
+        (resource.data.referrerId == request.auth.uid || 
+         resource.data.referredUserId == request.auth.uid ||
+         isAdmin());
+      
+      // System creates conversions (via API/Functions)
+      allow create: if request.auth != null;
+      
+      // No updates allowed (immutable)
+      allow update: if false;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // Share events - track all share activities
+    match /shareEvents/{eventId} {
+      // Users can read their own share events
+      allow read: if request.auth != null &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Allow creating share events - both authenticated and anonymous users can share
+      allow create: if 
+        // For authenticated users, userId must match
+        (request.auth != null && request.resource.data.userId == request.auth.uid &&
+         request.resource.data.keys().hasAll(['userId', 'timestamp', 'method', 'content', 'result'])) ||
+        // For anonymous shares, allow without userId
+        (request.auth == null && !('userId' in request.resource.data) &&
+         request.resource.data.keys().hasAll(['timestamp', 'method', 'content', 'result']));
+      
+      // No updates allowed (immutable)
+      allow update: if false;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+
+    // Practice History collection - track YouTube shadowing practice
+    match /users/{userId}/practiceHistory/{itemId} {
+      // Users can read their own practice history
+      allow read: if request.auth != null && 
+        request.auth.uid == userId;
+      
+      // Users can create/update their own practice history
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['videoUrl', 'videoTitle', 'lastPracticed']) &&
+        request.resource.data.videoUrl is string &&
+        request.resource.data.videoTitle is string;
+      
+      // Users can delete their own practice history
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId;
+    }
+
+    // Bug Reports collection - for bug tracking and user feedback
+    match /bugReports/{bugId} {
+      // Admin can read all bug reports
+      allow read: if isAdmin();
+      
+      // Anyone can create bug reports (including anonymous users)
+      allow create: if 
+        request.resource.data.keys().hasAll(['category', 'title', 'description', 
+          'userEmail', 'userName', 'timestamp', 'status', 'priority', 
+          'obsidianSynced', 'createdAt', 'updatedAt']) &&
+        request.resource.data.category in ['bug', 'feedback', 'feature', 'support'] &&
+        request.resource.data.status in ['new', 'investigating', 'in-progress', 'fixed', 'wont-fix', 'duplicate'] &&
+        request.resource.data.priority in ['low', 'medium', 'high', 'critical'] &&
+        request.resource.data.timestamp is timestamp &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Only admin can update bug reports
+      allow update: if isAdmin();
+      
+      // Only admin can delete bug reports
+      allow delete: if isAdmin();
+    }
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

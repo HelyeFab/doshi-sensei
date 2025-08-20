@@ -1,0 +1,270 @@
+{
+  "name": "Doshi Sensei - Japanese Learning",
+  "short_name": "Doshi Sensei",
+  "description": "Master Japanese verb conjugations and vocabulary with interactive practice, drills, and JLPT preparation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#8a5cf6",
+  "theme_color": "#8a5cf6",
+  "orientation": "any",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["education", "language", "learning"],
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "prefer_related_applications": false,
+  "display_override": ["fullscreen", "minimal-ui", "standalone"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "shortcuts": [
+    {
+      "name": "Quick Practice",
+      "short_name": "Practice",
+      "description": "Jump into conjugation practice",
+      "url": "/drill?source=pwa_shortcut&mode=quick",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-practice-96.png", 
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Today's Vocabulary",
+      "short_name": "Vocabulary",
+      "description": "Review today's vocabulary",
+      "url": "/vocabulary?source=pwa_shortcut&view=today",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-vocabulary-96.png", 
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Play Kanji Game",
+      "short_name": "Games",
+      "description": "Quick kanji recognition game",
+      "url": "/games?source=pwa_shortcut&game=kanji",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-games-96.png", 
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Daily News",
+      "short_name": "News",
+      "description": "Read NHK Easy News",
+      "url": "/news?source=pwa_shortcut",
+      "icons": [
+        { 
+          "src": "/icons/shortcut-news-96.png", 
+          "sizes": "96x96",
+          "type": "image/png",
+          "purpose": "any"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-home-540x1170.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Home Screen - Welcome dashboard with daily progress"
+    },
+    {
+      "src": "/screenshots/mobile-practice-540x1170.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Practice Drills - Master verb conjugations"
+    },
+    {
+      "src": "/screenshots/mobile-vocabulary-540x1170.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Vocabulary - Learn 5000+ Japanese words"
+    },
+    {
+      "src": "/screenshots/mobile-games-540x1170.png",
+      "sizes": "540x1170",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Learning Games - Fun way to study Japanese"
+    },
+    {
+      "src": "/screenshots/desktop-home-1280x720.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Desktop Dashboard - Complete learning overview"
+    },
+    {
+      "src": "/screenshots/desktop-lessons-1280x720.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Lesson Library - Structured Japanese curriculum"
+    }
+  ],
+  "related_applications": [],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "media",
+          "accept": ["text/*", "image/*"]
+        }
+      ]
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+doshisensei",
+      "url": "/protocol?url=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/open",
+      "accept": {
+        "text/plain": [".txt"],
+        "application/json": [".json"],
+        "text/csv": [".csv"]
+      },
+      "icons": [
+        {
+          "src": "/icons/file-handler-96.png",
+          "sizes": "96x96"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "icons": [
+    {
+      "src": "/favicon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-70x70.png",
+      "sizes": "70x70",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon-120x120.png",
+      "sizes": "120x120",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-150x150.png",
+      "sizes": "150x150",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon-167x167.png",
+      "sizes": "167x167",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-310x310.png",
+      "sizes": "310x310",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/doshi.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/monochrome-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "monochrome"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

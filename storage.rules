@@ -1,0 +1,69 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow read access to all users
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+    
+    // Allow only admin to write to blog folder
+    match /blog/{allPaths=**} {
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Allow only admin to write to resources folder
+    match /resources/{allPaths=**} {
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Allow only admin to write to test folder
+    match /test/{allPaths=**} {
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Allow only admin to write to stories folder
+    match /stories/{allPaths=**} {
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Allow only admin to write to YouTube series folder (thumbnails, etc.)
+    match /youtube-series/{allPaths=**} {
+      allow write: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
+    
+    // Allow authenticated users to write to TTS cache folder
+    match /tts-cache/{allPaths=**} {
+      allow write: if request.auth != null;
+    }
+    
+    // Helper function to check if user is premium (same as in Firestore rules)
+    function isPremiumUser(userId) {
+      let userData = firestore.get(/databases/(default)/documents/users/$(userId)).data;
+      return userData.subscription != null &&
+        userData.subscription.subscription != null &&
+        userData.subscription.subscription.status == 'active' &&
+        userData.subscription.subscription.plan in ['monthly', 'yearly'];
+    }
+    
+    // Premium sync storage - users can only access their own synced assets
+    match /userSync/{userId}/{allPaths=**} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && 
+        request.auth.uid == userId &&
+        isPremiumUser(userId);
+    }
+    
+    // Anki import storage - premium users can upload their Anki media files
+    match /users/{userId}/anki/{allPaths=**} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && 
+        request.auth.uid == userId &&
+        isPremiumUser(userId);
+    }
+  }
+}

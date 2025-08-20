@@ -321,7 +321,7 @@ export default function AccountPage() {
             </>
           ) : isLogin ? (
             <>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button
                 onClick={() => setIsLogin(false)}
                 className="text-primary hover:underline"

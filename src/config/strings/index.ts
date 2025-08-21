@@ -1,9 +1,9 @@
 import { en } from './en';
 
-// English only - simplified for clean rebuild
+// English only - removed multi-language support
 export const strings = {
   en
-} as const;
+};
 
 export type Language = 'en';
 export type StringKeys = keyof typeof en;
@@ -24,11 +24,8 @@ export function isLanguageSupported(language: string): language is Language {
 export function getUserPreferredLanguage(): Language {
   if (typeof window === 'undefined') return 'en';
   
-  // For now, always return English since we only support it
-  // In the future, this could be expanded to check navigator.language
-  return 'en';
+  const userLang = navigator.language.split('-')[0] as Language;
+  return isLanguageSupported(userLang) ? userLang : 'en';
 }
 
-// Export the English strings as default
 export { en as default } from './en';
-export type EnglishStrings = typeof en;

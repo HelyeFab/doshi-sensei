@@ -15,6 +15,17 @@ After 3 months of intensive development with numerous patches and fixes, the cod
 - Build confidence in the release
 
 ## Migration Strategy
+
+### ⚠️ CRITICAL RULE #1: ALWAYS COPY FROM OLD CODEBASE - NO PLACEHOLDER CODE ⚠️
+**THIS IS IMPERATIVE AND THE MOST IMPORTANT RULE TO FOLLOW:**
+- **MUST** copy the complete file AS-IS from `/home/mate/Dev/NextProjects/doshi-sensei-old`
+- **NEVER** create placeholder implementations, stub functions, or "simplified versions"
+- **NEVER** make assumptions about what the code should do
+- **ALWAYS** copy all dependencies and related files
+- If a file is large, still copy it completely - do not truncate or simplify
+- This applies to ALL files: components, utilities, types, styles, configs, etc.
+
+### Migration Process
 1. **Incremental Component Migration**: Move components one by one from old project (/home/mate/Dev/NextProjects/doshi-sensei-old)
 2. **Test Each Step**: Verify both development and production builds after each addition
 3. **Maintain Both Projects**: Keep old project as reference until new one is complete
@@ -32,6 +43,11 @@ After 3 months of intensive development with numerous patches and fixes, the cod
   - Account deletion API
 - [x] Basic navigation structure (Bottom nav implemented)
 - [x] Theme system (dark/light mode) (12 color schemes with CSS variables)
+- [x] Access Control System (Three-Pillar Architecture)
+  - Feature Registry with limits configuration
+  - Entitlement Rules for user types
+  - Access Permission Mapping
+  - **NEW: Unified `useFeature` hook (see docs/access-control)**
 - [ ] Japanese/English language toggle
 
 ### Learning Features (Phase 2 - Primary Features)
@@ -43,12 +59,22 @@ After 3 months of intensive development with numerous patches and fixes, the cod
 - [ ] Study lists
 - [ ] Practice modes (partially complete)
 
+### Games & Interactive Features (Phase 2.5 - Games Migration)
+- [x] Kana Drop game - Fully migrated (8 files)
+- [x] Matching Game - Fully migrated (8 files)
+- [x] Sentence Scramble - Fully migrated (includes Three-Pillar setup)
+- [x] Pokemon system utilities - Already present
+- [ ] Stroke Order Practice (partial migration needed)
+- [ ] Memory Match game
+- [ ] Kanji Quest game
+- [ ] Other interactive learning games
+
 ### Advanced Features (Phase 3 - Enhanced Features)
 - [ ] YouTube shadowing with transcript caching
 - [ ] Textbook vocabulary (Genki/Minna no Nihongo)
-- [ ] Games (Snake, Kanji Battle, etc.)
 - [ ] News reader
 - [ ] AI story generation
+- [ ] Reading routes and comprehension practice
 
 ### Infrastructure (Phase 4 - Production Ready)
 - [ ] PWA configuration
@@ -212,8 +238,8 @@ SUPA_YOUTUBE_API_KEY=
 
 ## Current Status
 - **Date Started**: January 20, 2025
-- **Current Phase**: Phase 2 - Learning Features
-- **Last Updated**: January 20, 2025
+- **Current Phase**: Phase 2.5 - Games Migration (Complete)
+- **Last Updated**: January 21, 2025
 - **Completed**:
   - ✅ Homepage with exact layout from old app
     - User avatar placeholder with greeting
@@ -294,13 +320,22 @@ SUPA_YOUTUBE_API_KEY=
     - Access Permission Mapping
     - useAccess hook for checking and tracking usage
     - Integration with AuthContext for user type detection
+    - **NEW: Unified `useFeature` hook properly configured for all migrated games**
+  - ✅ Games Migration (Phase 2.5)
+    - Kana Drop game - Fully migrated (8 files) with Three-Pillar setup
+    - Matching Game - Fully migrated (8 files) with Three-Pillar setup
+    - Sentence Scramble - Fully migrated with complete Three-Pillar integration
+    - Pokemon system utilities - Already present and functional
+    - All games properly configured with feature registry and access controls
 - **Next Steps**:
-  - Test authentication flow with different user types
+  - Complete Reading Routes migration for comprehension practice
+  - Complete Stroke Order Practice migration
+  - Test all games with different user types (guest/free/premium)
+  - Fix build issues in admin pages (marked, ProductionSnakePath, etc.)
   - Add subscription management (Stripe integration)
   - Migrate verb conjugation practice
   - Add vocabulary search feature
   - Implement kanji browser
-  - Add Kana Drop game functionality
 
 ## Notes for Claude/AI Assistant
 When working on this project:
@@ -318,3 +353,39 @@ When working on this project:
 - Report any issues or concerns immediately
 - Suggest improvements to architecture when noticed
 - Keep track of completed items in this document
+
+## Critical Architecture Changes from Old Project
+
+### 1. Unified Access Control (January 2025)
+**Change**: Consolidated `useAccess`, `useAccessWithModals`, and old `useFeature` into a single unified `useFeature` hook.
+
+**Why**: The old project had 3+ hooks doing essentially the same job, causing:
+- Developer confusion about which hook to use
+- Inconsistent behavior across the app
+- Maintenance overhead
+
+**New Approach**: Single `useFeature` hook with configuration options:
+```typescript
+const { canUse, checkAndTrack, remaining } = useFeature(featureId, {
+  showToast: true,    // Show notifications
+  showModal: true,    // Show upgrade modals
+  trackUsage: true    // Auto-track usage
+});
+```
+
+**Migration Notes**: 
+- When copying components from old project, replace all access hooks with the new unified hook
+- See `/docs/access-control/README.md` for full documentation
+- Old hook patterns are temporarily available as compatibility wrappers
+
+### 2. Flat Subscription Model
+**Structure**: Simplified to 4 user types:
+- `guest` - Not logged in
+- `free` - Logged in, no subscription
+- `monthly` - Active monthly subscription  
+- `yearly` - Active yearly subscription
+
+**Benefits**: 
+- Eliminates complex nested subscription tiers
+- Simplifies access checks
+- Clearer mental model for developers

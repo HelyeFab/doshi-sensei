@@ -24,16 +24,20 @@ interface AuthContextType {
   userType: UserType;
   subscription: UserSubscription | null;
   loading: boolean;
-  signInWithEmail: (email: string, password: string) => Promise<any>;
+  signInWithEmail: (email: string, password: string) => Promise<import('firebase/auth').UserCredential>;
   signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<User | null>;
   signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  sendVerificationEmail: () => Promise<void>;
   deleteAccount: () => Promise<void>;
   refreshSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Export the context for direct access when needed
+export { AuthContext };
 
 export function useAuth() {
   const context = useContext(AuthContext);
@@ -115,29 +119,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       const sub = await fetchUserSubscription(user.uid);
       setSubscription(sub);
-      setUserType(getUserType(sub));
+      setUserType(getUserType(sub ?? undefined));
     }
   };
 
   useEffect(() => {
     // Handle redirect result from Google sign-in
     const handleRedirectResult = async () => {
+      if (!auth) return;
       try {
         const result = await getRedirectResult(auth);
         if (result?.user) {
           const sub = await createOrUpdateUserDocument(result.user);
           setSubscription(sub);
-          setUserType(getUserType(sub));
+          setUserType(getUserType(sub ?? undefined));
         }
-      } catch (error: any) {
+      } catch (error) {
         // Only log actual errors, not null results
-        if (error?.code && error.code !== 'auth/no-auth-event') {
+        if ((error as { code?: string })?.code && (error as { code?: string }).code !== 'auth/no-auth-event') {
           console.error('Redirect sign-in error:', error);
         }
       }
     };
     
     handleRedirectResult();
+    
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
     
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
@@ -146,7 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Create/update user document and fetch subscription
         const sub = await createOrUpdateUserDocument(currentUser);
         setSubscription(sub);
-        setUserType(getUserType(sub));
+        setUserType(getUserType(sub ?? undefined));
       } else {
         // User signed out
         setSubscription(null);
@@ -160,19 +170,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
+    if (!auth) throw new Error('Auth not initialized');
     const result = await signInWithEmailAndPassword(auth, email, password);
     
     // Fetch subscription after sign in
     if (result.user) {
       const sub = await fetchUserSubscription(result.user.uid);
       setSubscription(sub);
-      setUserType(getUserType(sub));
+      setUserType(getUserType(sub ?? undefined));
     }
     
     return result;
   };
 
   const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
+    if (!auth) throw new Error('Auth not initialized');
     const result = await createUserWithEmailAndPassword(auth, email, password);
 
     // Update the user's display name if provided
@@ -184,7 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (result.user) {
       const sub = await createOrUpdateUserDocument(result.user);
       setSubscription(sub);
-      setUserType(getUserType(sub));
+      setUserType(getUserType(sub ?? undefined));
     }
     
     return result.user;
@@ -201,25 +213,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Try popup first (better UX on desktop)
       if (typeof window !== 'undefined' && window.innerWidth > 768) {
         try {
+          if (!auth) throw new Error('Auth not initialized');
           const result = await signInWithPopup(auth, provider);
           // Create/update user document in Firestore
           if (result.user) {
             const sub = await createOrUpdateUserDocument(result.user);
             setSubscription(sub);
-            setUserType(getUserType(sub));
+            setUserType(getUserType(sub ?? undefined));
           }
           return;
-        } catch (popupError: any) {
+        } catch (popupError) {
           // If popup fails (blocked, COOP issues, etc.), fall back to redirect
-          if (popupError.code !== 'auth/popup-closed-by-user') {
+          if ((popupError as { code?: string }).code !== 'auth/popup-closed-by-user') {
             console.log('Popup blocked or failed, using redirect method');
-            await signInWithRedirect(auth, provider);
+            if (auth) await signInWithRedirect(auth, provider);
           }
           // If user closed the popup, just return silently (not an error)
         }
       } else {
         // Use redirect for mobile devices
-        await signInWithRedirect(auth, provider);
+        if (auth) await signInWithRedirect(auth, provider);
       }
     } catch (error) {
       console.error('Google sign-in error:', error);
@@ -228,13 +241,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    if (!auth) throw new Error('Auth not initialized');
     await signOut(auth);
     setSubscription(null);
     setUserType('guest');
   };
 
   const resetPassword = async (email: string) => {
+    if (!auth) throw new Error('Auth not initialized');
     await sendPasswordResetEmail(auth, email);
+  };
+
+  const sendVerificationEmail = async () => {
+    if (!user) throw new Error('No user logged in');
+    await sendEmailVerification(user);
   };
 
   const deleteAccount = async () => {
@@ -258,7 +278,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     
     // Sign out locally (the account is already deleted on the server)
-    await signOut(auth);
+    if (auth) await signOut(auth);
     setSubscription(null);
     setUserType('guest');
   };
@@ -273,6 +293,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithGoogle,
     logout,
     resetPassword,
+    sendVerificationEmail,
     deleteAccount,
     refreshSubscription,
   };

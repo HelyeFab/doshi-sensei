@@ -2,6 +2,34 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ CRITICAL MIGRATION RULE - MUST READ FIRST ⚠️
+
+### ALWAYS COPY FROM OLD CODEBASE - NO PLACEHOLDER CODE
+**THIS IS IMPERATIVE AND THE MOST IMPORTANT RULE YOU MUST ABIDE BY:**
+
+When migrating ANY file from the old project (`/home/mate/Dev/NextProjects/doshi-sensei-old`):
+1. **MUST** copy the complete file AS-IS - no modifications or simplifications
+2. **NEVER** create placeholder code, stub functions, or "minimal implementations"
+3. **NEVER** make assumptions about what the code should do
+4. **ALWAYS** copy all dependencies that the file imports
+5. If a file is large (even 1000+ lines), copy it completely - do not truncate
+6. This applies to ALL file types: `.ts`, `.tsx`, `.js`, `.jsx`, `.css`, `.json`, etc.
+
+**Example of what NOT to do:**
+```typescript
+// ❌ WRONG - Creating placeholder
+export async function searchWords(query: string): Promise<JapaneseWord[]> {
+  // TODO: Implement later
+  return [];
+}
+```
+
+**Example of what TO do:**
+```typescript
+// ✅ CORRECT - Copy the entire file from old codebase, even if it's 600+ lines
+// [Complete original implementation copied exactly as-is]
+```
+
 ## Project Overview
 
 Doshi Sensei is a comprehensive Japanese language learning application being rebuilt from scratch for production stability. This is a clean rebuild of an existing production app (doshisensei.com) with the goal of implementing proper architecture and eliminating technical debt accumulated over 3 months of rapid development.
@@ -141,11 +169,18 @@ const permissionMap: Record<string, string> = {
 ```
 
 ### Implementation in Components:
+
+**⚠️ IMPORTANT CHANGE: We now use the unified `useFeature` hook instead of `useAccess`**
+
 ```typescript
-import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
 
 export default function MyFeature() {
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('feature_name', {
+    showModal: true,    // Show upgrade modals
+    showToast: true,    // Show notifications
+    trackUsage: true    // Auto-track usage
+  });
   
   const handleFeatureUse = async () => {
     // This ONE line handles EVERYTHING:
@@ -154,7 +189,7 @@ export default function MyFeature() {
     // - Checks usage limits
     // - Tracks usage automatically
     // - Shows appropriate modals if access denied
-    if (await checkAndTrack('feature_name')) {
+    if (await checkAndTrack()) {
       // User has access - perform the action
       doTheFeatureWork();
     }
@@ -162,6 +197,21 @@ export default function MyFeature() {
   };
 }
 ```
+
+### Migration Alert: Access Control Changes
+
+**When copying from old project, replace ALL access hooks:**
+
+```typescript
+// ❌ OLD - DO NOT USE
+import { useAccess } from '@/hooks/useAccess';
+import { useAccessWithModals } from '@/hooks/useAccessWithModals';
+
+// ✅ NEW - USE THIS
+import { useFeature } from '@/hooks/useFeature';
+```
+
+See `/docs/access-control/README.md` for complete migration guide.
 
 ### Adding a New Feature - Complete Checklist:
 1. **Register the feature** in `/src/lib/features/registry.ts`

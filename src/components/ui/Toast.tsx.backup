@@ -1,0 +1,104 @@
+'use client';
+
+import { strings } from '../../config/strings/strings';
+
+import { useEffect, useState } from 'react';
+import { Notification, useNotification } from '@/contexts/NotificationContext';
+
+function ToastItem({ notification }: { notification: Notification }) {
+  const [isExiting, setIsExiting] = useState(false);
+  const { removeNotification } = useNotification();
+
+  const handleRemove = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      removeNotification(notification.id);
+    }, 300); // Match animation duration
+  };
+
+  // Icons for different notification types
+  const icons = {
+    success: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="" />
+      </svg>
+    ),
+    error: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="" />
+      </svg>
+    ),
+    warning: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    ),
+    info: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    ),
+  };
+
+  const colors = {
+    success: strings.string_8,
+    error: strings.string_9,
+    warning: strings.string_10,
+    info: strings.string_11,
+  };
+
+  const iconColors = {
+    success: strings.string_12,
+    error: strings.string_13,
+    warning: strings.string_14,
+    info: strings.string_15,
+  };
+
+  return (
+    <div
+      className={`
+        flex items-start gap-3 min-w-[300px] max-w-md p-4 rounded-lg border backdrop-blur-sm shadow-lg
+        ${colors[notification.type]}
+        transform transition-all duration-300 ease-in-out
+        ${isExiting ? strings.string_20 : strings.string_19}
+      `}
+    >
+      <div className={`flex-shrink-0 ${iconColors[notification.type]}`}>
+        {icons[notification.type]}
+      </div>
+      
+      <div className="flex-1 min-w-0">
+        <h4 className="font-medium text-sm leading-tight">
+          {notification.title}
+        </h4>
+        {notification.message && (
+          <p className="mt-1 text-sm opacity-90">
+            {notification.message}
+          </p>
+        )}
+      </div>
+
+      <button
+        onClick={handleRemove}
+        className="flex-shrink-0 p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+        aria-label={strings.close_notification}
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+export function ToastContainer() {
+  const { notifications } = useNotification();
+
+  return (
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-3">
+      {notifications.map((notification) => (
+        <ToastItem key={notification.id} notification={notification} />
+      ))}
+    </div>
+  );
+}

@@ -59,19 +59,7 @@ function ToggleSetting({ label, description, checked, onChange }: ToggleSettingP
 
 export default function SettingsClient() {
   const strings = useStrings();
-  const { settings, updateSetting, resetSettings } = useSettings();
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
-
-  const handleResetData = () => {
-    if (showResetConfirm) {
-      resetSettings();
-      setShowResetConfirm(false);
-    } else {
-      setShowResetConfirm(true);
-      // Auto-hide confirmation after 5 seconds
-      setTimeout(() => setShowResetConfirm(false), 5000);
-    }
-  };
+  const { settings, updateSetting } = useSettings();
 
   return (
     <div className="min-h-screen bg-background">
@@ -111,29 +99,6 @@ export default function SettingsClient() {
               />
             </SettingsSection>
 
-            {/* Tutorial & Learning */}
-            <SettingsSection title={strings.settings.tutorialLearning}>
-              <div className="space-y-4">
-                <ToggleSetting
-                  label={strings.settings.showRomaji}
-                  description="Display romanized Japanese text"
-                  checked={settings.showRomaji}
-                  onChange={(checked) => updateSetting('showRomaji', checked)}
-                />
-                <ToggleSetting
-                  label={strings.settings.showFurigana}
-                  description="Show reading aids above kanji"
-                  checked={settings.showFurigana ?? true}
-                  onChange={(checked) => updateSetting('showFurigana', checked)}
-                />
-                <div className="pt-2 border-t border-border">
-                  <p className="text-xs text-muted-foreground">
-                    {strings.settings.tutorialInfo}
-                  </p>
-                </div>
-              </div>
-            </SettingsSection>
-
             {/* Navigation Settings */}
             <SettingsSection title={strings.settings.navigation}>
               <div className="space-y-4">
@@ -151,65 +116,64 @@ export default function SettingsClient() {
               </div>
             </SettingsSection>
 
-            {/* Goals & Progress Section */}
-            <SettingsSection title={strings.settings.goalsProgress}>
-              <div className="space-y-4">
-                {/* Daily Goal */}
-                <div>
-                  <label className="text-sm font-medium text-foreground block mb-2">
-                    {strings.settings.dailyGoalWords}
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => updateSetting('dailyGoal', Math.max(1, settings.dailyGoal - 5))}
-                      className="p-2 rounded-lg border border-border hover:bg-muted"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                      </svg>
-                    </button>
-                    <div className="px-4 py-2 bg-muted rounded-lg min-w-[80px] text-center">
-                      <span className="font-medium">{settings.dailyGoal}</span>
-                    </div>
-                    <button
-                      onClick={() => updateSetting('dailyGoal', settings.dailyGoal + 5)}
-                      className="p-2 rounded-lg border border-border hover:bg-muted"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Practice Reminders */}
-                <ToggleSetting
-                  label={strings.settings.practiceReminders}
-                  description="Get daily reminders to practice"
-                  checked={settings.practiceReminders}
-                  onChange={(checked) => updateSetting('practiceReminders', checked)}
-                />
+            {/* Support & Feedback */}
+            <SettingsSection title="Support & Feedback">
+              <div className="space-y-3">
+                <a
+                  href="/contact"
+                  className="block w-full p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
+                >
+                  <div className="text-sm font-medium text-foreground">Contact Us</div>
+                  <div className="text-xs text-muted-foreground mt-1">Get in touch with our support team</div>
+                </a>
+                <a
+                  href="/contact?type=bug"
+                  className="block w-full p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
+                >
+                  <div className="text-sm font-medium text-foreground">Report a Bug</div>
+                  <div className="text-xs text-muted-foreground mt-1">Help us improve by reporting issues</div>
+                </a>
+                <a
+                  href="/contact?type=feedback"
+                  className="block w-full p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
+                >
+                  <div className="text-sm font-medium text-foreground">Send Feedback</div>
+                  <div className="text-xs text-muted-foreground mt-1">Share your thoughts and suggestions</div>
+                </a>
+                <a
+                  href="/contact?type=help"
+                  className="block w-full p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
+                >
+                  <div className="text-sm font-medium text-foreground">Help & FAQ</div>
+                  <div className="text-xs text-muted-foreground mt-1">Find answers to common questions</div>
+                </a>
               </div>
             </SettingsSection>
 
-            {/* Data Management Section */}
-            <SettingsSection title={strings.settings.dataManagement}>
+            {/* Legal & Privacy */}
+            <SettingsSection title="Legal & Privacy">
               <div className="space-y-3">
-                <button
-                  onClick={handleResetData}
-                  className={`w-full p-3 rounded-lg border transition-all ${
-                    showResetConfirm 
-                      ? 'border-destructive bg-destructive/10 text-destructive' 
-                      : 'border-border hover:border-destructive/50 text-foreground hover:text-destructive'
-                  }`}
+                <a
+                  href="/settings/privacy-policy"
+                  className="block w-full p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
                 >
-                  <div className="text-sm font-medium">
-                    {showResetConfirm ? strings.settings.resetAllDataConfirm : strings.settings.resetAllData}
-                  </div>
-                  {!showResetConfirm && (
-                    <div className="text-xs text-muted-foreground mt-1">{strings.settings.resetAllDataDesc}</div>
-                  )}
-                </button>
+                  <div className="text-sm font-medium text-foreground">Privacy Policy</div>
+                  <div className="text-xs text-muted-foreground mt-1">Learn how we protect your data</div>
+                </a>
+                <a
+                  href="/settings/terms-of-service"
+                  className="block w-full p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
+                >
+                  <div className="text-sm font-medium text-foreground">Terms of Service</div>
+                  <div className="text-xs text-muted-foreground mt-1">Review our terms and conditions</div>
+                </a>
+                <a
+                  href="/settings/data-usage"
+                  className="block w-full p-3 rounded-lg border border-border hover:bg-muted transition-colors text-left"
+                >
+                  <div className="text-sm font-medium text-foreground">Data Usage</div>
+                  <div className="text-xs text-muted-foreground mt-1">Understand how your data is used</div>
+                </a>
               </div>
             </SettingsSection>
 

@@ -1,0 +1,97 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import type { VocabularyItem } from '../types';
+
+interface VocabularyGridProps {
+  vocabulary: VocabularyItem[];
+  onStartStudy: (cards: VocabularyItem[]) => void;
+  onCardClick: (card: VocabularyItem) => void;
+}
+
+export function VocabularyGrid({ vocabulary, onStartStudy, onCardClick }: VocabularyGridProps) {
+  const handleCardClick = (item: VocabularyItem) => {
+    onCardClick(item);
+  };
+
+  const handleStudyAll = () => {
+    onStartStudy(vocabulary);
+  };
+
+  if (vocabulary.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No vocabulary items found matching your filters.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Study All Button */}
+      <div className="flex justify-between items-center">
+        <p className="text-sm text-muted-foreground">{vocabulary.length} words</p>
+        <button
+          onClick={handleStudyAll}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          Study All
+        </button>
+      </div>
+
+      {/* Vocabulary Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {vocabulary.map((item, index) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+            onClick={() => handleCardClick(item)}
+            className="bg-card rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-4 border border-border"
+          >
+            <div className="space-y-2">
+              {/* Japanese & Reading */}
+              <div>
+                <div className="text-2xl font-bold text-foreground">
+                  {item.japanese}
+                </div>
+                {item.reading !== item.japanese && (
+                  <div className="text-sm text-muted-foreground">{item.reading}</div>
+                )}
+              </div>
+
+              {/* Meaning */}
+              <div className="text-muted-foreground">{item.meaning}</div>
+
+              {/* Tags */}
+              <div className="flex gap-2 flex-wrap">
+                {item.jlptLevel && (
+                  <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                    {item.jlptLevel}
+                  </span>
+                )}
+                {item.partOfSpeech.slice(0, 2).map((pos, idx) => (
+                  <span
+                    key={idx}
+                    className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full"
+                  >
+                    {pos}
+                  </span>
+                ))}
+              </div>
+
+              {/* Progress Indicator (placeholder) */}
+              <div className="h-1 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-green-400 to-green-500"
+                  style={{ width: '0%' }}
+                />
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}

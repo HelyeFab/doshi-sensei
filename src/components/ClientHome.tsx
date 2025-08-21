@@ -5,6 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { StatsBar } from '@/components/stats/StatsBar';
+import UserAchievements from '@/components/achievements/UserAchievements';
+import UserAvatar from '@/components/UserAvatar';
+import VirtualCompanion from '@/components/VirtualCompanion';
+import SmartReviewWidget from '@/components/unified-review/SmartReviewWidget';
 
 interface ClientHomeProps {
   initialDate: string;
@@ -14,6 +19,7 @@ interface ClientHomeProps {
 export default function ClientHome({ initialDate, initialProgress }: ClientHomeProps) {
   const { user, userType } = useAuth();
   const [displayName] = useState(user?.displayName || user?.email?.split('@')[0] || 'Friend');
+  const [showCompanion, setShowCompanion] = useState(false);
   const strings = useStrings();
 
   // SEO Structured Data using strings
@@ -64,6 +70,7 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
   ];
 
   const practiceCards = [
+    { title: 'Review System', icon: '📝', href: '/review', description: 'Unified spaced repetition review' },
     { title: 'Practice', icon: '🎯', href: '/practice', description: 'General practice mode' },
     { title: 'Drill', icon: '⚡', href: '/drill', description: 'Quick drill exercises' },
     { title: 'Games', icon: '🎮', href: '/games', description: 'Learn through fun games' }
@@ -78,6 +85,7 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
   ];
 
   const toolsCards = [
+    { title: 'Achievements', icon: '🏆', href: '/achievements', description: 'Track your progress' },
     { title: 'Resources', icon: '🎌', href: '/resources', description: 'Learning resources' },
     { title: 'Saved Items', icon: '⭐', href: '/favourites', description: 'Your saved items' }
   ];
@@ -133,14 +141,18 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
         <header className="px-4 pt-8 pb-6" role="banner">
           <div className="flex items-center gap-3">
             {/* User Avatar */}
-            <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
-              <span className="text-xl">👤</span>
-            </div>
+            <button 
+              onClick={() => setShowCompanion(true)}
+              className="cursor-pointer transition-transform hover:scale-105"
+              aria-label="Open Virtual Companion"
+            >
+              <UserAvatar size="md" priority={true} />
+            </button>
             
             {/* Greeting Text */}
             <div className="flex-1">
               <h1 className="text-xl font-semibold text-gray-900">
-                {strings.home.greeting} {displayName}-san! <span className="inline-block">👋</span>
+                {strings.home.greeting} {displayName}-san! <span className="inline-block animate-wave">👋</span>
               </h1>
               <p className="text-sm text-gray-600">{strings.home.readyToPractice}</p>
             </div>
@@ -162,6 +174,17 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
           </div>
           <p className="text-xs text-gray-500 mt-1">Day progress</p>
         </section>
+
+        {/* Smart Review Widget - Shows when reviews are due */}
+        <SmartReviewWidget />
+        
+        {/* User Achievements */}
+        <UserAchievements />
+        
+        {/* Stats Bar */}
+        <div className="px-4 pb-4">
+          <StatsBar />
+        </div>
 
         {/* Feature Cards - Scrollable Container */}
         <div className="flex-1 overflow-y-auto px-4 pb-4">
@@ -198,6 +221,12 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
           </div>
         </div>
       </div>
+
+      {/* Virtual Companion Modal */}
+      <VirtualCompanion 
+        isOpen={showCompanion} 
+        onClose={() => setShowCompanion(false)} 
+      />
     </div>
   );
 }

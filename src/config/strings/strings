@@ -1,0 +1,5 @@
+export const strings = {
+
+};
+
+export type StringKeys = keyof typeof strings;

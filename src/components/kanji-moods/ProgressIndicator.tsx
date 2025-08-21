@@ -1,0 +1,67 @@
+interface ProgressIndicatorProps {
+  current: number;
+  total: number;
+  size?: 'sm' | 'md' | 'lg';
+  showText?: boolean;
+  className?: string;
+}
+
+export default function ProgressIndicator({
+  current,
+  total,
+  size = 'md',
+  showText = true,
+  className = ''
+}: ProgressIndicatorProps) {
+  const percentage = total > 0 ? Math.round((current / total) * 100) : 0;
+
+  const sizeClasses = {
+    sm: 'h-2',
+    md: 'h-3',
+    lg: 'h-4'
+  };
+
+  const textSizeClasses = {
+    sm: 'text-xs',
+    md: 'text-sm',
+    lg: 'text-base'
+  };
+
+  return (
+    <div className={`progress-indicator ${className}`}>
+      {showText && (
+        <div className={`flex justify-between items-center mb-1 ${textSizeClasses[size]}`}>
+          <span className="text-muted-foreground font-medium">
+            Progress
+          </span>
+          <span className="text-foreground font-semibold">
+            {current}/{total} ({percentage}%)
+          </span>
+        </div>
+      )}
+
+      <div className={`w-full bg-muted rounded-full overflow-hidden ${sizeClasses[size]}`}>
+        <div
+          className="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all duration-500 ease-out"
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+
+      {/* Dots indicator for small counts */}
+      {total <= 10 && (
+        <div className="flex justify-center gap-1 mt-2">
+          {Array.from({ length: total }, (_, index) => (
+            <div
+              key={index}
+              className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                index < current
+                  ? 'bg-green-500'
+                  : 'bg-gray-300 dark:bg-gray-600'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

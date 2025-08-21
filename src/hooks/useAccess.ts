@@ -197,7 +197,9 @@ export function useAccess() {
     // Check usage limits
     if (!canAccess(featureId)) {
       const limitType = feature.limitType;
-      const limit = getLimit(userType, featureId, limitType);
+      // Convert limitType to limitPeriod (exclude 'none')
+      const limitPeriod = limitType === 'none' ? 'total' : limitType;
+      const limit = getLimit(userType, featureId, limitPeriod);
       
       if (limit === 0) {
         if (userType === 'guest') {

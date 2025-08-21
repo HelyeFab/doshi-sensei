@@ -1,0 +1,185 @@
+import { strings } from '../../config/strings/strings';
+import React, { useState, useEffect } from 'react';
+
+// Distractor images from KanaDrop game
+const DISTRACTOR_IMAGES = [
+  // Pokemon-themed PNG files
+  strings.string_0,
+  strings.string_1,
+  strings.string_2,
+  strings.string_3,
+  strings.string_4,
+  
+  // Farm Animals
+  strings.string_5,
+  strings.string_6,
+  strings.string_7,
+  strings.string_8,
+  strings.string_9,
+  strings.string_10,
+  strings.string_11,
+  strings.string_12,
+  strings.string_13,
+  strings.string_14,
+  strings.string_15,
+  strings.string_16,
+  
+  // Wild Animals
+  strings.string_17,
+  strings.string_18,
+  strings.string_19,
+  strings.string_20,
+  strings.string_21,
+  strings.string_22,
+  strings.string_23,
+  strings.string_24,
+  strings.string_25,
+  strings.string_26,
+  strings.string_27,
+  strings.string_28,
+  strings.string_29,
+  strings.string_30,
+  strings.string_31,
+  strings.string_32,
+  strings.string_33,
+  
+  // Emotions
+  strings.string_34,
+  strings.string_35,
+  strings.string_36,
+  strings.string_37,
+  strings.string_38,
+  strings.string_39,
+  strings.string_40,
+  
+  // Numbers
+  strings.string_41,
+  strings.string_42,
+  strings.string_43,
+  strings.string_44,
+  strings.string_45,
+  strings.string_46,
+  strings.string_47,
+  strings.string_48,
+  strings.string_49,
+  strings.string_50,
+];
+
+interface ConfirmationDialogProps {
+    isOpen: boolean;
+    title: string;
+    message: string;
+    confirmText: string;
+    cancelText: string;
+    isDestructive: boolean;
+    onConfirm: () => void;
+    onCancel: () => void;
+    loading: boolean;
+}
+
+export default function ConfirmationDialog({
+    isOpen,
+    title,
+    message,
+    confirmText,
+    cancelText,
+    isDestructive,
+    onConfirm,
+    onCancel,
+    loading
+}: ConfirmationDialogProps) {
+    const [selectedDistractors, setSelectedDistractors] = useState<string[]>([]);
+    const [distractorBackground, setDistractorBackground] = useState<string>('');
+
+    // Vibrant pastel color options
+    const pastelBackgrounds = [
+        strings.string_64, // Pastel pink
+        strings.string_52, // Pastel blue
+        strings.string_53, // Pastel green
+        strings.string_54, // Pastel purple
+        strings.string_55, // Pastel yellow
+        strings.string_56, // Pastel orange
+        strings.string_57, // Pastel teal
+        strings.string_58, // Pastel rose
+        strings.string_59, // Pastel indigo
+        strings.string_60, // Pastel cyan
+        strings.string_61, // Pastel emerald
+        strings.string_62, // Pastel violet
+    ];
+
+    // Select random distractor and background when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            const numDistractors = 1; // Show 1 distractor
+            const shuffled = [...DISTRACTOR_IMAGES].sort(() => 0.5 - Math.random());
+            setSelectedDistractors(shuffled.slice(0, numDistractors));
+            
+            // Select random pastel background
+            const randomBackground = pastelBackgrounds[Math.floor(Math.random() * pastelBackgrounds.length)];
+            setDistractorBackground(randomBackground);
+        }
+    }, [isOpen]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-card border border-border rounded-lg max-w-md w-full overflow-hidden">
+                {/* Distractor decoration header */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 border-b border-border">
+                    <div className="flex items-center justify-center">
+                        {selectedDistractors.map((imagePath, index) => (
+                            <div
+                                key={index}
+                                className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-xl border border-white/30 flex items-center justify-center ${distractorBackground || strings.string_64}`}
+                            >
+                                <img
+                                    src={imagePath}
+                                    alt="decoration"
+                                    className="w-7 h-7 sm:w-8 sm:h-8 object-contain opacity-80"
+                                    onError={(e) => {
+                                        // Fallback to emoji
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        const parent = target.parentElement;
+                                        if (parent) {
+                                            parent.innerHTML = strings.string_63;
+                                        }
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Main content */}
+                <div className="p-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">{title}</h3>
+                    <p className="text-muted-foreground mb-6">{message}</p>
+                    
+                    {/* Button section */}
+                    <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+                        <button
+                            onClick={onCancel}
+                            disabled={loading}
+                            className="w-full sm:w-auto px-4 py-2 text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 order-2 sm:order-1"
+                        >
+                            {cancelText}
+                        </button>
+                        <button
+                            onClick={onConfirm}
+                            disabled={loading}
+                            className={`w-full sm:w-auto px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-purple-300 text-white hover:bg-purple-400 order-1 sm:order-2`}
+                        >
+                            {loading ? strings.string_65 : confirmText}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Simple decoration footer */}
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 h-2 border-t border-border">
+                </div>
+            </div>
+        </div>
+    );
+}

@@ -5,10 +5,10 @@ import StunningBottomNavbar from "@/components/StunningBottomNavbar";
 import DesktopNavMenu from "@/components/DesktopNavMenu";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import GlobalVirtualCompanion from "@/components/GlobalVirtualCompanion";
-import { LanguageProvider } from "@/contexts/LanguageContext";
+import GlobalToastContainer from "@/components/GlobalToastContainer";
+import { UnifiedNotificationProvider } from "@/components/UnifiedNotificationProvider";
+import { CriticalProviders, NonCriticalProviders } from "@/components/OptimizedProviders";
 import { VirtualCompanionProvider } from "@/contexts/VirtualCompanionContext";
-import { SettingsProvider } from "@/contexts/SettingsContext";
-import { AuthProvider } from "@/contexts/AuthContext";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -29,21 +29,21 @@ export default function RootLayout({
   return (
     <html lang="en" className={rubik.variable}>
       <body className={`${rubik.className} antialiased`}>
-        <LanguageProvider>
-          <SettingsProvider>
-            <AuthProvider>
-              <VirtualCompanionProvider>
-                <div className="min-h-screen pb-16 md:pb-0">
-                  {children}
-                </div>
-                <StunningBottomNavbar />
-                <DesktopNavMenu />
-                <FloatingDonateButton />
-                <GlobalVirtualCompanion />
-              </VirtualCompanionProvider>
-            </AuthProvider>
-          </SettingsProvider>
-        </LanguageProvider>
+        <CriticalProviders>
+          <NonCriticalProviders>
+            <VirtualCompanionProvider>
+              <div className="min-h-screen pb-16 md:pb-0">
+                {children}
+              </div>
+              <StunningBottomNavbar />
+              <DesktopNavMenu />
+              <FloatingDonateButton />
+              <GlobalVirtualCompanion />
+              <GlobalToastContainer />
+              <UnifiedNotificationProvider />
+            </VirtualCompanionProvider>
+          </NonCriticalProviders>
+        </CriticalProviders>
       </body>
     </html>
   );

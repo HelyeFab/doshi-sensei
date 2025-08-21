@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
 import AccountPage from './AccountPage';
+import { generatePageMetadata, structuredData } from '@/utils/seo';
+import { StructuredData } from '@/components/StructuredData';
 
 export const metadata: Metadata = {
-  title: 'My Account - Dōshi Sensei',
-  description: 'Manage your Dōshi Sensei account, subscription, study progress, and achievements',
+  ...generatePageMetadata({
+    title: 'My Account',
+    description: 'Manage your Dōshi Sensei account, subscription, study progress, and achievements',
+    path: '/account',
+  }),
   robots: {
     index: false,
     follow: false,
@@ -12,40 +17,21 @@ export const metadata: Metadata = {
   },
 };
 
-const accountStructuredData = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "My Account - Dōshi Sensei",
-  "description": "Manage your Japanese learning account and subscription",
-  "url": "https://doshisensei.com/account",
-  "breadcrumb": {
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://doshisensei.com"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Account",
-        "item": "https://doshisensei.com/account"
-      }
-    ]
-  }
-};
-
 export default function Page() {
+  const breadcrumbData = structuredData.breadcrumb([
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Account",
+      "url": "/account"
+    }
+  ]);
+
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(accountStructuredData),
-        }}
-      />
+      <StructuredData data={breadcrumbData} />
       <AccountPage />
     </>
   );

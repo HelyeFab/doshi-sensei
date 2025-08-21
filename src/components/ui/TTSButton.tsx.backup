@@ -1,0 +1,247 @@
+import { strings } from '../../config/strings/strings';
+/**
+ * Reusable TTS Button component with caching support
+ * Can be used throughout the app for consistent TTS experience
+ */
+
+import React from 'react';
+import { useTTS, TTSOptions } from '@/hooks/useTTS';
+import { useStrings } from '@/hooks/useLanguage';
+
+interface TTSButtonProps {
+  text: string;
+  reading?: string; // For kanji/vocabulary with specific readings
+  options?: TTSOptions;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'minimal' | 'pill';
+  className?: string;
+  disabled?: boolean;
+  showText?: boolean;
+  tooltip?: string;
+  children?: React.ReactNode;
+}
+
+export function TTSButton({
+  text,
+  reading,
+  options = {},
+  size = 'md',
+  variant = 'default',
+  className = '',
+  disabled = false,
+  showText = false,
+  tooltip,
+  children
+}: TTSButtonProps) {
+  const strings = useStrings();
+  const { state, speak } = useTTS();
+
+  const handleClick = async () => {
+    if (disabled || state.isLoading) return;
+
+    // Use reading if provided (for kanji), otherwise use text
+    const textToSpeak = reading || text;
+    await speak(textToSpeak, options);
+  };
+
+  // Size classes
+  const sizeClasses = {
+    sm: strings.string_0,
+    md: strings.string_1,
+    lg: strings.string_2
+  };
+
+  // Variant classes
+  const variantClasses = {
+    default: strings.border,
+    minimal: strings.string_4,
+    pill: strings.string_5
+  };
+
+  // Icon size based on button size
+  const iconSizes = {
+    sm: strings.string_6,
+    md: strings.string_7,
+    lg: strings.string_8
+  };
+
+  const buttonClasses = `
+    ${sizeClasses[size]}
+    ${variantClasses[variant]}
+    ${className}
+    inline-flex items-center justify-center
+    rounded-lg transition-all duration-200
+    disabled:opacity-50 disabled:cursor-not-allowed
+    focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+    ${state.isLoading ? 'animate-pulse' : ''}
+    ${state.isPlaying ? strings.string_9 : ''}
+  `.trim();
+
+  // Loading spinner
+  const LoadingIcon = () => (
+    <svg
+      className={`${iconSizes[size]} animate-spin`}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 6h16M4 12h16m-7 6h7"
+      />
+    </svg>
+  );
+
+  // Speaker icon
+  const SpeakerIcon = () => (
+    <svg
+      className={iconSizes[size]}
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {state.isPlaying ? (
+        // Playing animation
+        <>
+          <path d="M5 12h14M12 5l7 7-7 7" />
+          <path d="M19 12H5m7-7l-7 7 7 7" />
+          <path d="" />
+        </>
+      ) : (
+        // Static speaker
+        <path d="M6 18L18 6M6 6l12 12" />
+      )}
+    </svg>
+  );
+
+  const buttonContent = (
+    <>
+      {state.isLoading ? <LoadingIcon /> : <SpeakerIcon />}
+      {showText && (
+        <span className="ml-2 text-sm">
+          {state.isLoading ? strings.loading.general : state.isPlaying ? strings.string_19 : strings.play}
+        </span>
+      )}
+      {children}
+    </>
+  );
+
+  // Generate tooltip text
+  const tooltipText = tooltip || `${strings.tooltips.playPronunciation}: ${reading || text}`;
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={disabled || state.isLoading}
+      className={buttonClasses}
+      title={tooltipText}
+      aria-label={tooltipText}
+    >
+      {buttonContent}
+    </button>
+  );
+}
+
+// Specialized TTS buttons for different contexts
+
+interface VocabularyTTSButtonProps extends Omit<TTSButtonProps, 'options' | 'text'> {
+  word: string | { kanji?: string; kana?: string; word?: string };
+  kana?: string;
+  voice?: 'male' | 'female';
+  speed?: number;
+}
+
+export function VocabularyTTSButton({
+  word,
+  kana,
+  voice = 'male',
+  speed = 1.0,
+  ...props
+}: VocabularyTTSButtonProps) {
+  // Handle both string and object word types
+  let textToSpeak: string;
+  let reading: string | undefined;
+  
+  if (typeof word === 'string') {
+    textToSpeak = word;
+    reading = kana;
+  } else {
+    // If word is an object, prioritize kanji, then word field, then kana
+    textToSpeak = word.kanji || word.word || word.kana || '';
+    reading = word.kana || kana;
+  }
+  
+  return (
+    <TTSButton
+      text={textToSpeak}
+      reading={reading}
+      options={{ voice, speed, context: 'vocabulary' }}
+      {...props}
+    />
+  );
+}
+
+interface KanjiTTSButtonProps extends Omit<TTSButtonProps, 'options' | 'text'> {
+  kanji: string;
+  reading?: string;
+  readingType?: 'kun' | 'on';
+  voice?: 'male' | 'female';
+  speed?: number;
+}
+
+export function KanjiTTSButton({
+  kanji,
+  reading,
+  readingType = 'kun',
+  voice = 'male',
+  speed = 1.0,
+  ...props
+}: KanjiTTSButtonProps) {
+  return (
+    <TTSButton
+      text={kanji}
+      reading={reading}
+      options={{
+        voice,
+        speed,
+        context: `kanji-${readingType}-reading`
+      }}
+      {...props}
+    />
+  );
+}
+
+interface GameTTSButtonProps extends Omit<TTSButtonProps, 'options'> {
+  gameType: string;
+  voice?: 'male' | 'female';
+  speed?: number;
+}
+
+export function GameTTSButton({
+  gameType,
+  voice = 'male',
+  speed = 1.0,
+  ...props
+}: GameTTSButtonProps) {
+  return (
+    <TTSButton
+      options={{
+        voice,
+        speed,
+        context: `game-${gameType}`
+      }}
+      {...props}
+    />
+  );
+}
+
+export default TTSButton;

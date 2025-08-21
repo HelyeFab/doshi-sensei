@@ -1,94 +1,148 @@
 'use client';
 
-import { Switch } from '@/components/Switch';
+import { ReactNode } from 'react';
 
 interface SelectionActionBarProps {
+  // Selection controls
   onSelectBasic?: () => void;
-  onSelectAll: () => void;
-  onClearSelection: () => void;
+  onSelectAll?: () => void;
+  onClearSelection?: () => void;
+  
+  // Toggle control
   showToggle?: boolean;
   toggleLabel?: string;
   toggleValue?: boolean;
   onToggleChange?: (value: boolean) => void;
+  
+  // Action button
   actionLabel?: string;
   actionDisabled?: boolean;
   onAction?: () => void;
   selectionCount?: number;
+  
+  // Custom presets (optional)
+  customPresets?: Array<{
+    label: string;
+    onClick: () => void;
+    variant?: 'primary' | 'secondary';
+  }>;
+  
+  // Additional content
+  children?: ReactNode;
+  
+  // Control visibility
+  showSelectAll?: boolean;
+  showClearSelection?: boolean;
+  showAction?: boolean;
 }
 
 export function SelectionActionBar({
   onSelectBasic,
   onSelectAll,
   onClearSelection,
-  showToggle = false,
+  showToggle = true,
   toggleLabel = 'Toggle',
   toggleValue = false,
   onToggleChange,
-  actionLabel = 'Study',
+  actionLabel = 'Action',
   actionDisabled = false,
   onAction,
   selectionCount = 0,
+  customPresets = [],
+  children,
+  showSelectAll = true,
+  showClearSelection = true,
+  showAction = true,
 }: SelectionActionBarProps) {
   return (
-    <div className="mb-6 bg-card rounded-lg border border-border p-4">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Selection Controls */}
-        <div className="flex flex-wrap items-center gap-2">
-          {onSelectBasic && (
+    <div className="mb-6">
+      <div className="bg-card rounded-2xl shadow-lg border border-border p-3">
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          {/* Top Row: Selection and Toggle */}
+          <div className="flex items-center justify-between w-full sm:w-auto gap-3">
+            {/* Quick Selection Presets */}
+            <div className="flex items-center gap-1.5">
+              {onSelectBasic && (
+                <button
+                  onClick={onSelectBasic}
+                  className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                >
+                  Basic
+                </button>
+              )}
+              
+              {/* Custom presets */}
+              {customPresets.map((preset, index) => (
+                <button
+                  key={index}
+                  onClick={preset.onClick}
+                  className={`px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                    preset.variant === 'primary'
+                      ? 'bg-primary/10 text-primary hover:bg-primary/20'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+              
+              {showSelectAll && onSelectAll && (
+                <button
+                  onClick={onSelectAll}
+                  className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+                >
+                  All
+                </button>
+              )}
+              {showClearSelection && onClearSelection && (
+                <button
+                  onClick={onClearSelection}
+                  className="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            {/* Optional Toggle */}
+            {showToggle && onToggleChange && (
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-secondary">
+                <span className="text-xs text-secondary-foreground">{toggleLabel}</span>
+                <button
+                  onClick={() => onToggleChange(!toggleValue)}
+                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
+                    toggleValue ? 'bg-primary' : 'bg-muted'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-3 w-3 transform rounded-full bg-background transition-transform ${
+                      toggleValue ? 'translate-x-[18px]' : 'translate-x-0.5'
+                    }`}
+                  />
+                </button>
+              </div>
+            )}
+            
+            {/* Additional content slot */}
+            {children}
+          </div>
+
+          {/* Action Button with Counter */}
+          {showAction && onAction && (
             <button
-              onClick={onSelectBasic}
-              className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium text-sm"
+              onClick={onAction}
+              disabled={actionDisabled}
+              className="w-full sm:w-auto px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/80 disabled:bg-muted disabled:text-muted-foreground transition-all font-medium text-sm flex items-center justify-center gap-2 shadow-sm"
             >
-              Basic
+              <span>{actionLabel}</span>
+              {selectionCount > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[20px] px-1.5 py-0.5 text-xs font-bold bg-background/90 text-foreground rounded-full">
+                  {selectionCount}
+                </span>
+              )}
             </button>
           )}
-          <button
-            onClick={onSelectAll}
-            className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium text-sm"
-          >
-            Select All
-          </button>
-          <button
-            onClick={onClearSelection}
-            className="px-3 py-1.5 bg-muted text-muted-foreground rounded-lg hover:bg-muted/90 transition-colors font-medium text-sm"
-          >
-            Clear
-          </button>
-          
-          {/* Toggle Switch */}
-          {showToggle && onToggleChange && (
-            <div className="flex items-center gap-2 ml-2 pl-2 border-l border-border">
-              <Switch
-                id="toggle-switch"
-                checked={toggleValue}
-                onChange={onToggleChange}
-                size="sm"
-              />
-              <label 
-                htmlFor="toggle-switch" 
-                className="text-sm text-foreground cursor-pointer select-none"
-              >
-                {toggleLabel}
-              </label>
-            </div>
-          )}
         </div>
-
-        {/* Action Button */}
-        {onAction && (
-          <button
-            onClick={onAction}
-            disabled={actionDisabled}
-            className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {actionLabel}
-            {selectionCount > 0 && (
-              <span className="bg-primary-foreground/20 px-2 py-0.5 rounded-full text-xs">
-                {selectionCount}
-              </span>
-            )}
-          </button>
-        )}
       </div>
     </div>
   );

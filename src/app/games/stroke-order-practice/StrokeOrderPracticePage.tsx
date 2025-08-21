@@ -1,0 +1,348 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Brain, Trophy, Star, Zap } from 'lucide-react';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
+import StrokeOrderGame from './components/StrokeOrderGame';
+import { useFeature } from '@/hooks/useFeature';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import SlideUpModal from '@/components/SlideUpModal';
+
+const PRACTICE_SETS = [
+  {
+    id: 'jlpt-n5',
+    name: 'JLPT N5',
+    description: 'Basic kanji for beginners',
+    kanji: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '日', '月', '火', '水', '木', '金', '土'],
+    color: '',
+  },
+  {
+    id: 'jlpt-n4',
+    name: 'JLPT N4',
+    description: 'Elementary level kanji',
+    kanji: ['山', '川', '田', '人', '口', '車', '門', '間', '話', '言', '読', '聞', '書', '見', '行', '来'],
+    color: '',
+  },
+  {
+    id: 'common-radicals',
+    name: 'Common Radicals',
+    description: 'Essential kanji components',
+    kanji: ['人', '手', '心', '日', '月', '木', '水', '火', '土', '金', '言', '糸', '肉', '貝', '車', '門'],
+    color: '',
+  },
+  {
+    id: 'numbers',
+    name: 'Numbers',
+    description: 'Learn to write numbers',
+    kanji: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '百', '千', '万', '円', '年', '月'],
+    color: '',
+  },
+];
+
+interface StrokeOrderProgress {
+  highScores: { [setId: string]: number };
+  kanjiMastery: { [kanji: string]: { attempts: number; successes: number; bestTime: number } };
+  totalGamesPlayed: number;
+  totalKanjiPracticed: number;
+  lastPlayed: number;
+}
+
+export default function StrokeOrderPracticePage() {
+  const [selectedSet, setSelectedSet] = useState<any>(null);
+  const [showGame, setShowGame] = useState(false);
+  const [progress, setProgress] = useState<StrokeOrderProgress | null>(null);
+  const { checkAndTrack, remaining } = useFeature('stroke_order_practice', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
+  const { isPremium } = useSubscription2();
+  const [showInstructions, setShowInstructions] = useState(true);
+  
+  useEffect(() => {
+    loadProgress();
+  }, []);
+
+  const loadProgress = async () => {
+    try {
+      const savedProgressStr = localStorage.getItem('strokeOrderProgress');
+      if (savedProgressStr) {
+        const savedProgress = JSON.parse(savedProgressStr) as StrokeOrderProgress;
+        setProgress(savedProgress);
+      }
+    } catch (error) {
+      console.error('Failed to load progress:', error);
+    }
+  };
+
+  const handleSelectSet = async (setId: string) => {
+    const canAccess = await checkAndTrack();
+    if (canAccess) {
+      setSelectedSet(setId);
+      setShowGame(true);
+    }
+  };
+
+  const handleBackToSets = () => {
+    setShowGame(false);
+    setSelectedSet(null);
+  };
+
+  const selectedPracticeSet = PRACTICE_SETS.find(set => set.id === selectedSet);
+
+  if (showGame && selectedPracticeSet) {
+    return (
+      <StrokeOrderGame
+        practiceSet={selectedPracticeSet}
+        onBack={handleBackToSets}
+      />
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      
+      <SmartPageHeader
+        title="Stroke Order Practice"
+      />
+
+      {/* Main Content */}
+      <MobileAwareContainer className="container mx-auto px-4 py-8">
+        <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
+
+          {/* Hero Section */}
+          <div className="mb-12">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="relative inline-block mb-6">
+                <div className="text-7xl animate-pulse">✍️</div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-2xl rounded-full opacity-60"></div>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+                Master Kanji Stroke Order
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-6 max-w-2xl mx-auto">
+                Learn to write kanji correctly by practicing stroke order.
+                Click strokes in the right sequence to build muscle memory.
+              </p>
+              {((remaining !== null && remaining !== undefined) || isPremium) && (
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-4">
+                  <span className="text-sm font-medium text-foreground">
+                    {isPremium ? (
+                      <span className="text-green-600 font-bold">Unlimited practices</span>
+                    ) : remaining && remaining > 0 ? (
+                      <>
+                        <span className="text-primary font-bold">{remaining}</span> practices remaining today
+                      </>
+                    ) : (
+                      <span className="text-destructive">No practices remaining today</span>
+                    )}
+                  </span>
+                </div>
+              )}
+
+              {progress && progress.totalGamesPlayed > 0 && (
+                <div className="flex gap-4 justify-center">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="h-4 w-4 text-yellow-500" />
+                    <span className="text-sm text-muted-foreground">
+                      {progress.totalGamesPlayed} games played
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-primary" />
+                    <span className="text-sm text-muted-foreground">
+                      {progress.totalKanjiPracticed} kanji practiced
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Instructions Button */}
+          <div className="mb-8 text-center">
+            <button
+              onClick={() => setShowInstructions(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>How to Play</span>
+            </button>
+          </div>
+
+          {/* Practice Sets */}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold text-foreground mb-6 text-center">
+              Practice Sets
+            </h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              {PRACTICE_SETS.map((set) => {
+                const setColor = {
+                  'jlpt-n5': 'from-green-400 to-green-600',
+                  'jlpt-n4': 'from-blue-400 to-blue-600',
+                  'common-radicals': 'from-purple-400 to-purple-600',
+                  'numbers': 'from-yellow-400 to-yellow-600'
+                }[set.id] || 'from-gray-400 to-gray-600';
+
+                return (
+                  <button
+                    key={set.id}
+                    className="group relative overflow-hidden rounded-2xl bg-card hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                    onClick={() => handleSelectSet(set.id)}
+                  >
+                    {/* Background with subtle gradient */}
+                    <div 
+                      className={`absolute inset-0 bg-gradient-to-br ${setColor} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}
+                    />
+
+                    <div className="relative p-6">
+                      {/* Title and Description */}
+                      <div className="text-left mb-4">
+                        <h4 className="text-xl font-bold text-foreground mb-1">{set.name}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {set.description}
+                        </p>
+                      </div>
+
+                      {/* Kanji count and high score */}
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+                        <div className="flex items-center gap-1.5">
+                          <Brain className="h-4 w-4" />
+                          <span className="font-medium">{set.kanji.length} kanji</span>
+                        </div>
+                        {progress && progress.highScores[set.id] && (
+                          <>
+                            <span className="text-muted-foreground">•</span>
+                            <div className="flex items-center gap-1.5">
+                              <Zap className="h-4 w-4 text-yellow-500" />
+                              <span className="font-medium">High: {progress.highScores[set.id].toLocaleString()}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Kanji preview */}
+                      <div className="flex flex-wrap gap-1.5 items-center">
+                        {set.kanji.slice(0, 8).map((kanji, idx) => (
+                          <span
+                            key={idx}
+                            className="text-2xl font-bold text-foreground/80 group-hover:text-foreground transition-colors japanese-text font-ja"
+                            data-quickcontext="true"
+                          >
+                            {kanji}
+                          </span>
+                        ))}
+                        {set.kanji.length > 8 && (
+                          <span className="text-sm text-muted-foreground font-medium ml-1">
+                            +{set.kanji.length - 8} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Hover border effect */}
+                    <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-primary/30 transition-colors duration-300" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </main>
+      </MobileAwareContainer>
+
+      {/* Instructions Modal */}
+      <SlideUpModal
+        isOpen={showInstructions}
+        onClose={() => setShowInstructions(false)}
+        title="How to Play Stroke Order Practice"
+        height="auto"
+        showHandle={false}
+      >
+        <div className="space-y-8">
+          {/* Main Instructions */}
+          <div className="text-center">
+            <div className="text-6xl mb-4">✍️</div>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Master kanji by learning the correct stroke order. Click each stroke in the right sequence to build muscle memory and improve your writing skills.
+            </p>
+          </div>
+
+          {/* Step by Step Guide */}
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg">
+                1
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-foreground text-lg">See the Kanji</h4>
+                <p className="text-sm text-muted-foreground mt-1">
+                  A kanji appears with numbered stroke guides showing the correct order
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg">
+                2
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-foreground text-lg">Click Strokes in Order</h4>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Click each stroke in the correct sequence. Start with stroke 1, then 2, and so on.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg">
+                3
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-foreground text-lg">Get Instant Feedback</h4>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Correct strokes turn green and animate. Wrong strokes flash red - try again!
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-lg">
+                4
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-foreground text-lg">Earn Points & Progress</h4>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Score points for speed and accuracy. Track your progress and beat your high scores!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tips */}
+          <div className="bg-primary/5 rounded-lg p-4">
+            <h4 className="font-semibold text-foreground mb-2">💡 Pro Tips</h4>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li>• Take your time to memorize the stroke order before clicking</li>
+              <li>• Pay attention to stroke direction - it matters!</li>
+              <li>• Practice regularly to build muscle memory</li>
+              <li>• Try different difficulty levels as you improve</li>
+            </ul>
+          </div>
+
+          {/* Start Button */}
+          <div className="text-center pt-4">
+            <button
+              onClick={() => setShowInstructions(false)}
+              className="px-8 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+            >
+              Got it, let's practice!
+            </button>
+          </div>
+        </div>
+      </SlideUpModal>
+    </div>
+  );
+}

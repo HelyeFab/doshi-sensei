@@ -1,0 +1,511 @@
+'use client';
+
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, RotateCcw, Volume2, VolumeX } from 'lucide-react';
+import { JapaneseWord } from '@/types';
+import { GameState, GameStats, GAME_CONFIG } from './types';
+import { createTiles, checkMatch } from './gameUtils';
+import GameGrid from './GameGrid';
+import VictoryScreen from './VictoryScreen';
+import { useStrings } from '@/contexts/LanguageContext';
+import { trackGamePlayed } from '@/lib/stats/trackingEvents';
+
+// Fallback TTS hook until useTTS is migrated
+function useGameTTS() {
+  return {
+    speakGameText: async (text: string, gameId: string, options?: any) => {
+      // Fallback to browser speech synthesis
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ja-JP';
+        utterance.rate = 0.8;
+        speechSynthesis.speak(utterance);
+      }
+    }
+  };
+}
+
+// Fallback analytics hook until useAnalytics is migrated
+function useAnalytics() {
+  return {
+    trackGameComplete: (gameType: string, score: number, accuracy: number) => {
+      console.log('[Analytics] Game completed:', { gameType, score, accuracy });
+      // Placeholder for analytics tracking
+    }
+  };
+}
+
+interface MatchingGameModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  words: JapaneseWord[];
+  onPlayAgain?: () => void;
+}
+
+export default function MatchingGameModal({ isOpen, onClose, words, onPlayAgain }: MatchingGameModalProps) {
+  const strings = useStrings();
+  const { speakGameText } = useGameTTS();
+  const { trackGameComplete } = useAnalytics();
+  
+  // Calculate number of pairs based on available words
+  const pairCount = useMemo(() => {
+    // With mixed match types, we can create more pairs from fewer words
+    // Aim for 12-15 pairs with 5+ words
+    if (words.length >= 10) {
+      return GAME_CONFIG.MAX_PAIRS; // 15 pairs
+    } else if (words.length >= 7) {
+      return 12;
+    } else if (words.length >= 5) {
+      return 10;
+    }
+    return Math.min(words.length * 2, GAME_CONFIG.MIN_PAIRS);
+  }, [words]);
+
+  const [gameState, setGameState] = useState<GameState>(() => ({
+    tiles: [],
+    selectedTiles: [],
+    matchedPairs: 0,
+    totalPairs: pairCount,
+    moves: 0,
+    isGameOver: false,
+    startTime: Date.now()
+  }));
+
+  const [showVictory, setShowVictory] = useState(false);
+  const [gameStats, setGameStats] = useState<GameStats | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [musicEnabled, setMusicEnabled] = useState(true); // Music ON by default
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isMusicFirstRender = useRef(true);
+  const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Initialize game
+  useEffect(() => {
+    if (isOpen && words.length > 0) {
+      startNewGame();
+    }
+  }, [isOpen]);
+
+  // Fade functions
+  const fadeIn = useCallback((audio: HTMLAudioElement, targetVolume: number = 0.3) => {
+    // Clear any existing fade
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+    }
+    
+    audio.volume = 0;
+    audio.play().then(() => {
+      fadeIntervalRef.current = setInterval(() => {
+        if (audio.volume < targetVolume - 0.01) {
+          audio.volume = Math.min(targetVolume, audio.volume + 0.02);
+        } else {
+          audio.volume = targetVolume;
+          if (fadeIntervalRef.current) {
+            clearInterval(fadeIntervalRef.current);
+            fadeIntervalRef.current = null;
+          }
+        }
+      }, 50);
+    }).catch(err => {
+
+      // Set up play on first user interaction
+      const playOnInteraction = () => {
+        fadeIn(audio, targetVolume);
+        document.removeEventListener('click', playOnInteraction);
+      };
+      document.addEventListener('click', playOnInteraction, { once: true });
+    });
+  }, []);
+
+  const fadeOut = useCallback((audio: HTMLAudioElement, callback?: () => void) => {
+    // Clear any existing fade
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+    }
+    
+    fadeIntervalRef.current = setInterval(() => {
+      if (audio.volume > 0.01) {
+        audio.volume = Math.max(0, audio.volume - 0.02);
+      } else {
+        audio.volume = 0;
+        audio.pause();
+        if (fadeIntervalRef.current) {
+          clearInterval(fadeIntervalRef.current);
+          fadeIntervalRef.current = null;
+        }
+        if (callback) callback();
+      }
+    }, 50);
+  }, []);
+
+  // Background music management
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Create audio element
+    const audio = new Audio();
+    audio.src = '/sounds/whispers.mp3';
+    audio.loop = true;
+    audio.volume = 0;
+    
+    // Add load event listener to ensure audio is ready
+    audio.addEventListener('loadeddata', () => {
+
+    });
+    
+    audio.addEventListener('error', (e) => {
+      console.error('Audio load error:', e);
+      console.error('Attempted path:', audio.src);
+    });
+    
+    // Store in ref
+    audioRef.current = audio;
+
+    // Start playing if music is enabled (with small delay to ensure setup)
+    const shouldPlayMusic = musicEnabled;
+    setTimeout(() => {
+      if (shouldPlayMusic && audioRef.current) {
+        fadeIn(audioRef.current);
+      }
+    }, 100);
+
+    // Cleanup function
+    return () => {
+      if (fadeIntervalRef.current) {
+        clearInterval(fadeIntervalRef.current);
+        fadeIntervalRef.current = null;
+      }
+      
+      const audioToClean = audioRef.current;
+      if (audioToClean && !audioToClean.paused) {
+        // Only fade out if playing
+        audioToClean.pause();
+        audioToClean.currentTime = 0;
+      }
+      audioRef.current = null;
+    };
+  }, [isOpen, musicEnabled, fadeIn]); // Include musicEnabled
+
+  // Handle music toggle after initial setup
+  useEffect(() => {
+    // Skip first render since it's handled in the setup
+    if (isMusicFirstRender.current) {
+      isMusicFirstRender.current = false;
+      return;
+    }
+    
+    if (!audioRef.current || !isOpen) return;
+
+    if (musicEnabled) {
+      fadeIn(audioRef.current);
+    } else {
+      fadeOut(audioRef.current);
+    }
+  }, [musicEnabled, fadeIn, fadeOut]);
+
+  const startNewGame = useCallback(() => {
+    const tiles = createTiles(words, pairCount);
+    // Calculate actual pairs from tiles created
+    const actualPairs = tiles.length / 2;
+    setGameState({
+      tiles,
+      selectedTiles: [],
+      matchedPairs: 0,
+      totalPairs: actualPairs,
+      moves: 0,
+      isGameOver: false,
+      startTime: Date.now()
+    });
+    setShowVictory(false);
+    setGameStats(null);
+  }, [words, pairCount]);
+
+  const playSound = useCallback(async (text: string) => {
+    if (soundEnabled) {
+      try {
+        await speakGameText(text, 'matching-game', { voice: 'female' });
+      } catch (error) {
+        console.error('Failed to play sound:', error);
+      }
+    }
+  }, [soundEnabled, speakGameText]);
+
+  const handleTileClick = useCallback(async (tileId: string) => {
+    if (isProcessing || gameState.selectedTiles.length >= GAME_CONFIG.MAX_SELECTED) {
+      return;
+    }
+
+    const clickedTile = gameState.tiles.find(t => t.id === tileId);
+    if (!clickedTile || clickedTile.isFlipped || clickedTile.isMatched) {
+      return;
+    }
+
+    // Play the word sound
+    if (clickedTile.word) {
+      playSound(clickedTile.word.kana || clickedTile.word.kanji || '');
+    }
+
+    // Flip the tile
+    setGameState(prev => ({
+      ...prev,
+      tiles: prev.tiles.map(t => 
+        t.id === tileId ? { ...t, isFlipped: true } : t
+      ),
+      selectedTiles: [...prev.selectedTiles, tileId]
+    }));
+
+    // Check for match if this is the second tile
+    if (gameState.selectedTiles.length === 1) {
+      setIsProcessing(true);
+      const firstTileId = gameState.selectedTiles[0];
+      const firstTile = gameState.tiles.find(t => t.id === firstTileId);
+      
+      if (firstTile && clickedTile) {
+        const isMatch = checkMatch(firstTile, clickedTile);
+        
+        if (isMatch) {
+          // Match found!
+          setTimeout(() => {
+            setGameState(prev => {
+              const newMatchedPairs = prev.matchedPairs + 1;
+              const newMoves = prev.moves + 1;
+              const isGameOver = newMatchedPairs === prev.totalPairs;
+              
+              // Check for victory inside the state update
+              if (isGameOver) {
+                setTimeout(() => {
+                  const endTime = Date.now();
+                  const timeTaken = endTime - prev.startTime;
+                  const perfectGame = newMoves === prev.totalPairs;
+                  const score = Math.round((prev.totalPairs / newMoves) * 100);
+                  
+                  // Track game completion
+                  trackGamePlayed('matching-game', score, prev.totalPairs, prev.totalPairs).catch(error => {
+                    console.error('Failed to track game completion:', error);
+                  });
+                  
+                  // Track with new analytics
+                  const accuracy = newMoves > 0 ? (prev.totalPairs / newMoves) * 100 : 0;
+                  trackGameComplete('matching_game', score, accuracy);
+
+                  setGameStats({
+                    totalMoves: newMoves,
+                    timeTaken,
+                    perfectGame
+                  });
+                  setShowVictory(true);
+                }, GAME_CONFIG.VICTORY_DELAY);
+              }
+              
+              return {
+                ...prev,
+                tiles: prev.tiles.map(t => 
+                  t.id === firstTileId || t.id === tileId 
+                    ? { ...t, isMatched: true, isFlipped: true } 
+                    : t
+                ),
+                selectedTiles: [],
+                matchedPairs: newMatchedPairs,
+                moves: newMoves,
+                isGameOver,
+                endTime: isGameOver ? Date.now() : undefined
+              };
+            });
+            
+            setIsProcessing(false);
+          }, GAME_CONFIG.MATCH_DELAY);
+        } else {
+          // No match - flip back
+          setTimeout(() => {
+            setGameState(prev => ({
+              ...prev,
+              tiles: prev.tiles.map(t => 
+                t.id === firstTileId || t.id === tileId 
+                  ? { ...t, isFlipped: false } 
+                  : t
+              ),
+              selectedTiles: [],
+              moves: prev.moves + 1
+            }));
+            setIsProcessing(false);
+          }, GAME_CONFIG.MISMATCH_DELAY);
+        }
+      }
+    }
+  }, [gameState, isProcessing, playSound]);
+
+  const handleReset = () => {
+    startNewGame();
+  };
+
+  const handlePlayAgain = () => {
+    setShowVictory(false);
+    if (onPlayAgain) {
+      onPlayAgain();
+    } else {
+      startNewGame();
+    }
+  };
+  
+  const handleVictoryClose = () => {
+    setShowVictory(false);
+    onClose();
+  };
+
+  const toggleMusic = () => {
+    setMusicEnabled(!musicEnabled);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="bg-background rounded-lg shadow-xl w-full max-w-6xl max-h-[95vh] overflow-hidden"
+          >
+            {/* Header */}
+            <div className="bg-muted px-4 sm:px-6 py-4 border-b border-border">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">
+                  {strings.games.modes.matching.title}
+                </h2>
+                <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
+                  {/* Stats */}
+                  <div className="flex items-center gap-3 sm:gap-4 text-sm">
+                    <div className="text-muted-foreground">
+                      Moves: <span className="font-bold text-foreground">{gameState.moves}</span>
+                    </div>
+                    <div className="text-muted-foreground">
+                      Pairs: <span className="font-bold text-primary">
+                        {gameState.matchedPairs}/{gameState.totalPairs}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Controls */}
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <button
+                      onClick={() => setSoundEnabled(!soundEnabled)}
+                      className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
+                      title={soundEnabled ? "Mute sounds" : "Enable sounds"}
+                    >
+                      <img 
+                        src="/flat-icons/root-icons/volume.svg" 
+                        alt={soundEnabled ? "Mute" : "Unmute"} 
+                        className={`w-4 sm:w-5 h-4 sm:h-5 ${!soundEnabled ? 'opacity-50' : 'opacity-100'} transition-opacity`}
+                      />
+                    </button>
+                    <button
+                      onClick={handleReset}
+                      className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
+                      title="Reset game"
+                    >
+                      <RotateCcw className="w-4 sm:w-5 h-4 sm:h-5" />
+                    </button>
+                    <button
+                      onClick={() => setShowExitConfirm(true)}
+                      className="p-1.5 sm:p-2 rounded-lg hover:bg-muted transition-colors"
+                      title="Close game"
+                    >
+                      <X className="w-4 sm:w-5 h-4 sm:h-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Game Content */}
+            <div className="p-4 sm:p-6 lg:p-8 overflow-y-auto max-h-[calc(95vh-80px)]">
+              <GameGrid
+                gameState={gameState}
+                onTileClick={handleTileClick}
+                disabled={isProcessing || showVictory}
+              />
+            </div>
+          </motion.div>
+
+          {/* Victory Screen */}
+          {showVictory && gameStats && (
+            <VictoryScreen
+              stats={gameStats}
+              onPlayAgain={handlePlayAgain}
+              onClose={handleVictoryClose}
+            />
+          )}
+          
+          {/* Exit Confirmation Dialog */}
+          {showExitConfirm && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[60]"
+              onClick={() => setShowExitConfirm(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-background rounded-lg shadow-xl p-6 max-w-sm w-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 className="text-lg font-semibold mb-3">
+                  {strings.games.confirmExit?.title || 'Leave Game?'}
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  {strings.games.confirmExit?.message || 'Your progress will be lost. Are you sure you want to exit?'}
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowExitConfirm(false)}
+                    className="flex-1 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors font-medium"
+                  >
+                    {strings.games.confirmExit?.cancel || 'Keep Playing'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowExitConfirm(false);
+                      
+                      // Track early exit if game has started and has been playing for more than 10 seconds
+                      const timePlayed = Date.now() - gameState.startTime;
+                      if (gameState.moves > 0 && timePlayed > 10000) {
+                        const score = gameState.matchedPairs > 0 ? Math.round((gameState.matchedPairs / gameState.moves) * 100) : 0;
+                        trackGamePlayed('matching-game', score, gameState.totalPairs, gameState.matchedPairs).catch(error => {
+                          console.error('Failed to track early exit:', error);
+                        });
+                        
+                        // Track with new analytics
+                        const accuracy = gameState.moves > 0 ? (gameState.matchedPairs / gameState.moves) * 100 : 0;
+                        trackGameComplete('matching_game', score, accuracy);
+                        console.log('[MatchingGame] Analytics tracked (early exit):', { game: 'matching_game', score, accuracy });
+                      }
+                      
+                      onClose();
+                    }}
+                    className="flex-1 px-4 py-2 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors font-medium"
+                  >
+                    {strings.games.confirmExit?.confirm || 'Exit Game'}
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

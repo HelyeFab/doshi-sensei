@@ -44,8 +44,9 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'signin' }: A
         toast.success('Signed in successfully');
         onClose();
       }
-    } catch (error: any) {
-      const message = getAuthErrorMessage(error.code);
+    } catch (error) {
+      const errorCode = error instanceof Error && 'code' in error ? (error as { code: string }).code : 'default';
+      const message = getAuthErrorMessage(errorCode);
       toast.error('Authentication failed', message);
     } finally {
       setIsLoading(false);
@@ -58,10 +59,11 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'signin' }: A
       await signInWithGoogle();
       toast.success('Signed in with Google');
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       // Don't show error if user just closed the popup
-      if (error.code && error.code !== 'auth/popup-closed-by-user') {
-        const message = getAuthErrorMessage(error.code);
+      const errorCode = error instanceof Error && 'code' in error ? (error as { code: string }).code : 'default';
+      if (errorCode && errorCode !== 'auth/popup-closed-by-user') {
+        const message = getAuthErrorMessage(errorCode);
         toast.error('Google sign-in failed', message);
       }
     } finally {
@@ -204,7 +206,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'signin' }: A
         <div className="mt-4 text-center text-sm text-muted">
           {mode === 'signin' ? (
             <>
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button
                 onClick={() => setMode('signup')}
                 className="text-primary hover:underline"

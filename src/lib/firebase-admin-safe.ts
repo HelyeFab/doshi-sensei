@@ -227,10 +227,21 @@ export function getInitializationError(): Error | null {
   return initializationError;
 }
 
+/**
+ * Verify Firebase ID token
+ * @param token The ID token to verify
+ * @returns The decoded token claims
+ */
+export async function verifyIdToken(token: string): Promise<admin.auth.DecodedIdToken> {
+  const adminInstance = await getFirebaseAdmin();
+  return adminInstance.auth().verifyIdToken(token);
+}
+
 // Export both named and default
 export default {
   getFirebaseAdmin,
   getFirebaseAdminSync,
   isFirebaseAdminInitialized,
-  getInitializationError
+  getInitializationError,
+  verifyIdToken
 };

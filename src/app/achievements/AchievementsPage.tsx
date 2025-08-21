@@ -12,7 +12,7 @@ import { MultiLevelAchievementGrid } from "@/components/achievements/MultiLevelA
 import { HiddenAchievementsSection } from "@/components/achievements/HiddenAchievements";
 import { CosmeticRewards } from "@/components/achievements/CosmeticRewards";
 import { AchievementManager } from "@/lib/achievements/manager";
-import { SmartHeader } from "@/components/SmartHeader";
+import SmartHeader from "@/components/SmartHeader";
 
 interface DisplayAchievement extends Achievement {
   progress: string | number;

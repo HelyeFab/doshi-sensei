@@ -224,6 +224,9 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
   },
 };
 
+// Export alias for backward compatibility
+export const ENTITLEMENT_RULES = entitlementRules;
+
 // Helper functions
 export function getLimit(
   userType: UserType,

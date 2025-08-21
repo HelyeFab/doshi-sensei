@@ -13,6 +13,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuth } from '@/contexts/AuthContext';
 import { practiceHistoryService } from '@/services/practiceHistory/PracticeHistoryService';
 import { TranscriptCacheManager } from '@/utils/transcriptCache';
+import { AccordionItem } from '@/components/Accordion';
 import YouTubeInput from './components/YouTubeInput';
 import AudioExtractor from './components/AudioExtractor';
 import TranscriptDisplay from './components/TranscriptDisplay';
@@ -372,28 +373,25 @@ export default function YouTubeShadowing() {
       {/* How to use Shadowing */}
       <div className="px-4 mb-6">
         <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-xl">🎥</span>
-              </div>
+          <AccordionItem 
+            title="How to Use Shadowing"
+            icon={<span className="text-xl">🎥</span>}
+            defaultOpen={false}
+            className="border-0"
+          >
+            <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside mb-4">
+              <li>Paste a YouTube URL and click "Extract Audio" to get started</li>
+              <li>Wait for the AI to generate Japanese subtitles (usually 20-30 seconds)</li>
+              <li>Use the player controls to practice: play, pause, and repeat sentences</li>
+              <li>Click on any line to jump to that part of the video</li>
+            </ol>
+            <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
+              <span className="text-base mt-0.5">💡</span>
+              <p className="text-sm text-foreground">
+                <span className="font-medium">Quick tip:</span> To change playback settings, pause the video first. Settings can't be adjusted during playback.
+              </p>
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-foreground mb-3 text-lg">How to Use Shadowing</h3>
-              <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside mb-4">
-                <li>Paste a YouTube URL and click "Extract Audio" to get started</li>
-                <li>Wait for the AI to generate Japanese subtitles (usually 20-30 seconds)</li>
-                <li>Use the player controls to practice: play, pause, and repeat sentences</li>
-                <li>Click on any line to jump to that part of the video</li>
-              </ol>
-              <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
-                <span className="text-base mt-0.5">💡</span>
-                <p className="text-sm text-foreground">
-                  <span className="font-medium">Quick tip:</span> To change playback settings, pause the video first. Settings can't be adjusted during playback.
-                </p>
-              </div>
-            </div>
-          </div>
+          </AccordionItem>
         </div>
       </div>
       

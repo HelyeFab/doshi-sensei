@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/components/PageHeader';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
@@ -8,7 +8,7 @@ import validator from 'validator';
 import { useStrings } from '@/contexts/LanguageContext';
 import { bugTracker } from '@/services/bugTracking';
 
-export default function ContactPage() {
+function ContactForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
@@ -423,5 +423,17 @@ export default function ContactPage() {
         />
       )}
     </>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <ContactForm />
+    </Suspense>
   );
 }

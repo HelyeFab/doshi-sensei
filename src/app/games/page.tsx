@@ -3,6 +3,9 @@ import GamesPage from './GamesPage';
 import { generatePageMetadata, structuredData } from '@/utils/seo';
 import { StructuredData } from '@/components/StructuredData';
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: 'Japanese Learning Games - Kanji, Vocabulary & More',
   description: 'Learn Japanese through engaging games: Kanji Simon Says, Reading Routes, stroke order practice, vocabulary matching, and more. Features content from Genki, Minna no Nihongo, and JLPT levels.',

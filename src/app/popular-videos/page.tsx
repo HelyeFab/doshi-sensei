@@ -3,6 +3,9 @@ import PopularVideos from './PopularVideos';
 import { generatePageMetadata, structuredData } from '@/utils/seo';
 import { StructuredData } from '@/components/StructuredData';
 
+// Disable static generation for this page (requires Firebase auth)
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: 'Popular Videos',
   description: 'Popular Videos - Learn Japanese with Dōshi Sensei\'s comprehensive platform featuring Genki & Minna no Nihongo vocabulary, kanji study, and interactive practice',

@@ -65,7 +65,7 @@ export default function PopularVideos() {
   const { checkAndTrack } = useAccess();
   const router = useRouter();
   const { isPremium } = useSubscription2();
-  const [user] = useAuthState(auth);
+  const [user] = useAuthState(auth || undefined);
   
   const [popularVideos, setPopularVideos] = useState<PopularVideo[]>([]);
   const [historyVideos, setHistoryVideos] = useState<PopularVideo[]>([]);
@@ -127,6 +127,13 @@ export default function PopularVideos() {
         setIsAggregating(true);
         
         // Query all practice history to aggregate by video
+        if (!db) {
+          console.warn('Firebase database not initialized');
+          setIsAggregating(false);
+          setIsLoading(false);
+          return;
+        }
+        
         const practiceQuery = query(
           collection(db, 'userPracticeHistory'),
           where('contentType', contentFilter === 'all' ? 'in' : '==', 

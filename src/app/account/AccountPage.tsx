@@ -19,7 +19,6 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import UserAvatar from '@/components/UserAvatar';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import { useStrings } from '@/contexts/LanguageContext';
-import { DetailedStats } from '@/components/stats/DetailedStats';
 import { validatePassword, passwordRequirements, getPasswordStrength } from '@/utils/passwordValidation';
 import { checkEmailAvailability, debounce } from '@/utils/emailValidation';
 import { useCallback } from 'react';
@@ -389,12 +388,6 @@ export default function AccountPage() {
                 </div>
               )}
 
-              {/* Detailed Statistics - Only for registered users */}
-              {user && userType !== 'guest' && (
-                <div className="bg-card border border-border rounded-lg overflow-hidden">
-                  <DetailedStats />
-                </div>
-              )}
 
               {/* Subscription Management */}
               {subLoading ? (

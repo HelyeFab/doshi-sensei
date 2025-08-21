@@ -2,7 +2,7 @@
   command = "npm ci && npm run build:netlify"
   publish = ".next"
   functions = "netlify/functions"
-  environment = { NODE_VERSION = "20", NEXT_TELEMETRY_DISABLED = "1" }
+  environment = { NODE_VERSION = "20.11.1", NEXT_TELEMETRY_DISABLED = "1" }
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

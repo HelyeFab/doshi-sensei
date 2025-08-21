@@ -11,6 +11,7 @@ export const FEATURE_PERMISSION_MAP: Record<string, string> = {
   'flashcard_review': 'do_drills',
   'speaking_practice': 'do_drills',
   'article_reading': 'read_articles',
+  'article_bookmarks': 'bookmark_articles',
   'story_reading': 'read_stories',
   'kanji_moods': 'kanji_moods',
   'textbook_vocabulary': 'textbook_vocabulary',

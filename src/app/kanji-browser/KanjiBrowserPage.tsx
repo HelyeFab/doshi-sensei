@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import {
   Kanji,
   JLPTLevel,
@@ -62,7 +62,7 @@ const kanjiStructuredData = {
   ],
 };
 
-export default function KanjiBrowserPage() {
+function KanjiBrowserContent() {
   const { user } = useAuth();
   const { subscription } = useSubscription2();
   const { checkAndTrack } = useFeature('kanji_browser');
@@ -893,5 +893,17 @@ function SaveKanjiModal({
         </div>
       </div>
     </div>
+  );
+}
+
+export default function KanjiBrowserPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <KanjiBrowserContent />
+    </Suspense>
   );
 }

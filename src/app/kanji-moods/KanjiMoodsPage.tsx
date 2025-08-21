@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMoodBoards } from '@/hooks/useMoodBoards';
 import { getAllProgress } from '@/utils/moodBoardProgress';
@@ -13,7 +13,7 @@ import { LoadingHourglassPage } from '@/components/ui/LoadingHourglass';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
 
-export default function KanjiMoodsPage() {
+function KanjiMoodsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { moodBoards, loading } = useMoodBoards();
@@ -512,5 +512,13 @@ export default function KanjiMoodsPage() {
       {/* Three-Pillar Architecture Access Modals */}
       <AccessModals />
     </div>
+  );
+}
+
+export default function KanjiMoodsPage() {
+  return (
+    <Suspense fallback={<LoadingHourglassPage />}>
+      <KanjiMoodsContent />
+    </Suspense>
   );
 }

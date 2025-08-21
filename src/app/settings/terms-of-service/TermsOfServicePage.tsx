@@ -5,15 +5,11 @@ import { useStrings } from '@/contexts/LanguageContext';
 
 export default function TermsOfServicePage() {
   const strings = useStrings();
-  const termsStrings = strings.settingsPages?.termsOfService;
-
-  if (!termsStrings) {
-    return <div className="container mx-auto px-4 py-8 text-center">Loading...</div>;
-  }
+  const pageTitle = strings.settingsPages?.pages?.termsOfService || 'Terms of Service';
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SmartPageHeader title={termsStrings.title} backHref="/settings" />
+      <SmartPageHeader title={pageTitle} backHref="/settings" />
 
       <div className="container mx-auto px-4">
         <main className="max-w-3xl mx-auto mb-32 md:mb-8 pb-safe">
@@ -23,345 +19,123 @@ export default function TermsOfServicePage() {
               <div className="text-center mb-8">
                 <div className="text-5xl mb-4">📋</div>
                 <h1 className="text-2xl font-bold text-foreground mb-2">
-                  {termsStrings.subtitle}
+                  {pageTitle}
                 </h1>
                 <p className="text-muted-foreground text-sm">
-                  {termsStrings.effectiveDate}
+                  Effective Date: January 1, 2025
                 </p>
               </div>
 
-              {/* 1. Acceptance of Terms */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.acceptance.title}
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  {termsStrings.sections.acceptance.content}
-                </p>
-              </section>
-
-              {/* 2. Definitions */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.definitions.title}
-                </h2>
-                <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
-                  {Object.entries(termsStrings.sections.definitions.terms).map(([key, value]: [string, any]) => (
-                    <p key={key} className="text-sm text-muted-foreground">
-                      • {value}
-                    </p>
-                  ))}
-                </div>
-              </section>
-
-              {/* 3. Eligibility */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.eligibility.title}
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  {termsStrings.sections.eligibility.content}
-                </p>
-              </section>
-
-              {/* 4. Account Terms */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.accountTerms.title}
-                </h2>
-                <ul className="space-y-2 ml-4">
-                  {termsStrings.sections.accountTerms.responsibilities.map((item: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5">•</span>
-                      <span className="text-sm text-muted-foreground">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              {/* 5. Acceptable Use Policy */}
+              {/* Terms Content */}
               <section className="space-y-6">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.acceptableUse.title}
-                </h2>
-                
-                {/* Permitted Uses */}
-                <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-foreground flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
-                    {termsStrings.sections.acceptableUse.permitted.title}
-                  </h3>
-                  <div className="space-y-2 ml-8">
-                    {termsStrings.sections.acceptableUse.permitted.uses.map((use: string, index: number) => (
-                      <div key={index} className="flex items-start gap-2">
-                        <span className="text-green-500 mt-0.5">✓</span>
-                        <span className="text-sm text-muted-foreground">{use}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Prohibited Uses */}
-                <div className="space-y-3">
-                  <h3 className="text-lg font-medium text-foreground flex items-center gap-2">
-                    <span className="text-red-500">✗</span>
-                    {termsStrings.sections.acceptableUse.prohibited.title}
-                  </h3>
-                  <div className="space-y-2 ml-8">
-                    {termsStrings.sections.acceptableUse.prohibited.uses.map((use: string, index: number) => (
-                      <div key={index} className="flex items-start gap-2">
-                        <span className="text-red-500 mt-0.5">✗</span>
-                        <span className="text-sm text-muted-foreground">{use}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              {/* 6. Intellectual Property Rights */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.intellectualProperty.title}
-                </h2>
-                
                 <div className="space-y-4">
-                  <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                    <h4 className="font-medium text-foreground mb-2">
-                      {termsStrings.sections.intellectualProperty.ourRights.title}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {termsStrings.sections.intellectualProperty.ourRights.content}
-                    </p>
-                  </div>
-                  
-                  <div className="p-4 bg-green-500/5 border border-green-500/20 rounded-lg">
-                    <h4 className="font-medium text-foreground mb-2">
-                      {termsStrings.sections.intellectualProperty.yourRights.title}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {termsStrings.sections.intellectualProperty.yourRights.content}
-                    </p>
-                  </div>
-                  
-                  <div className="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-lg">
-                    <h4 className="font-medium text-foreground mb-2">
-                      {termsStrings.sections.intellectualProperty.thirdPartyRights.title}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {termsStrings.sections.intellectualProperty.thirdPartyRights.content}
-                    </p>
-                  </div>
-                </div>
-              </section>
-
-              {/* 7. User Content */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.userContent.title}
-                </h2>
-                <ul className="space-y-2 ml-4">
-                  {termsStrings.sections.userContent.guidelines.map((guideline: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5">•</span>
-                      <span className="text-sm text-muted-foreground">{guideline}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              {/* 8. Payments and Subscriptions */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.payments.title}
-                </h2>
-                <ul className="space-y-2 ml-4">
-                  {termsStrings.sections.payments.terms.map((term: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5">•</span>
-                      <span className="text-sm text-muted-foreground">{term}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg mt-4">
-                  <p className="text-sm text-foreground">
-                    <strong>Refund Policy:</strong> {termsStrings.sections.payments.refundPolicy}
+                  <h2 className="text-xl font-semibold text-foreground">
+                    1. Agreement to Terms
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    By accessing and using Dōshi Sensei ("the Service"), you agree to be bound by these Terms of Service. 
+                    If you do not agree to these terms, please do not use the Service.
                   </p>
                 </div>
-              </section>
 
-              {/* 9. Privacy and Data Protection */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.privacyAndData.title}
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  {termsStrings.sections.privacyAndData.content}
-                </p>
-              </section>
-
-              {/* 10. Disclaimers and Warranties */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.disclaimers.title}
-                </h2>
-                <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                  <p className="text-sm font-medium text-foreground mb-3">
-                    {termsStrings.sections.disclaimers.content}
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    2. Use of Service
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Dōshi Sensei is an educational platform designed to help users learn Japanese. 
+                    The Service is provided for personal, non-commercial use only. You agree to use the Service 
+                    in accordance with all applicable laws and regulations.
                   </p>
-                  <ul className="space-y-1">
-                    {termsStrings.sections.disclaimers.disclaimers.map((disclaimer: string, index: number) => (
-                      <li key={index} className="text-sm text-muted-foreground">
-                        • {disclaimer}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              </section>
 
-              {/* 11. Limitation of Liability */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.limitationOfLiability.title}
-                </h2>
-                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                  <p className="text-sm font-medium text-foreground mb-3">
-                    {termsStrings.sections.limitationOfLiability.content}
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    3. User Accounts
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    You are responsible for maintaining the confidentiality of your account credentials and 
+                    for all activities that occur under your account. You agree to notify us immediately of 
+                    any unauthorized use of your account.
                   </p>
-                  <ul className="space-y-1">
-                    {termsStrings.sections.limitationOfLiability.exclusions.map((exclusion: string, index: number) => (
-                      <li key={index} className="text-sm text-muted-foreground">
-                        • {exclusion}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              </section>
 
-              {/* 12. Indemnification */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.indemnification.title}
-                </h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  {termsStrings.sections.indemnification.content}
-                </p>
-              </section>
-
-              {/* 13. Termination */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.termination.title}
-                </h2>
-                <p className="text-muted-foreground">
-                  {termsStrings.sections.termination.content}
-                </p>
-                <p className="text-sm text-muted-foreground p-3 bg-muted/50 rounded-lg">
-                  <strong>Effects of Termination:</strong> {termsStrings.sections.termination.effects}
-                </p>
-              </section>
-
-              {/* 14. Governing Law and Disputes */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.governingLaw.title}
-                </h2>
-                <p className="text-muted-foreground">
-                  {termsStrings.sections.governingLaw.content}
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  <strong>Exceptions:</strong> {termsStrings.sections.governingLaw.exceptions}
-                </p>
-              </section>
-
-              {/* 15. Changes to Terms */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.changes.title}
-                </h2>
-                <p className="text-muted-foreground">
-                  {termsStrings.sections.changes.content}
-                </p>
-                <ul className="space-y-2 ml-4">
-                  {termsStrings.sections.changes.methods.map((method: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5">•</span>
-                      <span className="text-sm text-muted-foreground">{method}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-sm text-muted-foreground mt-3 italic">
-                  {termsStrings.sections.changes.continuation}
-                </p>
-              </section>
-
-              {/* 16. General Provisions */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.generalProvisions.title}
-                </h2>
-                <div className="space-y-3">
-                  {Object.entries(termsStrings.sections.generalProvisions.provisions).map(([key, value]: [string, any]) => (
-                    <div key={key} className="p-3 bg-muted/30 rounded-lg">
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground capitalize">
-                          {key.replace(/([A-Z])/g, ' $1').trim()}:
-                        </strong>{' '}
-                        {value}
-                      </p>
-                    </div>
-                  ))}
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    4. Content and Intellectual Property
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    All content provided through the Service, including text, graphics, and educational materials, 
+                    is protected by copyright and other intellectual property laws. You may not reproduce, distribute, 
+                    or create derivative works without our express written permission.
+                  </p>
                 </div>
-              </section>
 
-              {/* 17. Contact Information */}
-              <section className="space-y-4">
-                <h2 className="text-xl font-semibold text-foreground">
-                  {termsStrings.sections.contact.title}
-                </h2>
-                <p className="text-muted-foreground">
-                  {termsStrings.sections.contact.content}
-                </p>
-                <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
-                  {Object.entries(termsStrings.sections.contact.methods).map(([key, method]: [string, any]) => (
-                    <div key={key} className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-foreground min-w-[80px]">
-                        {method.label}:
-                      </span>
-                      {key === 'email' ? (
-                        <a
-                          href={`mailto:${method.value}`}
-                          className="text-sm text-primary hover:underline"
-                        >
-                          {method.value}
-                        </a>
-                      ) : key === 'form' ? (
-                        <a
-                          href="/contact?category=general"
-                          className="text-sm text-primary hover:underline"
-                        >
-                          {method.value}
-                        </a>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">
-                          {method.value}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    5. Privacy
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Your use of the Service is also governed by our Privacy Policy. We respect your privacy and 
+                    are committed to protecting your personal information.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    6. Subscriptions and Payments
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Some features of the Service require a paid subscription. Subscription fees are billed in advance 
+                    on a monthly or annual basis. You may cancel your subscription at any time through your account settings.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    7. Disclaimers and Limitations
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    The Service is provided "as is" without warranties of any kind. While we strive to provide 
+                    accurate and helpful educational content, we do not guarantee the accuracy, completeness, or 
+                    usefulness of any information provided through the Service.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    8. Changes to Terms
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    We reserve the right to modify these Terms of Service at any time. We will notify users of 
+                    any material changes. Your continued use of the Service after such changes constitutes your 
+                    acceptance of the new terms.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-foreground">
+                    9. Contact Information
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed">
+                    If you have any questions about these Terms of Service, please contact us through the 
+                    contact form available in the application.
+                  </p>
                 </div>
               </section>
 
               {/* Footer */}
-              <div className="pt-8 border-t border-border">
-                <div className="text-center">
-                  <div className="text-3xl mb-3">🎌</div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    がんばって！(Good luck with your Japanese studies!)
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {termsStrings.lastUpdated}
-                  </p>
-                </div>
+              <div className="text-center mt-12 pt-8 border-t border-border">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Acknowledgment:</strong> By using Dōshi Sensei, you acknowledge that you have read, 
+                  understood, and agree to be bound by these Terms of Service.
+                </p>
+                <p className="text-xs text-muted-foreground mt-4">
+                  © 2025 Dōshi Sensei. All rights reserved.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  <strong>Last Updated:</strong> January 1, 2025
+                </p>
               </div>
             </div>
           </div>

@@ -46,6 +46,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'ai_stories': 0,          // Must sign up
       'youtube_shadowing': 1,   // One video per day
       'news_reader': 1,         // One article per day
+      'article_reading': 0,     // Must sign up
       'anki_import': 0,         // Must sign up
       'youtube_series': -1,     // Unlimited access
       'my_videos': 0,           // Must sign up
@@ -82,6 +83,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'bookmarks': 0,
       'anki_import': 0,
       'my_videos': 0,
+      'article_bookmarks': 0,
     },
   },
 
@@ -115,6 +117,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'ai_stories': 1,          // One AI story per day
       'youtube_shadowing': 3,   // Few videos per day
       'news_reader': 5,         // Several articles
+      'article_reading': 5,     // Several articles per day
       'anki_import': 0,         // Premium only
       'youtube_series': -1,     // Unlimited access
       'my_videos': -1,          // No daily limit
@@ -151,6 +154,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'bookmarks': 10,          // Max 10 bookmarks
       'anki_import': 0,         // Premium only
       'my_videos': 3,           // Max 3 personal videos
+      'article_bookmarks': 10,  // Max 10 bookmarked articles
     },
   },
 
@@ -184,6 +188,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'ai_stories': -1,
       'youtube_shadowing': -1,
       'news_reader': -1,
+      'article_reading': -1,    // Unlimited articles
       'anki_import': -1,
       'youtube_series': -1,
       'my_videos': -1,
@@ -220,6 +225,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'bookmarks': -1,
       'anki_import': -1,
       'my_videos': -1,
+      'article_bookmarks': -1,  // Unlimited bookmarks
     },
   },
 };

@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { collection, getDocs, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
+
+// Dynamic import to prevent build-time errors
+async function getFirebaseServices() {
+  const { db } = await import('@/lib/firebase');
+  const { collection, getDocs, doc, setDoc, getDoc, deleteDoc } = await import('firebase/firestore');
+  return { db, collection, getDocs, doc, setDoc, getDoc, deleteDoc };
+}
 
 export async function GET() {
   const audit: any = {
@@ -20,6 +25,9 @@ export async function GET() {
   };
 
   try {
+    // Get Firebase services dynamically
+    const { db, collection, getDocs, doc, setDoc, getDoc, deleteDoc } = await getFirebaseServices();
+    
     // Test 1: Firebase Connection
     if (db) {
       audit.tests.firebase.connection = true;

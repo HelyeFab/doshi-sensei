@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import KanjiProgressSummary from './components/KanjiProgressSummary';
 import ReviewDueAlert from './components/ReviewDueAlert';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
 const pageStructuredData = {
   "@context": "https://schema.org",
@@ -114,7 +116,8 @@ export default function KanjiMasteryDashboard() {
         }}
       />
 
-      <div className="mobile-nav-padding">
+      <DesktopContainer>
+        <div className="mobile-nav-padding">
         {/* Smart Page Header */}
         <SmartPageHeader 
           title="Kanji Mastery"
@@ -402,6 +405,18 @@ export default function KanjiMasteryDashboard() {
                 <span>Start Learning Session</span>
               )}
             </button>
+            
+            {/* Kanji Families Link */}
+            <Link 
+              href="/tools/kanji-mastery/families"
+              className="w-full mt-3 py-3 px-4 bg-card text-foreground font-medium rounded-lg border border-border hover:bg-muted transition-colors flex items-center justify-center gap-2"
+            >
+              <span className="text-lg">👨‍👩‍👧‍👦</span>
+              <span>Explore Kanji Families</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
 
 
@@ -440,6 +455,7 @@ export default function KanjiMasteryDashboard() {
           <KanjiProgressSummary />
         </div>
       </div>
+      </DesktopContainer>
     </div>
   );
 }

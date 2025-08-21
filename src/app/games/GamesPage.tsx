@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
@@ -22,6 +22,7 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import SlideUpModal from '@/components/SlideUpModal';
 import ListeningQuizEmptyState from '@/components/games/ListeningQuizEmptyState';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
@@ -79,7 +80,7 @@ interface AssemblyStats {
 // Daily limit for free users
 const FREE_USER_DAILY_LIMIT = 3;
 
-export default function GamesPage() {
+function GamesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
@@ -938,7 +939,8 @@ export default function GamesPage() {
       <SmartPageHeader title="Games" />
       
       {/* Main Content */}
-      <MobileAwareContainer className="container mx-auto px-4 py-8">
+      <DesktopContainer>
+        <MobileAwareContainer className="container mx-auto px-4 py-8">
 
         <div className="max-w-2xl mx-auto">
           {/* Game Selection */}
@@ -1711,6 +1713,19 @@ export default function GamesPage() {
           </div>
         </SlideUpModal>
       </MobileAwareContainer>
+      </DesktopContainer>
     </div>
+  );
+}
+
+export default function GamesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <GamesContent />
+    </Suspense>
   );
 }

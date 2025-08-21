@@ -3,6 +3,9 @@ import ResourcesPage from './ResourcesPage';
 import { generatePageMetadata, structuredData } from '@/utils/seo';
 import { StructuredData } from '@/components/StructuredData';
 
+// Disable static generation for this page (uses Firebase)
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: 'Japanese Learning Resources - Grammar & Study Guides',
   description: 'Access curated Japanese learning resources from top creators: comprehensive grammar guides, study tips, learning strategies, and expert recommendations for all levels.',

@@ -17,6 +17,7 @@ import { StudyListManager } from '@/utils/studyListManager';
 import { ExampleSentencesBlock } from '@/components/vocabulary/ExampleSentencesBlock';
 import StrokeOrderModal from '@/components/kanji/StrokeOrderModal';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
 // Add JMdict search utility import (to be implemented)
 import { searchJMdictWords, loadJMdictData, getDidYouMeanSuggestion, SearchResult } from '@/utils/jmdictLocalSearch';
@@ -361,7 +362,8 @@ export default function VocabularyPage() {
       <SmartPageHeader title="Vocabulary" />
       
       {/* Main Content */}
-      <MobileAwareContainer className="container mx-auto px-4 py-8">
+      <DesktopContainer>
+        <MobileAwareContainer className="container mx-auto px-4 py-8">
         <p className="text-muted-foreground text-center mt-2">
           {strings.vocab.searchPlaceholder}
         </p>
@@ -601,6 +603,7 @@ export default function VocabularyPage() {
           <SearchLoadingOverlay searchTerm={searchTerm || currentSearchTerm} />
         )}
       </MobileAwareContainer>
+      </DesktopContainer>
     </div>
   );
 }

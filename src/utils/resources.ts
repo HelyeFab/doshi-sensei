@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ResourcePost, ResourceFormData, ResourceSearchFilters, ResourceStats, ResourceListItem, RESOURCE_CATEGORIES } from '@/types/resources';
+import { sampleResources } from '@/data/sampleResources';
 
 const RESOURCES_COLLECTION = 'resources';
 

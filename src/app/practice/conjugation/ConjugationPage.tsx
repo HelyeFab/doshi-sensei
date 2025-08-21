@@ -23,6 +23,7 @@ import {
 import { useNotification } from "@/contexts/NotificationContext";
 import { MobileAwareContainer } from "@/components/layout/MobileAwareContainer";
 import { useSettings } from "@/contexts/SettingsContext";
+import { DesktopContainer } from "@/components/layout/DesktopContainer";
 import { ConjugationLoadingAnimation } from "@/components/ui/ConjugationLoadingAnimation";
 import { WordCardSkeletonGrid } from "@/components/ui/WordCardSkeleton";
 import { VocabularyTTSButton } from "@/components/ui/TTSButton";
@@ -194,7 +195,8 @@ export default function ConjugationPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Main Content */}
-      <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
+      <DesktopContainer>
+        <MobileAwareContainer className="container mx-auto px-4 py-8 min-h-screen">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -245,6 +247,7 @@ export default function ConjugationPage() {
           </>
         </main>
       </MobileAwareContainer>
+      </DesktopContainer>
     </div>
   );
 }

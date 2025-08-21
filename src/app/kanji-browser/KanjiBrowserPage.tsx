@@ -21,6 +21,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useStrings } from "@/contexts/LanguageContext";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { DesktopContainer } from "@/components/layout/DesktopContainer";
 
 // Structured Data for Kanji Browser
 const kanjiStructuredData = {
@@ -344,7 +345,8 @@ function KanjiBrowserContent() {
       <SmartPageHeader title="Kanji Browser" backHref="/" />
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <DesktopContainer>
+        <div className="container mx-auto px-4 py-8">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -594,6 +596,7 @@ function KanjiBrowserContent() {
         )}
 
       </div>
+      </DesktopContainer>
     </div>
   );
 }

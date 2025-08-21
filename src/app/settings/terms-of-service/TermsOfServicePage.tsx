@@ -2,6 +2,7 @@
 
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useStrings } from '@/contexts/LanguageContext';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
 export default function TermsOfServicePage() {
   const strings = useStrings();
@@ -11,7 +12,8 @@ export default function TermsOfServicePage() {
     <div className="min-h-screen bg-gray-50">
       <SmartPageHeader title={pageTitle} backHref="/settings" />
 
-      <div className="container mx-auto px-4">
+      <DesktopContainer>
+        <div className="container mx-auto px-4">
         <main className="max-w-3xl mx-auto mb-32 md:mb-8 pb-safe">
           <div className="bg-card border border-border rounded-lg overflow-hidden">
             <div className="p-6 md:p-8 space-y-8">
@@ -141,6 +143,7 @@ export default function TermsOfServicePage() {
           </div>
         </main>
       </div>
+      </DesktopContainer>
     </div>
   );
 }

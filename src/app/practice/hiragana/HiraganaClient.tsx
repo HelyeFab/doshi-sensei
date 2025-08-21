@@ -8,6 +8,7 @@ import KanaStudyModal from '@/components/kana/KanaStudyModal';
 import { SelectionActionBar } from '@/components/ui/SelectionActionBar';
 import { kanaData, getBasicKana } from '@/data/kanaData';
 import { useToast } from '@/hooks/useToast';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
 export default function HiraganaClient() {
   const router = useRouter();
@@ -87,7 +88,8 @@ export default function HiraganaClient() {
       />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 pb-24">
+      <DesktopContainer>
+        <main className="container mx-auto px-4 py-8 pb-24">
         <div className="max-w-4xl mx-auto">
 
           {/* Target Icon */}
@@ -173,6 +175,7 @@ export default function HiraganaClient() {
           </div>
         </div>
       </main>
+      </DesktopContainer>
 
       {/* Study Modal */}
       {showKanaStudyModal && (

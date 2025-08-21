@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ResourcePost, ResourceSearchFilters } from '@/types/resources';
 import { getPublishedResourcePosts, getResourceCategoriesAndTags } from '@/utils/resources';
@@ -12,8 +12,9 @@ import { getResourceColorTheme, getResourceIcon, getCategoryEmoji } from '@/util
 import { useStrings } from '@/contexts/LanguageContext';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import { ExternalImage } from '@/components/ui/OptimizedImage';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
-export default function ResourcesPage() {
+function ResourcesContent() {
   const searchParams = useSearchParams();
   const strings = useStrings();
   const [resources, setResources] = useState<ResourcePost[]>([]);
@@ -109,7 +110,8 @@ export default function ResourcesPage() {
     <div className="min-h-screen bg-background">
       <SmartPageHeader title="Resources" backHref="/" />
       
-      <MobileAwareContainer className="container mx-auto px-4 py-6">
+      <DesktopContainer>
+        <MobileAwareContainer className="container mx-auto px-4 py-6">
 
         {/* Search and Filters */}
         <div className="max-w-4xl mx-auto mb-8">
@@ -409,6 +411,19 @@ export default function ResourcesPage() {
           )}
         </div>
       </MobileAwareContainer>
+      </DesktopContainer>
     </div>
+  );
+}
+
+export default function ResourcesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <ResourcesContent />
+    </Suspense>
   );
 }

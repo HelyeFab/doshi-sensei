@@ -1,5 +1,7 @@
 import ClientHome from '@/components/ClientHome';
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   // Calculate initial values on the server
   const today = new Date();

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import SmartHeader from '@/components/SmartHeader';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
 export default function PracticeClient() {
   return (
@@ -13,7 +14,8 @@ export default function PracticeClient() {
       />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 pb-24">
+      <DesktopContainer>
+        <main className="container mx-auto px-4 py-8 pb-24">
         <div className="max-w-4xl mx-auto">
           
           {/* Foundation Section */}
@@ -94,6 +96,7 @@ export default function PracticeClient() {
 
         </div>
       </main>
+      </DesktopContainer>
     </div>
   );
 }

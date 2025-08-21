@@ -121,6 +121,17 @@ const _internalRegistry: Record<string, Feature> = {
     requiresSubscription: false,
     status: 'active',
   },
+  'kanji_families': {
+    id: 'kanji_families',
+    name: 'Kanji Families',
+    description: 'Learn kanji grouped by shared components and radicals',
+    category: 'learning',
+    icon: '👨‍👩‍👧‍👦',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+  },
 
   // Games
   'kanji_quest': {
@@ -516,6 +527,19 @@ const _internalRegistry: Record<string, Feature> = {
     limitType: 'none',
     requiresAuth: true,
     requiresSubscription: true,
+    status: 'active',
+  },
+  
+  // Resources & Content
+  'resources': {
+    id: 'resources',
+    name: 'Learning Resources',
+    description: 'Access learning guides, articles, and educational content',
+    category: 'learning',
+    icon: '📚',
+    limitType: 'none',
+    requiresAuth: false,
+    requiresSubscription: false,
     status: 'active',
   },
 };

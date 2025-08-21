@@ -37,6 +37,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'stroke_order_practice': 3, // Few practices
       'kanji_mastery': 0,       // Must sign up
       'kanji_browser': -1,      // Unlimited browsing
+      'kanji_families': 5,      // Limited family explorations per day
       'kanji_moods': 0,         // Must sign up
       'kanji_simon': 1,         // One game per day
       'sentence_scramble': 1,   // One game per day
@@ -75,6 +76,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'progress_dashboard': 0,        // Must sign up
       'advanced_srs_algorithms': 0,   // Must sign up
       'cross_device_sync': 0,         // Must sign up
+      'resources': -1,                // Unlimited access for guests
     },
     total: {
       // Storage limits
@@ -108,6 +110,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'stroke_order_practice': 10, // Some practices
       'kanji_mastery': 3,       // Limited sessions
       'kanji_browser': -1,      // Unlimited browsing
+      'kanji_families': 20,     // Many family explorations per day
       'kanji_moods': 1,         // One mood board per day
       'kanji_simon': 5,         // Several games per day
       'sentence_scramble': 3,   // Few games per day
@@ -146,6 +149,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'progress_dashboard': -1,       // Unlimited dashboard access
       'advanced_srs_algorithms': 0,   // Premium only
       'cross_device_sync': 0,         // Premium only
+      'resources': -1,                // Unlimited access for free users
     },
     total: {
       // Storage limits
@@ -179,6 +183,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'stroke_order_practice': -1,
       'kanji_mastery': -1,      // Unlimited sessions
       'kanji_browser': -1,      // Unlimited browsing
+      'kanji_families': -1,     // Unlimited family explorations
       'kanji_moods': -1,        // Unlimited mood boards
       'kanji_simon': -1,        // Unlimited games
       'sentence_scramble': -1,  // Unlimited games
@@ -217,6 +222,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'progress_dashboard': -1,       // Unlimited dashboard access
       'advanced_srs_algorithms': -1,  // Access to FSRS and advanced algorithms
       'cross_device_sync': -1,        // Cross-device sync enabled
+      'resources': -1,                // Unlimited access for premium users
     },
     total: {
       // Storage - all unlimited

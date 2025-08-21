@@ -56,30 +56,30 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
 
   // Feature card sections based on old app structure
   const foundationCards = [
-    { title: 'Hiragana', icon: '🅰', href: '/practice/hiragana', description: 'Master the hiragana alphabet' },
-    { title: 'Katakana', icon: '🅱', href: '/practice/katakana', description: 'Learn katakana characters' }
+    { title: 'Hiragana', icon: 'あ', href: '/practice/hiragana', description: 'Master the hiragana alphabet' },
+    { title: 'Katakana', icon: 'ア', href: '/practice/katakana', description: 'Learn katakana characters' }
   ];
 
   const coreLearningCards = [
-    { title: 'Kanji', icon: '🉐', href: '/kanji-browser', description: 'Browse and learn kanji' },
+    { title: 'Kanji', icon: '漢', href: '/kanji-browser', description: 'Browse and learn kanji' },
     { title: 'Kanji Mastery', icon: '🎯', href: '/tools/kanji-mastery', description: 'Master kanji with SRS' },
-    { title: 'Mood Boards', icon: '🎨', href: '/kanji-moods', description: 'Learn kanji by themes' },
+    { title: 'Mood Boards', icon: '🗺️', href: '/kanji-moods', description: 'Learn kanji by themes' },
     { title: 'Textbook Vocab', icon: '📚', href: '/tools/textbook-vocabulary', description: 'Study textbook vocabulary' },
     { title: 'Vocabulary', icon: '📖', href: '/vocabulary', description: 'Explore Japanese vocabulary' },
-    { title: 'Conjugation', icon: '✍️', href: '/practice/conjugation', description: 'Practice verb conjugations' }
+    { title: 'Conjugation', icon: '🔤', href: '/practice/conjugation', description: 'Practice verb conjugations' }
   ];
 
   const practiceCards = [
     { title: 'Review System', icon: '📝', href: '/review', description: 'Unified spaced repetition review' },
-    { title: 'Practice', icon: '🎯', href: '/practice', description: 'General practice mode' },
+    { title: 'Practice', icon: '📚', href: '/practice', description: 'General practice mode' },
     { title: 'Drill', icon: '⚡', href: '/drill', description: 'Quick drill exercises' },
-    { title: 'Games', icon: '🎮', href: '/games', description: 'Learn through fun games' }
+    { title: 'Games', icon: '/game-console.png', href: '/games', description: 'Learn through fun games' }
   ];
 
   const immersionCards = [
-    { title: 'News', icon: '📰', href: '/news', description: 'Read Japanese news' },
+    { title: 'News', icon: '🗞️', href: '/news', description: 'Read Japanese news' },
     { title: 'Stories', icon: '/flat-icons/root-icons/story.svg', href: '/stories', description: 'AI-generated stories' },
-    { title: 'YouTube Shadowing', icon: '📺', href: '/tools/youtube-shadowing', description: 'Practice with YouTube' },
+    { title: 'YouTube Shadowing', icon: '/flat-icons/ui/youtube.svg', href: '/tools/youtube-shadowing', description: 'Practice with YouTube' },
     { title: 'YouTube Series', icon: '/flat-icons/ui/Shadowing/facebook.svg', href: '/tools/youtube-series', description: 'Track YouTube channels' },
     { title: 'My Videos', icon: '🎬', href: '/tools/my-videos', description: 'Your saved videos' }
   ];

@@ -23,6 +23,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import { useAchievements } from '@/hooks/useAchievements';
 import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
 import { PracticeCache } from '@/utils/practiceCache';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 import DrillSettingsDropdown from '@/components/drill/DrillSettingsDropdown';
 
 // Structured Data for Drill Page
@@ -673,7 +674,8 @@ export default function DrillPage() {
       <SmartPageHeader title={strings.drill.title} />
       
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <DesktopContainer>
+        <div className="container mx-auto px-4 py-8">
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -1098,6 +1100,7 @@ export default function DrillPage() {
             )}
         </main>
       </div>
+      </DesktopContainer>
     </div>
   );
 }

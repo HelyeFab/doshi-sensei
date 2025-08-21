@@ -12,6 +12,7 @@ import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import { LoadingHourglassPage } from '@/components/ui/LoadingHourglass';
 import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
 function KanjiMoodsContent() {
   const router = useRouter();
@@ -136,7 +137,8 @@ function KanjiMoodsContent() {
     <div className="min-h-screen bg-background">
       <SmartPageHeader title="Kanji Moods" />
       
-      <MobileAwareContainer className="container mx-auto px-4">
+      <DesktopContainer>
+        <MobileAwareContainer className="container mx-auto px-4">
         {/* Hero Section */}
         <div className="mb-8">
           <div className="text-center max-w-2xl mx-auto">
@@ -508,6 +510,7 @@ function KanjiMoodsContent() {
       </div>
 
       </MobileAwareContainer>
+      </DesktopContainer>
       
       {/* Three-Pillar Architecture Access Modals */}
       <AccessModals />

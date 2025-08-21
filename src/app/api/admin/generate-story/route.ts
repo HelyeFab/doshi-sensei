@@ -79,7 +79,7 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
       }, { status: 500 });
     }
 
-    // Initialize OpenAI client with shorter timeout for character generation
+    // Initialize OpenAI client with shorter timeout for character generation only
     const openai = new OpenAI({
       apiKey: process.env.OPEN_AI_API_KEY,
       timeout: 20000, // 20 second timeout for character generation only

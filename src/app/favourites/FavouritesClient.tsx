@@ -18,6 +18,7 @@ import { TTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { AnkiImportModal } from '@/components/anki/AnkiImportModal';
 import { AnkiCardModal } from '@/components/anki/AnkiCardModal';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
+import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
 // Structured Data for Favourites
 const favouritesStructuredData = {
@@ -556,7 +557,8 @@ export default function FavouritesClient() {
 
       <SmartPageHeader title={strings.favourites.title} />
 
-      <MobileAwareContainer className="container mx-auto px-4">
+      <DesktopContainer>
+        <MobileAwareContainer className="container mx-auto px-4">
         {/* Description */}
         <div className="mb-8">
           <p className="text-muted-foreground text-center">
@@ -1391,6 +1393,7 @@ export default function FavouritesClient() {
           </div>
         )}
       </MobileAwareContainer>
+      </DesktopContainer>
     </div>
   );
 }

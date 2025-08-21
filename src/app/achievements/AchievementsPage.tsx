@@ -13,6 +13,7 @@ import { HiddenAchievementsSection } from "@/components/achievements/HiddenAchie
 import { CosmeticRewards } from "@/components/achievements/CosmeticRewards";
 import { AchievementManager } from "@/lib/achievements/manager";
 import SmartHeader from "@/components/SmartHeader";
+import { DesktopContainer } from "@/components/layout/DesktopContainer";
 
 interface DisplayAchievement extends Achievement {
   progress: string | number;
@@ -182,7 +183,8 @@ export default function AchievementsPage() {
     <div className="min-h-screen bg-background">
       <SmartHeader title="Achievements" />
 
-      <div className="container mx-auto px-4 pb-8">
+      <DesktopContainer>
+        <div className="container mx-auto px-4 pb-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
@@ -383,6 +385,7 @@ export default function AchievementsPage() {
 
         {selectedTab === "cosmetics" && <CosmeticRewards />}
       </div>
+      </DesktopContainer>
 
       {/* Title Selector Modal */}
       <TitleSelector

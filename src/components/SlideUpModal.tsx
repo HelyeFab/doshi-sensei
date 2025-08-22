@@ -81,12 +81,13 @@ export default function SlideUpModal({
       <div
         ref={modalRef}
         className={`absolute bottom-0 left-0 right-0 bg-background rounded-t-3xl shadow-xl transition-all duration-300 flex flex-col ${
-          isOpen ? 'translate-y-0' : 'translate-y-full'
+          isOpen ? 'translate-y-0' : 'translate-y-[105%]'
         } ${className}`}
         style={{
           height: height === 'full' ? '100%' : height === 'auto' ? 'auto' : height,
           maxHeight: height === '90%' && typeof window !== 'undefined' && window.innerWidth < 768 ? '90vh' : '100vh',
           marginTop: height === '90%' && typeof window !== 'undefined' && window.innerWidth < 768 ? '10vh' : '0',
+          visibility: isOpen ? 'visible' : 'hidden',
         }}
       >
         {/* Close button (always at top right) */}

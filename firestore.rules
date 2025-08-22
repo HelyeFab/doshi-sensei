@@ -1116,6 +1116,18 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Usage collection at root level (for feature limits tracking)
+    match /usage/{userId} {
+      // Users can read their own usage data
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can create and update their own usage data
+      allow create, update: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can delete their own usage data
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

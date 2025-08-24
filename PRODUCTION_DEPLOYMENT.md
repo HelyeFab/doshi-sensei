@@ -99,7 +99,14 @@ netlify deploy --prod
 
 ### Check Firebase Functions Logs
 ```bash
+# First, set the project (if not already set)
+firebase use doshi-sensei
+
+# Then view the logs (refresh to see new entries)
 firebase functions:log --only stripeWebhook --lines 50
+
+# For continuous monitoring, run the command periodically or use:
+watch -n 5 "firebase functions:log --only stripeWebhook --lines 20"
 ```
 
 Look for:

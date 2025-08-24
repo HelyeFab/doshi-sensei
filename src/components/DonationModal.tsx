@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useToast } from '@/contexts/ToastContext';
 
 interface DonationModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ const DONATION_AMOUNTS = [
 
 export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
   const strings = useStrings();
+  const { toast } = useToast();
   const [selectedAmount, setSelectedAmount] = useState(500); // Default $5
   const [customAmount, setCustomAmount] = useState('');
   const [isCustom, setIsCustom] = useState(false);
@@ -28,14 +30,20 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
 
   const handleStripeClick = async () => {
     if (finalAmount < 100) {
-      alert(strings.subscriptions.minimumDonation);
+      toast.warning(
+        'Minimum Donation',
+        strings.subscriptions.minimumDonation
+      );
       return;
     }
 
     setIsLoading(true);
     // Placeholder for Stripe integration
     setTimeout(() => {
-      alert(`Thank you for your $${(finalAmount / 100).toFixed(2)} donation! (Demo mode)`);
+      toast.success(
+        'Thank You!',
+        `Thank you for your $${(finalAmount / 100).toFixed(2)} donation! (Demo mode)`
+      );
       setIsLoading(false);
       onClose();
     }, 1000);
@@ -53,13 +61,13 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-card border border-border rounded-2xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="bg-blue-500 text-white p-6 text-center">
+        <div className="bg-primary text-primary-foreground p-6 text-center">
           <div className="text-4xl mb-3">☕</div>
           <h2 className="text-xl font-semibold mb-1">{strings.subscriptions.supportDeveloper}</h2>
-          <p className="text-blue-100 text-sm">
+          <p className="text-primary-foreground/90 text-sm">
             {strings.subscriptions.supportDescription}
           </p>
         </div>
@@ -68,7 +76,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
         <div className="p-6 space-y-4">
           {/* Amount Selection */}
           <div className="space-y-3">
-            <p className="text-center text-gray-600 text-sm">
+            <p className="text-center text-muted-foreground text-sm">
               {strings.subscriptions.chooseDonationAmount}
             </p>
 
@@ -80,12 +88,12 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
                   onClick={() => handleAmountSelect(amount.value)}
                   className={`relative p-3 rounded-lg border transition-all ${
                     selectedAmount === amount.value && !isCustom
-                      ? 'border-blue-500 bg-blue-50 text-blue-600'
-                      : 'border-gray-200 hover:border-blue-300 text-gray-700'
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border hover:border-primary/50 text-foreground'
                   }`}
                 >
                   {amount.popular && (
-                    <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                    <div className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
                       {strings.subscriptions.popular}
                     </div>
                   )}
@@ -104,18 +112,18 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
                   onChange={(e) => handleCustomAmountChange(e.target.value)}
                   min="1"
                   step="0.01"
-                  className={`flex-1 px-3 py-2 border rounded-lg bg-white text-gray-900 ${
-                    isCustom ? 'border-blue-500' : 'border-gray-200'
-                  } focus:outline-none focus:border-blue-500`}
+                  className={`flex-1 px-3 py-2 border rounded-lg bg-background text-foreground ${
+                    isCustom ? 'border-primary' : 'border-border'
+                  } focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-2`}
                 />
-                <span className="text-gray-600 text-sm">USD</span>
+                <span className="text-muted-foreground text-sm">USD</span>
               </div>
             </div>
           </div>
 
           {/* Payment Methods */}
-          <div className="space-y-3 pt-2 border-t border-gray-200">
-            <p className="text-center text-gray-600 text-sm">
+          <div className="space-y-3 pt-2 border-t border-border">
+            <p className="text-center text-muted-foreground text-sm">
               {strings.subscriptions.securePaymentViaStripe}
             </p>
 
@@ -123,17 +131,17 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
             <button
               onClick={handleStripeClick}
               disabled={isLoading || finalAmount < 100}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed text-white rounded-xl p-4 flex items-center justify-center space-x-3 transition-colors group"
+              className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed text-primary-foreground rounded-xl p-4 flex items-center justify-center space-x-3 transition-colors group"
             >
               {isLoading ? (
                 <>
-                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                  <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
                   <span className="font-medium">{strings.subscriptions.processing}</span>
                 </>
               ) : (
                 <>
-                  <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
-                    <span className="text-indigo-600 font-bold text-sm">S</span>
+                  <div className="w-6 h-6 bg-primary-foreground rounded-sm flex items-center justify-center">
+                    <span className="text-primary font-bold text-sm">S</span>
                   </div>
                   <span className="font-medium">
                     {strings.subscriptions.donateViaStripe.replace('{amount}', (finalAmount / 100).toFixed(2))}
@@ -149,7 +157,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="w-full text-gray-600 hover:text-gray-900 border border-gray-200 hover:border-gray-300 rounded-xl p-3 transition-colors disabled:opacity-50"
+              className="w-full text-muted-foreground hover:text-foreground border border-border hover:border-border/80 rounded-xl p-3 transition-colors disabled:opacity-50"
             >
               {strings.subscriptions.maybeLater}
             </button>
@@ -158,7 +166,7 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
 
         {/* Footer */}
         <div className="px-6 pb-6">
-          <p className="text-xs text-center text-gray-500">
+          <p className="text-xs text-center text-muted-foreground/70">
             {strings.subscriptions.yourSupportHelps}
           </p>
         </div>

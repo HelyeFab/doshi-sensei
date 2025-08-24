@@ -33,13 +33,13 @@ function Toast({ toast, onRemove }: ToastProps) {
   const getStyles = () => {
     switch (toast.type) {
       case 'success':
-        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200';
+        return 'bg-green-500/10 border-green-500/20 text-green-600 dark:text-green-400';
       case 'error':
-        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200';
+        return 'bg-destructive/10 border-destructive/20 text-destructive';
       case 'warning':
-        return 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200';
+        return 'bg-warning/10 border-warning/20 text-warning';
       default:
-        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200';
+        return 'bg-primary/10 border-primary/20 text-primary';
     }
   };
 
@@ -58,7 +58,7 @@ function Toast({ toast, onRemove }: ToastProps) {
 
   return (
     <div
-      className={`flex items-start gap-3 w-full max-w-sm p-4 rounded-lg border shadow-lg bg-white dark:bg-gray-800 transition-all duration-300 ${
+      className={`flex items-start gap-3 w-full max-w-sm p-4 rounded-lg border shadow-lg bg-card transition-all duration-300 ${
         isLeaving ? 'opacity-0 translate-x-full' : 'opacity-100 translate-x-0'
       } ${getStyles()}`}
     >
@@ -106,29 +106,3 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
   );
 }
 
-// Hook for toast management
-export function useToast() {
-  const [toasts, setToasts] = useState<ToastMessage[]>([]);
-
-  const addToast = (toast: Omit<ToastMessage, 'id'>) => {
-    const id = Date.now().toString();
-    setToasts((prev) => [...prev, { ...toast, id }]);
-  };
-
-  const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  const toast = {
-    success: (title: string, message?: string) =>
-      addToast({ type: 'success', title, message }),
-    error: (title: string, message?: string) =>
-      addToast({ type: 'error', title, message }),
-    info: (title: string, message?: string) =>
-      addToast({ type: 'info', title, message }),
-    warning: (title: string, message?: string) =>
-      addToast({ type: 'warning', title, message }),
-  };
-
-  return { toasts, toast, removeToast };
-}

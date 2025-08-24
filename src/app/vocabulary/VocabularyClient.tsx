@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useConfirmDialog } from '@/components/ConfirmDialog';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
 import type { ExampleSentence } from '@/types/sentences';
 import { searchWords } from '@/utils/api';
@@ -275,15 +276,24 @@ export default function VocabularyClient() {
     }
   };
 
+  const { showDialog: showClearHistoryDialog, DialogComponent: ClearHistoryDialog } = useConfirmDialog();
+
   const handleClearSearchHistory = async () => {
-    if (confirm('Are you sure you want to clear all search history?')) {
-      try {
-        await SearchHistoryManager2.clearSearchHistory(user, mapUserType(userType));
-        setSearchHistory([]);
-      } catch (error) {
-        console.error('Error clearing search history:', error);
+    showClearHistoryDialog({
+      title: 'Clear Search History',
+      message: 'Are you sure you want to clear all search history? This action cannot be undone.',
+      type: 'warning',
+      confirmText: 'Clear History',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          await SearchHistoryManager2.clearSearchHistory(user, mapUserType(userType));
+          setSearchHistory([]);
+        } catch (error) {
+          console.error('Error clearing search history:', error);
+        }
       }
-    }
+    });
   };
 
   const formatDate = (timestamp: number) => {

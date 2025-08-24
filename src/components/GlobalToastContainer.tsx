@@ -1,9 +1,7 @@
 'use client';
 
-import { ToastContainer, useToast } from '@/components/Toast';
-
+// This component is now replaced by ToastProvider in ToastContext.tsx
+// Keeping this file for backward compatibility but it's no longer used
 export default function GlobalToastContainer() {
-  const { toasts, removeToast } = useToast();
-  
-  return <ToastContainer toasts={toasts} onRemove={removeToast} />;
+  return null;
 }

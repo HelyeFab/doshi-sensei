@@ -5,7 +5,7 @@ import StunningBottomNavbar from "@/components/StunningBottomNavbar";
 import DesktopNavMenu from "@/components/DesktopNavMenu";
 import FloatingDonateButton from "@/components/FloatingDonateButton";
 import GlobalVirtualCompanion from "@/components/GlobalVirtualCompanion";
-import GlobalToastContainer from "@/components/GlobalToastContainer";
+import { ToastProvider } from "@/contexts/ToastContext";
 import { UnifiedNotificationProvider } from "@/components/UnifiedNotificationProvider";
 import { CriticalProviders, NonCriticalProviders } from "@/components/OptimizedProviders";
 import { VirtualCompanionProvider } from "@/contexts/VirtualCompanionContext";
@@ -98,17 +98,18 @@ export default function RootLayout({
           <NonCriticalProviders>
             <BackgroundSyncProvider>
               <VirtualCompanionProvider>
-              <div className="min-h-screen pb-16 md:pb-0">
-                {children}
-              </div>
-              <StunningBottomNavbar />
-              <DesktopNavMenu />
-              <FloatingDonateButton />
-              <GlobalVirtualCompanion />
-              <GlobalToastContainer />
-              <UnifiedNotificationProvider />
-              <PWAUpdateNotification />
-              <PWAInstallPrompt />
+                <ToastProvider>
+                  <div className="min-h-screen pb-16 md:pb-0">
+                    {children}
+                  </div>
+                  <StunningBottomNavbar />
+                  <DesktopNavMenu />
+                  <FloatingDonateButton />
+                  <GlobalVirtualCompanion />
+                  <UnifiedNotificationProvider />
+                  <PWAUpdateNotification />
+                  <PWAInstallPrompt />
+                </ToastProvider>
               </VirtualCompanionProvider>
             </BackgroundSyncProvider>
           </NonCriticalProviders>

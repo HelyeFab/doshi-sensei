@@ -9,6 +9,7 @@ import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useStripePrices } from '@/hooks/useStripePrices';
+import { useSubscriptionFeatures } from '@/hooks/useSubscriptionFeatures';
 
 export default function SubscriptionPlans() {
   const strings = useStrings();
@@ -18,6 +19,7 @@ export default function SubscriptionPlans() {
   const { access: listAccess } = useFeature('word_lists');
   const { showNotification } = useNotification();
   const { prices, loading: pricesLoading, formatPrice } = useStripePrices();
+  const { features: dynamicFeatures, loading: featuresLoading } = useSubscriptionFeatures();
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
@@ -28,7 +30,60 @@ export default function SubscriptionPlans() {
         ? STRIPE_CONFIG.priceIds.monthly
         : STRIPE_CONFIG.priceIds.yearly;
 
-      await createCheckoutSession(priceId);
+      // Check if user has an existing subscription to upgrade
+      if (subscription?.stripeSubscriptionId && (subscription?.plan === 'monthly' || subscription?.plan === 'yearly')) {
+        // Use update API for existing subscriptions
+        console.log('Upgrading existing subscription:', subscription.stripeSubscriptionId);
+        
+        if (!user) {
+          throw new Error('Must be logged in to upgrade');
+        }
+        
+        const idToken = await user.getIdToken();
+        const response = await fetch('/api/update-subscription', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            currentSubscriptionId: subscription.stripeSubscriptionId,
+            newPriceId: priceId,
+            idToken,
+            userEmail: user.email,
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || data.message || 'Failed to update subscription');
+        }
+        
+        // Show success message with proration info
+        let message = strings.subscriptions.upgradeSuccessMessage;
+        if (data.subscription?.prorationAmount) {
+          const amount = Math.abs(data.subscription.prorationAmount);
+          if (data.subscription.prorationAmount > 0) {
+            message += ` You'll be charged ${formatPrice({ amount: amount * 100, currency: 'gbp' })} for the upgrade.`;
+          } else if (data.subscription.prorationAmount < 0) {
+            message += ` You'll receive a ${formatPrice({ amount: amount * 100, currency: 'gbp' })} credit.`;
+          }
+        }
+        
+        showNotification({
+          title: strings.subscriptions.upgradeSuccess || 'Subscription Updated',
+          message,
+          type: 'success'
+        });
+        
+        // Refresh subscription data
+        if (window.location) {
+          setTimeout(() => window.location.reload(), 2000);
+        }
+      } else {
+        // No existing subscription, create new one
+        await createCheckoutSession(priceId);
+      }
     } catch (error) {
       console.error('Error upgrading:', error);
       
@@ -62,7 +117,10 @@ export default function SubscriptionPlans() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ idToken }),
+        body: JSON.stringify({ 
+          idToken,
+          userEmail: user.email 
+        }),
       });
 
       if (!response.ok) {
@@ -152,6 +210,20 @@ export default function SubscriptionPlans() {
               )}
             </span>
           </div>
+          
+          {/* Show cancellation status if subscription is set to cancel */}
+          {subscription?.cancelAtPeriodEnd && (
+            <div className="mt-2 p-3 bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-lg">
+              <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                ⚠️ Subscription will cancel at the end of the billing period
+                {subscription.currentPeriodEnd && (
+                  <span className="block text-xs mt-1 text-amber-800 dark:text-amber-200">
+                    Active until: {new Date(subscription.currentPeriodEnd.seconds * 1000).toLocaleDateString()}
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
         </div>
 
         {currentPlan !== 'free' && subscription?.stripeSubscriptionId && (
@@ -176,14 +248,16 @@ export default function SubscriptionPlans() {
         )}
       </div>
 
-      {/* Upgrade Options */}
-      {currentPlan === 'free' && (
+      {/* Upgrade Options - Show for free AND monthly users (to allow upgrade to yearly) */}
+      {(currentPlan === 'free' || currentPlan === 'monthly') && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground">{strings.subscriptions.upgradePlans}</h3>
+          <h3 className="text-lg font-semibold text-foreground">
+            {currentPlan === 'free' ? strings.subscriptions.upgradePlans : 'Upgrade to Yearly'}
+          </h3>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Monthly Plan */}
-            {monthlyPlan && (
+          <div className={`grid ${currentPlan === 'monthly' ? '' : 'md:grid-cols-2'} gap-4`}>
+            {/* Monthly Plan - Only show if user doesn't have monthly */}
+            {monthlyPlan && currentPlan !== 'monthly' && (
               <div className="bg-card border border-border rounded-lg p-6">
                 <div className="text-center mb-4">
                   <h4 className="text-lg font-semibold text-foreground">Monthly</h4>
@@ -207,10 +281,10 @@ export default function SubscriptionPlans() {
                 </div>
 
                 <ul className="space-y-2 mb-6">
-                  {monthlyPlan.features.map((feature: string, index: number) => (
+                  {(featuresLoading ? monthlyPlan.features : dynamicFeatures.monthly.map(f => f.text)).map((feature: string, index: number) => (
                     <li key={index} className="flex items-center text-sm text-foreground">
                       <span className="text-green-500 mr-2">✓</span>
-                      {feature}
+                      {typeof feature === 'string' ? feature : feature.text}
                     </li>
                   ))}
                 </ul>
@@ -257,10 +331,10 @@ export default function SubscriptionPlans() {
                 </div>
 
                 <ul className="space-y-2 mb-6">
-                  {yearlyPlan.features.map((feature: string, index: number) => (
+                  {(featuresLoading ? yearlyPlan.features : dynamicFeatures.yearly.map(f => f.text)).map((feature: string, index: number) => (
                     <li key={index} className="flex items-center text-sm text-foreground">
                       <span className="text-green-500 mr-2">✓</span>
-                      {feature}
+                      {typeof feature === 'string' ? feature : feature.text}
                     </li>
                   ))}
                 </ul>
@@ -284,12 +358,19 @@ export default function SubscriptionPlans() {
           <div className="flex items-start space-x-3">
             <span className="text-yellow-600 dark:text-yellow-400 text-lg">⚠️</span>
             <div>
-              <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Free Plan Limitations</h4>
+              <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Free Plan Features</h4>
               <ul className="text-sm text-yellow-900 dark:text-yellow-100 space-y-1 font-medium">
-                <li>• Limited to {listAccess?.limit || 3} word lists</li>
-                <li>• Maximum {drillAccess?.limit || 3} drills per day</li>
-                <li>• No cloud sync across devices</li>
-                <li>• Local storage only</li>
+                {!featuresLoading && dynamicFeatures.free.map((feature, index) => (
+                  <li key={index}>• {feature.text}</li>
+                ))}
+                {featuresLoading && (
+                  <>
+                    <li>• Limited to {listAccess?.limit || 3} word lists</li>
+                    <li>• Maximum {drillAccess?.limit || 3} drills per day</li>
+                    <li>• No cloud sync across devices</li>
+                    <li>• Local storage only</li>
+                  </>
+                )}
               </ul>
               <p className="text-sm text-yellow-900 dark:text-yellow-100 mt-3 font-medium">
                 ⬆️ Upgrade to unlock unlimited features and cloud sync!

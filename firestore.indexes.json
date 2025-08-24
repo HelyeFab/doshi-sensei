@@ -1,6 +1,20 @@
 {
   "indexes": [
     {
+      "collectionGroup": "subscription_history",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timestamp",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "analytics",
       "queryScope": "COLLECTION",
       "fields": [

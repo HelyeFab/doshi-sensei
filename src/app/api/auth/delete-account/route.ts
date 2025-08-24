@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFirebaseAdmin } from '@/lib/firebase-admin-safe';
+import { callFirebaseFunction } from '@/lib/call-firebase-function';
 import { headers } from 'next/headers';
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Get Firebase Admin instance
-    const admin = await getFirebaseAdmin();
-    const auth = admin.auth();
-    const db = admin.firestore();
-    
     // Get the authorization header
     const headersList = await headers();
     const authorization = headersList.get('authorization');
@@ -17,67 +12,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Verify the token
+    // Get the ID token
     const token = authorization.split('Bearer ')[1];
-    const decodedToken = await auth.verifyIdToken(token);
-    const uid = decodedToken.uid;
-
-    // Get user data before deletion for logging
-    const userRecord = await auth.getUser(uid);
-    console.log(`Deleting account for user: ${userRecord.email} (${uid})`);
-
-    // Delete user data from Firestore
-    const batch = db.batch();
     
-    // Delete user document
-    batch.delete(db.collection('users').doc(uid));
+    console.log('Calling deleteAccount Cloud Function...');
     
-    // Delete user's stats if they exist
-    const userStatsRef = db.collection('userStats').doc(uid);
-    const userStatsSnap = await userStatsRef.get();
-    if (userStatsSnap.exists) {
-      batch.delete(userStatsRef);
-    }
-    
-    // Delete user's daily activities
-    const activitiesSnapshot = await db.collection('dailyActivities')
-      .where('userId', '==', uid)
-      .get();
-    
-    activitiesSnapshot.docs.forEach(doc => {
-      batch.delete(doc.ref);
-    });
-
-    // Delete user's caught Pokemon if exists
-    const pokemonRef = db.collection('userPokemon').doc(uid);
-    const pokemonSnap = await pokemonRef.get();
-    if (pokemonSnap.exists) {
-      batch.delete(pokemonRef);
-    }
-
-    // Delete user's subscription and entitlement data
-    const entitlementsSnapshot = await db.collection('userEntitlements')
-      .where('userId', '==', uid)
-      .get();
-    
-    entitlementsSnapshot.docs.forEach(doc => {
-      batch.delete(doc.ref);
-    });
-
-    // Delete any usage tracking data
-    const usageSnapshot = await db.collection('featureUsage')
-      .where('userId', '==', uid)
-      .get();
-    
-    usageSnapshot.docs.forEach(doc => {
-      batch.delete(doc.ref);
-    });
-
-    // Commit all deletions
-    await batch.commit();
-
-    // Finally, delete the user account from Firebase Auth
-    await auth.deleteUser(uid);
+    // Call the Cloud Function to delete the account
+    const result = await callFirebaseFunction('deleteAccount', {}, token);
 
     return NextResponse.json({ 
       success: true, 

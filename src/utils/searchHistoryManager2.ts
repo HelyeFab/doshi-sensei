@@ -26,7 +26,7 @@ export class SearchHistoryManager2 {
     searchTerm: string, 
     results: JapaneseWord[], 
     user: User | null,
-    userType: 'guest' | 'free' | 'premium' | 'premium_yearly',
+    userType: 'guest' | 'free' | 'monthly' | 'yearly',
     source: 'wanikani' | 'jmdict' = 'wanikani'
   ): Promise<void> {
     try {
@@ -55,7 +55,7 @@ export class SearchHistoryManager2 {
       await this.saveToIndexedDB(updatedHistory, userId);
 
       // Sync to Firebase for premium users
-      if (userType === 'premium' || userType === 'premium_yearly') {
+      if (userType === 'monthly' || userType === 'yearly') {
         await this.syncToFirebase(updatedHistory, user!);
       }
     } catch (error) {
@@ -69,13 +69,13 @@ export class SearchHistoryManager2 {
    */
   static async getSearchHistory(
     user: User | null,
-    userType: 'guest' | 'free' | 'premium' | 'premium_yearly'
+    userType: 'guest' | 'free' | 'monthly' | 'yearly'
   ): Promise<SearchHistoryEntry[]> {
     try {
       const userId = user?.uid || null;
 
       // Try to load from Firebase for premium users
-      if ((userType === 'premium' || userType === 'premium_yearly') && user) {
+      if ((userType === 'monthly' || userType === 'yearly') && user) {
         const firebaseHistory = await this.loadFromFirebase(user);
         if (firebaseHistory.length > 0) {
           // Also update IndexedDB with Firebase data
@@ -98,7 +98,7 @@ export class SearchHistoryManager2 {
   static async deleteSearchEntry(
     entryId: string,
     user: User | null,
-    userType: 'guest' | 'free' | 'premium' | 'premium_yearly'
+    userType: 'guest' | 'free' | 'monthly' | 'yearly'
   ): Promise<void> {
     try {
       const history = await this.getSearchHistory(user, userType);
@@ -108,7 +108,7 @@ export class SearchHistoryManager2 {
       await this.saveToIndexedDB(filteredHistory, userId);
 
       // Sync to Firebase for premium users
-      if ((userType === 'premium' || userType === 'premium_yearly') && user) {
+      if ((userType === 'monthly' || userType === 'yearly') && user) {
         await this.syncToFirebase(filteredHistory, user);
       }
     } catch (error) {
@@ -121,7 +121,7 @@ export class SearchHistoryManager2 {
    */
   static async clearSearchHistory(
     user: User | null,
-    userType: 'guest' | 'free' | 'premium' | 'premium_yearly'
+    userType: 'guest' | 'free' | 'monthly' | 'yearly'
   ): Promise<void> {
     try {
       const userId = user?.uid || null;
@@ -130,7 +130,7 @@ export class SearchHistoryManager2 {
       await UserScopedStorage.deleteFromStore(STORE_NAME, 'history', userId);
 
       // Clear from Firebase for premium users
-      if ((userType === 'premium' || userType === 'premium_yearly') && user) {
+      if ((userType === 'monthly' || userType === 'yearly') && user) {
         await deleteDoc(doc(db, 'users', user.uid, FIREBASE_COLLECTION, 'data'));
       }
     } catch (error) {
@@ -143,7 +143,7 @@ export class SearchHistoryManager2 {
    */
   static async getAllSearchedWords(
     user: User | null,
-    userType: 'guest' | 'free' | 'premium' | 'premium_yearly'
+    userType: 'guest' | 'free' | 'monthly' | 'yearly'
   ): Promise<JapaneseWord[]> {
     try {
       const history = await this.getSearchHistory(user, userType);
@@ -245,7 +245,7 @@ export class SearchHistoryManager2 {
    */
   static async migrateFromOldHistory(
     user: User | null,
-    userType: 'guest' | 'free' | 'premium' | 'premium_yearly'
+    userType: 'guest' | 'free' | 'monthly' | 'yearly'
   ): Promise<void> {
     try {
       // Check if old history exists
@@ -260,7 +260,7 @@ export class SearchHistoryManager2 {
         await this.saveToIndexedDB(parsedHistory, userId);
         
         // Sync to Firebase for premium users
-        if ((userType === 'premium' || userType === 'premium_yearly') && user) {
+        if ((userType === 'monthly' || userType === 'yearly') && user) {
           await this.syncToFirebase(parsedHistory, user);
         }
         

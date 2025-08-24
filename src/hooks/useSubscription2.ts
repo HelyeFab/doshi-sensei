@@ -94,6 +94,9 @@ export function useSubscription2(): UseSubscription2Return {
     }
     
     try {
+      // Get Firebase ID token for authentication
+      const idToken = await user.getIdToken();
+      
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -103,6 +106,7 @@ export function useSubscription2(): UseSubscription2Return {
           priceId,
           userId: user.uid,
           userEmail: user.email,
+          idToken: idToken,
         }),
       });
       
@@ -111,10 +115,14 @@ export function useSubscription2(): UseSubscription2Return {
         throw new Error(errorData.error || 'Failed to create checkout session');
       }
       
-      const { sessionUrl } = await response.json();
+      const { url, sessionUrl } = await response.json();
       
-      if (sessionUrl) {
-        window.location.href = sessionUrl;
+      // Support both url and sessionUrl for compatibility
+      const checkoutUrl = url || sessionUrl;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        throw new Error('No checkout URL received from server');
       }
     } catch (error) {
       console.error('Error creating checkout session:', error);
@@ -125,8 +133,11 @@ export function useSubscription2(): UseSubscription2Return {
   // Cancel subscription
   const cancelSubscription = async () => {
     if (!user || !subscription?.stripeSubscriptionId) {
+      console.error('Cancel failed - no subscription:', subscription);
       throw new Error('No active subscription to cancel');
     }
+    
+    console.log('Canceling subscription with ID:', subscription.stripeSubscriptionId);
     
     try {
       const idToken = await user.getIdToken();
@@ -142,6 +153,15 @@ export function useSubscription2(): UseSubscription2Return {
       });
       
       const data = await response.json();
+      
+      // Handle case where subscription doesn't exist in Stripe (test/prod mismatch)
+      if (response.status === 404 && data.requiresNewSubscription) {
+        console.warn('Subscription not found in Stripe - this is a test/production mismatch');
+        // For testing purposes, just refresh the subscription
+        console.log('Test mode: Subscription not found in Stripe, refreshing local data');
+        loadSubscription();
+        return; // Don't throw error, just refresh
+      }
       
       if (!response.ok && !data.success) {
         throw new Error(data.error || 'Failed to cancel subscription');

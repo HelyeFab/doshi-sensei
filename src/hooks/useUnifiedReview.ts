@@ -51,7 +51,8 @@ export function useUnifiedReview() {
                   const parsed = JSON.parse(authState);
                   if (parsed.user?.uid) {
                     userId = parsed.user.uid;
-                    userType = parsed.subscription?.status === 'active' ? 'premium' : 'free';
+                    const plan = parsed.subscription?.plan;
+                    userType = (plan === 'monthly' || plan === 'yearly') ? plan : 'free';
                   }
                 }
               } catch (e) {
@@ -63,8 +64,8 @@ export function useUnifiedReview() {
             // Create the engine instance with configuration
             engineInstance = new UnifiedReviewEngine({
               userId: userId,
-              enableSync: userType === 'premium',
-              defaultAlgorithm: userType === 'premium' ? AlgorithmType.FSRS : AlgorithmType.SIMPLE,
+              enableSync: userType === 'monthly' || userType === 'yearly',
+              defaultAlgorithm: (userType === 'monthly' || userType === 'yearly') ? AlgorithmType.FSRS : AlgorithmType.SIMPLE,
               enableNotifications: true
             });
             

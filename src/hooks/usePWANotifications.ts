@@ -1,167 +1,167 @@
-import { useEffect, useRef } from 'react'
-import { useToast } from '@/hooks/useToast'
+import { useState, useEffect, useCallback, useRef } from 'react';
 
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[]
-  readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed'
-    platform: string
-  }>
-  prompt(): Promise<void>
+export type NotificationPermission = 'default' | 'granted' | 'denied';
+
+export interface NotificationOptions {
+  body?: string;
+  icon?: string;
+  badge?: string;
+  image?: string;
+  tag?: string;
+  requireInteraction?: boolean;
+  actions?: Array<{
+    action: string;
+    title: string;
+    icon?: string;
+  }>;
+  data?: any;
+  vibrate?: number | number[];
+  silent?: boolean;
+  renotify?: boolean;
+  dir?: 'auto' | 'ltr' | 'rtl';
+  lang?: string;
+  timestamp?: number;
 }
 
 export function usePWANotifications() {
-  const { toast } = useToast()
-  const wasOffline = useRef(false)
-  const hasShownInstallPrompt = useRef(false)
+  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [isSupported, setIsSupported] = useState(false);
+  const scheduledNotifications = useRef<Map<number, NodeJS.Timeout>>(new Map());
+  const nextId = useRef(1);
 
   useEffect(() => {
-    // Connection status notifications
-    const handleOnline = () => {
-      if (wasOffline.current) {
-        toast.success(
-          'Connection Restored',
-          "You're back online"
-        )
-      }
-      wasOffline.current = false
+    // Check if notifications are supported
+    const supported = 'Notification' in window;
+    setIsSupported(supported);
+
+    if (supported) {
+      // Set initial permission state
+      setPermission(Notification.permission as NotificationPermission);
+    }
+  }, []);
+
+  const requestPermission = useCallback(async (): Promise<NotificationPermission> => {
+    if (!isSupported) {
+      console.warn('Notifications are not supported in this browser');
+      return 'denied';
     }
 
-    const handleOffline = () => {
-      wasOffline.current = true
-      toast.warning(
-        'Connection Lost',
-        'You are now offline. Some features may be limited.'
-      )
+    try {
+      const result = await Notification.requestPermission();
+      setPermission(result as NotificationPermission);
+      return result as NotificationPermission;
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+      return 'denied';
+    }
+  }, [isSupported]);
+
+  const showNotification = useCallback(async (
+    title: string,
+    options?: NotificationOptions
+  ): Promise<void> => {
+    console.log('[usePWANotifications] showNotification called');
+    console.log('- isSupported:', isSupported);
+    console.log('- permission:', permission);
+    console.log('- serviceWorker in navigator:', 'serviceWorker' in navigator);
+    console.log('- navigator.serviceWorker?.controller:', navigator.serviceWorker?.controller);
+    
+    if (!isSupported) {
+      throw new Error('Notifications are not supported');
     }
 
-    // PWA installation prompt
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault()
-      if (!hasShownInstallPrompt.current) {
-        hasShownInstallPrompt.current = true
-        toast.info(
-          'Install App',
-          'Add Doshi Sensei to your home screen for a better experience'
-        )
-      }
+    if (permission !== 'granted') {
+      throw new Error(`Notification permission not granted (current: ${permission})`);
     }
 
-    // PWA installation success
-    const handleAppInstalled = () => {
-      toast.success(
-        'App Installed',
-        'Doshi Sensei has been added to your device'
-      )
-    }
-
-    // Service Worker updates
-    const handleServiceWorkerUpdate = () => {
-      toast.info(
-        'Update Available',
-        'A new version is available. Refresh to update.'
-      )
-    }
-
-    // Network connection changes
-    const handleConnectionChange = () => {
-      if ('connection' in navigator) {
-        const connection = (navigator as any).connection
-        const effectiveType = connection?.effectiveType
+    try {
+      // Check if we have a service worker to show the notification
+      if ('serviceWorker' in navigator) {
+        console.log('[usePWANotifications] Waiting for service worker...');
+        const registration = await navigator.serviceWorker.ready;
+        console.log('[usePWANotifications] Service worker ready, registration:', registration);
+        console.log('[usePWANotifications] Showing notification via SW...');
+        await registration.showNotification(title, options);
+        console.log('[usePWANotifications] Notification shown successfully via SW');
+      } else {
+        // Fallback to regular Notification API
+        console.log('[usePWANotifications] Using fallback Notification API');
+        const notification = new Notification(title, options);
         
-        if (effectiveType === 'slow-2g' || effectiveType === '2g') {
-          toast.warning(
-            'Slow Connection',
-            'Your connection is slow. Some features may load slowly.'
-          )
-        }
+        // Handle notification click
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+        };
+
+        // Handle notification error
+        notification.onerror = (error) => {
+          console.error('Notification error:', error);
+        };
       }
+    } catch (error) {
+      console.error('[usePWANotifications] Error showing notification:', error);
+      throw error;
+    }
+  }, [isSupported, permission]);
+
+  const scheduleNotification = useCallback(async (
+    title: string,
+    options: NotificationOptions,
+    delay: number
+  ): Promise<number> => {
+    if (!isSupported) {
+      throw new Error('Notifications are not supported');
     }
 
-    // Set initial offline state
-    wasOffline.current = !navigator.onLine
-
-    // Add event listeners
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    window.addEventListener('appinstalled', handleAppInstalled)
-
-    if ('connection' in navigator) {
-      (navigator as any).connection?.addEventListener('change', handleConnectionChange)
+    if (permission !== 'granted') {
+      throw new Error('Notification permission not granted');
     }
 
-    // Service Worker registration and updates
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'SW_UPDATE_AVAILABLE') {
-          handleServiceWorkerUpdate()
-        }
-      })
+    const id = nextId.current++;
+    
+    const timeoutId = setTimeout(async () => {
+      try {
+        await showNotification(title, options);
+        scheduledNotifications.current.delete(id);
+      } catch (error) {
+        console.error('Error showing scheduled notification:', error);
+      }
+    }, delay);
 
-      // Check for existing service worker updates
-      navigator.serviceWorker.getRegistration().then((registration) => {
-        if (registration) {
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  handleServiceWorkerUpdate()
-                }
-              })
-            }
-          })
-        }
-      })
+    scheduledNotifications.current.set(id, timeoutId);
+    return id;
+  }, [isSupported, permission, showNotification]);
+
+  const cancelScheduledNotification = useCallback((id: number): void => {
+    const timeoutId = scheduledNotifications.current.get(id);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      scheduledNotifications.current.delete(id);
     }
+  }, []);
 
-    // Cleanup
+  const cancelAllScheduledNotifications = useCallback((): void => {
+    scheduledNotifications.current.forEach((timeoutId) => {
+      clearTimeout(timeoutId);
+    });
+    scheduledNotifications.current.clear();
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-      window.removeEventListener('appinstalled', handleAppInstalled)
-      
-      if ('connection' in navigator) {
-        (navigator as any).connection?.removeEventListener('change', handleConnectionChange)
-      }
-    }
-  }, [toast])
-
-  // Manual notification functions
-  const notifyInstallAvailable = () => {
-    toast.info(
-      'Install Available',
-      'Click the install button to add this app to your device'
-    )
-  }
-
-  const notifyUpdateInstalled = () => {
-    toast.success(
-      'Update Installed',
-      'The app has been updated to the latest version'
-    )
-  }
-
-  const notifyCacheCleared = () => {
-    toast.success(
-      'Cache Cleared',
-      'All cached data has been removed'
-    )
-  }
-
-  const notifyNotificationEnabled = () => {
-    toast.success(
-      'Notifications Enabled',
-      'You will now receive push notifications'
-    )
-  }
+      cancelAllScheduledNotifications();
+    };
+  }, [cancelAllScheduledNotifications]);
 
   return {
-    notifyInstallAvailable,
-    notifyUpdateInstalled,
-    notifyCacheCleared,
-    notifyNotificationEnabled
-  }
+    permission,
+    isSupported,
+    requestPermission,
+    showNotification,
+    scheduleNotification,
+    cancelScheduledNotification,
+    cancelAllScheduledNotifications
+  };
 }

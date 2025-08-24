@@ -1,6 +1,6 @@
 import { getEntitlementsForUserType, getFeatureLimit } from '@/utils/userEntitlements';
 
-export type UserType = 'guest' | 'free' | 'monthly' | 'yearly' | 'premium';
+export type UserType = 'guest' | 'free' | 'monthly' | 'yearly';
 
 export interface GuestUsage {
   drillsToday: number;
@@ -336,29 +336,20 @@ export const SUBSCRIPTION_PLANS_MAP = {
     id: 'yearly',
     name: 'Yearly Premium',
     limits: DEFAULT_YEARLY_SUBSCRIPTION.limits
-  },
-  // Legacy premium support - maps to monthly for backwards compatibility
-  premium: {
-    id: 'premium',
-    name: 'Premium',
-    limits: DEFAULT_MONTHLY_SUBSCRIPTION.limits
   }
 };
 
 // For backwards compatibility, add properties to SUBSCRIPTION_PLANS
 Object.assign(SUBSCRIPTION_PLANS, SUBSCRIPTION_PLANS_MAP);
 
-// Utility function to normalize user type from legacy 'premium' to specific plan
+// Utility function to normalize user type
 export function normalizeUserType(userType: UserType): 'guest' | 'free' | 'monthly' | 'yearly' {
-  if (userType === 'premium') {
-    return 'monthly'; // Default premium to monthly for backwards compatibility
-  }
   return userType as 'guest' | 'free' | 'monthly' | 'yearly';
 }
 
 // Helper function to check if a user type is premium (monthly or yearly)
 export function isPremiumUserType(userType: UserType): boolean {
-  return userType === 'premium' || userType === 'monthly' || userType === 'yearly';
+  return userType === 'monthly' || userType === 'yearly';
 }
 
 // Utility function to get user type from subscription
@@ -366,10 +357,13 @@ export function getUserType(subscription: UserSubscription | null): UserType {
   if (!subscription) return 'guest';
   
   // Check both flattened and nested structure for backwards compatibility
-  const status = subscription.status || subscription.subscription?.status;
   const plan = subscription.plan || subscription.subscription?.plan;
   
-  if (status !== 'active') return 'free';
+  // Return the plan type directly - monthly/yearly/free
+  // If no plan is specified, default to 'free'
+  if (plan === 'monthly' || plan === 'yearly') {
+    return plan as UserType;
+  }
   
-  return plan as UserType;
+  return 'free';
 }

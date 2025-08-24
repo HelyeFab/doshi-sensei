@@ -201,12 +201,10 @@ export default function KPIDashboardPage() {
         const userData = doc.data();
         if (!userData.email) {
           distribution.guest++;
-        } else if (userData.subscription?.status === 'active') {
-          if (userData.subscription.plan === 'monthly') {
-            distribution.monthly++;
-          } else if (userData.subscription.plan === 'yearly') {
-            distribution.yearly++;
-          }
+        } else if (userData.subscription?.plan === 'monthly') {
+          distribution.monthly++;
+        } else if (userData.subscription?.plan === 'yearly') {
+          distribution.yearly++;
         } else {
           distribution.free++;
         }

@@ -23,10 +23,8 @@ import { SaveWordModal } from '@/components/drill/SaveWordModal';
 import { searchJMdictWords, loadJMdictData, getDidYouMeanSuggestion, SearchResult } from '@/utils/jmdictLocalSearch';
 
 // Helper to map UserType to the expected type for SearchHistoryManager2
-const mapUserType = (type: string): 'guest' | 'free' | 'premium' | 'premium_yearly' => {
-  if (type === 'monthly') return 'premium';
-  if (type === 'yearly') return 'premium_yearly';
-  return type as 'guest' | 'free';
+const mapUserType = (type: string): 'guest' | 'free' | 'monthly' | 'yearly' => {
+  return type as 'guest' | 'free' | 'monthly' | 'yearly';
 };
 
 export default function VocabularyClient() {

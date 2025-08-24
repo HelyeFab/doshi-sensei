@@ -1128,6 +1128,15 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Subscription Features collection - for dynamic subscription plan features
+    match /subscriptionFeatures/{planId} {
+      // Anyone can read subscription features (needed for displaying on public pages)
+      allow read: if true;
+      
+      // Only admin can create, update, or delete subscription features
+      allow create, update, delete: if isAdmin();
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

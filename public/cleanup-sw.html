@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Service Worker Cleanup</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #b91c1c;
+        }
+        .success {
+            background: #10b981;
+        }
+        .success:hover {
+            background: #059669;
+        }
+        .log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Service Worker Cleanup Tool</h1>
+        <p>Use this tool to completely remove old service workers and caches.</p>
+        
+        <div style="margin: 30px 0;">
+            <button onclick="cleanupEverything()">🗑️ Clean Everything</button>
+            <button onclick="checkStatus()">🔍 Check Status</button>
+            <button class="success" onclick="goBack()">✅ Go Back to App</button>
+        </div>
+        
+        <div id="status"></div>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        const log = (message, isError = false) => {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${isError ? '❌' : '✅'} ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        };
+
+        const setStatus = (message, isError = false) => {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${isError ? 'error' : 'success'}`;
+            statusDiv.textContent = message;
+        };
+
+        async function cleanupEverything() {
+            log('Starting complete cleanup...');
+            
+            try {
+                // 1. Unregister ALL service workers
+                log('Unregistering all service workers...');
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                
+                for (const registration of registrations) {
+                    const success = await registration.unregister();
+                    log(`Unregistered SW at ${registration.scope}: ${success ? 'Success' : 'Failed'}`);
+                }
+                
+                // 2. Clear ALL caches
+                log('Clearing all caches...');
+                const cacheNames = await caches.keys();
+                
+                for (const cacheName of cacheNames) {
+                    const success = await caches.delete(cacheName);
+                    log(`Deleted cache "${cacheName}": ${success ? 'Success' : 'Failed'}`);
+                }
+                
+                // 3. Clear IndexedDB (if exists)
+                log('Clearing IndexedDB...');
+                const databases = await indexedDB.databases();
+                
+                for (const db of databases) {
+                    if (db.name) {
+                        indexedDB.deleteDatabase(db.name);
+                        log(`Deleted IndexedDB: ${db.name}`);
+                    }
+                }
+                
+                // 4. Clear localStorage
+                log('Clearing localStorage...');
+                const localStorageItems = Object.keys(localStorage);
+                localStorageItems.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                log(`Removed ${localStorageItems.length} localStorage items`);
+                
+                // 5. Clear sessionStorage
+                log('Clearing sessionStorage...');
+                const sessionStorageItems = Object.keys(sessionStorage);
+                sessionStorageItems.forEach(key => {
+                    sessionStorage.removeItem(key);
+                });
+                log(`Removed ${sessionStorageItems.length} sessionStorage items`);
+                
+                setStatus('✨ Cleanup complete! You can now close this tab and reload the app.', false);
+                log('Cleanup completed successfully!');
+                
+            } catch (error) {
+                setStatus(`Error during cleanup: ${error.message}`, true);
+                log(`Error: ${error.message}`, true);
+            }
+        }
+
+        async function checkStatus() {
+            log('Checking current status...');
+            
+            try {
+                // Check service workers
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                log(`Found ${registrations.length} service worker(s):`);
+                
+                registrations.forEach(reg => {
+                    log(`  - Scope: ${reg.scope}`);
+                    if (reg.active) {
+                        log(`    Active: ${reg.active.scriptURL}`);
+                    }
+                    if (reg.installing) {
+                        log(`    Installing: ${reg.installing.scriptURL}`);
+                    }
+                    if (reg.waiting) {
+                        log(`    Waiting: ${reg.waiting.scriptURL}`);
+                    }
+                });
+                
+                // Check caches
+                const cacheNames = await caches.keys();
+                log(`Found ${cacheNames.length} cache(s):`);
+                cacheNames.forEach(name => {
+                    log(`  - ${name}`);
+                });
+                
+                // Check IndexedDB
+                const databases = await indexedDB.databases();
+                log(`Found ${databases.length} IndexedDB database(s):`);
+                databases.forEach(db => {
+                    log(`  - ${db.name} (v${db.version})`);
+                });
+                
+                setStatus('Status check complete', false);
+                
+            } catch (error) {
+                setStatus(`Error checking status: ${error.message}`, true);
+                log(`Error: ${error.message}`, true);
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/';
+        }
+
+        // Check status on load
+        window.addEventListener('load', () => {
+            checkStatus();
+        });
+    </script>
+</body>
+</html>

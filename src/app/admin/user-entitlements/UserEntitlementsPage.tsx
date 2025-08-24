@@ -107,10 +107,11 @@ export default function UserEntitlementsPage() {
           }
           
           // Determine user type from basic data (no API call needed)
+          // IMPORTANT: User type is based on plan, not status
           let userType: 'guest' | 'free' | 'monthly' | 'yearly' = 'free';
-          if (userData?.subscription?.plan === 'monthly' && userData?.subscription?.status === 'active') {
+          if (userData?.subscription?.plan === 'monthly') {
             userType = 'monthly';
-          } else if (userData?.subscription?.plan === 'yearly' && userData?.subscription?.status === 'active') {
+          } else if (userData?.subscription?.plan === 'yearly') {
             userType = 'yearly';
           }
           

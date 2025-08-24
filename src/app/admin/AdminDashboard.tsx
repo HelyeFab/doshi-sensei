@@ -109,6 +109,9 @@ export default function AdminDashboard() {
       case 'pricing':
         router.push('/admin/pricing');
         break;
+      case 'subscription-features':
+        router.push('/admin/subscription-features');
+        break;
       case 'bugs':
         router.push('/admin/bugs');
         break;
@@ -236,6 +239,12 @@ export default function AdminDashboard() {
               description="Manage subscription pricing"
               icon="💰"
               onClick={() => handleQuickAction('pricing')}
+            />
+            <QuickAction
+              title="Subscription Features"
+              description="Edit plan features and benefits"
+              icon="✨"
+              onClick={() => handleQuickAction('subscription-features')}
             />
             <QuickAction
               title="System Health"

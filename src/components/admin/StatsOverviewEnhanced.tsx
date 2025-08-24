@@ -309,7 +309,7 @@ export function StatsOverviewEnhanced() {
           data = freeUsersSnapshot.docs
             .filter(doc => {
               const sub = doc.data().subscription;
-              return !sub || sub.plan === 'free' || sub.status !== 'active';
+              return !sub || sub.plan === 'free' || (sub.plan !== 'monthly' && sub.plan !== 'yearly');
             })
             .map(doc => ({
               id: doc.id,
@@ -326,7 +326,7 @@ export function StatsOverviewEnhanced() {
           data = allPremiumSnapshot.docs
             .filter(doc => {
               const sub = doc.data().subscription;
-              return sub?.status === 'active' && (sub?.plan === 'monthly' || sub?.plan === 'yearly');
+              return sub?.plan === 'monthly' || sub?.plan === 'yearly';
             })
             .map(doc => ({
               id: doc.id,
@@ -342,7 +342,7 @@ export function StatsOverviewEnhanced() {
           data = allMonthlySnapshot.docs
             .filter(doc => {
               const sub = doc.data().subscription;
-              return sub?.plan === 'monthly' && sub?.status === 'active';
+              return sub?.plan === 'monthly';
             })
             .map(doc => ({
               id: doc.id,
@@ -358,7 +358,7 @@ export function StatsOverviewEnhanced() {
           data = allYearlySnapshot.docs
             .filter(doc => {
               const sub = doc.data().subscription;
-              return sub?.plan === 'yearly' && sub?.status === 'active';
+              return sub?.plan === 'yearly';
             })
             .map(doc => ({
               id: doc.id,

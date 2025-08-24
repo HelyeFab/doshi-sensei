@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   
+  // Experimental features to control preloading
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+  
   // Configure webpack to handle module resolution issues
   webpack: (config, { isServer, dev }) => {
     // Handle browser-specific modules
@@ -59,6 +64,21 @@ const nextConfig: NextConfig = {
     }
     
     return config;
+  },
+  
+  // Headers to control resource hints
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+        ],
+      },
+    ];
   },
 };
 

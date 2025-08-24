@@ -17,22 +17,12 @@ const colors = {
   tableAlt: '#F5F5DC',      // Beige
 };
 
-// Register fonts (using web fonts for now, can be replaced with local fonts)
-Font.register({
-  family: 'Rubik',
-  fonts: [
-    { src: 'https://fonts.gstatic.com/s/rubik/v28/iJWZBXyIfDnIV5PNhY1KTN7Z-Yh-B4i1UA.ttf', fontWeight: 400, fontStyle: 'normal' },
-    { src: 'https://fonts.gstatic.com/s/rubik/v28/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8sDE0Uw.ttf', fontWeight: 500, fontStyle: 'normal' },
-    { src: 'https://fonts.gstatic.com/s/rubik/v28/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8tdFkUw.ttf', fontWeight: 600, fontStyle: 'normal' },
-    { src: 'https://fonts.gstatic.com/s/rubik/v28/iJWbBXyIfDnIV7nEt3KSJbVDV49rz8s6FkUw.ttf', fontWeight: 700, fontStyle: 'normal' },
-    // Add italic variant for regular weight
-    { src: 'https://fonts.gstatic.com/s/rubik/v28/iJWXBXyIfDnIV7nBrXyw823e.ttf', fontWeight: 400, fontStyle: 'italic' },
-  ]
-});
+// Use built-in fonts to avoid external dependencies
+// Helvetica is available in all PDF renderers
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'Rubik',
+    fontFamily: 'Helvetica',
     backgroundColor: colors.background,
     padding: 40,
   },

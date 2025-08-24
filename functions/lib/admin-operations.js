@@ -32,13 +32,19 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPortalSession = exports.updateUserLimit = exports.getSystemHealth = exports.adminDeleteUser = exports.getShareStats = exports.trackShare = exports.updateNotificationPreferences = exports.registerNotificationToken = exports.manageBookmarks = exports.trackArticleView = exports.deleteAccount = exports.cancelSubscription = void 0;
+exports.createCheckoutSession = exports.createPortalSession = exports.updateUserLimit = exports.getSystemHealth = exports.adminDeleteUser = exports.getShareStats = exports.trackShare = exports.updateNotificationPreferences = exports.registerNotificationToken = exports.manageBookmarks = exports.trackArticleView = exports.deleteAccount = exports.cancelSubscription = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
+const stripe_1 = __importDefault(require("stripe"));
 // Get initialized admin instance from index.ts
 const db = admin.firestore();
 const auth = admin.auth();
+// Initialize Stripe (will be initialized on first use)
+let stripe;
 // Helper to verify admin status
 async function verifyAdmin(uid) {
     var _a;
@@ -449,23 +455,160 @@ exports.createPortalSession = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
     }
     const userId = context.auth.uid;
+    // Initialize Stripe if not already done
+    if (!stripe) {
+        const secretKey = process.env.STRIPE_SECRET_KEY;
+        if (!secretKey) {
+            throw new functions.https.HttpsError('failed-precondition', 'Stripe not configured');
+        }
+        stripe = new stripe_1.default(secretKey, {
+            apiVersion: '2023-10-16',
+        });
+    }
     try {
         // Get user's stripe customer ID
         const userDoc = await db.collection('users').doc(userId).get();
-        const stripeCustomerId = (_a = userDoc.data()) === null || _a === void 0 ? void 0 : _a.stripeCustomerId;
+        const userData = userDoc.data();
+        const stripeCustomerId = ((_a = userData === null || userData === void 0 ? void 0 : userData.subscription) === null || _a === void 0 ? void 0 : _a.stripeCustomerId) || (userData === null || userData === void 0 ? void 0 : userData.stripeCustomerId);
         if (!stripeCustomerId) {
             throw new functions.https.HttpsError('not-found', 'No Stripe customer found');
         }
-        // This will need Stripe initialization - we'll handle this in the main function
-        // For now, return the customer ID so Netlify can create the session
+        // Create the portal session
+        const session = await stripe.billingPortal.sessions.create({
+            customer: stripeCustomerId,
+            return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://doshisensei.com'}/account`,
+        });
         return {
-            customerId: stripeCustomerId,
-            message: 'Use this customer ID to create portal session'
+            url: session.url,
+            success: true
         };
     }
     catch (error) {
         console.error('Error creating portal session:', error);
         throw new functions.https.HttpsError('internal', 'Failed to create portal session');
+    }
+});
+/**
+ * Create Checkout Session for new subscriptions
+ * Migrated from: /api/create-checkout-session
+ */
+exports.createCheckoutSession = functions.https.onCall(async (data, context) => {
+    var _a;
+    if (!context.auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+    const { priceId } = data;
+    const userId = context.auth.uid;
+    const userEmail = context.auth.token.email;
+    if (!priceId) {
+        throw new functions.https.HttpsError('invalid-argument', 'Price ID is required');
+    }
+    // Initialize Stripe if not already done
+    if (!stripe) {
+        const secretKey = process.env.STRIPE_SECRET_KEY;
+        if (!secretKey) {
+            throw new functions.https.HttpsError('failed-precondition', 'Stripe not configured');
+        }
+        stripe = new stripe_1.default(secretKey, {
+            apiVersion: '2023-10-16',
+        });
+    }
+    try {
+        // Get or create Stripe customer
+        let customer;
+        const userDoc = await db.collection('users').doc(userId).get();
+        const userData = userDoc.data();
+        const existingCustomerId = ((_a = userData === null || userData === void 0 ? void 0 : userData.subscription) === null || _a === void 0 ? void 0 : _a.stripeCustomerId) || (userData === null || userData === void 0 ? void 0 : userData.stripeCustomerId);
+        if (existingCustomerId) {
+            // Retrieve existing customer
+            try {
+                customer = await stripe.customers.retrieve(existingCustomerId);
+                // Update metadata if needed
+                if (customer && !customer.deleted) {
+                    await stripe.customers.update(existingCustomerId, {
+                        metadata: { firebaseUID: userId }
+                    });
+                }
+            }
+            catch (error) {
+                console.log('Could not retrieve customer, will create new one');
+            }
+        }
+        // If no customer exists or retrieval failed, create new one
+        if (!customer || customer.deleted) {
+            // Check if customer exists by email
+            const existingCustomers = await stripe.customers.list({
+                email: userEmail,
+                limit: 1,
+            });
+            if (existingCustomers.data.length > 0) {
+                customer = existingCustomers.data[0];
+                // Update metadata
+                await stripe.customers.update(customer.id, {
+                    metadata: { firebaseUID: userId }
+                });
+            }
+            else {
+                // Create new customer
+                customer = await stripe.customers.create({
+                    email: userEmail,
+                    metadata: {
+                        firebaseUID: userId,
+                    },
+                });
+            }
+            // Save customer ID to Firestore (use set with merge in case user doc doesn't exist)
+            await db.collection('users').doc(userId).set({
+                subscription: {
+                    stripeCustomerId: customer.id
+                },
+                updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        }
+        // Create checkout session
+        const session = await stripe.checkout.sessions.create({
+            customer: customer.id,
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price: priceId,
+                    quantity: 1,
+                },
+            ],
+            mode: 'subscription',
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://doshisensei.com'}/account?success=true`,
+            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://doshisensei.com'}/account?canceled=true`,
+            metadata: {
+                firebaseUID: userId,
+            },
+            subscription_data: {
+                metadata: {
+                    firebaseUID: userId,
+                },
+            },
+        });
+        return {
+            sessionUrl: session.url,
+            sessionId: session.id,
+            success: true
+        };
+    }
+    catch (error) {
+        console.error('Error creating checkout session:', error);
+        // Provide specific error messages
+        let errorMessage = 'Failed to create checkout session';
+        if (error instanceof Error) {
+            if (error.message.includes('No such price')) {
+                errorMessage = 'Invalid price ID';
+            }
+            else if (error.message.includes('rate limit')) {
+                errorMessage = 'Too many requests. Please try again later.';
+            }
+            else {
+                errorMessage = error.message;
+            }
+        }
+        throw new functions.https.HttpsError('internal', errorMessage);
     }
 });
 //# sourceMappingURL=admin-operations.js.map

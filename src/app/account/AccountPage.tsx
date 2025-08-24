@@ -398,8 +398,8 @@ export default function AccountPage() {
                 <SubscriptionPlans />
               )}
 
-              {/* Subscription History */}
-              {isPremium && <SubscriptionHistory />}
+              {/* Subscription History - Show for all users who might have payment history */}
+              <SubscriptionHistory />
 
               {/* YouTube Integration */}
               <div className="mt-6">

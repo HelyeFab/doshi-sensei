@@ -133,21 +133,18 @@ export async function getSubscriptionStats(): Promise<SubscriptionStats> {
     // Filter by subscription type - using FLAT structure as per SINGLE SOURCE OF TRUTH
     const freeUsers = allUsers.filter(user => {
       const plan = user.subscription?.plan; // FLAT structure
-      const status = user.subscription?.status;
-      // Count as free if: no subscription, plan is 'free', or status is not 'active'
-      return !user.subscription || plan === 'free' || status !== 'active';
+      // Count as free if: no subscription, plan is 'free', or not monthly/yearly
+      return !user.subscription || plan === 'free' || (plan !== 'monthly' && plan !== 'yearly');
     }).length;
 
     const monthlySubscribers = allUsers.filter(user => {
       const plan = user.subscription?.plan; // FLAT structure
-      const status = user.subscription?.status;
-      return plan === 'monthly' && status === 'active';
+      return plan === 'monthly';
     }).length;
 
     const yearlySubscribers = allUsers.filter(user => {
       const plan = user.subscription?.plan; // FLAT structure
-      const status = user.subscription?.status;
-      return plan === 'yearly' && status === 'active';
+      return plan === 'yearly';
     }).length;
 
     const totalSubscribers = monthlySubscribers + yearlySubscribers;

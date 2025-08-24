@@ -35,7 +35,7 @@ export function Spinner({ size = 'md', className = '', label }: SpinnerProps) {
         ⏳
       </div>
       {label && (
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{label}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{label}</p>
       )}
       <style jsx>{`
         @keyframes spin {
@@ -82,7 +82,7 @@ export function InlineSpinner({ size = 'sm' }: { size?: 'sm' | 'md' }) {
 // Full page spinner overlay
 export function PageSpinner({ message = 'Loading...' }: { message?: string }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
       <Spinner size="lg" label={message} />
     </div>
   );

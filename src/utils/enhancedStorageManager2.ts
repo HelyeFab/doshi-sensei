@@ -33,7 +33,7 @@ export interface StorageLimit {
   type: string;
 }
 
-export type UserType = 'guest' | 'free' | 'monthly' | 'yearly' | 'premium';
+export type UserType = 'guest' | 'free' | 'monthly' | 'yearly';
 
 // Storage limits configuration
 const STORAGE_LIMITS = {
@@ -62,14 +62,6 @@ const STORAGE_LIMITS = {
     audio: Infinity
   },
   yearly: {
-    article: 50,
-    story: 50,
-    kanji: Infinity,
-    verb: Infinity,
-    adjective: Infinity,
-    audio: Infinity
-  },
-  premium: {
     article: 50,
     story: 50,
     kanji: Infinity,
@@ -160,8 +152,8 @@ export class EnhancedStorageManager2 extends EnhancedStorageManager {
         })
       );
 
-      // Queue for sync if premium user
-      if (userType === 'premium') {
+      // Queue for sync if user has subscription
+      if (userType === 'monthly' || userType === 'yearly') {
         await this.queueForSync(resource);
       }
     } catch (error) {

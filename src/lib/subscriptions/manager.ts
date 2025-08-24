@@ -142,13 +142,21 @@ export class SubscriptionManager {
   
   /**
    * Get user type from subscription
+   * IMPORTANT: Returns the plan type (monthly/yearly/free) regardless of status
+   * This ensures users keep their entitlements even during payment issues
    */
   getUserType(subscription: Subscription | null): UserType {
     if (!subscription) return 'guest';
     
-    if (subscription.status !== 'active') return 'free';
+    // Return the plan type directly - users keep their plan benefits
+    // even if status is 'past_due', 'trialing', etc.
+    const plan = subscription.plan;
     
-    return subscription.plan as UserType;
+    if (plan === 'monthly' || plan === 'yearly') {
+      return plan as UserType;
+    }
+    
+    return 'free';
   }
   
   /**

@@ -134,7 +134,7 @@ export function useAccess() {
     }
 
     // Check subscription requirement
-    if (requiresSubscription(featureId) && userType !== 'premium') {
+    if (requiresSubscription(featureId) && userType !== 'monthly' && userType !== 'yearly') {
       return false;
     }
 
@@ -188,7 +188,7 @@ export function useAccess() {
     }
 
     // Check subscription requirement
-    if (requiresSubscription(featureId) && userType !== 'premium') {
+    if (requiresSubscription(featureId) && userType !== 'monthly' && userType !== 'yearly') {
       toast.warning('Premium subscription required', 'Upgrade to access this feature');
       // TODO: Show upgrade modal
       return false;
@@ -258,6 +258,6 @@ export function useAccess() {
     loading,
     userType,
     isAuthenticated: !!user,
-    isPremium: userType === 'premium',
+    isPremium: userType === 'monthly' || userType === 'yearly',
   };
 }

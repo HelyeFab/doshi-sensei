@@ -15,7 +15,7 @@ import {
   sendPasswordResetEmail,
   sendEmailVerification,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { getDefaultSubscription, UserSubscription, getUserType, UserType } from '@/types/subscription';
 
@@ -260,27 +260,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const deleteAccount = async () => {
     if (!user) throw new Error('No user logged in');
     
-    // Get the user's ID token
-    const idToken = await user.getIdToken();
-    
-    // Call the delete account API
-    const response = await fetch('/api/auth/delete-account', {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${idToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to delete account');
+    try {
+      // For account deletion to work, we need a recent authentication
+      // Let's prompt the user to re-enter their password
+      const email = user.email;
+      if (!email) throw new Error('No email found for user');
+      
+      // Ask for password
+      const password = prompt('Please enter your password to confirm account deletion:');
+      if (!password) {
+        throw new Error('Account deletion cancelled');
+      }
+      
+      // Re-authenticate the user
+      const { EmailAuthProvider, reauthenticateWithCredential } = await import('firebase/auth');
+      const credential = EmailAuthProvider.credential(email, password);
+      await reauthenticateWithCredential(user, credential);
+      
+      // Now we can delete - first get the UID
+      const uid = user.uid;
+      
+      // Delete Firestore data first (while we still have auth)
+      if (db) {
+        try {
+          await deleteDoc(doc(db, 'users', uid));
+        } catch (error) {
+          console.log('Error deleting Firestore data:', error);
+          // Continue anyway
+        }
+      }
+      
+      // Now delete the auth user account (this should work after reauthentication)
+      await user.delete();
+      
+      // Clear local state
+      setSubscription(null);
+      setUserType('guest');
+      
+      console.log('Account deleted successfully');
+    } catch (error: any) {
+      console.error('Delete account error:', error);
+      
+      if (error.code === 'auth/requires-recent-login') {
+        throw new Error('Authentication failed. Please try again.');
+      } else if (error.code === 'auth/wrong-password') {
+        throw new Error('Incorrect password. Please try again.');
+      }
+      
+      throw new Error(error.message || 'Failed to delete account');
     }
-    
-    // Sign out locally (the account is already deleted on the server)
-    if (auth) await signOut(auth);
-    setSubscription(null);
-    setUserType('guest');
   };
 
   const value: AuthContextType = {

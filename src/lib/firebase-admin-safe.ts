@@ -79,24 +79,33 @@ async function initializeAdmin(): Promise<void> {
         }
       }
 
-      // Method 2: Use credentials file if it exists (fallback)
-      if (!initialized && process.env.USE_FIREBASE_CREDS_FILE === 'true') {
+      // Method 2: Use credentials file if it exists (for local development)
+      if (!initialized) {
         try {
           const fs = await import('fs');
           const path = await import('path');
-          const credsPath = path.join(process.cwd(), '.firebase-creds.json');
           
-          if (fs.existsSync(credsPath)) {
-            const serviceAccount = JSON.parse(fs.readFileSync(credsPath, 'utf-8'));
-            
-            if (isValidServiceAccount(serviceAccount)) {
-              adminApp = admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-                projectId: serviceAccount.project_id || projectId,
-                storageBucket: 'doshi-sensei',
-              });
-              initialized = true;
-              console.log('[Firebase Admin] Initialized from credentials file');
+          // Try multiple possible locations for the service account file
+          const possiblePaths = [
+            path.join(process.cwd(), 'firebase-service-account.json'),
+            path.join(process.cwd(), '.firebase-creds.json'),
+            '/home/mate/Dev/NextProjects/doshi-sensei/firebase-service-account.json' // Direct path for local dev
+          ];
+          
+          for (const credsPath of possiblePaths) {
+            if (fs.existsSync(credsPath)) {
+              const serviceAccount = JSON.parse(fs.readFileSync(credsPath, 'utf-8'));
+              
+              if (isValidServiceAccount(serviceAccount)) {
+                adminApp = admin.initializeApp({
+                  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+                  projectId: serviceAccount.project_id || projectId,
+                  storageBucket: 'doshi-sensei',
+                });
+                initialized = true;
+                console.log('[Firebase Admin] Initialized from credentials file:', credsPath);
+                break;
+              }
             }
           }
         } catch (fileError) {

@@ -87,6 +87,8 @@ export const serverFirebaseFunctions = {
     callFirebaseFunction('updateUserLimit', data, idToken),
   createPortalSession: (data?: any, idToken?: string) => 
     callFirebaseFunction('createPortalSession', data, idToken),
+  createCheckoutSession: (data: any, idToken?: string) => 
+    callFirebaseFunction('createCheckoutSession', data, idToken),
   
   // Admin analytics
   getSubscriptionAnalytics: (data?: any, idToken?: string) => 

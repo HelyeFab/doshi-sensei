@@ -14,13 +14,33 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function GET() {
   return NextResponse.json({ 
-    status: 'Stripe webhook endpoint is active',
-    timestamp: new Date().toISOString()
+    status: 'DISABLED - Webhook processing moved to Cloud Functions',
+    message: 'This endpoint has been disabled to prevent race conditions. All webhook processing is now handled by Google Cloud Functions.',
+    timestamp: new Date().toISOString(),
+    migrationDate: '2025-01-23'
   });
 }
 
-export async function POST(request: NextRequest) {
+// PRODUCTION CRITICAL: This endpoint is PERMANENTLY DISABLED
+// All Stripe webhooks MUST be processed by Cloud Functions at:
+// https://stripewebhook-jtmxvmnera-uc.a.run.app
+// RE-ENABLING THIS WILL CAUSE DUPLICATE CHARGES AND DATA CORRUPTION
 
+export async function POST(request: NextRequest) {
+  console.error('🚨 CRITICAL: Webhook sent to disabled endpoint - check Stripe Dashboard configuration');
+  console.error('Correct webhook URL: https://stripewebhook-jtmxvmnera-uc.a.run.app');
+  
+  return NextResponse.json(
+    { 
+      error: 'Webhook endpoint disabled', 
+      message: 'This endpoint has been disabled to prevent duplicate processing. Webhooks are now handled by Google Cloud Functions.',
+      migration: 'Please update your Stripe Dashboard webhook URL to use the Cloud Function endpoint instead.'
+    }, 
+    { status: 410 } // 410 Gone - indicates the resource is no longer available
+  );
+  
+  // ORIGINAL CODE BELOW - DO NOT DELETE YET (for reference during migration)
+  /*
   console.log('Headers:', Object.fromEntries(request.headers.entries()));
   const body = await request.text();
   const signature = request.headers.get('stripe-signature')!;
@@ -198,9 +218,10 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   // Get current entitlement rules (dynamic or static)
   const rules = await dynamicRules.getRules();
   
-  // Determine user type based on plan and subscription status
+  // Determine user type based on plan (not status!)
+  // Users keep their plan benefits even with payment issues
   let userType: UserType = 'free';
-  if ((plan === 'monthly' || plan === 'yearly') && subscription.status === 'active') {
+  if (plan === 'monthly' || plan === 'yearly') {
     userType = plan;
   }
   
@@ -212,7 +233,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   const subscriptionData: Subscription = {
     userId: firebaseUID,
     status: subscription.status as any,
-    plan: subscription.status === 'active' ? plan : 'free',
+    plan: plan,  // Always use actual plan, regardless of status
     stripeCustomerId: subscription.customer as string,
     stripeSubscriptionId: subscription.id,
     currentPeriodEnd: new Date(subscription.current_period_end * 1000),
@@ -541,4 +562,6 @@ async function logUserSubscriptionEvent(userId: string, event: {
     console.error('Error logging user subscription event:', error);
     // Don't throw - this is not critical to the webhook processing
   }
+}
+*/
 }

@@ -56,8 +56,8 @@ export function useStats(): UseStatsReturn {
           return;
         }
 
-        // Only pass isPremium as true if user has an active premium subscription
-        const actuallyPremium = isPremiumUser && subscription?.status === 'active';
+        // Only pass isPremium as true if user has monthly or yearly subscription
+        const actuallyPremium = isPremiumUser;
         await statsTracker.initialize(user, actuallyPremium);
         
         // Get initial stats and activities
@@ -129,8 +129,8 @@ export function useStats(): UseStatsReturn {
         return;
       }
 
-      // Only pass isPremium as true if user has an active premium subscription
-      const actuallyPremium = isPremiumUser && subscription?.status === 'active';
+      // Only pass isPremium as true if user has monthly or yearly subscription
+      const actuallyPremium = isPremiumUser;
       await statsTracker.initialize(user, actuallyPremium);
       setStats(statsTracker.getStats());
       const activitiesData = await statsTracker.getActivitiesData();

@@ -4,12 +4,19 @@ import { useState } from 'react';
 
 export type AlertType = 'info' | 'success' | 'warning' | 'error';
 
+interface AlertAction {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
 interface AlertBannerProps {
   type?: AlertType;
-  title: string;
-  message?: string;
+  title?: string;
+  message: string;
   dismissible?: boolean;
   onDismiss?: () => void;
+  action?: AlertAction;
   className?: string;
 }
 
@@ -19,6 +26,7 @@ export function AlertBanner({
   message,
   dismissible = true,
   onDismiss,
+  action,
   className = '',
 }: AlertBannerProps) {
   const [isVisible, setIsVisible] = useState(true);
@@ -33,13 +41,13 @@ export function AlertBanner({
   const getStyles = () => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200';
+        return 'bg-success/10 border-success/30 text-success';
       case 'error':
-        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200';
+        return 'bg-destructive/10 border-destructive/30 text-destructive';
       case 'warning':
-        return 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200';
+        return 'bg-warning/10 border-warning/30 text-warning';
       default:
-        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200';
+        return 'bg-primary/10 border-primary/30 text-primary';
     }
   };
 
@@ -83,17 +91,24 @@ export function AlertBanner({
             <div className="flex-shrink-0">
               {getIcon()}
             </div>
-            <div className="ml-3">
-              <p className="font-medium">{title}</p>
-              {message && (
-                <p className="mt-1 text-sm opacity-90">{message}</p>
-              )}
+            <div className="ml-3 flex-1">
+              {title && <p className="font-medium">{title}</p>}
+              <p className={`${title ? 'mt-1 ' : ''}text-sm opacity-90`}>{message}</p>
             </div>
           </div>
+          {action && (
+            <button
+              onClick={action.onClick}
+              disabled={action.disabled}
+              className="ml-4 flex-shrink-0 px-3 py-1.5 text-sm font-medium rounded-md bg-current/10 hover:bg-current/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {action.label}
+            </button>
+          )}
           {dismissible && (
             <button
               onClick={handleDismiss}
-              className="ml-auto flex-shrink-0 -mr-1 flex p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+              className="ml-auto flex-shrink-0 -mr-1 flex p-1 rounded-md hover:bg-foreground/10 transition-colors"
               aria-label="Dismiss"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

@@ -152,6 +152,9 @@ export function useStripePayment(): UseStripePaymentReturn {
         }
       } else {
         // Standard card checkout
+        // Get Firebase ID token for authentication
+        const idToken = await user.getIdToken();
+        
         const response = await fetch('/api/create-checkout-session', {
           method: 'POST',
           headers: {
@@ -162,7 +165,8 @@ export function useStripePayment(): UseStripePaymentReturn {
               ? process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID
               : process.env.NEXT_PUBLIC_STRIPE_YEARLY_PRICE_ID,
             userId: user.uid,
-            email: user.email,
+            userEmail: user.email,
+            idToken: idToken,
           }),
         });
 
@@ -173,17 +177,25 @@ export function useStripePayment(): UseStripePaymentReturn {
         }
 
         // Redirect to Stripe Checkout
-        const stripe = await getStripe();
-        if (!stripe) {
-          throw new Error('Stripe not initialized');
-        }
+        if (data.sessionUrl) {
+          // Direct URL redirect (from Cloud Function)
+          window.location.href = data.sessionUrl;
+        } else if (data.sessionId) {
+          // Legacy session ID redirect
+          const stripe = await getStripe();
+          if (!stripe) {
+            throw new Error('Stripe not initialized');
+          }
 
-        const { error } = await stripe.redirectToCheckout({
-          sessionId: data.sessionId,
-        });
+          const { error } = await stripe.redirectToCheckout({
+            sessionId: data.sessionId,
+          });
 
-        if (error) {
-          throw error;
+          if (error) {
+            throw error;
+          }
+        } else {
+          throw new Error('No checkout session URL received');
         }
       }
     } catch (error) {

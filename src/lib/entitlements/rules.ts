@@ -162,8 +162,81 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
     },
   },
 
-  // Premium users (monthly or yearly subscription)
-  premium: {
+  // Monthly subscription users
+  monthly: {
+    daily: {
+      // Learning - all unlimited
+      'hiragana_practice': -1,
+      'katakana_practice': -1,
+      'drill_practice': -1,
+      'vocabulary_search': -1,
+      'kanji_study': -1,
+      'verb_conjugation': -1,
+      'conjugation_practice': -1,   // Unlimited practice
+      'flashcard_review': -1,       // Unlimited flashcard reviews
+      'textbook_vocabulary': -1,
+      
+      // Games - all unlimited
+      'kanji_quest': -1,
+      'kana_drop': -1,
+      'memory_match': -1,
+      'stroke_order_practice': -1,
+      'kanji_mastery': -1,      // Unlimited sessions
+      'kanji_browser': -1,      // Unlimited browsing
+      'kanji_families': -1,     // Unlimited family explorations
+      'kanji_moods': -1,        // Unlimited mood boards
+      'kanji_simon': -1,        // Unlimited games
+      'sentence_scramble': -1,  // Unlimited games
+      'reading_routes': -1,     // Unlimited games
+      
+      // Tools - all unlimited
+      'ai_stories': -1,
+      'youtube_shadowing': -1,
+      'news_reader': -1,
+      'article_reading': -1,    // Unlimited articles
+      'anki_import': -1,
+      'youtube_series': -1,
+      'my_videos': -1,
+      
+      // Storage - all unlimited
+      'study_lists': -1,
+      'saved_items': -1,
+      'bookmarks': -1,
+      
+      // System - all unlimited
+      'cloud_sync': -1,
+      'offline_mode': -1,
+      'advanced_analytics': -1,
+      
+      // Achievement System - all unlimited
+      'achievement_view': -1,      // Unlimited viewing
+      'achievement_tracking': -1,  // Unlimited tracking
+      'pokedex_view': -1,         // Unlimited Pokédex access
+      'pokemon_catching': -1,     // Unlimited catching
+      'achievement_admin': -1,    // Full admin access
+      
+      // Unified Review Engine - all unlimited
+      'unified_review_system': -1,    // Unlimited access to review system
+      'review_session': -1,           // Unlimited review sessions
+      'review_notifications': -1,     // Unlimited notification access
+      'progress_dashboard': -1,       // Unlimited dashboard access
+      'advanced_srs_algorithms': -1,  // Access to FSRS and advanced algorithms
+      'cross_device_sync': -1,        // Cross-device sync enabled
+      'resources': -1,                // Unlimited access for premium users
+    },
+    total: {
+      // Storage - all unlimited
+      'study_lists': -1,
+      'saved_items': -1,
+      'bookmarks': -1,
+      'anki_import': -1,
+      'my_videos': -1,
+      'article_bookmarks': -1,  // Unlimited bookmarks
+    },
+  },
+
+  // Yearly subscription users (same benefits as monthly)
+  yearly: {
     daily: {
       // Learning - all unlimited
       'hiragana_practice': -1,

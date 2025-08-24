@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useStrings } from '@/contexts/LanguageContext';
 import SmartHeader from '@/components/SmartHeader';
 import { Switch } from '@/components/Switch';
 import { ThemeSelector } from '@/components/ThemeSelector';
+import { CacheManagement } from '@/components/CacheManagement';
 
 // Settings Section Component
 interface SettingsSectionProps {
@@ -80,7 +80,7 @@ export default function SettingsClient() {
                   onChange={(checked) => updateSetting('showCompanion', checked)}
                 />
                 <div className="pt-2 border-t border-border">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-secondary-foreground">
                     {strings.settings.virtualCompanionInfo}
                   </p>
                 </div>
@@ -109,11 +109,16 @@ export default function SettingsClient() {
                   onChange={(checked) => updateSetting('navigationGestures', checked)}
                 />
                 <div className="pt-2 border-t border-border">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-secondary-foreground">
                     Swipe from the edge of the screen to go back or forward in your navigation history
                   </p>
                 </div>
               </div>
+            </SettingsSection>
+
+            {/* Cache & Storage Management */}
+            <SettingsSection title="Cache & Storage">
+              <CacheManagement />
             </SettingsSection>
 
             {/* Support & Feedback */}

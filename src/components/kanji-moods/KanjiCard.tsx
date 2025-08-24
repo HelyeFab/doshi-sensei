@@ -10,6 +10,7 @@ import { Bookmark } from 'lucide-react';
 import StudyListManager from '@/utils/studyListManager';
 import { SaveWordModal } from '@/components/drill/SaveWordModal';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useToast } from '@/hooks/useToast';
 
 export default function KanjiCard({
   kanji,
@@ -22,6 +23,7 @@ export default function KanjiCard({
   const strings = useStrings();
   const { user } = useAuth();
   const { track } = useAnalytics();
+  const { toast } = useToast();
 
   // Check if kanji is already saved when component mounts
   useEffect(() => {
@@ -69,7 +71,7 @@ export default function KanjiCard({
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!user) {
-      alert('Please sign in to save kanji');
+      toast.warning('Sign in required', 'Please sign in to save kanji to your study lists');
       return;
     }
     setShowSaveModal(true);

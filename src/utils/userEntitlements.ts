@@ -172,36 +172,6 @@ const ENTITLEMENTS_BY_USER_TYPE: Record<UserType, UserEntitlements> = {
       prioritySupport: { enabled: true },
     },
   },
-  
-  // Legacy premium type - maps to monthly
-  premium: {
-    games: {
-      kanjiQuest: { daily: -1, enabled: true },
-      kanaDrop: { daily: -1, enabled: true },
-      otherGames: { daily: -1, enabled: true },
-    },
-    learning: {
-      drills: { daily: -1, enabled: true },
-      stories: { daily: -1, enabled: true },
-      articles: { daily: -1, enabled: true },
-      vocabularySearch: { daily: -1, enabled: true },
-      moodBoards: { enabled: true },
-    },
-    storage: {
-      lists: { total: -1, enabled: true },
-      bookmarks: { total: -1, enabled: true },
-      savedWords: { total: -1, enabled: true },
-    },
-    system: {
-      cloudSync: { enabled: true },
-      offlineMode: { enabled: true },
-      progressTracking: { enabled: true },
-      analytics: { enabled: true },
-    },
-    support: {
-      prioritySupport: { enabled: true },
-    },
-  },
 };
 
 /**

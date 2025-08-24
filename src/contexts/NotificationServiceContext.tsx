@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useAuth } from '@/contexts/AuthContext';
 import { notificationService } from '@/services/notifications/NotificationService';
 import { NotificationPreferences } from '@/types/notifications';
-import { useToast } from '@/components/Toast';
+import { useToast } from '@/contexts/ToastContext';
 
 interface NotificationContextType {
   isInitialized: boolean;

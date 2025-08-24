@@ -776,6 +776,7 @@ function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
         meaning={word.meaning}
       />
     )}
+    <ClearHistoryDialog />
     </>
   );
 }

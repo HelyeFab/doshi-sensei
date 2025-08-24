@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ExampleSentence, JapaneseWord } from '@/types';
 import { TTSButton } from '@/components/ui/TTSButton';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 
 interface ExampleSentencesBlockProps {
   word: string;
@@ -15,6 +16,7 @@ interface ExampleSentencesBlockProps {
 export function ExampleSentencesBlock({ word, examples, maxVisible = 3, onSaveExample }: ExampleSentencesBlockProps) {
   const [showAll, setShowAll] = useState(false);
   const { user } = useAuth();
+  const { toast } = useToast();
   
   if (!examples || examples.length === 0) {
     return null;
@@ -25,7 +27,7 @@ export function ExampleSentencesBlock({ word, examples, maxVisible = 3, onSaveEx
 
   const handleSaveClick = (example: ExampleSentence) => {
     if (!user) {
-      alert('Please sign in to save sentences');
+      toast.info('Sign In Required', 'Please sign in to save sentences');
       return;
     }
 

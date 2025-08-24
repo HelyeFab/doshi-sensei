@@ -14,7 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { accessControl, featureManager } from '@/lib/access';
 import { Feature } from '@/lib/features/types';
 import { AccessCheckResult } from '@/lib/access/types';
-import { useToast as useToastHook } from '@/components/Toast';
+import { useToast as useToastHook } from '@/contexts/ToastContext';
 import { useRouter } from 'next/navigation';
 
 // Types

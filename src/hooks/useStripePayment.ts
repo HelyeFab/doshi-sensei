@@ -8,7 +8,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/components/Toast';
+import { useToast } from '@/contexts/ToastContext';
 import { getStripe, checkPaymentRequestAvailable, formatPrice } from '@/lib/stripe';
 import { subscriptionPricing } from '@/config/payment-providers';
 

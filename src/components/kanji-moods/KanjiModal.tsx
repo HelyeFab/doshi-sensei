@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useCallback, useState } from 'react';
+import { useToast } from '@/contexts/ToastContext';
 import { KanjiItem } from '@/types/moodBoard';
 import { useKanjiTTS, useTTS } from '@/hooks/useTTS';
 import { generateFuriganaWithCache } from '@/utils/furigana';
@@ -35,6 +36,7 @@ export default function KanjiModal({
   const { speak: speakKanji, isLoading: isKanjiTTSLoading, isPlaying: isKanjiPlaying } = useKanjiTTS();
   const { speak: speakSentence, state: { isLoading: isSentenceTTSLoading, isPlaying: isSentencePlaying } } = useTTS();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   // Process examples with furigana when needed
   useEffect(() => {
@@ -232,7 +234,7 @@ export default function KanjiModal({
                       <button
                         onClick={() => {
                           if (!user) {
-                            alert('Please sign in to save sentences');
+                            toast.info('Sign In Required', 'Please sign in to save sentences');
                             return;
                           }
                           setSentenceToSave({ text: stripRubyTags(example), index });

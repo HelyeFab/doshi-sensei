@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getFeature, requiresAuth, requiresSubscription } from '@/lib/features/registry';
 import { getLimit, hasAccess, isUnlimited } from '@/lib/entitlements/rules';
 import { getPermissionForFeature } from '@/lib/access';
-import { useToast as useToastHook } from '@/components/Toast';
+import { useToast as useToastHook } from '@/contexts/ToastContext';
 import { useState, useEffect, useCallback } from 'react';
 import { doc, getDoc, setDoc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';

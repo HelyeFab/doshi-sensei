@@ -1,6 +1,6 @@
 'use client';
 
-import { useToast } from '@/components/Toast';
+import { useToast } from '@/contexts/ToastContext';
 import { useUnifiedNotifications } from '@/hooks/useUnifiedNotifications';
 import { usePWANotifications } from '@/hooks/usePWANotifications';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ToastContainer, useToast } from '@/components/Toast';
+import { useToast } from '@/contexts/ToastContext';
 import { AlertBanner } from '@/components/AlertBanner';
 import { Spinner, InlineSpinner, PageSpinner } from '@/components/Spinner';
 import { Switch } from '@/components/Switch';
@@ -10,7 +10,7 @@ import { Accordion, AccordionItem, Collapsible } from '@/components/Accordion';
 
 export default function TestComponentsPage() {
   // Toast state
-  const { toasts, toast, removeToast } = useToast();
+  const { toast } = useToast();
   
   // Alert state
   const [showAlert, setShowAlert] = useState(true);
@@ -277,7 +277,6 @@ export default function TestComponentsPage() {
       </div>
 
       {/* Toast Container */}
-      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

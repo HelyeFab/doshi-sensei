@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAuthErrorMessage } from '@/utils/authErrorMessages';
-import { useToast } from '@/components/Toast';
+import { useToast } from '@/contexts/ToastContext';
 
 interface AuthModalProps {
   isOpen: boolean;

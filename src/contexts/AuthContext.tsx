@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { showPasswordPrompt } from '@/utils/dialogHelpers';
 import {
   User,
   signInWithEmailAndPassword,
@@ -266,9 +267,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const email = user.email;
       if (!email) throw new Error('No email found for user');
       
-      // Ask for password
-      const password = prompt('Please enter your password to confirm account deletion:');
-      if (!password) {
+      // Ask for password using secure dialog
+      let password: string;
+      try {
+        password = await showPasswordPrompt(
+          'Confirm Account Deletion',
+          'Please enter your password to permanently delete your account. This action cannot be undone.',
+          'Enter your password',
+          'danger'
+        );
+      } catch (error) {
         throw new Error('Account deletion cancelled');
       }
       

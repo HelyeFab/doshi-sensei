@@ -190,6 +190,10 @@ export const stripeWebhook = https.onRequest({cors: true}, async (req, res) => {
         await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
         break;
       
+      case 'charge.refunded':
+        await handleChargeRefunded(event.data.object as Stripe.Charge);
+        break;
+      
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
@@ -882,4 +886,69 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
       lastPaymentError: invoice.last_finalization_error
     }
   });
+}
+
+/**
+ * Handle charge refunds - immediately revoke access
+ */
+async function handleChargeRefunded(charge: Stripe.Charge) {
+  console.log('Handling charge refund:', charge.id);
+  console.log('Refund amount:', charge.amount_refunded);
+  
+  // Get Firebase UID from customer metadata
+  let firebaseUID: string | undefined;
+  
+  if (typeof charge.customer === 'string') {
+    try {
+      const customer = await stripe.customers.retrieve(charge.customer);
+      if ('metadata' in customer) {
+        firebaseUID = customer.metadata?.firebaseUID;
+      }
+    } catch (error) {
+      console.error('Error retrieving customer:', error);
+    }
+  }
+  
+  if (!firebaseUID) {
+    console.error('No Firebase UID found for refunded charge');
+    return;
+  }
+  
+  console.log(`Processing refund for user: ${firebaseUID}`);
+  
+  try {
+    // Immediately downgrade to free plan
+    const subscriptionData: any = {
+      plan: 'free',
+      status: 'canceled',
+      cancelReason: 'refunded',
+      refundedAt: admin.firestore.FieldValue.serverTimestamp(),
+      refundAmount: charge.amount_refunded,
+      // Clear all premium fields
+      stripeSubscriptionId: null,
+      stripeCustomerId: null,
+      stripePriceId: null,
+      currentPeriodEnd: null,
+      cancelAtPeriodEnd: false
+    };
+    
+    // Update user subscription
+    await db.collection('users').doc(firebaseUID).set({
+      subscription: subscriptionData,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    
+    // Add to subscription history
+    await saveSubscriptionHistory(firebaseUID, 'refunded', {
+      status: 'refunded',
+      plan: 'free',
+      refundAmount: charge.amount_refunded,
+      chargeId: charge.id
+    });
+    
+    console.log(`Successfully processed refund for user ${firebaseUID}`);
+  } catch (error) {
+    console.error('Error processing refund:', error);
+    throw error;
+  }
 }

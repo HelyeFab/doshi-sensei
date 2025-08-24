@@ -129,10 +129,8 @@ export interface SubscriptionFeature {
 // Default subscription values - using entitlements system
 const freeEntitlements = getEntitlementsForUserType('free');
 export const DEFAULT_FREE_SUBSCRIPTION: UserSubscription = {
-  subscription: {
-    plan: 'free',
-    status: 'active'
-  },
+  plan: 'free',
+  status: 'active',
   limits: {
     maxLists: getFeatureLimit('free', 'storage.lists', 'total') || 3,
     maxDrillsPerDay: getFeatureLimit('free', 'learning.drills', 'daily') || 3,
@@ -159,10 +157,8 @@ export const DEFAULT_FREE_SUBSCRIPTION: UserSubscription = {
 
 const monthlyEntitlements = getEntitlementsForUserType('monthly');
 export const DEFAULT_MONTHLY_SUBSCRIPTION: UserSubscription = {
-  subscription: {
-    plan: 'monthly',
-    status: 'active'
-  },
+  plan: 'monthly',
+  status: 'active',
   limits: {
     maxLists: getFeatureLimit('monthly', 'storage.lists', 'total') || -1,
     maxDrillsPerDay: getFeatureLimit('monthly', 'learning.drills', 'daily') || -1,
@@ -189,10 +185,8 @@ export const DEFAULT_MONTHLY_SUBSCRIPTION: UserSubscription = {
 
 const yearlyEntitlements = getEntitlementsForUserType('yearly');
 export const DEFAULT_YEARLY_SUBSCRIPTION: UserSubscription = {
-  subscription: {
-    plan: 'yearly',
-    status: 'active'
-  },
+  plan: 'yearly',
+  status: 'active',
   limits: {
     maxLists: getFeatureLimit('yearly', 'storage.lists', 'total') || -1,
     maxDrillsPerDay: getFeatureLimit('yearly', 'learning.drills', 'daily') || -1,

@@ -170,7 +170,9 @@ export class SubscriptionManager {
       };
     }
     
-    const isActive = subscription.status === 'active';
+    // Consider subscription active if user has a paid plan
+    // regardless of status (could be past_due, trialing, etc.)
+    const isActive = subscription.plan === 'monthly' || subscription.plan === 'yearly';
     let daysRemaining: number | undefined;
     
     if (subscription.currentPeriodEnd) {

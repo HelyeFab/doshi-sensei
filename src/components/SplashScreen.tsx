@@ -55,26 +55,27 @@ export default function SplashScreen({ duration = 2000, forceShow = false }: Spl
               className="mb-8 relative"
             >
               {/* Yokoso text in semicircle above mascot */}
-              <div className="absolute -top-14 left-1/2 transform -translate-x-1/2">
+              <div className="absolute -top-20 left-1/2 transform -translate-x-1/2">
                 <div className="relative">
                   {['よ', 'う', 'こ', 'そ', '！'].map((char, i) => {
-                    const angle = -60 + (i * 30); // Spread from -60 to +60 degrees
-                    const radius = 60; // Distance from center
+                    const angle = -50 + (i * 25); // Spread from -50 to +50 degrees
+                    const radius = 85; // Increased distance from center
                     const x = Math.sin(angle * Math.PI / 180) * radius;
-                    const y = -Math.cos(angle * Math.PI / 180) * radius + 20;
+                    const y = -Math.cos(angle * Math.PI / 180) * radius + 30;
                     
                     return (
                       <motion.span
                         key={i}
-                        className="absolute text-white font-bold text-2xl"
+                        className="absolute text-white font-bold text-4xl" // Increased from text-2xl to text-4xl
                         style={{
                           left: `${x}px`,
                           top: `${y}px`,
                           transform: 'translate(-50%, -50%)',
+                          textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)', // Added text shadow for better visibility
                         }}
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{
-                          scale: [1, 1.2, 1],
+                          scale: [1, 1.3, 1], // Increased animation scale
                           opacity: 1,
                         }}
                         transition={{

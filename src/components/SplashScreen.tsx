@@ -4,17 +4,24 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function SplashScreen() {
+interface SplashScreenProps {
+  duration?: number; // Duration in milliseconds
+  forceShow?: boolean; // For testing purposes
+}
+
+export default function SplashScreen({ duration = 2000, forceShow = false }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Hide splash screen after 2 seconds
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-    }, 2000);
+    if (!forceShow) {
+      // Hide splash screen after specified duration
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, duration);
 
-    return () => clearTimeout(timer);
-  }, []);
+      return () => clearTimeout(timer);
+    }
+  }, [duration, forceShow]);
 
   return (
     <AnimatePresence>
@@ -23,7 +30,7 @@ export default function SplashScreen() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-primary via-accent to-secondary"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500"
         >
           {/* Background pattern */}
           <div className="absolute inset-0 overflow-hidden">
@@ -35,7 +42,7 @@ export default function SplashScreen() {
 
           {/* Content */}
           <div className="relative z-10 flex flex-col items-center">
-            {/* Logo */}
+            {/* Logo with Yokoso */}
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
@@ -45,8 +52,50 @@ export default function SplashScreen() {
                 damping: 20,
                 duration: 0.8
               }}
-              className="mb-8"
+              className="mb-8 relative"
             >
+              {/* Yokoso text in semicircle above mascot */}
+              <div className="absolute -top-14 left-1/2 transform -translate-x-1/2">
+                <div className="relative">
+                  {['よ', 'う', 'こ', 'そ', '！'].map((char, i) => {
+                    const angle = -60 + (i * 30); // Spread from -60 to +60 degrees
+                    const radius = 60; // Distance from center
+                    const x = Math.sin(angle * Math.PI / 180) * radius;
+                    const y = -Math.cos(angle * Math.PI / 180) * radius + 20;
+                    
+                    return (
+                      <motion.span
+                        key={i}
+                        className="absolute text-white font-bold text-2xl"
+                        style={{
+                          left: `${x}px`,
+                          top: `${y}px`,
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: 1,
+                        }}
+                        transition={{
+                          delay: 0.5 + i * 0.1,
+                          scale: {
+                            duration: 2,
+                            repeat: Infinity,
+                            delay: 0.5 + i * 0.1,
+                          },
+                          opacity: {
+                            duration: 0.3,
+                          }
+                        }}
+                      >
+                        {char}
+                      </motion.span>
+                    );
+                  })}
+                </div>
+              </div>
+              
               <div className="relative">
                 <div className="absolute inset-0 bg-white/20 rounded-full blur-2xl"></div>
                 <Image
@@ -82,13 +131,14 @@ export default function SplashScreen() {
               transition={{ delay: 0.6 }}
               className="mt-12"
             >
-              <div className="flex space-x-2">
+              <div className="flex space-x-3">
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    className="w-3 h-3 bg-white rounded-full"
+                    className="w-4 h-4 bg-white rounded-full shadow-lg"
                     animate={{
-                      y: ["0%", "-50%", "0%"],
+                      y: ["0%", "-60%", "0%"],
+                      scale: [1, 1.2, 1],
                     }}
                     transition={{
                       duration: 0.6,

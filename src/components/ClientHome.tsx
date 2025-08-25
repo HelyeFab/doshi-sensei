@@ -18,7 +18,10 @@ interface ClientHomeProps {
 
 export default function ClientHome({ initialDate, initialProgress }: ClientHomeProps) {
   const { user, userType } = useAuth();
-  const displayName = user?.displayName || user?.email?.split('@')[0] || 'Friend';
+  const fullDisplayName = user?.displayName || user?.email?.split('@')[0] || 'Friend';
+  // Extract first name for mobile display
+  const firstName = fullDisplayName.split(' ')[0];
+  const displayName = fullDisplayName; // Keep full name for backward compatibility
   const [showCompanion, setShowCompanion] = useState(false);
   const strings = useStrings();
 
@@ -152,7 +155,13 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
             {/* Greeting Text */}
             <div className="flex-1">
               <h1 className="text-xl font-semibold text-gray-900">
-                {strings.home.greeting} {displayName}-san! <span className="inline-block animate-wave">👋</span>
+                {/* Show first name on mobile, full name on desktop */}
+                <span className="md:hidden">
+                  {strings.home.greeting} {firstName}-san! <span className="inline-block animate-wave">👋</span>
+                </span>
+                <span className="hidden md:inline">
+                  {strings.home.greeting} {fullDisplayName}-san! <span className="inline-block animate-wave">👋</span>
+                </span>
               </h1>
               <p className="text-sm text-gray-600">{strings.home.readyToPractice}</p>
             </div>

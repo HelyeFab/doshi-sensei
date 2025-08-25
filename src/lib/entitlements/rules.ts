@@ -49,6 +49,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       // Tools
       'ai_stories': 0,          // Must sign up (high API cost)
       'youtube_shadowing': 1,   // One video per day (API costs)
+      'uploaded_media_shadowing': 0, // Must sign up (processing costs)
       'news_reader': 3,         // Three articles per day
       'article_reading': 3,     // Three articles per day
       'anki_import': 0,         // Must sign up
@@ -122,6 +123,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       // Tools
       'ai_stories': 1,          // One AI story per day
       'youtube_shadowing': 3,   // Few videos per day
+      'uploaded_media_shadowing': 2, // Two uploads per day
       'news_reader': 5,         // Several articles
       'article_reading': 5,     // Several articles per day
       'anki_import': 0,         // Premium only
@@ -198,6 +200,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       // Tools - all unlimited
       'ai_stories': -1,
       'youtube_shadowing': -1,
+      'uploaded_media_shadowing': -1,
       'news_reader': -1,
       'article_reading': -1,    // Unlimited articles
       'anki_import': -1,
@@ -274,6 +277,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       // Tools - all unlimited
       'ai_stories': -1,
       'youtube_shadowing': -1,
+      'uploaded_media_shadowing': -1,
       'news_reader': -1,
       'article_reading': -1,    // Unlimited articles
       'anki_import': -1,

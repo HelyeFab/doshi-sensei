@@ -68,7 +68,7 @@ npm run lint        # Run ESLint
 │   └── access/            # Access control (Three-Pillar #3)
 │       └── index.ts       # Permission mappings
 ├── hooks/                  # Custom React hooks
-│   └── useAccess.ts       # Main access control hook
+│   └── useFeature.ts      # Main access control hook
 ├── contexts/               # React context providers
 ├── services/               # API and external service integrations
 ├── types/                  # TypeScript type definitions

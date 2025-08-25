@@ -268,6 +268,17 @@ const _internalRegistry: Record<string, Feature> = {
     requiresSubscription: false,
     status: 'active',
   },
+  'uploaded_media_shadowing': {
+    id: 'uploaded_media_shadowing',
+    name: 'Upload Media Shadowing',
+    description: 'Practice with uploaded video and audio files',
+    category: 'tools',
+    icon: '📤',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+  },
   'news_reader': {
     id: 'news_reader',
     name: 'News Reader',

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useToast } from '@/contexts/ToastContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface DonationModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ const DONATION_AMOUNTS = [
 export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
   const strings = useStrings();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [selectedAmount, setSelectedAmount] = useState(500); // Default $5
   const [customAmount, setCustomAmount] = useState('');
   const [isCustom, setIsCustom] = useState(false);
@@ -37,16 +39,55 @@ export default function DonationModal({ isOpen, onClose }: DonationModalProps) {
       return;
     }
 
+    if (!user) {
+      toast.error(
+        'Sign In Required',
+        'Please sign in to make a donation'
+      );
+      return;
+    }
+
     setIsLoading(true);
-    // Placeholder for Stripe integration
-    setTimeout(() => {
-      toast.success(
-        'Thank You!',
-        `Thank you for your $${(finalAmount / 100).toFixed(2)} donation! (Demo mode)`
+    
+    try {
+      const idToken = await user.getIdToken();
+      
+      // Create a one-time payment checkout session using dedicated donation endpoint
+      const response = await fetch('/api/create-donation-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: finalAmount, // Amount in cents
+          userId: user.uid,
+          userEmail: user.email,
+          idToken: idToken,
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create donation session');
+      }
+      
+      const { url, sessionUrl } = await response.json();
+      
+      // Redirect to Stripe Checkout
+      const checkoutUrl = url || sessionUrl;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        throw new Error('No checkout URL received from server');
+      }
+    } catch (error) {
+      console.error('Error creating donation session:', error);
+      toast.error(
+        'Donation Failed',
+        error instanceof Error ? error.message : 'Failed to process donation. Please try again.'
       );
       setIsLoading(false);
-      onClose();
-    }, 1000);
+    }
   };
 
   const handleAmountSelect = (amount: number) => {

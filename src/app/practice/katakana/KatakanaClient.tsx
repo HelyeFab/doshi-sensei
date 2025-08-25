@@ -83,8 +83,7 @@ export default function KatakanaClient() {
     <div className="min-h-screen bg-background">
       {/* Smart Header */}
       <SmartHeader 
-        title="Katakana Charts" 
-        backHref="/practice"
+        title="Katakana Charts"
       />
 
       {/* Main Content */}
@@ -113,7 +112,7 @@ export default function KatakanaClient() {
               onClick={() => router.push('/practice/hiragana')}
               className="text-primary hover:text-primary/80 transition-colors underline"
             >
-              Switch to Hiragana →
+              ← Switch to Hiragana
             </button>
           </div>
 

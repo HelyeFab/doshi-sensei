@@ -333,11 +333,15 @@ const permissionMap: Record<string, string> = {
 ### 5. Use in Your Component
 ```typescript
 export default function MyFeature() {
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('my_new_feature', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
   
   const handleUse = async () => {
     // This ONE line handles EVERYTHING
-    if (await checkAndTrack('my_new_feature')) {
+    if (await checkAndTrack()) {
       // User has access AND usage is tracked
       doTheWork();
     }
@@ -364,15 +368,19 @@ When implementing notifications for any feature (current or future), follow thes
 ```typescript
 // In your feature component
 import { useNotifications } from '@/contexts/NotificationServiceContext';
-import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
 
 export default function MyFeature() {
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('my_feature', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
   const { testNotification, preferences } = useNotifications();
   
   const handleCompleteSession = async () => {
     // Track feature usage
-    if (await checkAndTrack('my_feature')) {
+    if (await checkAndTrack()) {
       // Do the work
       await performFeatureAction();
       
@@ -419,20 +427,26 @@ export const sendFeatureReminders = functions.pubsub
 ```typescript
 // Notify when approaching limits
 export function useFeatureWithNotifications(featureId: string) {
-  const { checkAndTrack, getUsageInfo } = useAccess();
+  const { checkAndTrack, remaining } = useFeature(featureId, {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
   const { showNotification } = useNotification();
   
   const trackWithNotification = async () => {
-    const hasAccess = await checkAndTrack(featureId);
+    const hasAccess = await checkAndTrack();
     
-    if (hasAccess) {
-      const usage = await getUsageInfo(featureId);
+    if (hasAccess && remaining !== null && remaining !== -1) {
+      // Calculate percentage used
+      const limit = remaining + 1; // Approximate since we just used one
+      const percentage = ((limit - remaining) / limit) * 100;
       
       // Warn when 80% of limit reached
-      if (usage.percentage >= 80 && usage.percentage < 100) {
+      if (percentage >= 80 && percentage < 100) {
         showNotification({
           title: 'Approaching Daily Limit',
-          message: `You have ${usage.remaining} ${featureId} sessions left today`,
+          message: `You have ${remaining} ${featureId} sessions left today`,
           type: 'warning'
         });
       }
@@ -564,12 +578,16 @@ trackNotificationEvent({
 ```typescript
 // 1. Feature component
 export default function VocabularyPractice() {
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('vocabulary_practice', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
   const { preferences, showNotification } = useNotifications();
   const [wordsLearned, setWordsLearned] = useState(0);
   
   const completeSession = async () => {
-    if (await checkAndTrack('vocabulary_practice')) {
+    if (await checkAndTrack()) {
       const newWords = await practiceVocabulary();
       setWordsLearned(prev => prev + newWords);
       

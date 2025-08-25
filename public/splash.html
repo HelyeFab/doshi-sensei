@@ -17,7 +17,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #8a5cf6 0%, #d946ef 50%, #ec4899 100%);
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%);
             overflow: hidden;
             position: relative;
         }
@@ -53,6 +53,60 @@
             margin-bottom: 2rem;
             position: relative;
             display: inline-block;
+            margin-top: 3rem;
+        }
+        
+        /* Yokoso text in arc */
+        .yokoso-container {
+            position: absolute;
+            top: -3.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 100px;
+        }
+        
+        .yokoso-char {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            animation: pulse-scale 2s ease-in-out infinite;
+        }
+        
+        .yokoso-char:nth-child(1) {
+            left: 10px;
+            top: 30px;
+            animation-delay: 0s;
+        }
+        
+        .yokoso-char:nth-child(2) {
+            left: 40px;
+            top: 10px;
+            animation-delay: 0.2s;
+        }
+        
+        .yokoso-char:nth-child(3) {
+            left: 75px;
+            top: 5px;
+            animation-delay: 0.4s;
+        }
+        
+        .yokoso-char:nth-child(4) {
+            left: 110px;
+            top: 10px;
+            animation-delay: 0.6s;
+        }
+        
+        .yokoso-char:nth-child(5) {
+            left: 140px;
+            top: 30px;
+            animation-delay: 0.8s;
+        }
+        
+        @keyframes pulse-scale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
         
         .logo-glow {
@@ -101,6 +155,7 @@
             animation: fadeInUp 0.5s ease-out 0.5s both;
         }
         
+        
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -117,7 +172,7 @@
             margin-top: 3rem;
             display: flex;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             animation: fadeIn 0.5s ease-out 0.6s both;
         }
         
@@ -127,10 +182,11 @@
         }
         
         .dot {
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             background: white;
             border-radius: 50%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             animation: bounce 0.6s ease-in-out infinite;
         }
         
@@ -139,8 +195,12 @@
         .dot:nth-child(3) { animation-delay: 0.3s; }
         
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
+            0%, 100% { 
+                transform: translateY(0) scale(1); 
+            }
+            50% { 
+                transform: translateY(-20px) scale(1.2); 
+            }
         }
         
         /* Mobile adjustments */
@@ -155,7 +215,7 @@
         /* Dark mode support */
         @media (prefers-color-scheme: dark) {
             body {
-                background: linear-gradient(135deg, #6b46c1 0%, #a855f7 50%, #d946ef 100%);
+                background: linear-gradient(135deg, #6b46c1 0%, #9333ea 50%, #d946ef 100%);
             }
         }
     </style>
@@ -171,6 +231,14 @@
     <div class="container">
         <!-- Logo -->
         <div class="logo-container">
+            <!-- Yokoso text above mascot -->
+            <div class="yokoso-container">
+                <span class="yokoso-char">よ</span>
+                <span class="yokoso-char">う</span>
+                <span class="yokoso-char">こ</span>
+                <span class="yokoso-char">そ</span>
+                <span class="yokoso-char">！</span>
+            </div>
             <div class="logo-glow"></div>
             <img src="/doshi.png" alt="Dōshi Sensei" class="logo">
         </div>

@@ -15,6 +15,7 @@ import { TranscriptCacheManager } from '@/utils/transcriptCache';
 import { videoHistoryService } from '@/services/videoHistory';
 import { AccordionItem } from '@/components/Accordion';
 import YouTubeInput from './components/YouTubeInput';
+import FileUploader from './components/FileUploader';
 import AudioExtractor from './components/AudioExtractor';
 import TranscriptDisplay from './components/TranscriptDisplay';
 import ShadowingPlayer from './components/ShadowingPlayer';
@@ -26,8 +27,8 @@ import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
 const pageStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "YouTube Shadowing Practice - Doshi Sensei",
-  "description": "Practice Japanese shadowing with YouTube videos. Extract audio, get transcripts, and improve your pronunciation.",
+  "name": "Media Shadowing Practice - Doshi Sensei",
+  "description": "Practice Japanese shadowing with YouTube videos or your own media files. Get AI-generated transcripts and improve your pronunciation.",
   "url": "https://doshisensei.com/tools/youtube-shadowing"
 };
 
@@ -67,6 +68,11 @@ export default function YouTubeShadowing() {
     showModal: true,
     trackUsage: true
   });
+  const { checkAndTrack: checkAndTrackUpload, remaining: remainingUploads } = useFeature('uploaded_media_shadowing', {
+    showToast: true,
+    showModal: true,
+    trackUsage: true
+  });
   const { isPremium, userType } = useSubscription2();
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -78,6 +84,7 @@ export default function YouTubeShadowing() {
   const [grammarMode, setGrammarMode] = useState<'none' | 'all' | 'content' | 'grammar'>('content');
   const [showShadowingMode, setShowShadowingMode] = useState(true);
   const [isVideoFree, setIsVideoFree] = useState(false);
+  const [inputMode, setInputMode] = useState<'youtube' | 'upload'>('youtube');
   const previousUrlsRef = useRef<{ videoUrl?: string; audioUrl?: string }>({});
 
   // Debug logging helper
@@ -317,6 +324,55 @@ export default function YouTubeShadowing() {
     }
   };
 
+  const handleFileUpload = async (file: File) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Check access limits for uploads
+      const canUse = await checkAndTrackUpload();
+      
+      if (!canUse) {
+        // Access denied - modal will be shown automatically
+        setIsLoading(false);
+        return;
+      }
+      
+      // Create blob URL for the file
+      const blobUrl = URL.createObjectURL(file);
+      
+      // Determine if it's video or audio
+      const isVideo = file.type.startsWith('video/');
+      
+      // Create session with file info
+      // For both video and audio files, we set audioUrl to trigger transcription
+      updateSession({
+        videoUrl: blobUrl,
+        videoTitle: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
+        transcript: [],
+        currentLineIndex: 0,
+        fileInfo: {
+          name: file.name,
+          size: file.size,
+          type: file.type
+        },
+        audioUrl: blobUrl // Set audioUrl for both video and audio to trigger transcription
+      });
+      
+      debugLog('FILE_UPLOAD', 'File uploaded successfully', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        isVideo
+      });
+    } catch (err) {
+      setError('Failed to process uploaded file');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleAudioExtracted = (audioUrl: string, title?: string) => {
     if (session) {
       updateSession({
@@ -447,10 +503,10 @@ export default function YouTubeShadowing() {
             className="border-0"
           >
             <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside mb-4">
-              <li>Paste a YouTube URL and click "Extract Audio" to get started</li>
+              <li>Paste a YouTube URL or upload your own video/audio file</li>
               <li>Wait for the AI to generate Japanese subtitles (usually 20-30 seconds)</li>
               <li>Use the player controls to practice: play, pause, and repeat sentences</li>
-              <li>Click on any line to jump to that part of the video</li>
+              <li>Click on any line to jump to that part of the content</li>
             </ol>
             <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
               <span className="text-base mt-0.5">💡</span>
@@ -534,10 +590,10 @@ export default function YouTubeShadowing() {
                 <div className="relative z-10 text-center">
                   <div className="text-6xl mb-4">🎬</div>
                   <h2 className="text-3xl font-bold mb-3">
-                    {strings.youtubeShadowing?.subtitle || "Master Japanese with YouTube"}
+                    {strings.youtubeShadowing?.subtitle || "Master Japanese with Any Media"}
                   </h2>
                   <p className="text-lg opacity-90 max-w-2xl mx-auto">
-                    {strings.youtubeShadowing?.description || "Turn any YouTube video into an interactive shadowing practice session. Get instant transcripts and improve your pronunciation!"}
+                    {strings.youtubeShadowing?.description || "Turn YouTube videos or your own media files into interactive shadowing practice sessions. Get AI-powered transcripts and improve your pronunciation!"}
                   </p>
                 </div>
               </motion.div>
@@ -550,15 +606,88 @@ export default function YouTubeShadowing() {
                 transition={{ delay: 0.2 }}
                 className="bg-card rounded-2xl shadow-lg border border-border p-8 mb-6"
               >
-                <h3 className="text-lg font-semibold mb-4 text-foreground flex items-center gap-2">
-                  <span className="text-2xl">📺</span>
-                  Paste YouTube URL
-                </h3>
+                {/* Input Mode Tabs */}
+                <div className="flex gap-2 mb-6">
+                  <button
+                    onClick={() => setInputMode('youtube')}
+                    className={`flex-1 py-2.5 px-4 rounded-lg font-medium transition-all ${
+                      inputMode === 'youtube'
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'bg-secondary hover:bg-secondary/80'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <span>📺</span>
+                      YouTube URL
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setInputMode('upload')}
+                    className={`flex-1 py-2.5 px-4 rounded-lg font-medium transition-all ${
+                      inputMode === 'upload'
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'bg-secondary hover:bg-secondary/80'
+                    }`}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <span>📤</span>
+                      Upload File
+                    </span>
+                  </button>
+                </div>
                 
-                <YouTubeInput 
-                  onSubmit={handleUrlSubmit}
-                  isLoading={isLoading}
-                />
+                {/* YouTube Input */}
+                {inputMode === 'youtube' && (
+                  <>
+                    <h3 className="text-lg font-semibold mb-4 text-foreground flex items-center gap-2">
+                      <span className="text-2xl">📺</span>
+                      Paste YouTube URL
+                    </h3>
+                    
+                    <YouTubeInput 
+                      onSubmit={handleUrlSubmit}
+                      isLoading={isLoading}
+                    />
+                  </>
+                )}
+                
+                {/* File Upload */}
+                {inputMode === 'upload' && (
+                  <>
+                    <h3 className="text-lg font-semibold mb-4 text-foreground flex items-center gap-2">
+                      <span className="text-2xl">📤</span>
+                      Upload Media File
+                    </h3>
+                    
+                    <FileUploader
+                      onFileSelect={handleFileUpload}
+                      isLoading={isLoading}
+                      maxSizeMB={isPremium ? 200 : 50}
+                    />
+                    
+                    {/* Usage Display for Uploads */}
+                    {userType !== 'guest' && (
+                      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">
+                            Upload limit today
+                          </span>
+                          <span className="text-sm font-medium">
+                            {isPremium ? (
+                              <span className="text-green-600 dark:text-green-400">Unlimited</span>
+                            ) : remainingUploads === undefined || remainingUploads === null ? (
+                              <span className="text-muted-foreground">Loading...</span>
+                            ) : remainingUploads > 0 ? (
+                              <span className="text-primary">{remainingUploads} {remainingUploads === 1 ? 'upload' : 'uploads'} remaining</span>
+                            ) : (
+                              <span className="text-red-600 dark:text-red-400">Daily limit reached</span>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
                 
                 {error && (
                   <motion.div
@@ -576,7 +705,7 @@ export default function YouTubeShadowing() {
                           {error}
                         </p>
                         <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
-                          💡 Tip: Try pasting the URL again - it often works on the second attempt!
+                          💡 Tip: Try again - it often works on the second attempt!
                         </p>
                       </div>
                     </div>
@@ -695,8 +824,8 @@ export default function YouTubeShadowing() {
                 </motion.div>
               )}
 
-              {/* Audio Extraction */}
-              {!session.audioUrl && (
+              {/* Audio Extraction - Only for YouTube videos */}
+              {!session.audioUrl && !session.fileInfo && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -706,6 +835,28 @@ export default function YouTubeShadowing() {
                     videoUrl={session.videoUrl}
                     onAudioExtracted={handleAudioExtracted}
                   />
+                </motion.div>
+              )}
+              
+              {/* For uploaded video files, extract audio if needed */}
+              {!session.audioUrl && session.fileInfo && session.fileInfo.type.startsWith('video/') && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-card rounded-xl p-6 border border-border"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
+                      <span className="text-xl">🎬</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-foreground">Video file ready</p>
+                      <p className="text-xs text-muted-foreground">
+                        {session.fileInfo.name} • Ready for transcription
+                      </p>
+                    </div>
+                  </div>
                 </motion.div>
               )}
 

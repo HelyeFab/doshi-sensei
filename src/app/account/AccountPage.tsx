@@ -23,6 +23,8 @@ import { validatePassword, passwordRequirements, getPasswordStrength } from '@/u
 import { checkEmailAvailability, debounce } from '@/utils/emailValidation';
 import { useCallback } from 'react';
 import YouTubeConnection from '@/components/settings/YouTubeConnection';
+import DonationThankYou from '@/components/DonationThankYou';
+import { useSearchParams } from 'next/navigation';
 
 // List of available SVGs for user thumbnails
 const THUMBNAIL_OPTIONS = [
@@ -95,6 +97,26 @@ export default function AccountPage() {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const searchParams = useSearchParams();
+  const [showDonationThankYou, setShowDonationThankYou] = useState(false);
+  const [donationAmount, setDonationAmount] = useState<number | undefined>();
+  
+  // Check for donation success on mount
+  useEffect(() => {
+    if (searchParams?.get('donation') === 'success') {
+      const amount = searchParams.get('amount');
+      setDonationAmount(amount ? parseInt(amount) : undefined);
+      setShowDonationThankYou(true);
+      
+      // Clean up URL after showing thank you
+      if (window.history.replaceState) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('donation');
+        url.searchParams.delete('amount');
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
+  }, [searchParams]);
   
   // Show password requirements section when in signup mode
   useEffect(() => {
@@ -818,6 +840,13 @@ export default function AccountPage() {
         error={error}
         type={modalType}
         onClose={() => setShowErrorModal(false)}
+      />
+      
+      {/* Donation Thank You Modal */}
+      <DonationThankYou
+        isOpen={showDonationThankYou}
+        onClose={() => setShowDonationThankYou(false)}
+        amount={donationAmount}
       />
     </div>
   );

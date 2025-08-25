@@ -83,8 +83,7 @@ export default function HiraganaClient() {
     <div className="min-h-screen bg-background">
       {/* Smart Header */}
       <SmartHeader 
-        title="Hiragana Charts" 
-        backHref="/practice"
+        title="Hiragana Charts"
       />
 
       {/* Main Content */}

@@ -37,6 +37,7 @@ const permissionMap: Record<string, string> = {
   // Tool permissions
   'ai_stories': 'generate_stories',
   'youtube_shadowing': 'shadow_videos',
+  'uploaded_media_shadowing': 'shadow_uploads',
   'news_reader': 'read_news',
   'article_reading': 'read_articles',
   'article_bookmarks': 'bookmark_articles',

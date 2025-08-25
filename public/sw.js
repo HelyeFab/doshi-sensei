@@ -32,7 +32,9 @@ if (workbox) {
   // Precache essential pages only
   workbox.precaching.precacheAndRoute([
     { url: '/', revision: SW_VERSION },
-    { url: '/offline', revision: SW_VERSION }
+    { url: '/offline', revision: SW_VERSION },
+    { url: '/splash.html', revision: SW_VERSION },
+    { url: '/doshi.png', revision: SW_VERSION }
   ]);
 
   // ===== CRITICAL CHANGE: Next.js app code - Network First =====
@@ -82,7 +84,8 @@ if (workbox) {
         request.destination === 'font' ||
         url.pathname.startsWith('/icons/') ||
         url.pathname.startsWith('/sounds/') ||
-        url.pathname.startsWith('/fonts/');
+        url.pathname.startsWith('/fonts/') ||
+        url.pathname.startsWith('/splash/');
       
       return url.origin === self.location.origin && isStaticAsset;
     },

@@ -12,6 +12,8 @@ import { VirtualCompanionProvider } from "@/contexts/VirtualCompanionContext";
 import { BackgroundSyncProvider } from "@/contexts/BackgroundSyncContext";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import SplashScreenMeta from "@/components/SplashScreenMeta";
+import SplashScreen from "@/components/SplashScreen";
 
 const rubik = localFont({
   src: [
@@ -91,6 +93,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={rubik.variable} suppressHydrationWarning>
       <head>
+        <SplashScreenMeta />
         <script src="/register-sw.js" defer />
       </head>
       <body className={`${rubik.className || ''}`} suppressHydrationWarning>
@@ -99,6 +102,7 @@ export default function RootLayout({
             <BackgroundSyncProvider>
               <VirtualCompanionProvider>
                 <ToastProvider>
+                  <SplashScreen />
                   <div className="min-h-screen pb-16 md:pb-0">
                     {children}
                   </div>

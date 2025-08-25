@@ -80,6 +80,16 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  
+  // Add async rewrites to handle YouTube player requests
+  async rewrites() {
+    return [
+      {
+        source: '/tools/youtube-shadowing/youtube-player/:path*',
+        destination: 'https://www.youtube.com/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

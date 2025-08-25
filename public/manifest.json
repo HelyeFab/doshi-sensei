@@ -2,7 +2,7 @@
   "name": "Doshi Sensei - Japanese Learning",
   "short_name": "Doshi Sensei",
   "description": "Master Japanese verb conjugations and vocabulary with interactive practice, drills, and JLPT preparation",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#8a5cf6",
   "theme_color": "#8a5cf6",

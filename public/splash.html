@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dōshi Sensei - Loading...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #8a5cf6 0%, #d946ef 50%, #ec4899 100%);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Background kanji */
+        .bg-kanji {
+            position: absolute;
+            font-size: 120px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.1);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        .kanji-1 { top: 10%; left: 10%; animation-delay: 0s; }
+        .kanji-2 { bottom: 10%; right: 10%; animation-delay: 0.5s; }
+        .kanji-3 { top: 30%; right: 20%; animation-delay: 1s; }
+        .kanji-4 { bottom: 30%; left: 20%; animation-delay: 0.75s; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.1; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(1.05); }
+        }
+        
+        /* Content */
+        .container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+        
+        /* Logo */
+        .logo-container {
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .logo-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            filter: blur(30px);
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            animation: logoAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+        }
+        
+        @keyframes logoAppear {
+            from {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Text */
+        .app-name {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            animation: fadeInUp 0.5s ease-out 0.3s both;
+        }
+        
+        .tagline {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.125rem;
+            animation: fadeInUp 0.5s ease-out 0.5s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Loading dots */
+        .loading-dots {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            animation: fadeIn 0.5s ease-out 0.6s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: bounce 0.6s ease-in-out infinite;
+        }
+        
+        .dot:nth-child(1) { animation-delay: 0s; }
+        .dot:nth-child(2) { animation-delay: 0.15s; }
+        .dot:nth-child(3) { animation-delay: 0.3s; }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 640px) {
+            .bg-kanji { font-size: 80px; }
+            .logo { width: 100px; height: 100px; }
+            .logo-glow { width: 120px; height: 120px; }
+            .app-name { font-size: 2rem; }
+            .tagline { font-size: 1rem; }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #6b46c1 0%, #a855f7 50%, #d946ef 100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background kanji characters -->
+    <div class="bg-kanji kanji-1">道</div>
+    <div class="bg-kanji kanji-2">師</div>
+    <div class="bg-kanji kanji-3">先</div>
+    <div class="bg-kanji kanji-4">生</div>
+    
+    <!-- Main content -->
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo-container">
+            <div class="logo-glow"></div>
+            <img src="/doshi.png" alt="Dōshi Sensei" class="logo">
+        </div>
+        
+        <!-- Text -->
+        <h1 class="app-name">Dōshi Sensei</h1>
+        <p class="tagline">Master Japanese, One Step at a Time</p>
+        
+        <!-- Loading indicator -->
+        <div class="loading-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Redirect to main app after a short delay if this page is accessed directly
+        setTimeout(function() {
+            if (window.location.pathname === '/splash.html') {
+                window.location.href = '/';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

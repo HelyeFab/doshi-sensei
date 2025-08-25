@@ -2,8 +2,14 @@
   "name": "netlify-functions",
   "version": "1.0.0",
   "description": "Netlify functions for Doshi Sensei",
+  "scripts": {
+    "prebuild": "npx puppeteer browsers install chrome"
+  },
   "dependencies": {
     "stripe": "^14.14.0",
-    "firebase-admin": "^11.11.1"
+    "firebase-admin": "^11.11.1",
+    "cheerio": "^1.0.0-rc.12",
+    "@sparticuz/chromium": "^133.0.0",
+    "puppeteer-core": "^24.10.2"
   }
 }

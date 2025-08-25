@@ -12,6 +12,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuth } from '@/contexts/AuthContext';
 import { practiceHistoryService } from '@/services/practiceHistory/PracticeHistoryService';
 import { TranscriptCacheManager } from '@/utils/transcriptCache';
+import { videoHistoryService } from '@/services/videoHistory';
 import { AccordionItem } from '@/components/Accordion';
 import YouTubeInput from './components/YouTubeInput';
 import AudioExtractor from './components/AudioExtractor';
@@ -76,6 +77,7 @@ export default function YouTubeShadowing() {
   const [showGrammar, setShowGrammar] = useState(false);
   const [grammarMode, setGrammarMode] = useState<'none' | 'all' | 'content' | 'grammar'>('content');
   const [showShadowingMode, setShowShadowingMode] = useState(true);
+  const [isVideoFree, setIsVideoFree] = useState(false);
   const previousUrlsRef = useRef<{ videoUrl?: string; audioUrl?: string }>({});
 
   // Debug logging helper
@@ -156,7 +158,7 @@ export default function YouTubeShadowing() {
     return 'youtube';
   };
 
-  // Initialize practice history service
+  // Initialize practice history and video history services
   useEffect(() => {
     debugLog('PRACTICE_HISTORY_INIT', 'Initializing practice history service', {
       userId: user?.uid,
@@ -166,12 +168,39 @@ export default function YouTubeShadowing() {
     });
     
     if (user || userType === 'guest') {
+      // Initialize practice history
       practiceHistoryService.initialize(user?.uid, isPremium).then(() => {
         const status = practiceHistoryService.getStatus();
         debugLog('PRACTICE_HISTORY_INIT', 'Service initialized successfully', status);
       }).catch(error => {
         debugLog('PRACTICE_HISTORY_INIT', 'Failed to initialize service', error);
       });
+      
+      // Initialize video history
+      const initVideoHistory = async () => {
+        try {
+          // Check if we need to migrate guest history
+          if (user?.uid && userType !== 'guest') {
+            // User just signed in - migrate any guest history
+            await videoHistoryService.migrateGuestHistory(user.uid);
+            debugLog('VIDEO_HISTORY_MIGRATION', 'Migrated guest history to user account', {
+              userId: user.uid
+            });
+          } else {
+            // Normal initialization
+            await videoHistoryService.initialize(user?.uid);
+          }
+          
+          debugLog('VIDEO_HISTORY_INIT', 'Video history service initialized', {
+            userId: user?.uid,
+            videoCount: videoHistoryService.getUniqueVideoCount()
+          });
+        } catch (error) {
+          debugLog('VIDEO_HISTORY_INIT', 'Failed to initialize video history', error);
+        }
+      };
+      
+      initVideoHistory();
     } else {
       debugLog('PRACTICE_HISTORY_INIT', 'Skipping init - no user');
     }
@@ -226,24 +255,60 @@ export default function YouTubeShadowing() {
   };
 
   const handleUrlSubmit = async (url: string) => {
-    // Check if user has access to use this feature
-    const canUse = await checkAndTrack();
-    
-    if (!canUse) {
-      // Access denied - modal will be shown automatically
-      return;
-    }
-    
     setIsLoading(true);
     setError(null);
     
     try {
-      // Initialize session with URL
-      updateSession({
-        videoUrl: url,
-        transcript: [],
-        currentLineIndex: 0
-      });
+      // Extract video ID from URL
+      const videoId = extractVideoId(url);
+      
+      if (!videoId) {
+        setError('Invalid YouTube URL');
+        setIsLoading(false);
+        return;
+      }
+      
+      // Check if user has already used this video
+      const hasUsedVideo = videoHistoryService.hasUsedVideo(videoId);
+      
+      if (hasUsedVideo) {
+        // Video is free - user has already accessed it before
+        debugLog('VIDEO_ACCESS', 'Free access - video in history', { videoId });
+        setIsVideoFree(true);
+        
+        // Proceed without checking limits
+        updateSession({
+          videoUrl: url,
+          transcript: [],
+          currentLineIndex: 0
+        });
+      } else {
+        // New video - check access limits
+        debugLog('VIDEO_ACCESS', 'New video - checking limits', { videoId });
+        setIsVideoFree(false);
+        
+        const canUse = await checkAndTrack();
+        
+        if (!canUse) {
+          // Access denied - modal will be shown automatically
+          setIsLoading(false);
+          return;
+        }
+        
+        // Add video to history for future free access
+        await videoHistoryService.addVideo(videoId);
+        debugLog('VIDEO_HISTORY', 'Added video to history', { 
+          videoId,
+          totalVideos: videoHistoryService.getUniqueVideoCount()
+        });
+        
+        // Proceed with video
+        updateSession({
+          videoUrl: url,
+          transcript: [],
+          currentLineIndex: 0
+        });
+      }
     } catch (err) {
       setError('Failed to process YouTube URL');
       console.error(err);
@@ -399,25 +464,35 @@ export default function YouTubeShadowing() {
       
       {/* Usage Display */}
       {userType !== 'guest' && (
-        <div className="px-4 mb-4">
+        <div className="px-4 mb-4 space-y-2">
           <div className="bg-card rounded-lg p-3 border border-border">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
-                {userType === 'free' ? 'Daily usage' : 'Today\'s usage'}
+                {userType === 'free' ? 'New videos today' : 'Today\'s usage'}
               </span>
               <span className="text-sm font-medium">
                 {isPremium ? (
-                  <span className="text-green-600">Unlimited</span>
+                  <span className="text-green-600 dark:text-green-400">Unlimited</span>
                 ) : remaining === undefined || remaining === null ? (
                   <span className="text-muted-foreground">Loading...</span>
                 ) : remaining > 0 ? (
-                  <span className="text-primary">{remaining} {remaining === 1 ? 'use' : 'uses'} remaining</span>
+                  <span className="text-primary">{remaining} new {remaining === 1 ? 'video' : 'videos'} remaining</span>
                 ) : (
-                  <span className="text-red-600">Daily limit reached</span>
+                  <span className="text-red-600 dark:text-red-400">Daily limit reached</span>
                 )}
               </span>
             </div>
           </div>
+          
+          {/* Free Access Info */}
+          {!isPremium && (
+            <div className="bg-accent/10 rounded-lg p-2.5 border border-accent/20">
+              <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <span>✨</span>
+                <span>Videos you've used before have <span className="font-medium text-foreground">free unlimited access</span> for practice!</span>
+              </p>
+            </div>
+          )}
         </div>
       )}
       
@@ -580,8 +655,15 @@ export default function YouTubeShadowing() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-6 mb-6 text-white"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-6 mb-6 text-white relative"
                 >
+                  {/* Free Access Badge */}
+                  {isVideoFree && (
+                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                      <span>✨</span> Free Access
+                    </div>
+                  )}
+                  
                   <div className="flex items-center gap-4">
                     {/* Video Thumbnail or Icon */}
                     {session.videoMetadata?.thumbnails?.medium ? (
@@ -658,7 +740,7 @@ export default function YouTubeShadowing() {
                         onClick={() => setShowShadowingMode(true)}
                         className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm sm:text-base ${
                           showShadowingMode 
-                            ? 'bg-green-600 text-white shadow-md' 
+                            ? 'bg-primary text-primary-foreground shadow-md' 
                             : 'bg-secondary hover:bg-secondary/80'
                         }`}
                       >
@@ -669,7 +751,7 @@ export default function YouTubeShadowing() {
                         onClick={() => setShowShadowingMode(false)}
                         className={`px-4 py-2.5 rounded-lg font-medium transition-all text-sm sm:text-base ${
                           !showShadowingMode 
-                            ? 'bg-amber-600 text-white shadow-md' 
+                            ? 'bg-primary text-primary-foreground shadow-md' 
                             : 'bg-secondary hover:bg-secondary/80'
                         }`}
                       >

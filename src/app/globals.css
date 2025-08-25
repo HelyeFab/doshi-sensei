@@ -56,6 +56,75 @@ body {
   font-family: var(--font-geist-sans, system-ui, -apple-system, sans-serif);
 }
 
+/* Mobile-first responsive font sizing */
+html {
+  /* Base font size for mobile (increased from 16px default) */
+  font-size: 18px;
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* Adjust common text sizes for better mobile readability */
+@media (max-width: 767px) {
+  /* Make small text more readable on mobile */
+  .text-xs {
+    font-size: 0.813rem; /* 14.6px at 18px base */
+  }
+  
+  .text-sm {
+    font-size: 0.889rem; /* 16px at 18px base */
+  }
+  
+  /* Increase button and interactive element text */
+  button, 
+  input, 
+  select, 
+  textarea {
+    font-size: 1rem; /* 18px */
+  }
+  
+  /* Ensure minimum tap target size */
+  button, 
+  a, 
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve readability for cards and content areas */
+  .card,
+  [class*="card"] {
+    font-size: 1rem;
+  }
+  
+  /* Adjust heading sizes for mobile */
+  h1, .text-4xl, .text-3xl {
+    font-size: 1.75rem; /* 31.5px at 18px base */
+  }
+  
+  h2, .text-2xl {
+    font-size: 1.5rem; /* 27px at 18px base */
+  }
+  
+  h3, .text-xl {
+    font-size: 1.25rem; /* 22.5px at 18px base */
+  }
+  
+  h4, .text-lg {
+    font-size: 1.111rem; /* 20px at 18px base */
+  }
+  
+  /* Ensure paragraphs are readable */
+  p {
+    line-height: 1.6;
+  }
+}
+
 /* Dark mode support */
 .dark {
   color-scheme: dark;

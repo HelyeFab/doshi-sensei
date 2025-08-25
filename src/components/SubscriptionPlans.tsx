@@ -21,10 +21,11 @@ export default function SubscriptionPlans() {
   const { prices, loading: pricesLoading, formatPrice } = useStripePrices();
   const { features: dynamicFeatures, loading: featuresLoading } = useSubscriptionFeatures();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processingPlan, setProcessingPlan] = useState<'monthly' | 'yearly' | null>(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   const handleUpgrade = async (plan: 'monthly' | 'yearly') => {
-    setIsProcessing(true);
+    setProcessingPlan(plan);
     try {
       const priceId = plan === 'monthly'
         ? STRIPE_CONFIG.priceIds.monthly
@@ -99,7 +100,7 @@ export default function SubscriptionPlans() {
         type: 'error'
       });
     } finally {
-      setIsProcessing(false);
+      setProcessingPlan(null);
     }
   };
 
@@ -255,7 +256,7 @@ export default function SubscriptionPlans() {
             {currentPlan === 'free' ? strings.subscriptions.upgradePlans : 'Upgrade to Yearly'}
           </h3>
 
-          <div className={`grid ${currentPlan === 'monthly' ? '' : 'md:grid-cols-2'} gap-4`}>
+          <div className={`grid ${currentPlan === 'monthly' ? 'md:max-w-xl md:mx-auto' : 'md:grid-cols-2'} gap-4`}>
             {/* Monthly Plan - Only show if user doesn't have monthly */}
             {monthlyPlan && currentPlan !== 'monthly' && (
               <div className="bg-card border border-border rounded-lg p-6">
@@ -291,10 +292,10 @@ export default function SubscriptionPlans() {
 
                 <button
                   onClick={() => handleUpgrade('monthly')}
-                  disabled={isProcessing}
+                  disabled={processingPlan !== null}
                   className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
                 >
-                  {isProcessing ? strings.subscriptions.processing : strings.subscriptions.upgradeToMonthly}
+                  {processingPlan === 'monthly' ? strings.subscriptions.processing : strings.subscriptions.upgradeToMonthly}
                 </button>
               </div>
             )}
@@ -341,10 +342,10 @@ export default function SubscriptionPlans() {
 
                 <button
                   onClick={() => handleUpgrade('yearly')}
-                  disabled={isProcessing}
+                  disabled={processingPlan !== null}
                   className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
                 >
-                  {isProcessing ? strings.subscriptions.processing : strings.subscriptions.upgradeToYearly}
+                  {processingPlan === 'yearly' ? strings.subscriptions.processing : strings.subscriptions.upgradeToYearly}
                 </button>
               </div>
             )}

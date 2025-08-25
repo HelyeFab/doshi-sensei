@@ -118,7 +118,7 @@ export default function UserAchievements() {
       <section className="px-4 pb-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold text-foreground">Your Journey</h2>
-          <a href="/account" 
+          <a href="/login" 
             className="text-sm font-medium text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1 group">
             Sign In
             <svg 
@@ -138,7 +138,7 @@ export default function UserAchievements() {
             <p className="text-sm text-muted-foreground mb-4">
               Sign in to unlock achievements and track your Japanese learning journey!
             </p>
-            <a href="/account" 
+            <a href="/login" 
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm">
               Get Started
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

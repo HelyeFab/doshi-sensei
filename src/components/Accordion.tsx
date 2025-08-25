@@ -20,18 +20,18 @@ export function AccordionItem({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className={`border-b border-gray-200 dark:border-gray-700 ${className}`}>
+    <div className={`border-b border-border ${className}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        className="w-full px-4 py-4 flex items-center justify-between text-left hover:bg-accent/10 transition-colors"
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-3">
-          {icon && <span className="text-gray-500 dark:text-gray-400">{icon}</span>}
-          <span className="font-medium text-gray-900 dark:text-white">{title}</span>
+          {icon && <span className="text-muted-foreground">{icon}</span>}
+          <span className="font-medium text-foreground">{title}</span>
         </div>
         <svg
-          className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
+          className={`w-5 h-5 text-muted-foreground transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
           fill="none"
@@ -46,7 +46,7 @@ export function AccordionItem({
           isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="px-4 pb-4 text-gray-600 dark:text-gray-300">
+        <div className="px-4 pb-4 text-muted-foreground">
           {children}
         </div>
       </div>
@@ -66,7 +66,7 @@ export function Accordion({
   allowMultiple = true 
 }: AccordionProps) {
   return (
-    <div className={`border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden ${className}`}>
+    <div className={`border border-border rounded-lg overflow-hidden ${className}`}>
       {children}
     </div>
   );
@@ -92,7 +92,7 @@ export function Collapsible({
     <div className={className}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+        className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
         aria-expanded={isOpen}
       >
         <svg

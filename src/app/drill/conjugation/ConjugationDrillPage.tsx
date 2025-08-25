@@ -21,7 +21,6 @@ const generateQuestionStem = (form: keyof ExtendedConjugationForms, word: Japane
   return generateStem(word, form);
 };
 
-import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Analytics } from '@/utils/analytics';
@@ -77,8 +76,11 @@ export default function ConjugationDrillPage() {
   const router = useRouter();
   const { settings, isLoading: settingsLoading } = useSettings();
   const { user } = useAuth();
-  const { checkAndTrack } = useAccess();
-  const { feature, access, remaining, isLoading: featureLoading } = useFeature('drill_practice');
+  const { checkAndTrack, canUse, remaining, isLoading: featureLoading } = useFeature('drill_practice', {
+    showToast: true,
+    showModal: true,
+    trackUsage: true
+  });
   const { isPremium, userType } = useSubscription2();
   const { track } = useAnalytics();
   const strings = useStrings();
@@ -269,7 +271,7 @@ export default function ConjugationDrillPage() {
   };
 
   const startGame = async () => {
-    const canProceed = await checkAndTrack('drill_practice');
+    const canProceed = await checkAndTrack();
     if (!canProceed) return;
 
     track('drill_started', {

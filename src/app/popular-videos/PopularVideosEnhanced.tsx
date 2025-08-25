@@ -19,7 +19,7 @@ import {
 import { db, auth } from '@/lib/firebase';
 import Link from 'next/link';
 import { Play, TrendingUp, Clock, Users, Calendar, ExternalLink, Sparkles, Flame, Award, Search, Filter, History as HistoryIcon, ChevronDown, FileVideo, Mic, Youtube, Trash2, Loader2 } from 'lucide-react';
-import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
 import { useRouter } from 'next/navigation';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -61,7 +61,11 @@ const pageStructuredData = {
 
 export default function PopularVideosEnhanced() {
   const strings = useStrings();
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('youtube_shadowing', {
+    showToast: true,
+    showModal: true,
+    trackUsage: true
+  });
   const router = useRouter();
   const { isPremium } = useSubscription2();
   const [user] = useAuthState(auth);
@@ -270,7 +274,7 @@ export default function PopularVideosEnhanced() {
   };
 
   const handleStartPractice = async (video: PopularVideo) => {
-    if (await checkAndTrack('youtube_shadowing')) {
+    if (await checkAndTrack()) {
       const url = video.videoUrl || `https://www.youtube.com/watch?v=${video.metadata?.youtubeVideoId}`;
       router.push(`/tools/youtube-shadowing?url=${encodeURIComponent(url)}`);
     }

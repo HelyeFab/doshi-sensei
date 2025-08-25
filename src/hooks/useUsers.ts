@@ -123,7 +123,9 @@ export function useUsers(): UseUsersReturn {
         plan: plan,
         stripeCustomerId: existingData?.subscription?.stripeCustomerId || 'admin_manual_upgrade',
         stripeSubscriptionId: existingData?.subscription?.stripeSubscriptionId || `admin_${plan}_${Date.now()}`,
-        stripePriceId: plan === 'yearly' ? 'price_1RakzXHdrJomitOwE7B56erf' : 'price_1RakzXHdrJomitOwZc0HJC4J',
+        stripePriceId: plan === 'yearly' 
+          ? process.env.NEXT_PUBLIC_STRIPE_YEARLY_PRICE_ID 
+          : process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID,
         currentPeriodEnd: periodEnd,
         cancelAtPeriodEnd: false,
         metadata: {

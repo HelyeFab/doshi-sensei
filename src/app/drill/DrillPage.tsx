@@ -12,7 +12,6 @@ import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { DailyGoalSlider } from '@/components/DailyGoalSlider';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Analytics } from '@/utils/analytics';
@@ -65,8 +64,11 @@ export default function DrillPage() {
   const router = useRouter();
   const { settings, isLoading: settingsLoading, updateSetting } = useSettings();
   const { user } = useAuth();
-  const { checkAndTrack } = useAccess();
-  const { feature, access, remaining, isLoading: featureLoading } = useFeature('drill_practice');
+  const { checkAndTrack, canUse, remaining, isLoading: featureLoading } = useFeature('drill_practice', {
+    showToast: true,
+    showModal: true,
+    trackUsage: true
+  });
   const { isPremium, userType } = useSubscription2();
   const { trackDrillComplete } = useAnalytics();
   const { updateProgress } = useAchievements();
@@ -590,7 +592,7 @@ export default function DrillPage() {
   const startGame = async () => {
 
     // Check if user can do drill
-    const canDo = await checkAndTrack('drill_practice');
+    const canDo = await checkAndTrack();
 
     if (!canDo) {
 

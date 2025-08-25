@@ -277,26 +277,23 @@ async function handleSubscriptionUpdate(subscription, isNewSubscription = false)
     console.log('Processing subscription with price ID:', priceId);
     console.log('Subscription status:', status);
     console.log('Is active?:', isActive);
-    // Determine the plan based on price ID only (not status)
-    // User keeps their plan type even if subscription is past_due or canceled
+    // Determine the plan based on price ID from environment variables
     let plan = 'free';
-    if (priceId) {
-        const planMap = {
-            // Production price IDs
-            'price_1RubMXHdrJomitOwNNI4LmWB': 'monthly', // £8.99/month (LIVE)
-            'price_1RubMxHdrJomitOwElEo6nys': 'yearly', // £89.99/year (LIVE)
-            // Test price IDs
-            'price_1RzIUUQkBRi5wGMEzm9veY3j': 'monthly', // £8.99/month (TEST)
-            'price_1RzIVDQkBRi5wGME6v7ECis8': 'yearly' // £89.99/year (TEST)
-        };
-        plan = planMap[priceId] || 'free';
-        if (!planMap[priceId]) {
-            console.warn(`Unknown price ID: ${priceId} - defaulting to free plan`);
-        }
-        // Only set to free if subscription is actually canceled (not just past_due or canceling)
-        if (status === 'canceled') {
-            plan = 'free';
-        }
+    const monthlyPriceId = process.env.STRIPE_MONTHLY_PRICE_ID;
+    const yearlyPriceId = process.env.STRIPE_YEARLY_PRICE_ID;
+    if (!monthlyPriceId || !yearlyPriceId) {
+        console.error('❌ CRITICAL: Stripe price IDs not configured in environment variables');
+        console.error('Please set STRIPE_MONTHLY_PRICE_ID and STRIPE_YEARLY_PRICE_ID');
+    }
+    if (priceId === monthlyPriceId) {
+        plan = 'monthly';
+    }
+    else if (priceId === yearlyPriceId) {
+        plan = 'yearly';
+    }
+    else if (priceId) {
+        console.warn(`Unknown price ID: ${priceId} - defaulting to free plan`);
+        console.warn(`Expected monthly: ${monthlyPriceId} or yearly: ${yearlyPriceId}`);
     }
     try {
         // Get existing subscription data to preserve invoice information

@@ -9,7 +9,6 @@ import { useStrings } from '@/contexts/LanguageContext';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -96,8 +95,11 @@ export default function FlashcardReviewPage() {
   const router = useRouter();
   const { settings, isLoading: settingsLoading } = useSettings();
   const { user } = useAuth();
-  const { checkAndTrack } = useAccess();
-  const { feature, access, remaining, isLoading: featureLoading } = useFeature('flashcard_review');
+  const { checkAndTrack, canUse, remaining, isLoading: featureLoading } = useFeature('flashcard_review', {
+    showToast: true,
+    showModal: true,
+    trackUsage: true
+  });
   const { track } = useAnalytics();
   const { isPremium, userType, subscription } = useSubscription2();
   const strings = useStrings();
@@ -482,7 +484,7 @@ export default function FlashcardReviewPage() {
   };
 
   const startSession = async () => {
-    const canProceed = await checkAndTrack('flashcard_review');
+    const canProceed = await checkAndTrack();
     if (!canProceed) return;
 
     // Track in new analytics system

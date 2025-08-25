@@ -10,7 +10,6 @@ import { MoodBoard, MoodBoardsProgress } from '@/types/moodBoard';
 import { Search, Filter, X } from 'lucide-react';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import { LoadingHourglassPage } from '@/components/ui/LoadingHourglass';
-import { useAccessWithModals } from '@/hooks/useAccessWithModals';
 import { useFeature } from '@/hooks/useFeature';
 import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
@@ -21,8 +20,11 @@ function KanjiMoodsContent() {
   const [progress, setProgress] = useState<MoodBoardsProgress>({});
   
   // Three-Pillar Architecture integration
-  const { checkAndTrack, AccessModals } = useAccessWithModals();
-  const { feature, access, remaining } = useFeature('kanji_moods');
+  const { checkAndTrack, canUse, remaining, AccessModals } = useFeature('kanji_moods', {
+    showToast: true,
+    showModal: true,
+    trackUsage: true
+  });
 
   // Initialize state from URL params
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
@@ -115,11 +117,11 @@ function KanjiMoodsContent() {
 
   const handleBoardClick = async (boardId: string) => {
     // Check access before navigating to the board
-    const hasAccess = await checkAndTrack('kanji_moods');
+    const hasAccess = await checkAndTrack();
     if (hasAccess) {
       router.push(`/kanji-moods/${boardId}`);
     }
-    // If no access, the modal will be shown automatically by useAccessWithModals
+    // If no access, the modal will be shown automatically by useFeature
   };
 
   if (loading) {

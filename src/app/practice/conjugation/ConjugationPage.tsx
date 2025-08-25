@@ -9,7 +9,7 @@ import { ExtendedConjugationEngine } from "@/utils/conjugation-extended";
 import { useStrings } from "@/contexts/LanguageContext";
 import { SmartPageHeader } from "@/components/navigation/SmartPageHeader";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAccess } from "@/hooks/useAccess";
+import { useFeature } from "@/hooks/useFeature";
 import { useSubscription2 } from "@/hooks/useSubscription2";
 import StudyListManager from "@/utils/studyListManager";
 import StatsManager from "@/utils/stats";
@@ -76,7 +76,8 @@ const conjugationStructuredData = {
 export default function ConjugationPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { checkAndTrack } = useAccess();
+  // Note: This main component doesn't use access control directly
+  // Access control is handled in child WordCard components
   const { isPremium, userType } = useSubscription2();
   const strings = useStrings();
   const { track } = useAnalytics();
@@ -472,7 +473,10 @@ interface WordCardProps {
 }
 
 function WordCard({ word, onSelect }: WordCardProps) {
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('word_lists', {
+    showToast: true,
+    trackUsage: true
+  });
   const { isPremium, userType } = useSubscription2();
   const [wordLists, setWordLists] = useState<WordList[]>([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -544,7 +548,7 @@ function WordCard({ word, onSelect }: WordCardProps) {
     if (!newListName.trim()) return;
 
     // Check if user can create more lists using new system
-    const canCreate = await checkAndTrack("word_lists");
+    const canCreate = await checkAndTrack();
     if (!canCreate) {
       // The access system will show the appropriate modal
       return;

@@ -7,7 +7,6 @@ import Link from 'next/link'
 import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'next/navigation';
-import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuth } from '@/contexts/AuthContext';
@@ -62,8 +61,11 @@ export interface ShadowingSession {
 
 export default function YouTubeShadowing() {
   const strings = useStrings();
-  const { checkAndTrack } = useAccess();
-  const { feature, access, remaining } = useFeature('youtube_shadowing');
+  const { checkAndTrack, canUse, remaining } = useFeature('youtube_shadowing', {
+    showToast: true,
+    showModal: true,
+    trackUsage: true
+  });
   const { isPremium, userType } = useSubscription2();
   const { user } = useAuth();
   const searchParams = useSearchParams();
@@ -225,7 +227,7 @@ export default function YouTubeShadowing() {
 
   const handleUrlSubmit = async (url: string) => {
     // Check if user has access to use this feature
-    const canUse = await checkAndTrack('youtube_shadowing');
+    const canUse = await checkAndTrack();
     
     if (!canUse) {
       // Access denied - modal will be shown automatically

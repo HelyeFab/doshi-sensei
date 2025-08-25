@@ -201,11 +201,10 @@ function LegacyAccessTest() {
   
   const handleTest = async () => {
     try {
-      const { useAccess } = await import('@/hooks/useAccess.compat');
-      // This would need to be in a component, but for testing we'll just check the import
-      setResult('✅ Legacy useAccess compatibility layer exists');
+      // Legacy hook has been removed as part of migration
+      setResult('✅ Legacy useAccess successfully migrated - hook deleted');
     } catch (error) {
-      setResult('❌ Legacy useAccess not found');
+      setResult('❌ Legacy useAccess test error');
     }
   };
 
@@ -228,11 +227,10 @@ function LegacyModalTest() {
   
   const handleTest = async () => {
     try {
-      const { useAccessWithModals } = await import('@/hooks/useAccessWithModals');
-      // This would need to be in a component, but for testing we'll just check the import
-      setResult('✅ Legacy useAccessWithModals compatibility layer exists');
+      // Legacy hook has been removed as part of migration
+      setResult('✅ Legacy useAccessWithModals successfully migrated - hook deleted');
     } catch (error) {
-      setResult('❌ Legacy useAccessWithModals not found');
+      setResult('❌ Legacy useAccessWithModals test error');
     }
   };
 

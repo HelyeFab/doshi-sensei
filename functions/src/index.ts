@@ -281,29 +281,24 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription, isNew
   console.log('Subscription status:', status);
   console.log('Is active?:', isActive);
   
-  // Determine the plan based on price ID only (not status)
-  // User keeps their plan type even if subscription is past_due or canceled
+  // Determine the plan based on price ID from environment variables
   let plan: 'free' | 'monthly' | 'yearly' = 'free';
-  if (priceId) {
-    const planMap: { [key: string]: 'monthly' | 'yearly' } = {
-      // Production price IDs
-      'price_1RubMXHdrJomitOwNNI4LmWB': 'monthly',  // £8.99/month (LIVE)
-      'price_1RubMxHdrJomitOwElEo6nys': 'yearly',   // £89.99/year (LIVE)
-      // Test price IDs
-      'price_1RzIUUQkBRi5wGMEzm9veY3j': 'monthly',  // £8.99/month (TEST)
-      'price_1RzIVDQkBRi5wGME6v7ECis8': 'yearly'    // £89.99/year (TEST)
-    };
-    
-    plan = planMap[priceId] || 'free';
-    
-    if (!planMap[priceId]) {
-      console.warn(`Unknown price ID: ${priceId} - defaulting to free plan`);
-    }
-    
-    // Only set to free if subscription is actually canceled (not just past_due or canceling)
-    if (status === 'canceled') {
-      plan = 'free';
-    }
+  
+  const monthlyPriceId = process.env.STRIPE_MONTHLY_PRICE_ID;
+  const yearlyPriceId = process.env.STRIPE_YEARLY_PRICE_ID;
+  
+  if (!monthlyPriceId || !yearlyPriceId) {
+    console.error('❌ CRITICAL: Stripe price IDs not configured in environment variables');
+    console.error('Please set STRIPE_MONTHLY_PRICE_ID and STRIPE_YEARLY_PRICE_ID');
+  }
+  
+  if (priceId === monthlyPriceId) {
+    plan = 'monthly';
+  } else if (priceId === yearlyPriceId) {
+    plan = 'yearly';
+  } else if (priceId) {
+    console.warn(`Unknown price ID: ${priceId} - defaulting to free plan`);
+    console.warn(`Expected monthly: ${monthlyPriceId} or yearly: ${yearlyPriceId}`);
   }
   
   try {
@@ -889,66 +884,354 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 }
 
 /**
- * Handle charge refunds - immediately revoke access
+ * Handle charge refunds with comprehensive business logic
+ * 
+ * BUSINESS POLICY:
+ * - IMMEDIATE downgrade to 'free' plan upon ANY refund (no grace period)
+ * - Set subscription status to 'canceled' 
+ * - Clear all premium entitlements immediately
+ * - Full audit trail for compliance
+ * - Handle both partial and full refunds
+ * - Robust error handling for edge cases
  */
 async function handleChargeRefunded(charge: Stripe.Charge) {
-  console.log('Handling charge refund:', charge.id);
-  console.log('Refund amount:', charge.amount_refunded);
+  const refundId = `refund_${charge.id}_${Date.now()}`;
+  console.log(`🔴 REFUND PROCESSING START [${refundId}]`);
+  console.log('Charge ID:', charge.id);
+  console.log('Original amount:', charge.amount);
+  console.log('Refunded amount:', charge.amount_refunded);
+  console.log('Currency:', charge.currency);
   
-  // Get Firebase UID from customer metadata
-  let firebaseUID: string | undefined;
-  
-  if (typeof charge.customer === 'string') {
-    try {
-      const customer = await stripe.customers.retrieve(charge.customer);
-      if ('metadata' in customer) {
-        firebaseUID = customer.metadata?.firebaseUID;
-      }
-    } catch (error) {
-      console.error('Error retrieving customer:', error);
-    }
-  }
-  
-  if (!firebaseUID) {
-    console.error('No Firebase UID found for refunded charge');
+  // Step 1: Validate refund data
+  if (!charge.amount_refunded || charge.amount_refunded <= 0) {
+    console.error('❌ Invalid refund amount:', charge.amount_refunded);
+    await logRefundEvent(refundId, 'error', 'Invalid refund amount', { charge: charge.id });
     return;
   }
   
-  console.log(`Processing refund for user: ${firebaseUID}`);
+  // Additional safety checks
+  if (!charge.id) {
+    console.error('❌ Missing charge ID');
+    await logRefundEvent(refundId, 'error', 'Missing charge ID', { charge: charge });
+    return;
+  }
   
+  if (!charge.customer) {
+    console.error('❌ No customer associated with refunded charge');
+    await logRefundEvent(refundId, 'error', 'No customer in refunded charge', { 
+      chargeId: charge.id,
+      amount: charge.amount_refunded 
+    });
+    return;
+  }
+  
+  // Validate refund amount is not larger than original charge
+  if (charge.amount_refunded > charge.amount) {
+    console.error('❌ Refund amount exceeds original charge amount');
+    await logRefundEvent(refundId, 'error', 'Refund exceeds original charge', {
+      chargeId: charge.id,
+      originalAmount: charge.amount,
+      refundAmount: charge.amount_refunded
+    });
+    return;
+  }
+  
+  // Step 2: Determine refund type
+  const isFullRefund = charge.amount_refunded >= charge.amount;
+  console.log(`Refund type: ${isFullRefund ? 'FULL' : 'PARTIAL'} (${charge.amount_refunded}/${charge.amount})`);
+  
+  // Step 3: Get Firebase UID with multiple fallback strategies
+  let firebaseUID: string | undefined;
+  let userLookupMethod = 'unknown';
+  
+  // Strategy 1: From customer metadata
+  if (typeof charge.customer === 'string') {
+    try {
+      const customer = await stripe.customers.retrieve(charge.customer);
+      if (!customer.deleted && 'metadata' in customer) {
+        firebaseUID = customer.metadata?.firebaseUID;
+        if (firebaseUID) {
+          userLookupMethod = 'customer_metadata';
+          console.log(`✅ Found Firebase UID via customer metadata: ${firebaseUID}`);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error retrieving customer:', error);
+    }
+  }
+  
+  // Strategy 2: From associated subscription
+  if (!firebaseUID && charge.invoice) {
+    try {
+      const invoice = await stripe.invoices.retrieve(charge.invoice as string);
+      if (invoice.subscription) {
+        const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+        firebaseUID = subscription.metadata?.firebaseUID;
+        if (firebaseUID) {
+          userLookupMethod = 'subscription_metadata';
+          console.log(`✅ Found Firebase UID via subscription metadata: ${firebaseUID}`);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error retrieving invoice/subscription:', error);
+    }
+  }
+  
+  // Strategy 3: From customer email lookup
+  if (!firebaseUID && typeof charge.customer === 'string') {
+    try {
+      const customer = await stripe.customers.retrieve(charge.customer);
+      if (!customer.deleted && 'email' in customer && customer.email) {
+        const usersSnapshot = await db.collection('users')
+          .where('email', '==', customer.email)
+          .limit(1)
+          .get();
+        
+        if (!usersSnapshot.empty) {
+          firebaseUID = usersSnapshot.docs[0].id;
+          userLookupMethod = 'email_lookup';
+          console.log(`✅ Found Firebase UID via email lookup: ${firebaseUID}`);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error looking up user by email:', error);
+    }
+  }
+  
+  // Step 4: Handle case where user cannot be found
+  if (!firebaseUID) {
+    console.error('❌ CRITICAL: Cannot find Firebase UID for refunded charge');
+    console.error('This means a refund occurred but we cannot revoke the user\'s access!');
+    
+    // Log this critical error for manual intervention
+    await logRefundEvent(refundId, 'critical_error', 'User not found for refund', {
+      chargeId: charge.id,
+      customerId: charge.customer,
+      amount: charge.amount_refunded,
+      currency: charge.currency,
+      requiresManualIntervention: true
+    });
+    
+    // Create alert in dedicated collection for admin monitoring
+    await db.collection('critical_alerts').add({
+      type: 'refund_user_not_found',
+      severity: 'high',
+      chargeId: charge.id,
+      customerId: charge.customer,
+      refundAmount: charge.amount_refunded,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      resolved: false,
+      message: 'Refund processed but user not found - requires manual access revocation'
+    });
+    
+    return;
+  }
+  
+  console.log(`🎯 Processing refund for user: ${firebaseUID} (found via ${userLookupMethod})`);
+  
+  // Step 5: Get current user subscription state
+  let currentSubscription: any = null;
   try {
-    // Immediately downgrade to free plan
-    const subscriptionData: any = {
+    const userDoc = await db.collection('users').doc(firebaseUID).get();
+    if (userDoc.exists) {
+      currentSubscription = userDoc.data()?.subscription;
+      console.log('Current subscription status:', currentSubscription?.status);
+      console.log('Current plan:', currentSubscription?.plan);
+    } else {
+      console.warn('❌ User document does not exist:', firebaseUID);
+    }
+  } catch (error) {
+    console.error('❌ Error fetching current user data:', error);
+  }
+  
+  // Step 6: Handle edge case - user already downgraded
+  if (currentSubscription?.plan === 'free' && currentSubscription?.status === 'canceled') {
+    console.log('⚠️ User already downgraded to free plan - logging refund but no status change needed');
+    
+    // Still log the refund for audit purposes
+    await saveSubscriptionHistory(firebaseUID, 'refund_duplicate', {
+      status: 'already_free',
+      plan: 'free',
+      refundAmount: charge.amount_refunded,
+      chargeId: charge.id,
+      refundType: isFullRefund ? 'full' : 'partial',
+      note: 'User was already on free plan when refund processed'
+    });
+    
+    await logRefundEvent(refundId, 'success', 'Refund logged for already-free user', {
+      firebaseUID,
+      chargeId: charge.id,
+      amount: charge.amount_refunded
+    });
+    
+    return;
+  }
+  
+  // Step 7: BUSINESS POLICY - Immediate downgrade regardless of refund type
+  // Even partial refunds result in immediate cancellation (strict policy)
+  try {
+    console.log('🔥 IMPLEMENTING IMMEDIATE DOWNGRADE POLICY');
+    
+    // Build the new subscription data
+    const refundedSubscriptionData: any = {
+      // IMMEDIATE downgrade - no grace period
       plan: 'free',
       status: 'canceled',
       cancelReason: 'refunded',
+      
+      // Refund tracking
       refundedAt: admin.firestore.FieldValue.serverTimestamp(),
       refundAmount: charge.amount_refunded,
-      // Clear all premium fields
+      refundChargeId: charge.id,
+      refundType: isFullRefund ? 'full' : 'partial',
+      
+      // Clear ALL premium entitlements immediately
       stripeSubscriptionId: null,
       stripeCustomerId: null,
       stripePriceId: null,
       currentPeriodEnd: null,
-      cancelAtPeriodEnd: false
+      cancelAtPeriodEnd: false,
+      
+      // Preserve audit trail
+      metadata: {
+        source: 'refund_webhook',
+        previousPlan: currentSubscription?.plan || 'unknown',
+        previousStatus: currentSubscription?.status || 'unknown',
+        refundProcessedAt: admin.firestore.FieldValue.serverTimestamp(),
+        userLookupMethod: userLookupMethod,
+        refundId: refundId,
+        originalAmount: charge.amount,
+        refundedAmount: charge.amount_refunded,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      }
     };
     
-    // Update user subscription
+    // Step 8: Update user subscription with atomic operation
     await db.collection('users').doc(firebaseUID).set({
-      subscription: subscriptionData,
+      subscription: refundedSubscriptionData,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
     
-    // Add to subscription history
+    console.log('✅ User subscription updated to free plan');
+    
+    // Step 9: Record in subscription history
     await saveSubscriptionHistory(firebaseUID, 'refunded', {
       status: 'refunded',
       plan: 'free',
       refundAmount: charge.amount_refunded,
-      chargeId: charge.id
+      chargeId: charge.id,
+      refundType: isFullRefund ? 'full' : 'partial',
+      previousPlan: currentSubscription?.plan || 'unknown',
+      previousStatus: currentSubscription?.status || 'unknown',
+      originalAmount: charge.amount,
+      currency: charge.currency,
+      userLookupMethod: userLookupMethod,
+      refundId: refundId,
+      policyApplied: 'immediate_downgrade_no_grace_period'
     });
     
-    console.log(`Successfully processed refund for user ${firebaseUID}`);
+    console.log('✅ Subscription history updated');
+    
+    // Step 10: Cancel any active Stripe subscription
+    if (currentSubscription?.stripeSubscriptionId) {
+      try {
+        console.log('🔄 Canceling active Stripe subscription:', currentSubscription.stripeSubscriptionId);
+        await stripe.subscriptions.cancel(currentSubscription.stripeSubscriptionId);
+        console.log('✅ Stripe subscription canceled');
+      } catch (stripeError) {
+        console.error('❌ Error canceling Stripe subscription:', stripeError);
+        // Don't throw - user is already downgraded in our system
+      }
+    }
+    
+    // Step 11: Log successful refund processing
+    await logRefundEvent(refundId, 'success', 'Refund processed successfully', {
+      firebaseUID,
+      chargeId: charge.id,
+      amount: charge.amount_refunded,
+      refundType: isFullRefund ? 'full' : 'partial',
+      previousPlan: currentSubscription?.plan,
+      userLookupMethod
+    });
+    
+    console.log(`✅ REFUND PROCESSING COMPLETE [${refundId}] - User ${firebaseUID} downgraded to free`);
+    
   } catch (error) {
-    console.error('Error processing refund:', error);
+    console.error('❌ CRITICAL ERROR processing refund:', error);
+    
+    // Log the error for manual intervention
+    await logRefundEvent(refundId, 'processing_error', error instanceof Error ? error.message : 'Unknown error', {
+      firebaseUID,
+      chargeId: charge.id,
+      amount: charge.amount_refunded,
+      errorStack: error instanceof Error ? error.stack : undefined
+    });
+    
+    // Create high-priority alert
+    await db.collection('critical_alerts').add({
+      type: 'refund_processing_error',
+      severity: 'high',
+      firebaseUID,
+      chargeId: charge.id,
+      refundAmount: charge.amount_refunded,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      resolved: false,
+      message: 'Refund processing failed - user may still have premium access'
+    });
+    
     throw error;
+  }
+}
+
+/**
+ * Log refund events for audit trail and monitoring
+ * 
+ * Creates comprehensive audit logs for all refund-related events:
+ * - Successful refund processing
+ * - Error conditions 
+ * - Critical failures requiring manual intervention
+ */
+async function logRefundEvent(
+  refundId: string,
+  status: 'success' | 'error' | 'critical_error' | 'processing_error',
+  message: string,
+  details: Record<string, unknown>
+) {
+  try {
+    const logEntry = {
+      refundId,
+      status,
+      message,
+      details,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      source: 'stripe_webhook_refund',
+      
+      // Add severity level for monitoring
+      severity: status === 'critical_error' || status === 'processing_error' ? 'high' : 
+                status === 'error' ? 'medium' : 'low',
+      
+      // Flag for manual review if needed
+      requiresReview: status === 'critical_error',
+      
+      // Environment context
+      environment: process.env.NODE_ENV || 'unknown'
+    };
+    
+    // Store in dedicated refund audit log collection
+    await db.collection('refund_audit_logs').add(logEntry);
+    
+    // For high-severity issues, also store in general audit collection
+    if (status === 'critical_error' || status === 'processing_error') {
+      await db.collection('audit_logs').add({
+        ...logEntry,
+        type: 'refund_processing_issue'
+      });
+    }
+    
+    console.log(`📝 Refund event logged: ${status} - ${message}`);
+  } catch (error) {
+    console.error('❌ Failed to log refund event:', error);
+    // Don't throw - logging failure shouldn't break refund processing
   }
 }

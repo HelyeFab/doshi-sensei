@@ -19,7 +19,7 @@ import {
 import { db, auth } from '@/lib/firebase';
 import Link from 'next/link';
 import { Play, TrendingUp, Clock, Users, Calendar, ExternalLink, Sparkles, Flame, Award, Search, Filter, History as HistoryIcon, ChevronDown, FileVideo, Mic, Youtube, Trash2 } from 'lucide-react';
-import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
 import { useRouter } from 'next/navigation';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -62,7 +62,11 @@ const pageStructuredData = {
 
 export default function PopularVideos() {
   const strings = useStrings();
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('youtube_shadowing', {
+    showToast: true,
+    showModal: true,
+    trackUsage: true
+  });
   const router = useRouter();
   const { isPremium } = useSubscription2();
   const [user] = useAuthState(auth || undefined);
@@ -467,7 +471,7 @@ export default function PopularVideos() {
       e.preventDefault();
       
       // Check if user has access to use YouTube shadowing
-      const canAccess = await checkAndTrack('youtube_shadowing');
+      const canAccess = await checkAndTrack();
       
       if (canAccess) {
         // User has access, navigate to the shadowing page
@@ -840,7 +844,7 @@ export default function PopularVideos() {
               </p>
               <button
                 onClick={async () => {
-                  const canAccess = await checkAndTrack('youtube_shadowing');
+                  const canAccess = await checkAndTrack();
                   if (canAccess) {
                     router.push('/tools/youtube-shadowing');
                   }

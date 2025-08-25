@@ -18,13 +18,32 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { getDefaultSubscription, UserSubscription, getUserType, UserType } from '@/types/subscription';
+import { 
+  getDefaultSubscription, 
+  UserSubscription, 
+  getUserType, 
+  getUserProfile,
+  getAuthStatus,
+  getSubscriptionTier,
+  UserType 
+} from '@/types/subscription';
+import {
+  UserProfile,
+  AuthStatus,
+  SubscriptionTier,
+  createUserProfile
+} from '@/types/user-profile';
 
 interface AuthContextType {
   user: User | null;
   userType: UserType;
   subscription: UserSubscription | null;
   loading: boolean;
+  // NEW: Separated concerns
+  userProfile: UserProfile;
+  authStatus: AuthStatus;
+  subscriptionTier: SubscriptionTier;
+  // Methods
   signInWithEmail: (email: string, password: string) => Promise<import('firebase/auth').UserCredential>;
   signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<User | null>;
   signInWithGoogle: () => Promise<void>;
@@ -113,6 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [userType, setUserType] = useState<UserType>('guest');
+  const [userProfile, setUserProfile] = useState<UserProfile>(createUserProfile('anonymous', 'free'));
   const [loading, setLoading] = useState(true);
 
   // Function to refresh subscription data
@@ -120,7 +140,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       const sub = await fetchUserSubscription(user.uid);
       setSubscription(sub);
-      setUserType(getUserType(sub ?? undefined));
+      const newUserType = getUserType(sub ?? undefined);
+      const newUserProfile = getUserProfile(sub, user.uid);
+      setUserType(newUserType);
+      setUserProfile(newUserProfile);
     }
   };
 
@@ -133,7 +156,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (result?.user) {
           const sub = await createOrUpdateUserDocument(result.user);
           setSubscription(sub);
-          setUserType(getUserType(sub ?? undefined));
+          const newUserType = getUserType(sub ?? undefined);
+          const newUserProfile = getUserProfile(sub, result.user.uid);
+          setUserType(newUserType);
+          setUserProfile(newUserProfile);
         }
       } catch (error) {
         // Only log actual errors, not null results
@@ -157,11 +183,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Create/update user document and fetch subscription
         const sub = await createOrUpdateUserDocument(currentUser);
         setSubscription(sub);
-        setUserType(getUserType(sub ?? undefined));
+        const newUserType = getUserType(sub ?? undefined);
+        const newUserProfile = getUserProfile(sub, currentUser.uid);
+        setUserType(newUserType);
+        setUserProfile(newUserProfile);
       } else {
         // User signed out
         setSubscription(null);
         setUserType('guest');
+        setUserProfile(createUserProfile('anonymous', 'free'));
       }
 
       setLoading(false);
@@ -178,7 +208,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (result.user) {
       const sub = await fetchUserSubscription(result.user.uid);
       setSubscription(sub);
-      setUserType(getUserType(sub ?? undefined));
+      const newUserType = getUserType(sub ?? undefined);
+      const newUserProfile = getUserProfile(sub, result.user.uid);
+      setUserType(newUserType);
+      setUserProfile(newUserProfile);
     }
     
     return result;
@@ -197,7 +230,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (result.user) {
       const sub = await createOrUpdateUserDocument(result.user);
       setSubscription(sub);
-      setUserType(getUserType(sub ?? undefined));
+      const newUserType = getUserType(sub ?? undefined);
+      const newUserProfile = getUserProfile(sub, result.user.uid);
+      setUserType(newUserType);
+      setUserProfile(newUserProfile);
     }
     
     return result.user;
@@ -220,7 +256,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (result.user) {
             const sub = await createOrUpdateUserDocument(result.user);
             setSubscription(sub);
-            setUserType(getUserType(sub ?? undefined));
+            const newUserType = getUserType(sub ?? undefined);
+            const newUserProfile = getUserProfile(sub, result.user.uid);
+            setUserType(newUserType);
+            setUserProfile(newUserProfile);
           }
           return;
         } catch (popupError) {
@@ -246,6 +285,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signOut(auth);
     setSubscription(null);
     setUserType('guest');
+    setUserProfile(createUserProfile('anonymous', 'free'));
   };
 
   const resetPassword = async (email: string) => {
@@ -304,6 +344,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Clear local state
       setSubscription(null);
       setUserType('guest');
+      setUserProfile(createUserProfile('anonymous', 'free'));
       
       console.log('Account deleted successfully');
     } catch (error: any) {
@@ -324,6 +365,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     userType,
     subscription,
     loading,
+    // NEW: Separated concerns
+    userProfile,
+    authStatus: userProfile.authStatus,
+    subscriptionTier: userProfile.subscriptionTier,
+    // Methods
     signInWithEmail,
     signUpWithEmail,
     signInWithGoogle,

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { usePWA } from '@/hooks/usePWA';
 import { AlertBanner } from '@/components/AlertBanner';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
@@ -8,7 +9,14 @@ import { Spinner } from '@/components/Spinner';
 import { Switch } from '@/components/Switch';
 import { useToast } from '@/hooks/useToast';
 
-export function PWAInstallPrompt() {
+export function PWAInstallPromptInner() {
+  const [mounted, setMounted] = useState(false);
+  
+  // Ensure component only renders on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const {
     canInstall,
     isInstalling,
@@ -105,6 +113,13 @@ export function PWAInstallPrompt() {
     const today = new Date().toDateString();
     return dismissedDate === today;
   };
+
+  // Don't render on server
+  if (!mounted) {
+    return null;
+  }
+
+  const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);
 
   return (
     <>
@@ -230,7 +245,7 @@ export function PWAInstallPrompt() {
       />
 
       {/* iOS Install Instructions */}
-      {canInstall && /iPhone|iPad|iPod/.test(navigator.userAgent) && (
+      {canInstall && isIOS && (
         <ConfirmDialog
           isOpen={showInstallDialog}
           onClose={() => setShowInstallDialog(false)}
@@ -256,3 +271,9 @@ export function PWAInstallPrompt() {
     </>
   );
 }
+
+// Export a wrapper that uses dynamic import to prevent SSR
+export const PWAInstallPrompt = dynamic(
+  () => Promise.resolve({ default: PWAInstallPromptInner }),
+  { ssr: false }
+);

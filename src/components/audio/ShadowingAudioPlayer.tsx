@@ -8,7 +8,7 @@ import { StudyListManager } from '@/utils/studyListManager';
 import { generateFuriganaWithCache } from '@/utils/furigana';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription2 } from '@/hooks/useSubscription2';
-import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
 import { useNotification } from '@/contexts/NotificationContext';
 import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Settings, Bookmark } from 'lucide-react';
 import { translationService } from '@/services/translationService';
@@ -30,7 +30,10 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
   // Hooks
   const { user } = useAuth();
   const { subscription } = useSubscription2();
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('word_lists', {
+    showToast: true,
+    trackUsage: true
+  });
   const { showNotification } = useNotification();
 
   // State
@@ -365,7 +368,7 @@ export default function ShadowingAudioPlayer({ article, onClose }: ShadowingAudi
   // Handle sentence bookmark click
   const handleBookmarkSentence = async (sentence: SentenceData) => {
     // Use access control to check if user can create/use lists (same as word lists)
-    const hasAccess = await checkAndTrack('word_lists');
+    const hasAccess = await checkAndTrack();
     if (!hasAccess) {
       return; // checkAndTrack already shows appropriate notification
     }

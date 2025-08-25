@@ -94,7 +94,7 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted || typeof document === 'undefined') return null;
 
   return createPortal(
     <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">

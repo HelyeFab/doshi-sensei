@@ -21,7 +21,7 @@ interface NetworkInfo {
 }
 
 export function useUnifiedNotifications() {
-  const { toast, removeToast } = useToast();
+  const { toast } = useToast();
   const [networkInfo, setNetworkInfo] = useState<NetworkInfo>({
     isOnline: true,
     quality: 'good'

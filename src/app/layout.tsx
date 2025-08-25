@@ -89,11 +89,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={rubik.variable}>
+    <html lang="en" className={rubik.variable} suppressHydrationWarning>
       <head>
         <script src="/register-sw.js" defer />
       </head>
-      <body className={rubik.className}>
+      <body className={`${rubik.className || ''}`} suppressHydrationWarning>
         <CriticalProviders>
           <NonCriticalProviders>
             <BackgroundSyncProvider>

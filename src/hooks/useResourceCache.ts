@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { ResourceCacheManager, ResourceType } from '@/lib/cache/resourceCacheManager';
@@ -15,8 +14,9 @@ interface UseResourceCacheOptions {
 }
 
 export function useResourceCache(options: UseResourceCacheOptions = {}) {
-  const { checkAndTrack } = useAccess();
-  const { feature: resourceCaching } = useFeature('resource_caching');
+  const { canUse: resourceCaching } = useFeature('resource_caching', {
+    checkOnly: true
+  });
   const { userType } = useSubscription2();
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -25,7 +25,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
     const initializeCache = async () => {
       try {
         // Pre-cache common sounds if enabled
-        if (options.preCacheCommonSounds && resourceCaching?.status === 'active') {
+        if (options.preCacheCommonSounds && resourceCaching) {
           await ResourceCacheManager.preCacheCommonSounds(userType as UserType);
         }
         setIsInitialized(true);
@@ -34,15 +34,15 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
       }
     };
 
-    if (resourceCaching?.status === 'active') {
+    if (resourceCaching) {
       initializeCache();
     }
-  }, [resourceCaching?.status, userType, options.preCacheCommonSounds]);
+  }, [resourceCaching, userType, options.preCacheCommonSounds]);
 
   // Cache kanji
   const cacheKanji = useCallback(async (kanji: Kanji): Promise<boolean> => {
     try {
-      if (resourceCaching?.status !== 'active') {
+      if (!resourceCaching) {
 
         return false;
       }
@@ -53,7 +53,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
       console.error('[useResourceCache] Failed to cache kanji:', error);
       return false;
     }
-  }, [resourceCaching?.status, userType]);
+  }, [resourceCaching, userType]);
 
   // Get kanji
   const getKanji = useCallback(async (
@@ -71,7 +71,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
   // Cache verb
   const cacheVerb = useCallback(async (verb: Verb): Promise<boolean> => {
     try {
-      if (resourceCaching?.status !== 'active') {
+      if (!resourceCaching) {
 
         return false;
       }
@@ -82,7 +82,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
       console.error('[useResourceCache] Failed to cache verb:', error);
       return false;
     }
-  }, [resourceCaching?.status, userType]);
+  }, [resourceCaching, userType]);
 
   // Get verb
   const getVerb = useCallback(async (
@@ -100,7 +100,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
   // Cache adjective
   const cacheAdjective = useCallback(async (adjective: Adjective): Promise<boolean> => {
     try {
-      if (resourceCaching?.status !== 'active') {
+      if (!resourceCaching) {
 
         return false;
       }
@@ -111,7 +111,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
       console.error('[useResourceCache] Failed to cache adjective:', error);
       return false;
     }
-  }, [resourceCaching?.status, userType]);
+  }, [resourceCaching, userType]);
 
   // Get adjective
   const getAdjective = useCallback(async (
@@ -129,7 +129,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
   // Cache audio
   const cacheAudio = useCallback(async (audioResource: AudioResource): Promise<boolean> => {
     try {
-      if (resourceCaching?.status !== 'active') {
+      if (!resourceCaching) {
 
         return false;
       }
@@ -140,7 +140,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
       console.error('[useResourceCache] Failed to cache audio:', error);
       return false;
     }
-  }, [resourceCaching?.status, userType]);
+  }, [resourceCaching, userType]);
 
   // Get audio
   const getAudio = useCallback(async (
@@ -158,7 +158,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
   // Cache kana sound
   const cacheKanaSound = useCallback(async (kana: string): Promise<boolean> => {
     try {
-      if (resourceCaching?.status !== 'active') {
+      if (!resourceCaching) {
 
         return false;
       }
@@ -169,7 +169,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
       console.error('[useResourceCache] Failed to cache kana sound:', error);
       return false;
     }
-  }, [resourceCaching?.status, userType]);
+  }, [resourceCaching, userType]);
 
   // Get kana sound
   const getKanaSound = useCallback(async (kana: string): Promise<AudioResource | null> => {
@@ -206,7 +206,7 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
     relatedResources: { type: ResourceType; id: string }[]
   ): Promise<void> => {
     try {
-      if (resourceCaching?.status !== 'active') {
+      if (!resourceCaching) {
         return;
       }
 
@@ -232,12 +232,12 @@ export function useResourceCache(options: UseResourceCacheOptions = {}) {
     } catch (error) {
       console.error('[useResourceCache] Failed to pre-cache related resources:', error);
     }
-  }, [resourceCaching?.status]);
+  }, [resourceCaching]);
 
   return {
     // State
     isInitialized,
-    isAvailable: resourceCaching?.status === 'active',
+    isAvailable: resourceCaching,
     userType,
 
     // Kanji methods

@@ -7,6 +7,13 @@ import { doc, getDoc, setDoc, onSnapshot, Unsubscribe } from 'firebase/firestore
 import { db } from '@/lib/firebase';
 import { Subscription, SubscriptionPlan, SubscriptionCheckResult } from './types';
 import { UserType } from '../entitlements/types';
+import {
+  UserProfile,
+  AuthStatus,
+  SubscriptionTier,
+  createUserProfile,
+  createUserProfileFromLegacy
+} from '../../types/user-profile';
 
 export class SubscriptionManager {
   private subscriptionCache = new Map<string, Subscription>();
@@ -141,21 +148,74 @@ export class SubscriptionManager {
   }
   
   /**
+   * Get UserProfile with separated authentication and subscription concerns
+   * Recommended for new code
+   */
+  getUserProfile(subscription: Subscription | null, userId?: string): UserProfile {
+    if (!subscription) {
+      return createUserProfile('anonymous', 'free');
+    }
+    
+    const plan = subscription.plan;
+    const status = subscription.status;
+    const isActive = status === 'active' || status === 'trialing';
+    
+    let subscriptionTier: SubscriptionTier;
+    if ((plan === 'monthly' || plan === 'yearly') && isActive) {
+      subscriptionTier = plan as SubscriptionTier;
+    } else {
+      subscriptionTier = 'free';
+    }
+    
+    return createUserProfile('authenticated', subscriptionTier, userId);
+  }
+  
+  /**
+   * Get authentication status from subscription
+   */
+  getAuthStatus(subscription: Subscription | null): AuthStatus {
+    return subscription ? 'authenticated' : 'anonymous';
+  }
+  
+  /**
+   * Get subscription tier from subscription
+   */
+  getSubscriptionTier(subscription: Subscription | null): SubscriptionTier {
+    if (!subscription) return 'free';
+    
+    const plan = subscription.plan;
+    const status = subscription.status;
+    const isActive = status === 'active' || status === 'trialing';
+    
+    if ((plan === 'monthly' || plan === 'yearly') && isActive) {
+      return plan as SubscriptionTier;
+    }
+    
+    return 'free';
+  }
+
+  /**
+   * @deprecated Use getUserProfile() instead for new code
    * Get user type from subscription
-   * IMPORTANT: Returns the plan type (monthly/yearly/free) regardless of status
-   * This ensures users keep their entitlements even during payment issues
+   * Returns the plan type ONLY if subscription is active
+   * Users downgrade to free when subscription ends or has payment issues
    */
   getUserType(subscription: Subscription | null): UserType {
     if (!subscription) return 'guest';
     
-    // Return the plan type directly - users keep their plan benefits
-    // even if status is 'past_due', 'trialing', etc.
     const plan = subscription.plan;
+    const status = subscription.status;
     
-    if (plan === 'monthly' || plan === 'yearly') {
+    // Check if subscription is actually active
+    // Users should downgrade to free if subscription is not active
+    const isActive = status === 'active' || status === 'trialing';
+    
+    // Only return premium plan if subscription is active
+    if ((plan === 'monthly' || plan === 'yearly') && isActive) {
       return plan as UserType;
     }
     
+    // Downgrade to free if subscription is not active
     return 'free';
   }
   

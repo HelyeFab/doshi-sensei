@@ -6,7 +6,6 @@ import { getRandomPokemon, getPokemonSpriteUrl, getPokemonSilhouetteClassName } 
 import { useAuth } from '@/contexts/AuthContext';
 import { KanjiTTSButton, VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { useState, useEffect, useRef } from 'react';
-import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -123,8 +122,11 @@ export default function KanjiQuest({
 }: KanjiQuestProps) {
 
   const { user, loading: authLoading } = useAuth();
-  const { checkAndTrack } = useAccess();
-  const { feature, access, remaining, isLoading: featureLoading } = useFeature('kanji_quest');
+  const { checkAndTrack, canUse, remaining, isLoading: featureLoading } = useFeature('kanji_quest', {
+    showToast: true,  // Show toast notifications for access issues
+    showModal: true,  // Show upgrade/login modals
+    trackUsage: true  // Automatically track usage when checkAndTrack is called
+  });
   const { isPremium, userType, isLoading: subscriptionLoading } = useSubscription2();
   const { showNotification } = useNotification();
   const { speak } = useTTS();
@@ -255,7 +257,7 @@ export default function KanjiQuest({
       }
 
       // Check if user can play KanjiQuest
-      const canPlay = await checkAndTrack('kanji_quest');
+      const canPlay = await checkAndTrack();
 
       setEntitlementCheckComplete(true);
 

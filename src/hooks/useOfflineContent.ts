@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { ArticleCache } from '@/lib/cache/articleCache';
@@ -31,8 +30,11 @@ interface OfflineContentHook {
 }
 
 export function useOfflineContent(resourceType: ResourceType): OfflineContentHook {
-  const { checkAndTrack } = useAccess();
-  const { feature, access } = useFeature(`offline_${resourceType}s`);
+  const { checkAndTrack, canUse, limit, remaining } = useFeature(`offline_${resourceType}s`, {
+    showToast: true,
+    showModal: true,
+    trackUsage: true
+  });
   const { userType: subUserType, isPremium } = useSubscription2();
   const { getStats, markActive, markInactive, formatStorageDisplay } = useEviction();
   
@@ -91,7 +93,7 @@ export function useOfflineContent(resourceType: ResourceType): OfflineContentHoo
   const cacheResource = useCallback(async (resource: any): Promise<boolean> => {
     try {
       // Check if user can cache this resource using three-pillar system
-      const canCache = await checkAndTrack(`offline_${resourceType}s`);
+      const canCache = await checkAndTrack();
       
       if (!canCache) {
         // Access denied modal shown automatically by checkAndTrack
@@ -172,15 +174,16 @@ export function useOfflineContent(resourceType: ResourceType): OfflineContentHoo
   }, [resourceType]);
   
   // Determine if user can cache more resources
-  const canCache = currentCount < (access?.remaining || 0);
+  const maxAllowed = limit || 0;
+  const canCacheMore = canUse && (remaining === null || remaining > 0);
   
   return {
     cacheResource,
     getCachedCount,
     getCachedResources,
     clearCache,
-    canCache,
-    maxAllowed: access?.remaining || 0,
+    canCache: canCacheMore,
+    maxAllowed,
     currentCount,
     userType,
     isLoading,

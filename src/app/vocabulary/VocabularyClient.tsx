@@ -8,7 +8,7 @@ import { searchWords } from '@/utils/api';
 import { useStrings } from '@/contexts/LanguageContext';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { VocabularyTTSButton } from '@/components/ui/TTSButton';
 import { Analytics } from '@/utils/analytics';
@@ -659,12 +659,15 @@ interface WordModalProps {
 }
 
 function WordModal({ word, onClose, onSave, onSaveExample }: WordModalProps) {
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('kanji_stroke_order', {
+    showToast: true,
+    trackUsage: true
+  });
   const [showStrokeOrder, setShowStrokeOrder] = useState(false);
   const [strokeOrderKanji, setStrokeOrderKanji] = useState<string>('');
 
   const handleStrokeOrderClick = async () => {
-    const canAccess = await checkAndTrack('kanji_stroke_order');
+    const canAccess = await checkAndTrack();
     if (canAccess) {
       // Extract all kanji characters from the word
       const kanjiChars = (word.kanji || word.kana).match(/[\u4e00-\u9faf]/g) || [];

@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAccess } from '@/hooks/useAccess';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { UserType } from '@/types/subscription';
@@ -39,57 +38,49 @@ export function FeatureGate({
 }: FeatureGateProps) {
   const { user, loading: authLoading } = useAuth();
   const { userType } = useSubscription2();
-  const { canAccess, showAccessPrompt } = useAccess();
   const [hasAccess, setHasAccess] = useState(true);
-  const [checking, setChecking] = useState(false);
-
+  
   // Get the mapped feature ID
   const featureId = feature ? featureMap[feature] : undefined;
+  
+  // Use the unified feature hook for access control
+  const { canUse, isLoading: featureLoading, checkAndTrack } = useFeature(featureId || '', {
+    checkOnly: true, // Don't track usage, just check access
+    showModal: true, // Enable modal support for access prompts
+    showToast: false // Don't show toasts in FeatureGate, let parent handle
+  });
 
   // Check access when component mounts or dependencies change
   useEffect(() => {
-    const checkAccess = async () => {
-      // If auth is still loading, allow access temporarily
-      if (authLoading) {
-        setHasAccess(true);
+    // If auth is still loading, allow access temporarily
+    if (authLoading || featureLoading) {
+      setHasAccess(true);
+      return;
+    }
+
+    // Check user type requirement
+    if (requiredUserType) {
+      const typeOk = Array.isArray(requiredUserType) 
+        ? requiredUserType.includes(userType)
+        : userType === requiredUserType;
+      
+      if (!typeOk) {
+        setHasAccess(false);
         return;
       }
+    }
 
-      // Check user type requirement
-      if (requiredUserType) {
-        const typeOk = Array.isArray(requiredUserType) 
-          ? requiredUserType.includes(userType)
-          : userType === requiredUserType;
-        
-        if (!typeOk) {
-          setHasAccess(false);
-          return;
-        }
-      }
-
-      // Check feature access if feature is specified
-      if (featureId) {
-        setChecking(true);
-        try {
-          const result = await canAccess(featureId);
-          setHasAccess(result.allowed);
-        } catch (error) {
-          console.error('Error checking feature access:', error);
-          setHasAccess(false);
-        } finally {
-          setChecking(false);
-        }
-      } else {
-        // No feature specified, just check user type
-        setHasAccess(true);
-      }
-    };
-
-    checkAccess();
-  }, [authLoading, userType, requiredUserType, featureId, canAccess]);
+    // Check feature access if feature is specified
+    if (featureId) {
+      setHasAccess(canUse);
+    } else {
+      // No feature specified, just check user type
+      setHasAccess(true);
+    }
+  }, [authLoading, featureLoading, userType, requiredUserType, featureId, canUse]);
 
   // Allow access while checking
-  if (checking || authLoading) {
+  if (featureLoading || authLoading) {
     return <>{children}</>;
   }
 
@@ -106,14 +97,16 @@ export function FeatureGate({
   // Show appropriate prompt based on user status
   const handlePromptClick = () => {
     if (featureId) {
-      // Let the access system handle the prompt
-      showAccessPrompt(featureId, upgradeMessage || loginMessage);
+      // Use the unified feature hook's access checking
+      checkAndTrack();
     } else if (!user) {
-      // Manual prompt for non-feature gates
-      showAccessPrompt('', loginMessage || 'Please log in to access this feature');
+      // For non-feature gates, we'd need to show a login modal manually
+      // TODO: Implement manual modal showing for non-feature cases
+      console.log('Manual login prompt needed:', loginMessage);
     } else if (showUpgradePrompt) {
-      // Manual upgrade prompt
-      showAccessPrompt('', upgradeMessage || 'Upgrade to premium to access this feature');
+      // For non-feature gates, we'd need to show upgrade modal manually
+      // TODO: Implement manual modal showing for non-feature cases
+      console.log('Manual upgrade prompt needed:', upgradeMessage);
     }
   };
 

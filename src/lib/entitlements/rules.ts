@@ -22,32 +22,35 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       // Learning
       'hiragana_practice': -1,  // Unlimited for basic kana
       'katakana_practice': -1,  // Unlimited for basic kana
-      'drill_practice': 0,      // Must sign up
-      'vocabulary_search': 10,  // Limited searches
-      'kanji_study': 5,         // Limited kanji views
-      'verb_conjugation': 3,    // Limited conjugations
+      'drill_practice': 3,      // Taste of the feature
+      'vocabulary_search': 20,  // More generous searches (API protection)
+      'kanji_study': -1,        // Unlimited browsing (read-only)
+      'verb_conjugation': -1,   // Unlimited (no saving anyway)
       'conjugation_practice': 0,    // Must sign up
       'flashcard_review': 0,        // Must sign up
-      'textbook_vocabulary': 20, // Limited cards
+      'textbook_vocabulary': 30, // More cards to explore
       
       // Games
-      'kanji_quest': 1,         // One game per day
-      'kana_drop': 1,           // One game per day
-      'memory_match': 1,        // One game per day
-      'stroke_order_practice': 3, // Few practices
-      'kanji_mastery': 0,       // Must sign up
+      'kanji_quest': 3,         // Enough to get hooked
+      'kana_drop': 3,           // Enough to get hooked
+      'memory_match': 3,        // Enough to get hooked
+      'stroke_order_practice': 5, // More practices
+      'kanji_mastery': 0,       // Must sign up (requires saving)
       'kanji_browser': -1,      // Unlimited browsing
-      'kanji_families': 5,      // Limited family explorations per day
-      'kanji_moods': 0,         // Must sign up
-      'kanji_simon': 1,         // One game per day
-      'sentence_scramble': 1,   // One game per day
-      'reading_routes': 1,      // One game per day
+      'kanji_families': 10,     // More family explorations per day
+      'kanji_moods': 0,         // Must sign up (requires saving)
+      'kanji_simon': 3,         // Enough to get hooked
+      'sentence_scramble': 3,   // Enough to get hooked
+      'reading_routes': 3,      // Enough to get hooked
+      'word_assembly': 3,       // Phonetic building game
+      'listening_quiz': 3,      // Audio recognition game
+      'matching_game': 3,       // Advanced vocabulary pairing
       
       // Tools
-      'ai_stories': 0,          // Must sign up
-      'youtube_shadowing': 1,   // One video per day
-      'news_reader': 1,         // One article per day
-      'article_reading': 0,     // Must sign up
+      'ai_stories': 0,          // Must sign up (high API cost)
+      'youtube_shadowing': 1,   // One video per day (API costs)
+      'news_reader': 3,         // Three articles per day
+      'article_reading': 3,     // Three articles per day
       'anki_import': 0,         // Must sign up
       'youtube_series': -1,     // Unlimited access
       'my_videos': 0,           // Must sign up
@@ -71,7 +74,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       
       // Unified Review Engine
       'unified_review_system': -1,    // Unlimited access to review system
-      'review_session': 3,            // Limited review sessions per day
+      'review_session': 5,            // More review sessions per day
       'review_notifications': 0,      // Must sign up
       'progress_dashboard': 0,        // Must sign up
       'advanced_srs_algorithms': 0,   // Must sign up
@@ -188,6 +191,9 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'kanji_simon': -1,        // Unlimited games
       'sentence_scramble': -1,  // Unlimited games
       'reading_routes': -1,     // Unlimited games
+      'word_assembly': -1,      // Unlimited games
+      'listening_quiz': -1,     // Unlimited games
+      'matching_game': -1,      // Unlimited games
       
       // Tools - all unlimited
       'ai_stories': -1,
@@ -261,6 +267,9 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'kanji_simon': -1,        // Unlimited games
       'sentence_scramble': -1,  // Unlimited games
       'reading_routes': -1,     // Unlimited games
+      'word_assembly': -1,      // Unlimited games
+      'listening_quiz': -1,     // Unlimited games
+      'matching_game': -1,      // Unlimited games
       
       // Tools - all unlimited
       'ai_stories': -1,

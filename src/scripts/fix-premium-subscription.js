@@ -67,19 +67,18 @@ async function updateUserSubscription(userId, userData) {
   // Get current subscription or create default
   const currentSubscription = userData?.subscription || {};
 
-  // Determine plan type
-  const plan = currentSubscription.subscription?.plan || 'yearly';
+  // Determine plan type - check both nested (old) and flat (new) structure
+  const plan = currentSubscription.plan || currentSubscription.subscription?.plan || 'yearly';
 
-  // Create proper subscription structure
+  // Create CORRECT FLAT subscription structure (NOT nested!)
   const updatedSubscription = {
-    subscription: {
-      plan: plan,
-      status: 'active',
-      stripeSubscriptionId: currentSubscription.subscription?.stripeSubscriptionId || null,
-      stripeCustomerId: currentSubscription.subscription?.stripeCustomerId || null,
-      currentPeriodEnd: currentSubscription.subscription?.currentPeriodEnd || null,
-      cancelAtPeriodEnd: currentSubscription.subscription?.cancelAtPeriodEnd || false
-    },
+    // FLAT structure - no nested subscription.subscription!
+    plan: plan,
+    status: 'active',
+    stripeSubscriptionId: currentSubscription.stripeSubscriptionId || currentSubscription.subscription?.stripeSubscriptionId || null,
+    stripeCustomerId: currentSubscription.stripeCustomerId || currentSubscription.subscription?.stripeCustomerId || null,
+    currentPeriodEnd: currentSubscription.currentPeriodEnd || currentSubscription.subscription?.currentPeriodEnd || null,
+    cancelAtPeriodEnd: currentSubscription.cancelAtPeriodEnd || currentSubscription.subscription?.cancelAtPeriodEnd || false,
     limits: {
       maxLists: -1,
       maxDrillsPerDay: -1,

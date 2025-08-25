@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Plus, Trash2, Save, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
 import StudyListManager from '@/utils/studyListManager';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,10 @@ interface AnkiCard {
 
 export function AnkiSetCreator({ isOpen, onClose }: AnkiSetCreatorProps) {
   const { user } = useAuth();
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('anki_set_creation', {
+    showToast: true,
+    trackUsage: true
+  });
   const { track } = useAnalytics();
   const router = useRouter();
   
@@ -66,7 +69,7 @@ export function AnkiSetCreator({ isOpen, onClose }: AnkiSetCreatorProps) {
       setError('');
       
       // Check access
-      const canCreate = await checkAndTrack('anki_set_creation');
+      const canCreate = await checkAndTrack();
       if (!canCreate) return;
       
       // Track creation start

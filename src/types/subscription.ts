@@ -1,6 +1,22 @@
 import { getEntitlementsForUserType, getFeatureLimit } from '@/utils/userEntitlements';
+import {
+  UserProfile,
+  UserType,
+  LegacyUserType,
+  AuthStatus,
+  SubscriptionTier,
+  createUserProfile,
+  createUserProfileFromLegacy,
+  getAuthStatusFromLegacy,
+  getSubscriptionTierFromLegacy,
+  getSubscriptionTierFromData
+} from './user-profile';
 
-export type UserType = 'guest' | 'free' | 'monthly' | 'yearly';
+/**
+ * @deprecated Use AuthStatus and SubscriptionTier from user-profile.ts instead
+ * Keeping for backward compatibility during migration
+ */
+export type { UserType, LegacyUserType };
 
 export interface GuestUsage {
   drillsToday: number;
@@ -20,7 +36,7 @@ export interface UserSubscription {
   userId?: string;
   // Flattened structure as per Firebase Functions migration
   plan: 'free' | 'monthly' | 'yearly';
-  status: 'active' | 'inactive' | 'canceled' | 'past_due';
+  status: 'active' | 'inactive' | 'canceled' | 'past_due' | 'trialing';
   
   // Payment provider information
   paymentProvider?: 'stripe' | 'paypal' | 'googlepay';
@@ -59,18 +75,6 @@ export interface UserSubscription {
     createdAt?: Date;
     updatedAt?: Date;
     upgradedBy?: string;
-  };
-  // Legacy nested structure - DEPRECATED
-  subscription?: {
-    plan: 'free' | 'monthly' | 'yearly';
-    status: 'active' | 'inactive' | 'canceled' | 'past_due';
-    stripeSubscriptionId?: string;
-    stripeCustomerId?: string;
-    currentPeriodStart?: Date;
-    currentPeriodEnd?: Date;
-    cancelAtPeriodEnd?: boolean;
-    priceId?: string;
-    renewalDate?: string;
   };
   limits?: {
     maxLists: number; // -1 means unlimited
@@ -346,18 +350,85 @@ export function isPremiumUserType(userType: UserType): boolean {
   return userType === 'monthly' || userType === 'yearly';
 }
 
-// Utility function to get user type from subscription
-export function getUserType(subscription: UserSubscription | null): UserType {
-  if (!subscription) return 'guest';
+// === NEW USER PROFILE FUNCTIONS ===
+
+/**
+ * Get UserProfile with separated authentication and subscription concerns
+ * Recommended for new code
+ */
+export function getUserProfile(subscription: UserSubscription | null, userId?: string): UserProfile {
+  if (!subscription) {
+    // No subscription = anonymous user
+    return createUserProfile('anonymous', 'free');
+  }
   
-  // Check both flattened and nested structure for backwards compatibility
-  const plan = subscription.plan || subscription.subscription?.plan;
+  const plan = subscription.plan;
+  const status = subscription.status;
   
-  // Return the plan type directly - monthly/yearly/free
-  // If no plan is specified, default to 'free'
-  if (plan === 'monthly' || plan === 'yearly') {
-    return plan as UserType;
+  // Check if subscription is actually active
+  const isActive = status === 'active' || status === 'trialing';
+  
+  // Determine subscription tier
+  let subscriptionTier: SubscriptionTier;
+  if ((plan === 'monthly' || plan === 'yearly') && isActive) {
+    subscriptionTier = plan as SubscriptionTier;
+  } else {
+    // Downgrade to free if subscription is not active
+    subscriptionTier = 'free';
+  }
+  
+  // User with subscription is authenticated (even if on free tier)
+  return createUserProfile('authenticated', subscriptionTier, userId);
+}
+
+/**
+ * Get authentication status from subscription
+ */
+export function getAuthStatus(subscription: UserSubscription | null): AuthStatus {
+  return subscription ? 'authenticated' : 'anonymous';
+}
+
+/**
+ * Get subscription tier from subscription, respecting active status
+ */
+export function getSubscriptionTier(subscription: UserSubscription | null): SubscriptionTier {
+  if (!subscription) return 'free';
+  
+  const plan = subscription.plan;
+  const status = subscription.status;
+  const isActive = status === 'active' || status === 'trialing';
+  
+  if ((plan === 'monthly' || plan === 'yearly') && isActive) {
+    return plan as SubscriptionTier;
   }
   
   return 'free';
+}
+
+// === LEGACY COMPATIBILITY FUNCTIONS ===
+
+/**
+ * @deprecated Use getUserProfile() instead for new code
+ * 
+ * Legacy function to get user type from subscription.
+ * Internally uses the new separated type system but maintains backward compatibility.
+ * 
+ * Migration path:
+ * - Old: const userType = getUserType(subscription)
+ * - New: const profile = getUserProfile(subscription, userId)
+ * 
+ * @param subscription - User subscription data or null for anonymous users
+ * @returns Legacy UserType for backward compatibility
+ */
+export function getUserType(subscription: UserSubscription | null): UserType {
+  // Use new separated types internally for consistency
+  const authStatus = subscription ? 'authenticated' : 'anonymous';
+  const subscriptionTier = getSubscriptionTierFromData(subscription);
+  
+  // Create UserProfile with separated concerns
+  const profile = createUserProfile(authStatus, subscriptionTier);
+  
+  // Return legacy format for backward compatibility
+  // This ensures consistency between old and new approaches
+  return profile.legacyUserType as UserType;
 }

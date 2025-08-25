@@ -18,7 +18,7 @@ interface ClientHomeProps {
 
 export default function ClientHome({ initialDate, initialProgress }: ClientHomeProps) {
   const { user, userType } = useAuth();
-  const [displayName] = useState(user?.displayName || user?.email?.split('@')[0] || 'Friend');
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'Friend';
   const [showCompanion, setShowCompanion] = useState(false);
   const strings = useStrings();
 

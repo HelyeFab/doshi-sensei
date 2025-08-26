@@ -10,14 +10,7 @@
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
 
-# Scheduled functions
-# AI validation runs every 2 hours to validate questionable articles
-[functions."validate-articles-scheduled"]
-  schedule = "0 */2 * * *"
-
-# News scraping runs every 6 hours
-[functions."scrape-news-scheduled-enhanced"]
-  schedule = "0 */6 * * *"
+# Scheduled functions are defined in the [functions] section below
 
 # Form handling configuration
 # Note: Netlify doesn't support forms configuration in netlify.toml
@@ -148,53 +141,45 @@
   status = 200
   force = false
 
-# Scheduled Functions
+# Scheduled Functions Configuration
 [functions]
-  # Daily news scraping - runs at 6 AM JST (9 PM UTC previous day)
-  # DISABLED: Using enhanced version instead (was fetching English content from todaiinews.com)
-  # [functions."scrape-news-scheduled"]
-  #   schedule = "0 21 * * *"
-  
-  # Enhanced daily news scraping with all 6 sources
-  [functions."scrape-news-scheduled-enhanced"]
-    schedule = "0 21 * * *"
-  
-  # AI validation for scraped articles - runs hourly
-  [functions."validate-articles-scheduled"]
-    schedule = "0 * * * *"
-  
-  # Puppeteer-based scraper configurations with increased memory
-  [functions."scrape-nhk-easy-puppeteer"]
-    memory = 1024
-  
-  [functions."scrape-todaii-puppeteer"]
-    memory = 1024
-  
-  [functions."scrape-watanoc-puppeteer"]
-    memory = 1024
-  
-  [functions."scrape-nhk-improved"]
-    memory = 1024
-  
-  [functions."scrape-yahoo-news"]
-    memory = 1024
-  
-  [functions."scrape-mainichi-shogakusei"]
-    memory = 1024
-  
-  [functions."scrape-mainichi-news"]
-    memory = 1024
-  
-  # Alternative times if you want multiple daily scrapes:
-  # Morning scrape at 6 AM JST (9 PM UTC)
-  # [functions."scrape-news-morning"]
-  #   schedule = "0 21 * * *"
-  
-  # Evening scrape at 6 PM JST (9 AM UTC)
-  # [functions."scrape-news-evening"]
-  #   schedule = "0 9 * * *"
+  # Node bundler for all functions
+  node_bundler = "esbuild"
+
+# Enhanced daily news scraping - runs at 6 AM JST (9 PM UTC previous day)
+[functions."scrape-news-scheduled-enhanced"]
+  schedule = "0 21 * * *"
+
+# AI validation for scraped articles - runs every 2 hours
+[functions."validate-articles-scheduled"]
+  schedule = "0 */2 * * *"
+
+# Puppeteer-based scraper configurations with increased memory
+[functions."scrape-nhk-easy-puppeteer"]
+  memory = 1024
+
+[functions."scrape-todaii-puppeteer"]
+  memory = 1024
+
+[functions."scrape-watanoc-puppeteer"]
+  memory = 1024
+
+[functions."scrape-nhk-improved"]
+  memory = 1024
+
+[functions."scrape-yahoo-news"]
+  memory = 1024
+
+[functions."scrape-mainichi-shogakusei"]
+  memory = 1024
+
+[functions."scrape-mainichi-news"]
+  memory = 1024
 
 # Note: The scrape-news-scheduled function supports both HTTP and scheduled triggers
+# Alternative times if you want multiple daily scrapes:
+# Morning scrape at 6 AM JST (9 PM UTC): schedule = "0 21 * * *"
+# Evening scrape at 6 PM JST (9 AM UTC): schedule = "0 9 * * *"
 
 # Development server configuration
 [dev]

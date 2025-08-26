@@ -37,10 +37,19 @@ export class CloudSync {
 
   /**
    * Check if user can sync (authenticated + paid subscription only)
+   * @deprecated Use canSyncWithSubscription instead - subscriptionStatus parameter is ambiguous
    */
   static canSync(user: User | null, subscriptionStatus?: string): boolean {
     if (!user) return false;
     return subscriptionStatus === 'active';
+  }
+
+  /**
+   * Check if user can sync based on their subscription plan
+   */
+  static canSyncWithPlan(user: User | null, plan?: string): boolean {
+    if (!user) return false;
+    return plan === 'monthly' || plan === 'yearly';
   }
 
   /**

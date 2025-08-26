@@ -2,6 +2,8 @@ import { User } from 'firebase/auth';
 import CloudSync from '@/utils/cloudSync';
 import { UserStats, UnlockedAchievement } from './types';
 import { serverTimestamp } from 'firebase/firestore';
+import { Subscription } from '@/lib/subscriptions/types';
+import { hasPaidPlan } from '@/lib/subscriptions/helpers';
 
 export class AchievementPremiumSync {
   /**
@@ -10,10 +12,10 @@ export class AchievementPremiumSync {
   static async syncUserStats(
     user: User,
     stats: UserStats,
-    subscriptionStatus?: string
+    subscription?: Subscription | null
   ): Promise<boolean> {
-    // Check if user can sync (premium only)
-    if (!CloudSync.canSync(user, subscriptionStatus)) {
+    // Check if user can sync (paid plans only)
+    if (!user || !hasPaidPlan(subscription)) {
       return false;
     }
 
@@ -44,10 +46,10 @@ export class AchievementPremiumSync {
    */
   static async downloadUserStats(
     user: User,
-    subscriptionStatus?: string
+    subscription?: Subscription | null
   ): Promise<UserStats | null> {
-    // Check if user can sync (premium only)
-    if (!CloudSync.canSync(user, subscriptionStatus)) {
+    // Check if user can sync (paid plans only)
+    if (!user || !hasPaidPlan(subscription)) {
       return null;
     }
 
@@ -77,10 +79,10 @@ export class AchievementPremiumSync {
   static async syncUnlockedAchievement(
     user: User,
     achievement: UnlockedAchievement,
-    subscriptionStatus?: string
+    subscription?: Subscription | null
   ): Promise<boolean> {
-    // Check if user can sync (premium only)
-    if (!CloudSync.canSync(user, subscriptionStatus)) {
+    // Check if user can sync (paid plans only)
+    if (!user || !hasPaidPlan(subscription)) {
       return false;
     }
 
@@ -111,10 +113,10 @@ export class AchievementPremiumSync {
    */
   static async downloadUnlockedAchievements(
     user: User,
-    subscriptionStatus?: string
+    subscription?: Subscription | null
   ): Promise<UnlockedAchievement[]> {
-    // Check if user can sync (premium only)
-    if (!CloudSync.canSync(user, subscriptionStatus)) {
+    // Check if user can sync (paid plans only)
+    if (!user || !hasPaidPlan(subscription)) {
       return [];
     }
 

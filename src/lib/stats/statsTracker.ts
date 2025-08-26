@@ -4,6 +4,8 @@ import { User } from 'firebase/auth';
 import { collection, doc, setDoc, getDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { updateTimeBasedStats } from '@/utils/timeBasedStats';
+import { Subscription } from '@/lib/subscriptions/types';
+import { hasPaidPlan, getUserSubscription } from '@/lib/subscriptions/helpers';
 
 // Activity event types
 export type ActivityType = 'drill' | 'story' | 'article' | 'kanji' | 'game' | 'vocab' | 'flashcard' | 'practice';
@@ -113,7 +115,7 @@ type StatsUpdateListener = (stats: UserStatsV2) => void;
 export class StatsTracker {
   private static instance: StatsTracker | null = null;
   private currentUser: User | null = null;
-  private isPremium: boolean = false;
+  private subscription: Subscription | null = null;
   private stats: UserStatsV2 | null = null;
   private activities: Map<string, DailyActivity> = new Map();
   private updateListeners: Set<StatsUpdateListener> = new Set();
@@ -142,7 +144,7 @@ export class StatsTracker {
   /**
    * Initialize the stats tracker with user context
    */
-  async initialize(user: User | null, isPremium: boolean): Promise<void> {
+  async initialize(user: User | null, subscription?: Subscription | null): Promise<void> {
 
     // If switching to a different user, clear existing data
     if (this.currentUser?.uid !== user?.uid) {
@@ -153,7 +155,15 @@ export class StatsTracker {
     }
     
     this.currentUser = user;
-    this.isPremium = isPremium;
+    
+    // Get subscription if not provided
+    if (subscription !== undefined) {
+      this.subscription = subscription;
+    } else if (user) {
+      this.subscription = await getUserSubscription(user);
+    } else {
+      this.subscription = null;
+    }
     
     // Load stats from storage
     await this.loadStats();
@@ -165,8 +175,8 @@ export class StatsTracker {
       await this.saveToIndexedDB();
     }
     
-    // Start sync timer for premium users
-    if (user && isPremium) {
+    // Start sync timer for users with paid plans
+    if (user && hasPaidPlan(this.subscription)) {
       this.startSyncTimer();
     } else {
       this.stopSyncTimer();
@@ -197,8 +207,8 @@ export class StatsTracker {
     // Process immediately
     await this.processPendingActivities();
     
-    // Update time-based stats for premium users
-    if (this.currentUser && this.isPremium) {
+    // Update time-based stats for users with paid plans
+    if (this.currentUser && hasPaidPlan(this.subscription)) {
       try {
         await updateTimeBasedStats(
           this.currentUser.uid,
@@ -255,7 +265,7 @@ export class StatsTracker {
    * Force sync to cloud (for premium users)
    */
   async forceSync(): Promise<void> {
-    if (!this.currentUser || !this.isPremium) {
+    if (!this.currentUser || !hasPaidPlan(this.subscription)) {
 
       return;
     }
@@ -268,34 +278,34 @@ export class StatsTracker {
    */
   private async loadStats(): Promise<void> {
     try {
-      // First try to load from IndexedDB
-      const localStats = await this.loadFromIndexedDB();
-      
-      if (localStats) {
-        this.stats = localStats;
-
-      }
-
-      // If premium user, also check cloud for newer data
-      if (this.currentUser && this.isPremium) {
-        // Don't reload from cloud if we have very recent local updates (within last 10 seconds)
-        const now = Date.now();
-        const recentlyUpdated = this.stats && (now - this.stats.lastUpdated < 10000);
+      // For users with paid plans, ALWAYS load from cloud first
+      if (this.currentUser && hasPaidPlan(this.subscription)) {
+        console.log('📊 [StatsTracker] Loading from cloud for paid user');
+        const cloudStats = await this.loadFromCloud();
         
-        if (recentlyUpdated) {
-
+        if (cloudStats) {
+          this.stats = cloudStats;
+          console.log('✅ [StatsTracker] Loaded stats from cloud:', {
+            currentStreak: cloudStats.currentStreak,
+            longestStreak: cloudStats.longestStreak,
+            totalActivities: cloudStats.totalActivities
+          });
+          // Save cloud stats locally for offline access
+          await this.saveToIndexedDB();
         } else {
-          const cloudStats = await this.loadFromCloud();
-          
-          // Only use cloud stats if they're actually newer than what we have in memory
-          if (cloudStats && (!localStats || (cloudStats.lastUpdated > localStats.lastUpdated && cloudStats.lastUpdated > (this.stats?.lastUpdated || 0)))) {
-            this.stats = cloudStats;
-
-            // Save cloud stats locally
-            await this.saveToIndexedDB();
-          } else if (cloudStats) {
-            // console.log('📊 [StatsTracker] Keeping current stats (newer than cloud)');
+          console.log('⚠️ [StatsTracker] No cloud stats found, loading from local');
+          // Fall back to local if cloud fails
+          const localStats = await this.loadFromIndexedDB();
+          if (localStats) {
+            this.stats = localStats;
           }
+        }
+      } else {
+        // For free users or when not logged in, use local storage
+        const localStats = await this.loadFromIndexedDB();
+        
+        if (localStats) {
+          this.stats = localStats;
         }
       }
 
@@ -526,8 +536,8 @@ export class StatsTracker {
     
     if (!this.stats) return;
 
-    // Additional check for premium status
-    if (!this.isPremium) {
+    // Additional check for paid plan
+    if (!hasPaidPlan(this.subscription)) {
 
       return;
     }
@@ -1112,8 +1122,8 @@ export class StatsTracker {
     // First load from IndexedDB
     await this.loadActivitiesRange(thirtyDaysAgo, today);
     
-    // For premium users, also check cloud for any newer activities
-    if (this.currentUser && this.isPremium) {
+    // For users with paid plans, also check cloud for any newer activities
+    if (this.currentUser && hasPaidPlan(this.subscription)) {
       try {
         await this.loadActivitiesFromCloud(thirtyDaysAgo, today);
         
@@ -1143,7 +1153,7 @@ export class StatsTracker {
       return;
     }
     
-    if (!this.isPremium) {
+    if (!hasPaidPlan(this.subscription)) {
 
       return;
     }
@@ -1248,7 +1258,7 @@ export class StatsTracker {
       return;
     }
     
-    if (!this.isPremium) {
+    if (!hasPaidPlan(this.subscription)) {
 
       return;
     }
@@ -1637,7 +1647,7 @@ export class StatsTracker {
       // Save the corrected stats
       if (this.stats) {
         await this.saveToIndexedDB();
-        if (this.currentUser && this.isPremium) {
+        if (this.currentUser && hasPaidPlan(this.subscription)) {
           await this.saveToCloud();
         }
         this.notifyListeners();
@@ -1669,7 +1679,7 @@ export class StatsTracker {
     
     await this.saveToIndexedDB();
     
-    if (this.currentUser && this.isPremium) {
+    if (this.currentUser && hasPaidPlan(this.subscription)) {
       await this.saveToCloud();
     }
     
@@ -1766,7 +1776,7 @@ export class StatsTracker {
       
       // Save to storage
       await this.saveToIndexedDB();
-      if (this.currentUser && this.isPremium) {
+      if (this.currentUser && hasPaidPlan(this.subscription)) {
         await this.saveToCloud();
       }
       

@@ -4,13 +4,15 @@ import EnhancedStorageManager from '@/utils/storage';
 import { AchievementPremiumSync } from './premiumSync';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
+import { Subscription } from '@/lib/subscriptions/types';
+import { getUserSubscription, hasPaidPlan } from '@/lib/subscriptions/helpers';
 
 export class AchievementManager {
   private static cache: Achievement[] | null = null;
   private static lastLoaded: number = 0;
   private static CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   private static currentUser: User | null = null;
-  private static subscriptionStatus: string | null = null;
+  private static subscription: Subscription | null = null;
   
   // Rate limiting for achievement checks
   private static lastAchievementCheck: number = 0;
@@ -28,31 +30,21 @@ export class AchievementManager {
       this.currentUser = user;
       
       if (user) {
-        // Get subscription status from user data
+        // Get subscription from user data
         try {
-          const idToken = await user.getIdToken();
-          const idTokenResult = await user.getIdTokenResult();
+          this.subscription = await getUserSubscription(user);
           
-          // Check custom claims for subscription status
-          if (idTokenResult.claims.subscriptionStatus) {
-            this.subscriptionStatus = idTokenResult.claims.subscriptionStatus as string;
-          } else {
-            // Fallback to checking user document
-            const userDoc = await EnhancedStorageManager.loadSettings();
-            this.subscriptionStatus = 'inactive'; // AppSettings doesn't have subscription info
-          }
-
-          // Sync with cloud if premium
-          if (this.subscriptionStatus === 'active') {
+          // Sync with cloud if user has paid plan
+          if (hasPaidPlan(this.subscription)) {
             await this.syncWithCloud();
           }
         } catch (error) {
-          console.error('Failed to get subscription status:', error);
-          this.subscriptionStatus = 'inactive';
+          console.error('Failed to get subscription:', error);
+          this.subscription = null;
         }
       } else {
         // User logged out - clear cached data
-        this.subscriptionStatus = null;
+        this.subscription = null;
         this.cache = null;
         this.lastLoaded = 0;
         this.weekendDaysStudied.clear();
@@ -67,39 +59,37 @@ export class AchievementManager {
    * Sync local data with cloud for premium users
    */
   private static async syncWithCloud(): Promise<void> {
-    if (!this.currentUser || this.subscriptionStatus !== 'active') {
+    if (!this.currentUser || !hasPaidPlan(this.subscription)) {
       return;
     }
 
     try {
-      // Download cloud data
+      console.log('🏆 [AchievementManager] Syncing with cloud for paid user');
+      
+      // Download cloud data FIRST (cloud is source of truth for paid users)
       const [cloudStats, cloudAchievements] = await Promise.all([
-        AchievementPremiumSync.downloadUserStats(this.currentUser, this.subscriptionStatus),
-        AchievementPremiumSync.downloadUnlockedAchievements(this.currentUser, this.subscriptionStatus)
+        AchievementPremiumSync.downloadUserStats(this.currentUser, this.subscription),
+        AchievementPremiumSync.downloadUnlockedAchievements(this.currentUser, this.subscription)
       ]);
 
-      // Get local data
-      const localStats = await EnhancedStorageManager.getUserStats();
-      const localAchievements = await EnhancedStorageManager.getUnlockedAchievements();
-
-      // Merge data
-      const mergedStats = AchievementPremiumSync.mergeAchievementData(localStats, cloudStats);
-      const mergedAchievements = AchievementPremiumSync.mergeUnlockedAchievements(
-        localAchievements,
-        cloudAchievements
-      );
-
-      // Save merged data locally
-      if (mergedStats) {
-        await EnhancedStorageManager.saveUserStats(mergedStats);
+      // For paid users, cloud data takes priority
+      if (cloudStats) {
+        console.log('✅ [AchievementManager] Using cloud stats as source of truth');
+        await EnhancedStorageManager.saveUserStats(cloudStats);
+      } else {
+        console.log('⚠️ [AchievementManager] No cloud stats found, keeping local');
       }
 
-      // Save merged achievements locally
-      for (const achievement of mergedAchievements) {
-        const exists = localAchievements.some(a => a.achievementId === achievement.achievementId);
-        if (!exists) {
+      // Replace local achievements with cloud achievements for paid users
+      if (cloudAchievements && cloudAchievements.length > 0) {
+        console.log('✅ [AchievementManager] Replacing local achievements with cloud data');
+        // Clear local and save cloud achievements
+        await EnhancedStorageManager.clearUnlockedAchievements();
+        for (const achievement of cloudAchievements) {
           await EnhancedStorageManager.saveUnlockedAchievement(achievement);
         }
+      } else {
+        console.log('⚠️ [AchievementManager] No cloud achievements found');
       }
 
     } catch (error) {
@@ -368,12 +358,12 @@ export class AchievementManager {
       // Always save locally first
       await EnhancedStorageManager.saveUserStats(stats);
       
-      // Sync to cloud if premium user
-      if (this.currentUser && this.subscriptionStatus === 'active') {
+      // Sync to cloud if user has paid plan
+      if (this.currentUser && hasPaidPlan(this.subscription)) {
         await AchievementPremiumSync.syncUserStats(
           this.currentUser,
           stats,
-          this.subscriptionStatus
+          this.subscription
         );
       }
     } catch (error) {
@@ -423,12 +413,12 @@ export class AchievementManager {
       // Always save locally first
       await EnhancedStorageManager.saveUnlockedAchievement(unlockedAchievement);
       
-      // Sync to cloud if premium user
-      if (this.currentUser && this.subscriptionStatus === 'active') {
+      // Sync to cloud if user has paid plan
+      if (this.currentUser && hasPaidPlan(this.subscription)) {
         await AchievementPremiumSync.syncUnlockedAchievement(
           this.currentUser,
           unlockedAchievement,
-          this.subscriptionStatus
+          this.subscription
         );
       }
     } catch (error) {
@@ -764,9 +754,23 @@ export class AchievementManager {
    * This should be called when a new user is created
    */
   static async initializeUserStats(): Promise<void> {
+    // For paid users, check cloud first
+    if (this.currentUser && hasPaidPlan(this.subscription)) {
+      const cloudStats = await AchievementPremiumSync.downloadUserStats(
+        this.currentUser,
+        this.subscription
+      );
+      
+      if (cloudStats) {
+        // Cloud data exists, use it
+        await EnhancedStorageManager.saveUserStats(cloudStats);
+        return;
+      }
+    }
+    
+    // For free users or if no cloud data, check local
     const existingStats = await EnhancedStorageManager.getUserStats();
     if (!existingStats) {
-
       await this.saveUserStats(this.getDefaultStats());
     }
     

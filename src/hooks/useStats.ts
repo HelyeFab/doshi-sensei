@@ -42,8 +42,8 @@ export function useStats(): UseStatsReturn {
 
         // Guest users should not have persistent stats
         if (!profile) {
-          // Initialize stats tracker for guest user (null user)
-          await statsTracker.initialize(null, false);
+          // Initialize stats tracker for guest user (null user, no subscription)
+          await statsTracker.initialize(null, null);
           
           // For guest users, stats are in-memory only
           setStats(statsTracker.getStats());
@@ -56,9 +56,8 @@ export function useStats(): UseStatsReturn {
           return;
         }
 
-        // Only pass isPremium as true if user has monthly or yearly subscription
-        const actuallyPremium = isPremiumUser;
-        await statsTracker.initialize(user, actuallyPremium);
+        // Pass the subscription object for proper sync
+        await statsTracker.initialize(user, subscription);
         
         // Get initial stats and activities
         setStats(statsTracker.getStats());
@@ -129,9 +128,8 @@ export function useStats(): UseStatsReturn {
         return;
       }
 
-      // Only pass isPremium as true if user has monthly or yearly subscription
-      const actuallyPremium = isPremiumUser;
-      await statsTracker.initialize(user, actuallyPremium);
+      // Pass the subscription object for proper sync
+      await statsTracker.initialize(user, subscription);
       setStats(statsTracker.getStats());
       const activitiesData = await statsTracker.getActivitiesData();
       setActivities(activitiesData);

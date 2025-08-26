@@ -141,37 +141,37 @@ function quickValidate(content, title = '', sourceInfo = null) {
       japaneseRatio: japaneseRatio,
       visible: false
     };
-  } else if (japaneseRatio < 0.87) {
-    // Low-medium Japanese (30-87%) - save but hide, high priority for AI
+  } else if (japaneseRatio < 0.70) {
+    // Low Japanese (30-70%) - save but hide, high priority for AI
     return {
       passed: true,
       reason: `Content has mixed languages (${Math.round(japaneseRatio * 100)}% Japanese), needs AI review`,
       shouldSave: true,
       needsAIEnhancement: true,
       japaneseRatio: japaneseRatio,
-      visible: false,  // Always hidden until AI validates
+      visible: false,  // Hidden until AI validates
       priority: 'high'
     };
-  } else if (japaneseRatio < 0.98) {
-    // Good Japanese (87-97.9%) - ALWAYS HIDE until AI validates (even trusted sources)
+  } else if (japaneseRatio < 0.87) {
+    // Medium Japanese (70-87%) - show but mark for AI enhancement
     return {
       passed: true,
-      reason: `Good Japanese content (${Math.round(japaneseRatio * 100)}%), pending AI verification`,
+      reason: `Good Japanese content (${Math.round(japaneseRatio * 100)}%), AI enhancement recommended`,
       shouldSave: true,
-      needsAIEnhancement: true,  // Always needs AI check
+      needsAIEnhancement: true,
       japaneseRatio: japaneseRatio,
-      visible: false,  // Never visible without AI validation
-      priority: 'medium'  // Medium priority for validation
+      visible: true,  // Now visible immediately (changed from false)
+      priority: 'medium'
     };
   } else {
-    // Excellent Japanese (98%+) - show immediately
+    // Excellent Japanese (87%+) - show immediately
     return {
       passed: true,
       reason: `Excellent Japanese content (${Math.round(japaneseRatio * 100)}%)`,
       shouldSave: true,
       needsAIEnhancement: false,
       japaneseRatio: japaneseRatio,
-      visible: true,  // Only these are visible immediately
+      visible: true,  // Visible immediately
       priority: 'low'
     };
   }

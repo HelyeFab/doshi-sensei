@@ -110,8 +110,8 @@ export default function LoginPage() {
         router.push('/');
       }
     } catch (error: any) {
-      toast.error(error.message || 'An error occurred');
-    } finally {
+      console.error('[Login] Form submission error:', error);
+      toast.error(error.message || 'An error occurred. Please try again.');
       setIsLoading(false);
     }
   };
@@ -123,7 +123,6 @@ export default function LoginPage() {
     if (!signInWithGoogle || typeof signInWithGoogle !== 'function') {
       console.error('[Login] CRITICAL: signInWithGoogle is not available!');
       toast.error('Google Sign-In is not available. Please refresh the page.');
-      setIsLoading(false);
       return;
     }
     

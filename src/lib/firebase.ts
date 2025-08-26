@@ -31,12 +31,16 @@ let db: Firestore | null = null;
 let storage: FirebaseStorage | null = null;
 
 // Function to get auth instance (creates it if needed and on client side)
-export const getAuthInstance = (): Auth | null => {
-  if (typeof window === 'undefined') return null;
-  if (auth) return auth;
-  if (app) {
+export const getAuthInstance = (): Auth => {
+  if (typeof window === 'undefined') {
+    throw new Error('Auth can only be used on client side');
+  }
+  if (!auth && app) {
     auth = getAuth(app);
     console.log('[Firebase] Auth instance created on demand');
+  }
+  if (!auth) {
+    throw new Error('Firebase Auth not initialized. Check your environment variables.');
   }
   return auth;
 };
@@ -88,5 +92,14 @@ if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.project
   }
 }
 
-export { auth, db, storage };
+// Use getter function for auth to ensure it's available when needed
+const getAuthSafe = () => {
+  if (typeof window === 'undefined') return null;
+  if (!auth && app) {
+    auth = getAuth(app);
+  }
+  return auth;
+};
+
+export { auth, db, storage, getAuthSafe };
 export default app;

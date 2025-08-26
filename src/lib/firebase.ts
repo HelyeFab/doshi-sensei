@@ -1,6 +1,6 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { getAuth, Auth, connectAuthEmulator } from 'firebase/auth';
+import { getFirestore, Firestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 // Firebase configuration from environment variables
@@ -14,144 +14,135 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || ''
 };
 
-// Diagnostic logging for auth issues
-console.log('[Firebase Init] Configuration check:', {
-  hasApiKey: !!firebaseConfig.apiKey,
-  hasAuthDomain: !!firebaseConfig.authDomain,
-  authDomain: firebaseConfig.authDomain || 'NOT SET',
-  hasProjectId: !!firebaseConfig.projectId,
-  projectId: firebaseConfig.projectId || 'NOT SET',
-  timestamp: new Date().toISOString()
-});
+// Validate configuration
+const isConfigValid = firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId;
 
-// Initialize Firebase
+if (!isConfigValid) {
+  console.error('[Firebase] Invalid configuration:', {
+    apiKey: firebaseConfig.apiKey ? 'SET' : 'MISSING',
+    authDomain: firebaseConfig.authDomain || 'MISSING',
+    projectId: firebaseConfig.projectId || 'MISSING'
+  });
+}
+
+// Initialize Firebase app
 let app: FirebaseApp | null = null;
+
+if (isConfigValid) {
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+    console.log('[Firebase] App initialized');
+  } else {
+    app = getApps()[0];
+    console.log('[Firebase] Using existing app');
+  }
+}
+
+// Initialize services lazily
 let auth: Auth | null = null;
 let db: Firestore | null = null;
 let storage: FirebaseStorage | null = null;
 
-// Track initialization state
-let isInitialized = false;
-let initializationPromise: Promise<void> | null = null;
-
-// Function to ensure Firebase is initialized
-export const ensureFirebaseInitialized = async (): Promise<void> => {
-  if (isInitialized) return;
-  
-  if (initializationPromise) {
-    return initializationPromise;
+// Get or create auth instance
+export function getAuthInstance(): Auth {
+  if (!app) {
+    throw new Error('Firebase app not initialized. Check your environment variables.');
   }
   
-  initializationPromise = new Promise((resolve) => {
-    if (typeof window === 'undefined') {
-      resolve();
-      return;
-    }
-    
-    // Check if already initialized
-    if (auth) {
-      isInitialized = true;
-      resolve();
-      return;
-    }
-    
-    // Wait for app to be available
-    const checkInterval = setInterval(() => {
-      if (app) {
-        if (!auth) {
-          auth = getAuth(app);
-          storage = getStorage(app);
-          console.log('[Firebase] Auth and Storage initialized via ensureFirebaseInitialized');
-        }
-        isInitialized = true;
-        clearInterval(checkInterval);
-        resolve();
-      }
-    }, 10);
-    
-    // Timeout after 5 seconds
-    setTimeout(() => {
-      clearInterval(checkInterval);
-      console.error('[Firebase] Initialization timeout');
-      resolve(); // Resolve anyway to prevent hanging
-    }, 5000);
-  });
-  
-  return initializationPromise;
-};
-
-// Function to get auth instance (creates it if needed and on client side)
-export const getAuthInstance = (): Auth => {
-  if (typeof window === 'undefined') {
-    throw new Error('Auth can only be used on client side');
-  }
-  if (!auth && app) {
-    auth = getAuth(app);
-    storage = getStorage(app);
-    console.log('[Firebase] Auth instance created on demand');
-  }
   if (!auth) {
-    throw new Error('Firebase Auth not initialized. Check your environment variables.');
-  }
-  return auth;
-};
-
-// Only initialize Firebase if we have the required configuration
-// This prevents build errors when environment variables are not available
-if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId) {
-  console.log('[Firebase Init] Initializing Firebase app...');
-  // Initialize Firebase (works on both client and server)
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-    console.log('[Firebase Init] Firebase app initialized successfully');
-  } else {
-    app = getApps()[0];
-    console.log('[Firebase Init] Using existing Firebase app');
-  }
-
-  // Initialize services
-  // Auth and Storage are only needed on client side
-  if (typeof window !== 'undefined') {
     auth = getAuth(app);
-    storage = getStorage(app);
-    isInitialized = true;
-    console.log('[Firebase Init] Auth and Storage services initialized');
+    console.log('[Firebase] Auth service initialized');
     
-    // Log auth settings for debugging
-    auth.onAuthStateChanged((user) => {
-      console.log('[Firebase Auth] Auth state changed:', {
-        isSignedIn: !!user,
-        email: user?.email || 'none',
-        provider: user?.providerData?.[0]?.providerId || 'none',
-        timestamp: new Date().toISOString()
+    // Set up auth state listener for debugging
+    if (typeof window !== 'undefined') {
+      auth.onAuthStateChanged((user) => {
+        console.log('[Firebase Auth] State changed:', user?.email || 'signed out');
       });
-    });
-  } else {
-    console.log('[Firebase Init] Server-side render - skipping Auth/Storage initialization');
+    }
   }
-
-  // Firestore is needed on both client and server (for caching)
-  db = getFirestore(app);
-  console.log('[Firebase Init] Firestore service initialized');
-} else {
-  // Log warning only in development or on client side
-  if (typeof window !== 'undefined' || process.env.NODE_ENV === 'development') {
-    console.error('[Firebase Init] CRITICAL: Firebase configuration is incomplete!', {
-      apiKey: firebaseConfig.apiKey ? 'SET' : 'MISSING',
-      authDomain: firebaseConfig.authDomain ? `SET: ${firebaseConfig.authDomain}` : 'MISSING',
-      projectId: firebaseConfig.projectId ? `SET: ${firebaseConfig.projectId}` : 'MISSING'
-    });
-  }
+  
+  return auth;
 }
 
-// Use getter function for auth to ensure it's available when needed
-const getAuthSafe = () => {
-  if (typeof window === 'undefined') return null;
-  if (!auth && app) {
-    auth = getAuth(app);
+// Get or create Firestore instance
+export function getFirestoreInstance(): Firestore {
+  if (!app) {
+    throw new Error('Firebase app not initialized');
   }
-  return auth;
+  
+  if (!db) {
+    db = getFirestore(app);
+    console.log('[Firebase] Firestore initialized');
+  }
+  
+  return db;
+}
+
+// Get or create Storage instance
+export function getStorageInstance(): FirebaseStorage {
+  if (!app) {
+    throw new Error('Firebase app not initialized');
+  }
+  
+  if (!storage) {
+    storage = getStorage(app);
+    console.log('[Firebase] Storage initialized');
+  }
+  
+  return storage;
+}
+
+// Initialize all services for client-side use
+export function initializeFirebaseClient(): { auth: Auth; db: Firestore; storage: FirebaseStorage } | null {
+  if (typeof window === 'undefined' || !app) {
+    return null;
+  }
+  
+  return {
+    auth: getAuthInstance(),
+    db: getFirestoreInstance(),
+    storage: getStorageInstance()
+  };
+}
+
+// Simple promise-based initialization for auth contexts
+let initPromise: Promise<void> | null = null;
+
+export async function ensureFirebaseInitialized(): Promise<void> {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  
+  if (!initPromise) {
+    initPromise = new Promise((resolve, reject) => {
+      if (!app) {
+        reject(new Error('Firebase app not initialized. Check environment variables.'));
+        return;
+      }
+      
+      try {
+        // Initialize services
+        getAuthInstance();
+        getFirestoreInstance();
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+  
+  return initPromise;
+}
+
+// Legacy exports for backward compatibility
+const legacyAuth = typeof window !== 'undefined' && app ? getAuthInstance() : null;
+const legacyDb = app ? getFirestoreInstance() : null;
+const legacyStorage = typeof window !== 'undefined' && app ? getStorageInstance() : null;
+
+export { 
+  legacyAuth as auth, 
+  legacyDb as db, 
+  legacyStorage as storage 
 };
 
-export { auth, db, storage, getAuthSafe };
 export default app;

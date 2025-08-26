@@ -18,7 +18,8 @@
       "Bash(stripe:*)",
       "Bash(firebase functions:log:*)",
       "Bash(git log:*)",
-      "Bash(git grep:*)"
+      "Bash(git grep:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

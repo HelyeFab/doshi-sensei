@@ -18,7 +18,7 @@ import {
   sendEmailVerification,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { auth, db, getAuthInstance, ensureFirebaseInitialized } from '@/lib/firebase';
+import { auth, db, getAuthInstance, ensureFirebaseInitialized, getFirestoreInstance } from '@/lib/firebase';
 import { 
   getDefaultSubscription, 
   UserSubscription, 
@@ -70,9 +70,10 @@ export function useAuth() {
 
 // Helper function to create/update user document in Firestore
 const createOrUpdateUserDocument = async (user: User) => {
-  if (!db || !user) return null;
-
-  const userRef = doc(db, 'users', user.uid);
+  if (!user) return null;
+  
+  const firestore = getFirestoreInstance();
+  const userRef = doc(firestore, 'users', user.uid);
 
   try {
     // Check if user document already exists
@@ -115,10 +116,11 @@ const createOrUpdateUserDocument = async (user: User) => {
 
 // Helper function to fetch user subscription
 const fetchUserSubscription = async (userId: string): Promise<UserSubscription | null> => {
-  if (!db || !userId) return null;
+  if (!userId) return null;
 
   try {
-    const userRef = doc(db, 'users', userId);
+    const firestore = getFirestoreInstance();
+    const userRef = doc(firestore, 'users', userId);
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
@@ -153,35 +155,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Wait for auth to be available on client side
+  // Initialize Firebase on mount
   useEffect(() => {
-    if (typeof window !== 'undefined' && !authInitialized) {
-      // Give Firebase a moment to initialize
-      const checkAuth = setInterval(() => {
-        try {
-          const authInstance = getAuthInstance();
-          if (authInstance) {
-            console.log('[Auth] Auth instance now available');
-            setAuthInitialized(true);
-            clearInterval(checkAuth);
-          }
-        } catch (error) {
-          console.log('[Auth] Auth not ready yet:', error);
-        }
-      }, 100);
-      
-      // Timeout after 3 seconds
-      setTimeout(() => {
-        clearInterval(checkAuth);
-        console.error('[Auth] Auth initialization timeout - check Firebase configuration');
-        setAuthInitialized(true); // Set to true anyway to prevent infinite loading
-      }, 3000);
-    }
-  }, [authInitialized]);
+    if (typeof window === 'undefined') return;
+    
+    ensureFirebaseInitialized()
+      .then(() => {
+        console.log('[Auth] Firebase initialized successfully');
+        setAuthInitialized(true);
+      })
+      .catch((error) => {
+        console.error('[Auth] Firebase initialization failed:', error);
+        setAuthInitialized(true); // Set true to prevent infinite loading
+        setLoading(false);
+      });
+  }, []);
   
   useEffect(() => {
-    // Only run after auth is initialized
-    if (!authInitialized) return;
+    // Set up auth listener after initialization
+    if (!authInitialized || typeof window === 'undefined') return;
     
     // Handle redirect result from Google sign-in
     const handleRedirectResult = async () => {
@@ -243,12 +235,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     handleRedirectResult();
     
-    // Set up auth state listener after ensuring Firebase is initialized
-    ensureFirebaseInitialized().then(() => {
-      try {
-        const authInstance = getAuthInstance();
-        
-        const unsubscribe = onAuthStateChanged(authInstance, async (currentUser) => {
+    // Set up auth state listener
+    try {
+      const authInstance = getAuthInstance();
+      
+      const unsubscribe = onAuthStateChanged(authInstance, async (currentUser) => {
       setUser(currentUser);
 
       if (currentUser) {
@@ -271,17 +262,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-        return unsubscribe;
-      } catch (error) {
-        console.log('[Auth] Failed to set up auth listener:', error);
-        setLoading(false);
-      }
-    }).catch(error => {
-      console.error('[Auth] Firebase initialization failed:', error);
+      return () => unsubscribe();
+    } catch (error) {
+      console.error('[Auth] Failed to set up auth listener:', error);
       setLoading(false);
-    });
-    
-    return () => {};
+      return () => {};
+    }
   }, [authInitialized]);
 
   const signInWithEmail = async (email: string, password: string) => {
@@ -328,7 +314,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     console.log('[Auth] signInWithGoogle called');
     
-    // Get auth instance safely
+    // Get auth instance
     const authInstance = getAuthInstance();
     
     if (!authInstance) {
@@ -374,7 +360,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Try popup first (better UX on desktop)
         if (window.innerWidth > 768) {
           try {
-            if (!auth) throw new Error('Auth not initialized');
+            // Auth is already initialized via authInstance
             const result = await signInWithPopup(authInstance, provider);
             // Create/update user document in Firestore
             if (result.user) {
@@ -402,7 +388,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Use redirect for mobile devices
           // Mark redirect as pending
           sessionStorage.setItem('googleAuthRedirect', 'pending');
-          if (auth) await signInWithRedirect(auth, provider);
+          await signInWithRedirect(authInstance, provider);
         }
       }
     } catch (error) {
@@ -441,7 +427,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         code: error.code,
         message: error.message,
         email: email,
-        authDomain: auth.app.options.authDomain
+        authDomain: authInstance.app.options.authDomain
       });
       throw error;
     }
@@ -489,12 +475,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const uid = user.uid;
       
       // Delete Firestore data first (while we still have auth)
-      if (db) {
-        try {
-          await deleteDoc(doc(db, 'users', uid));
-        } catch (error) {
-          // Error deleting Firestore data
-          // Continue anyway
+      try {
+        const firestore = getFirestoreInstance();
+        await deleteDoc(doc(firestore, 'users', uid));
+            } catch (error) {
+        // Error deleting Firestore data
+        // Continue anyway
         }
       }
       

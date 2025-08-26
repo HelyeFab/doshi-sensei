@@ -8,6 +8,7 @@ import { STRIPE_CONFIG } from '@/lib/stripe';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useStripePrices } from '@/hooks/useStripePrices';
+import { useSubscriptionFeatures } from '@/hooks/useSubscriptionFeatures';
 
 interface UpgradeSlideUpModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function UpgradeSlideUpModal({ isOpen, onClose, message, feature }: Upgra
   const strings = useStrings();
   const { trackUpgradeModalShown, track } = useAnalytics();
   const { prices, loading: pricesLoading, formatPrice } = useStripePrices();
+  const { features: dynamicFeatures, loading: featuresLoading } = useSubscriptionFeatures();
 
   // Track modal shown
   useEffect(() => {
@@ -32,6 +34,17 @@ export function UpgradeSlideUpModal({ isOpen, onClose, message, feature }: Upgra
 
   const monthlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'monthly');
   const yearlyPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'yearly');
+
+  // Calculate savings percentage dynamically
+  const calculateSavings = () => {
+    if (!prices?.monthly || !prices?.yearly) return 0;
+    const monthlyTotal = prices.monthly.amount * 12;
+    const yearlyTotal = prices.yearly.amount;
+    const savings = ((monthlyTotal - yearlyTotal) / monthlyTotal) * 100;
+    return Math.round(savings);
+  };
+
+  const savingsPercent = calculateSavings();
 
   const handleUpgrade = async (plan: 'monthly' | 'yearly') => {
     try {
@@ -73,12 +86,17 @@ export function UpgradeSlideUpModal({ isOpen, onClose, message, feature }: Upgra
             <strong>{strings.subscriptions?.premiumBenefits || "Premium Benefits"}</strong>
           </div>
           <div className="text-sm text-foreground space-y-1">
-            {monthlyPlan?.features.map((feature: string, index: number) => (
-              <div key={index} className="flex items-center gap-2">
-                <span className="text-green-500">✓</span>
-                <span>{feature}</span>
-              </div>
-            ))}
+            {featuresLoading ? (
+              <div className="text-center py-2">Loading features...</div>
+            ) : (
+              // Use dynamic features from Firestore, defaulting to monthly plan features
+              (dynamicFeatures.monthly || dynamicFeatures.yearly || []).map((feature, index) => (
+                <div key={feature.id || index} className="flex items-center gap-2">
+                  <span className="text-green-500">✓</span>
+                  <span>{feature.text}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -88,9 +106,11 @@ export function UpgradeSlideUpModal({ isOpen, onClose, message, feature }: Upgra
             className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium relative"
             disabled={pricesLoading}
           >
-            <div className="absolute top-0 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-b transform translate-y-0">
-              {strings.subscriptions?.savePercent || "Save 17%"}
-            </div>
+            {savingsPercent > 0 && (
+              <div className="absolute top-0 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-b transform translate-y-0">
+                Save {savingsPercent}%
+              </div>
+            )}
             <div className="text-lg">
               {pricesLoading ? 
                 "Loading..." : 

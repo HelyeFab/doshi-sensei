@@ -1,4 +1,4 @@
-export const ADMIN_EMAIL = "emmanuelfabiani23@gmail.com";
+export const ADMIN_EMAIL = "mate.fizir@gmail.com";
 
 // User statistics interfaces
 export interface UserStats {

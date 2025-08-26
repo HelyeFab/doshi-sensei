@@ -107,6 +107,12 @@ const sidebarCategories: SidebarCategory[] = [
     label: 'Analytics & Monitoring',
     items: [
       {
+        id: 'security' as AdminSection,
+        labelKey: 'security',
+        iconKey: 'security',
+        href: '/admin/security',
+      },
+      {
         id: 'analytics' as AdminSection,
         labelKey: 'analytics',
         iconKey: 'analytics',
@@ -200,7 +206,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   // Helper to get translated label for an item
   const getItemLabel = (labelKey: string) => {
     return strings.navigation?.admin?.[labelKey]?.label || 
-           (labelKey === 'blog' ? 'Blog' :
+           (labelKey === 'security' ? 'Security Monitor' :
+            labelKey === 'blog' ? 'Blog' :
             labelKey === 'media' ? 'Media Library' :
             labelKey === 'debug' ? 'Debug Tools' : 
             labelKey === 'snakePath' ? 'Snake Path' : 
@@ -224,7 +231,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   // Helper to get icon for an item
   const getItemIcon = (iconKey: string) => {
     return strings.navigation?.admin?.[iconKey]?.icon || 
-          (iconKey === 'blog' ? '📰' :
+          (iconKey === 'security' ? '🛡️' :
+           iconKey === 'blog' ? '📰' :
            iconKey === 'media' ? '🖼️' :
            iconKey === 'debug' ? '🐛' : 
            iconKey === 'snakePath' ? '🐍' : 

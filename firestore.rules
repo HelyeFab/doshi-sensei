@@ -6,7 +6,7 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null && (
         request.auth.token.admin == true ||
-        request.auth.token.email == "emmanuelfabiani23@gmail.com"
+        request.auth.token.email == "mate.fizir@gmail.com"
       );
     }
 
@@ -1163,6 +1163,72 @@ service cloud.firestore {
       
       // Only admin can create, update, or delete subscription features
       allow create, update, delete: if isAdmin();
+    }
+
+    // NEW AUTH COLLECTIONS FOR SECURE AUTHENTICATION SYSTEM
+    
+    // Magic Links collection - stores magic link tokens
+    match /magic_links/{linkId} {
+      // No direct client access (only server via Admin SDK)
+      allow read, write: if false;
+    }
+    
+    // Security Events collection - stores authentication security events
+    match /security_events/{eventId} {
+      // Only admin can read security events
+      allow read: if isAdmin();
+      
+      // No direct client writes (only via API endpoints)
+      allow write: if false;
+    }
+    
+    // Security Alerts collection - critical security notifications
+    match /security_alerts/{alertId} {
+      // Only admin can read security alerts
+      allow read: if isAdmin();
+      
+      // No direct client writes (only via API endpoints)
+      allow write: if false;
+    }
+    
+    // Sessions collection - stores user sessions
+    match /sessions/{sessionId} {
+      // Users can read their own sessions
+      allow read: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+      
+      // No direct client writes (managed by auth service)
+      allow write: if false;
+    }
+    
+    // Email Verifications collection - tracks email verification status
+    match /email_verifications/{userId} {
+      // Users can read their own verification status
+      allow read: if request.auth != null && 
+        request.auth.uid == userId;
+      
+      // No direct client writes (managed by auth service)
+      allow write: if false;
+    }
+    
+    // Account Deletion Requests collection - GDPR compliance
+    match /account_deletion_requests/{userId} {
+      // Users can read their own deletion requests
+      allow read: if request.auth != null && 
+        request.auth.uid == userId;
+      
+      // No direct client writes (managed via API)
+      allow write: if false;
+    }
+    
+    // User Data Exports collection - GDPR data exports
+    match /user_data_exports/{exportId} {
+      // Users can read their own exports
+      allow read: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+      
+      // No direct client writes (managed via API)
+      allow write: if false;
     }
 
     // Deny all other access

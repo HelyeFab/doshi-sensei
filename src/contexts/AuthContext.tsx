@@ -1,31 +1,18 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { showPasswordPrompt } from '@/utils/dialogHelpers';
-import { authDebug } from '@/utils/authDebug';
-import {
-  User,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  GoogleAuthProvider,
-  signOut,
-  onAuthStateChanged,
-  updateProfile,
-  sendPasswordResetEmail,
-  sendEmailVerification,
-} from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { auth, db, storage } from '@/lib/firebase';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { getAuthService } from '@/lib/auth/auth-service';
+import { getEmailVerificationService } from '@/lib/auth/email-verification';
+import { AuthUser, AuthSession } from '@/lib/auth/types';
+import { SECURITY_MESSAGES } from '@/lib/auth/constants';
 import { 
   getDefaultSubscription, 
   UserSubscription, 
   getUserType, 
   getUserProfile,
-  getAuthStatus,
-  getSubscriptionTier,
   UserType 
 } from '@/types/subscription';
 import {
@@ -36,28 +23,41 @@ import {
 } from '@/types/user-profile';
 
 interface AuthContextType {
+  // User state
   user: User | null;
+  authUser: AuthUser | null;
   userType: UserType;
   subscription: UserSubscription | null;
   loading: boolean;
-  // NEW: Separated concerns
+  
+  // Separated concerns
   userProfile: UserProfile;
   authStatus: AuthStatus;
   subscriptionTier: SubscriptionTier;
-  // Methods
-  signInWithEmail: (email: string, password: string) => Promise<import('firebase/auth').UserCredential>;
-  signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<User | null>;
-  signInWithGoogle: () => Promise<void>;
+  session: AuthSession | null;
+  
+  // Auth methods (simplified with magic links)
+  sendMagicLink: (email: string) => Promise<{ success: boolean; message: string }>;
+  verifyMagicLink: (email: string, token: string, link?: string) => Promise<{ success: boolean; message?: string }>;
+  signInWithGoogle: () => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  sendVerificationEmail: () => Promise<void>;
-  deleteAccount: () => Promise<void>;
+  
+  // Email verification
+  sendVerificationEmail: () => Promise<{ success: boolean; message: string }>;
+  isEmailVerified: () => boolean;
+  
+  // GDPR compliance
+  requestAccountDeletion: (reason?: string) => Promise<{ success: boolean; message: string; scheduledDate?: Date }>;
+  cancelAccountDeletion: () => Promise<{ success: boolean; message: string }>;
+  exportUserData: () => Promise<{ success: boolean; downloadUrl?: string; message?: string }>;
+  
+  // Profile management
+  updateProfile: (updates: { displayName?: string; photoURL?: string }) => Promise<{ success: boolean; message?: string }>;
   refreshSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Export the context for direct access when needed
 export { AuthContext };
 
 export function useAuth() {
@@ -68,455 +68,260 @@ export function useAuth() {
   return context;
 }
 
-// Helper function to create/update user document in Firestore
-const createOrUpdateUserDocument = async (user: User) => {
-  if (!user) return null;
-  
-  if (!db) return null;
-  const userRef = doc(db, 'users', user.uid);
-
-  try {
-    // Check if user document already exists
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      // Create new user document with default free subscription
-      const defaultSubscription = getDefaultSubscription('free');
-      
-      // Clean subscription data - remove any undefined values and fix dates
-      const cleanSubscription = JSON.parse(JSON.stringify(defaultSubscription));
-      
-      await setDoc(userRef, {
-        email: user.email || '',
-        displayName: user.displayName || '',
-        subscription: cleanSubscription,
-        createdAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(),
-        isActive: true,
-      });
-      return defaultSubscription;
-    } else {
-      // Update existing user document with latest info
-      await updateDoc(userRef, {
-        email: user.email || '',
-        displayName: user.displayName || '',
-        lastLoginAt: serverTimestamp(),
-        isActive: true,
-      });
-      
-      // Return existing subscription
-      const userData = userSnap.data();
-      return userData?.subscription || getDefaultSubscription('free');
-    }
-  } catch (error) {
-    // Error creating/updating user document
-    return null;
-  }
-};
-
-// Helper function to fetch user subscription
-const fetchUserSubscription = async (userId: string): Promise<UserSubscription | null> => {
-  if (!userId) return null;
-
-  try {
-    if (!db) return null;
-    const userRef = doc(db, 'users', userId);
-    const userSnap = await getDoc(userRef);
-
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
-      return userData?.subscription || getDefaultSubscription('free');
-    }
-    
-    return null;
-  } catch (error) {
-    // Error fetching user subscription
-    return null;
-  }
-};
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  // Core auth state
   const [user, setUser] = useState<User | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [session, setSession] = useState<AuthSession | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Subscription state
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [userType, setUserType] = useState<UserType>('guest');
   const [userProfile, setUserProfile] = useState<UserProfile>(createUserProfile('anonymous', 'free'));
-  const [loading, setLoading] = useState(true);
-  const [authInitialized, setAuthInitialized] = useState(false);
+  
+  // Get service instances
+  const authService = getAuthService();
+  const emailVerificationService = getEmailVerificationService();
 
-  // Function to refresh subscription data
-  const refreshSubscription = async () => {
+  /**
+   * Fetch user subscription from Firestore
+   */
+  const fetchUserSubscription = useCallback(async (userId: string): Promise<UserSubscription | null> => {
+    if (!userId || !db) return null;
+    
+    try {
+      const userRef = doc(db, 'users', userId);
+      const userDoc = await getDoc(userRef);
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        return userData?.subscription || getDefaultSubscription('free');
+      }
+      
+      return getDefaultSubscription('free');
+    } catch (error) {
+      console.error('Failed to fetch subscription:', error);
+      return getDefaultSubscription('free');
+    }
+  }, []);
+
+  /**
+   * Refresh subscription data
+   */
+  const refreshSubscription = useCallback(async () => {
     if (user) {
       const sub = await fetchUserSubscription(user.uid);
       setSubscription(sub);
-      const newUserType = getUserType(sub ?? null);
+      const newUserType = getUserType(sub);
       const newUserProfile = getUserProfile(sub, user.uid);
       setUserType(newUserType);
       setUserProfile(newUserProfile);
     }
-  };
+  }, [user, fetchUserSubscription]);
 
-  // Check if auth is available on mount
+  /**
+   * Handle auth state changes
+   */
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    // Auth should be available immediately if Firebase is configured
-    if (auth) {
-      console.log('[Auth] Firebase auth is available');
-      setAuthInitialized(true);
-    } else {
-      console.error('[Auth] Firebase auth not available - check configuration');
-      setAuthInitialized(true); // Prevent infinite loading
+    if (!auth) {
       setLoading(false);
+      return;
     }
-  }, []);
-  
-  useEffect(() => {
-    // Set up auth listener after initialization
-    if (!authInitialized || typeof window === 'undefined') return;
-    
-    // Handle redirect result from Google sign-in
-    const handleRedirectResult = async () => {
-      if (!auth) return;
-        
-        // Check if we're expecting a redirect result
-        const isRedirectFlow = sessionStorage.getItem('googleAuthRedirect');
-        
-        // Only check for redirect result if we're expecting one
-        if (isRedirectFlow === 'pending') {
-          try {
-            // Checking for redirect result
-            const result = await getRedirectResult(auth);
-          
-          // Clear the redirect flag immediately after checking
-          sessionStorage.removeItem('googleAuthRedirect');
-          
-          if (result?.user) {
-            // Redirect sign-in successful
-            const sub = await createOrUpdateUserDocument(result.user);
-            setSubscription(sub);
-            const newUserType = getUserType(sub ?? null);
-            const newUserProfile = getUserProfile(sub, result.user.uid);
-            setUserType(newUserType);
-            setUserProfile(newUserProfile);
-          } else if (result === null) {
-            // No redirect result but flag was set - might indicate an issue
-            // No redirect result found despite pending flag
-            // Run diagnostics to help identify the issue
-            authDebug.checkEnvironment();
-            authDebug.logRedirectInfo();
-            authDebug.diagnoseIssues();
-          }
-        } catch (error) {
-          // Clear the redirect flag on error
-          sessionStorage.removeItem('googleAuthRedirect');
-          
-          // Only log actual errors, not null results
-          if ((error as { code?: string })?.code && (error as { code?: string }).code !== 'auth/no-auth-event') {
-            // Redirect sign-in error
-            
-            // Log specific error details for debugging
-            const errorCode = (error as { code?: string })?.code;
-            const errorMessage = (error as { message?: string })?.message;
-            // Error details logged
-            
-            // Run diagnostics on error
-            authDebug.checkEnvironment();
-            authDebug.diagnoseIssues();
-          }
-          }
-        }
-      } catch (error) {
-        console.log('[Auth] handleRedirectResult - Firebase not ready yet');
-      }
-    };
-    
-    handleRedirectResult();
-    
-    // Set up auth state listener
-    try {
-      const auth = getAuthInstance();
-      
-      const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
 
-      if (currentUser) {
-        // Create/update user document and fetch subscription
-        const sub = await createOrUpdateUserDocument(currentUser);
-        // Subscription data loaded
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser);
+      
+      if (firebaseUser) {
+        // Create AuthUser object
+        const authUserData: AuthUser = {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email!,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+          emailVerified: firebaseUser.emailVerified,
+          createdAt: new Date(firebaseUser.metadata.creationTime!),
+          lastLoginAt: new Date(firebaseUser.metadata.lastSignInTime!),
+          provider: 'email', // Will be updated based on provider
+          metadata: {
+            trustScore: 50, // Will be updated by security monitor
+          },
+        };
+        setAuthUser(authUserData);
+        
+        // Get current session
+        const currentSession = authService.getCurrentSession();
+        setSession(currentSession);
+        
+        // Fetch subscription
+        const sub = await fetchUserSubscription(firebaseUser.uid);
         setSubscription(sub);
-        const newUserType = getUserType(sub ?? null);
-        // User type computed
-        const newUserProfile = getUserProfile(sub, currentUser.uid);
+        
+        // Update user type and profile
+        const newUserType = getUserType(sub);
+        const newUserProfile = getUserProfile(sub, firebaseUser.uid);
         setUserType(newUserType);
         setUserProfile(newUserProfile);
+        
+        // Check email verification
+        if (!firebaseUser.emailVerified) {
+          const verificationStatus = await emailVerificationService.checkVerificationStatus(firebaseUser);
+          if (verificationStatus.reminderNeeded) {
+            console.log('Email verification reminder needed');
+          }
+        }
       } else {
         // User signed out
+        setAuthUser(null);
+        setSession(null);
         setSubscription(null);
         setUserType('guest');
         setUserProfile(createUserProfile('anonymous', 'free'));
       }
-
+      
       setLoading(false);
     });
 
-      return () => unsubscribe();
-    } catch (error) {
-      console.error('[Auth] Failed to set up auth listener:', error);
-      setLoading(false);
-      return () => {};
-    }
-  }, [authInitialized]);
+    return () => unsubscribe();
+  }, [fetchUserSubscription, authService, emailVerificationService]);
 
-  const signInWithEmail = async (email: string, password: string) => {
-    if (!auth) throw new Error('Auth not initialized');
-    const result = await signInWithEmailAndPassword(auth, email, password);
+  /**
+   * Send magic link for passwordless sign in
+   */
+  const sendMagicLink = async (email: string) => {
+    return await authService.sendMagicLink(email, {
+      userAgent: navigator.userAgent,
+    });
+  };
+
+  /**
+   * Verify magic link and complete sign in
+   */
+  const verifyMagicLink = async (email: string, token: string, link?: string) => {
+    const result = await authService.verifyMagicLink(email, token, link);
     
-    // Fetch subscription after sign in
-    if (result.user) {
-      const sub = await fetchUserSubscription(result.user.uid);
-      setSubscription(sub);
-      const newUserType = getUserType(sub ?? null);
-      const newUserProfile = getUserProfile(sub, result.user.uid);
-      setUserType(newUserType);
-      setUserProfile(newUserProfile);
+    if (result.success && result.user) {
+      setAuthUser(result.user);
+      await refreshSubscription();
+    }
+    
+    return {
+      success: result.success,
+      message: result.message,
+    };
+  };
+
+  /**
+   * Sign in with Google
+   */
+  const signInWithGoogle = async () => {
+    const result = await authService.signInWithGoogle({
+      userAgent: navigator.userAgent,
+    });
+    
+    if (result.success && result.user) {
+      setAuthUser(result.user);
+      await refreshSubscription();
+    }
+    
+    return {
+      success: result.success,
+      message: result.message,
+    };
+  };
+
+  /**
+   * Sign out
+   */
+  const logout = async () => {
+    await authService.signOut();
+  };
+
+  /**
+   * Send email verification
+   */
+  const sendVerificationEmail = async () => {
+    return await authService.sendEmailVerification({
+      userAgent: navigator.userAgent,
+    });
+  };
+
+  /**
+   * Check if email is verified
+   */
+  const isEmailVerified = () => {
+    return user?.emailVerified || false;
+  };
+
+  /**
+   * Request account deletion (GDPR compliant)
+   */
+  const requestAccountDeletion = async (reason?: string) => {
+    return await authService.requestAccountDeletion(reason);
+  };
+
+  /**
+   * Cancel account deletion request
+   */
+  const cancelAccountDeletion = async () => {
+    return await authService.cancelAccountDeletion();
+  };
+
+  /**
+   * Export user data (GDPR compliant)
+   */
+  const exportUserData = async () => {
+    return await authService.exportUserData();
+  };
+
+  /**
+   * Update user profile
+   */
+  const updateProfile = async (updates: { displayName?: string; photoURL?: string }) => {
+    const result = await authService.updateUserProfile(updates);
+    
+    if (result.success && authUser) {
+      setAuthUser({
+        ...authUser,
+        displayName: updates.displayName ?? authUser.displayName,
+        photoURL: updates.photoURL ?? authUser.photoURL,
+      });
     }
     
     return result;
   };
 
-  const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
-    if (!auth) throw new Error('Auth not initialized');
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-
-    // Update the user's display name if provided
-    if (displayName && result.user) {
-      await updateProfile(result.user, { displayName });
-    }
-
-    // Create user document with default subscription
-    if (result.user) {
-      const sub = await createOrUpdateUserDocument(result.user);
-      setSubscription(sub);
-      const newUserType = getUserType(sub ?? null);
-      const newUserProfile = getUserProfile(sub, result.user.uid);
-      setUserType(newUserType);
-      setUserProfile(newUserProfile);
-    }
-    
-    return result.user;
-  };
-
-  const signInWithGoogle = async () => {
-    console.log('[Auth] signInWithGoogle called');
-    
-    // Get auth instance
-    const auth = getAuthInstance();
-    
-    if (!auth) {
-      console.error('[Auth] CRITICAL: Auth not initialized!');
-      console.error('[Auth] This usually means Firebase config is missing or incorrect');
-      throw new Error('Auth not initialized - check Firebase configuration');
-    }
-    
-    console.log('[Auth] Auth object exists?', !!auth);
-    console.log('[Auth] Window location:', window.location.href);
-    
-    console.log('[Auth] Creating GoogleAuthProvider...');
-    const provider = new GoogleAuthProvider();
-    
-    // Force account selection
-    provider.setCustomParameters({
-      prompt: 'select_account',
-      // Add additional parameters for better production handling
-      access_type: 'offline',
-      include_granted_scopes: 'true'
-    });
-    
-    console.log('[Auth] Auth config check:', {
-      authDomain: auth.app.options.authDomain,
-      apiKey: auth.app.options.apiKey ? 'SET' : 'MISSING',
-      projectId: auth.app.options.projectId,
-      appName: auth.app.name,
-      currentUser: auth.currentUser?.email || 'none'
-    });
-    
-    try {
-      // Check if we're in a redirect flow (important for production)
-      if (typeof window !== 'undefined') {
-        // Set a flag in sessionStorage to track redirect initiation
-        const isRedirectFlow = sessionStorage.getItem('googleAuthRedirect');
-        
-        // If we just initiated a redirect, don't try again
-        if (isRedirectFlow === 'pending') {
-          // Redirect already in progress
-          return;
-        }
-        
-        // Try popup first (better UX on desktop)
-        if (window.innerWidth > 768) {
-          try {
-            // Auth is already initialized via auth
-            const result = await signInWithPopup(auth, provider);
-            // Create/update user document in Firestore
-            if (result.user) {
-              const sub = await createOrUpdateUserDocument(result.user);
-              setSubscription(sub);
-              const newUserType = getUserType(sub ?? null);
-              const newUserProfile = getUserProfile(sub, result.user.uid);
-              setUserType(newUserType);
-              setUserProfile(newUserProfile);
-              // Clear any redirect flags
-              sessionStorage.removeItem('googleAuthRedirect');
-            }
-            return;
-          } catch (popupError) {
-            // If popup fails (blocked, COOP issues, etc.), fall back to redirect
-            if ((popupError as { code?: string }).code !== 'auth/popup-closed-by-user') {
-              // Popup blocked or failed, using redirect method
-              // Mark redirect as pending
-              sessionStorage.setItem('googleAuthRedirect', 'pending');
-              await signInWithRedirect(auth, provider);
-            }
-            // If user closed the popup, just return silently (not an error)
-          }
-        } else {
-          // Use redirect for mobile devices
-          // Mark redirect as pending
-          sessionStorage.setItem('googleAuthRedirect', 'pending');
-          await signInWithRedirect(auth, provider);
-        }
-      }
-    } catch (error) {
-      // Google sign-in error
-      // Clear redirect flag on error
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('googleAuthRedirect');
-      }
-      throw error;
-    }
-  };
-
-  const logout = async () => {
-    if (!auth) throw new Error('Auth not initialized');
-    await signOut(auth);
-    setSubscription(null);
-    setUserType('guest');
-    setUserProfile(createUserProfile('anonymous', 'free'));
-  };
-
-  const resetPassword = async (email: string) => {
-    console.log('[Auth] resetPassword called for email:', email);
-    
-    if (!auth) throw new Error('Auth not initialized');
-    
-    console.log('[Auth] Auth domain for password reset:', auth.app.options.authDomain);
-    
-    try {
-      console.log('[Auth] Sending password reset email...');
-      await sendPasswordResetEmail(auth, email);
-      console.log('[Auth] Password reset email sent successfully');
-    } catch (error: any) {
-      console.error('[Auth] Password reset error:', {
-        code: error.code,
-        message: error.message,
-        email: email,
-        authDomain: auth.app.options.authDomain
-      });
-      throw error;
-    }
-  };
-
-  const sendVerificationEmail = async () => {
-    if (!user) throw new Error('No user logged in');
-    try {
-      await sendEmailVerification(user);
-      console.log('[Auth] Verification email sent successfully');
-    } catch (error) {
-      console.error('[Auth] Failed to send verification email:', error);
-      throw error;
-    }
-  };
-
-  const deleteAccount = async () => {
-    if (!user) throw new Error('No user logged in');
-    
-    try {
-      // For account deletion to work, we need a recent authentication
-      // Let's prompt the user to re-enter their password
-      const email = user.email;
-      if (!email) throw new Error('No email found for user');
-      
-      // Ask for password using secure dialog
-      let password: string;
-      try {
-        password = await showPasswordPrompt(
-          'Confirm Account Deletion',
-          'Please enter your password to permanently delete your account. This action cannot be undone.',
-          'Enter your password',
-          'danger'
-        );
-      } catch (error) {
-        throw new Error('Account deletion cancelled');
-      }
-      
-      // Re-authenticate the user
-      const { EmailAuthProvider, reauthenticateWithCredential } = await import('firebase/auth');
-      const credential = EmailAuthProvider.credential(email, password);
-      await reauthenticateWithCredential(user, credential);
-      
-      // Now we can delete - first get the UID
-      const uid = user.uid;
-      
-      // Delete Firestore data first (while we still have auth)
-      try {
-        if (db) {
-          await deleteDoc(doc(db, 'users', uid));
-        }
-      } catch (error) {
-        // Error deleting Firestore data
-        // Continue anyway
-      }
-      
-      // Now delete the auth user account (this should work after reauthentication)
-      await user.delete();
-      console.log('[Auth] User account deleted successfully');
-      
-      // Clear local state
-      setSubscription(null);
-      setUserType('guest');
-      setUserProfile(createUserProfile('anonymous', 'free'));
-      
-      // Account deleted successfully
-    } catch (error: any) {
-      // Delete account error
-      
-      if (error.code === 'auth/requires-recent-login') {
-        throw new Error('Authentication failed. Please try again.');
-      } else if (error.code === 'auth/wrong-password') {
-        throw new Error('Incorrect password. Please try again.');
-      }
-      
-      throw new Error(error.message || 'Failed to delete account');
-    }
-  };
-
   const value: AuthContextType = {
+    // User state
     user,
+    authUser,
     userType,
     subscription,
     loading,
-    // NEW: Separated concerns
+    
+    // Separated concerns
     userProfile,
     authStatus: userProfile.authStatus,
     subscriptionTier: userProfile.subscriptionTier,
-    // Methods
-    signInWithEmail,
-    signUpWithEmail,
+    session,
+    
+    // Auth methods
+    sendMagicLink,
+    verifyMagicLink,
     signInWithGoogle,
     logout,
-    resetPassword,
+    
+    // Email verification
     sendVerificationEmail,
-    deleteAccount,
+    isEmailVerified,
+    
+    // GDPR compliance
+    requestAccountDeletion,
+    cancelAccountDeletion,
+    exportUserData,
+    
+    // Profile management
+    updateProfile,
     refreshSubscription,
   };
 

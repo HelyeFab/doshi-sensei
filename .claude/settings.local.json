@@ -1,7 +1,24 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:gist.githubusercontent.com)",
+      "Bash(firebase functions:config:get:*)",
+      "Bash(firebase functions:secrets:set:*)",
+      "Bash(npm run build:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(chmod:*)",
+      "Bash(firebase functions:config:unset:*)",
+      "Bash(gcloud run services describe:*)",
+      "Bash(firebase functions:delete:*)",
+      "Bash(stripe:*)",
+      "Bash(firebase functions:log:*)",
+      "Bash(git log:*)",
+      "Bash(git grep:*)"
     ],
     "deny": [],
     "ask": []

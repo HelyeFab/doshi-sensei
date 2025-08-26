@@ -8,7 +8,6 @@
     "build:netlify": "next build",
     "start": "next start",
     "lint": "eslint",
-    "validate:env": "node scripts/validate-env-sync.js",
     "prebuild": "node scripts/validate-env-sync.js"
   },
   "dependencies": {

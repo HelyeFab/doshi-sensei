@@ -153,5 +153,5 @@ const getAuthSafe = () => {
   return auth;
 };
 
-export { auth, db, storage, getAuthSafe, ensureFirebaseInitialized, getAuthInstance };
+export { auth, db, storage, getAuthSafe };
 export default app;

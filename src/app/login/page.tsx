@@ -107,14 +107,17 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
+    console.log('[Login] Google Sign-In button clicked');
     try {
       setIsLoading(true);
       // Store a flag that we're attempting Google sign-in
       sessionStorage.setItem('googleSignInPending', 'true');
+      console.log('[Login] Calling signInWithGoogle...');
       await signInWithGoogle();
+      console.log('[Login] signInWithGoogle completed (should redirect now)');
       // The page will redirect to Google, so this code won't execute
     } catch (error: any) {
-      console.error('Google sign-in error:', error);
+      console.error('[Login] Google sign-in error in component:', error);
       sessionStorage.removeItem('googleSignInPending');
       toast.error(error.message || 'Failed to sign in with Google');
       setIsLoading(false);

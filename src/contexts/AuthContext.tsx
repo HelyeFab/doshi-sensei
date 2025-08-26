@@ -268,10 +268,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     console.log('[Auth] signInWithGoogle called');
+    console.log('[Auth] Auth object exists?', !!auth);
+    console.log('[Auth] Window location:', window.location.href);
     
     if (!auth) {
       console.error('[Auth] CRITICAL: Auth not initialized!');
-      throw new Error('Auth not initialized');
+      console.error('[Auth] This usually means Firebase config is missing or incorrect');
+      throw new Error('Auth not initialized - check Firebase configuration');
     }
     
     console.log('[Auth] Creating GoogleAuthProvider...');
@@ -282,28 +285,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       prompt: 'select_account'
     });
     
-    console.log('[Auth] Auth config:', {
+    console.log('[Auth] Auth config check:', {
       authDomain: auth.app.options.authDomain,
       apiKey: auth.app.options.apiKey ? 'SET' : 'MISSING',
-      projectId: auth.app.options.projectId
+      projectId: auth.app.options.projectId,
+      appName: auth.app.name,
+      currentUser: auth.currentUser?.email || 'none'
     });
     
     try {
       // Always use redirect method for consistent behavior
-      console.log('[Auth] Initiating Google sign-in with redirect...');
-      console.log('[Auth] Current URL:', window.location.href);
+      console.log('[Auth] About to call signInWithRedirect...');
+      console.log('[Auth] Provider:', provider);
+      console.log('[Auth] Auth instance:', auth);
       
       await signInWithRedirect(auth, provider);
       
-      console.log('[Auth] signInWithRedirect called successfully (page should redirect now)');
+      console.log('[Auth] signInWithRedirect completed - page should redirect to Google now');
       // Note: This function will cause a page redirect, so code after this won't execute
     } catch (error: any) {
-      console.error('[Auth] Google sign-in error details:', {
+      console.error('[Auth] ❌ Google sign-in error details:', {
         code: error.code,
         message: error.message,
         customData: error.customData,
+        name: error.name,
         stack: error.stack
       });
+      
+      // Check for specific error types
+      if (error.code === 'auth/unauthorized-domain') {
+        console.error('[Auth] Domain not authorized in Firebase Console');
+      } else if (error.code === 'auth/operation-not-allowed') {
+        console.error('[Auth] Google sign-in not enabled in Firebase Console');
+      }
+      
       throw error;
     }
   };

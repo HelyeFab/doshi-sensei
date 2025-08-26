@@ -87,37 +87,6 @@ async function launchBrowser() {
       ignoreHTTPSErrors: true
     });
     return browser;
-  } catch (error) {
-    console.error('❌ Failed to launch browser:', error);
-    throw error;
-  }
-}
-
-// Scrape Yahoo News Japan
-async function scrapeYahooNews() {
-  const articles = [];
-  let browser;
-  
-  try {
-    console.log('🚀 [Yahoo News] Launching browser...');
-    browser = await launchBrowser();
-    const page = await browser.newPage();
-    
-    // Set Japanese user agent
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    
-    // Navigate to Yahoo News Japan
-    console.log('📖 [Yahoo News] Navigating to Yahoo News Japan...');
-    await page.goto('https://news.yahoo.co.jp/', {
-      waitUntil: 'networkidle2',
-      timeout: 30000
-    });
-    
-    // Wait for news items to load
-    await page.waitForSelector('article, .newsFeed_item, [data-ual-view-type="list"]', { timeout: 10000 });
-    
-    // Get article links from the homepage
-    const articleLinks = await page.evaluate(() => {
       const links = [];
       
       // Try multiple selectors for Yahoo News

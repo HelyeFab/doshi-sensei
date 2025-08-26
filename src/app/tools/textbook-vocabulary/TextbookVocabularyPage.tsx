@@ -17,7 +17,7 @@ const pageStructuredData = {
   "url": "https://doshisensei.com/tools/textbook-vocabulary"
 };
 
-type Textbook = 'genki-1' | 'genki-2' | 'minna-1' | 'minna-2' | null;
+type Textbook = 'genki-1' | 'genki-2-complete' | 'minna-1' | 'minna-2' | 'kaishi-15k' | 'kanji-in-context' | null;
 
 export default function TextbookVocabularyPage() {
   const strings = useStrings();
@@ -57,14 +57,14 @@ export default function TextbookVocabularyPage() {
       icon: '🌸'
     },
     {
-      id: 'genki-2' as Textbook,
+      id: 'genki-2-complete' as Textbook,
       title: 'Genki 2',
-      subtitle: 'Elementary Japanese II',
+      subtitle: 'Elementary Japanese II (Complete)',
       color: 'from-purple-400 to-indigo-500',
       shadowColor: 'shadow-indigo-200 dark:shadow-indigo-500/50',
       hoverShadow: 'hover:shadow-indigo-300 dark:hover:shadow-indigo-400/60',
       lessons: 11,
-      words: 491,
+      words: 1062,
       level: 'N4-N5',
       icon: '🌺'
     },
@@ -91,6 +91,30 @@ export default function TextbookVocabularyPage() {
       words: 1058,
       level: 'N4',
       icon: '🌊'
+    },
+    {
+      id: 'kaishi-15k' as Textbook,
+      title: 'Kaishi Core 1.5k',
+      subtitle: 'Frequency-Based Core Vocabulary',
+      color: 'from-orange-400 to-red-500',
+      shadowColor: 'shadow-red-200 dark:shadow-red-500/50',
+      hoverShadow: 'hover:shadow-red-300 dark:hover:shadow-red-400/60',
+      lessons: 0, // Organized by JLPT level instead
+      words: 1500,
+      level: 'N5-N1',
+      icon: '🔥'
+    },
+    {
+      id: 'kanji-in-context' as Textbook,
+      title: 'Kanji in Context',
+      subtitle: 'Comprehensive Kanji Compounds',
+      color: 'from-blue-400 to-cyan-500',
+      shadowColor: 'shadow-cyan-200 dark:shadow-cyan-500/50',
+      hoverShadow: 'hover:shadow-cyan-300 dark:hover:shadow-cyan-400/60',
+      lessons: 50, // 50 chapters
+      words: 9279,
+      level: 'N4-N1',
+      icon: '📚'
     }
   ];
 

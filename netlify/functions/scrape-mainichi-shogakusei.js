@@ -87,37 +87,6 @@ async function launchBrowser() {
       ignoreHTTPSErrors: true
     });
     return browser;
-  } catch (error) {
-    console.error('❌ Failed to launch browser:', error);
-    throw error;
-  }
-}
-
-// Scrape Mainichi Shogakusei Shimbun (Elementary School Newspaper)
-async function scrapeMainichiShogakusei() {
-  const articles = [];
-  let browser;
-  
-  try {
-    console.log('🚀 [Mainichi Shogakusei] Launching browser...');
-    browser = await launchBrowser();
-    const page = await browser.newPage();
-    
-    // Set Japanese user agent
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    
-    // Navigate to Mainichi Shogakusei Shimbun
-    console.log('📖 [Mainichi Shogakusei] Navigating to Mainichi Elementary News...');
-    await page.goto('https://mainichi.jp/maisho/', {
-      waitUntil: 'networkidle2',
-      timeout: 30000
-    });
-    
-    // Wait for news items to load
-    await page.waitForSelector('article, .article-list, .news-list, a[href*="/articles/"]', { timeout: 10000 });
-    
-    // Get article links from the homepage
-    const articleLinks = await page.evaluate(() => {
       const links = [];
       
       // Try multiple selectors for Mainichi

@@ -12,15 +12,15 @@ export const TEXTBOOK_CONFIG = {
       color: 'from-pink-400 to-purple-500',
       description: 'Popular beginner Japanese textbook series',
     },
-    'genki-2': {
-      id: 'genki-2',
+    'genki-2-complete': {
+      id: 'genki-2-complete',
       name: 'Genki',
-      title: 'Genki 2',
+      title: 'Genki 2 (Complete)',
       edition: '3rd',
       lessons: 11,
       lessonOffset: 12,
       color: 'from-purple-400 to-indigo-500',
-      description: 'Popular beginner Japanese textbook series',
+      description: 'Popular beginner Japanese textbook series - Complete Edition',
     },
     'minna-1': {
       id: 'minna-1',
@@ -41,6 +41,26 @@ export const TEXTBOOK_CONFIG = {
       lessonOffset: 0,
       color: 'from-teal-400 to-blue-500',
       description: 'Comprehensive Japanese learning textbook',
+    },
+    'kaishi-15k': {
+      id: 'kaishi-15k',
+      name: 'Kaishi Core',
+      title: 'Kaishi Core 1.5k',
+      edition: '1.0',
+      lessons: 5, // Organized by JLPT levels (N5-N1)
+      lessonOffset: 0,
+      color: 'from-orange-400 to-red-500',
+      description: 'Frequency-based core vocabulary for efficient learning',
+    },
+    'kanji-in-context': {
+      id: 'kanji-in-context',
+      name: 'Kanji in Context',
+      title: 'Kanji in Context',
+      edition: 'Revised',
+      lessons: 50, // 50 chapters
+      lessonOffset: 0,
+      color: 'from-blue-400 to-cyan-500',
+      description: 'Comprehensive kanji compounds and vocabulary',
     },
   },
 

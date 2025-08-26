@@ -87,37 +87,6 @@ const { filterArticles, quickValidate } = require('./article-quick-validation');
   }
 }
 
-// Scrape regular NHK News (not Easy) using patterns from news-crawler
-async function scrapeNHKNews() {
-  const articles = [];
-  let browser;
-  
-  try {
-    console.log('🚀 [NHK] Launching browser...');
-    browser = await launchBrowser();
-    const page = await browser.newPage();
-    
-    // First, get the news list page
-    console.log('📖 [NHK] Navigating to NHK News...');
-    await page.goto('https://www3.nhk.or.jp/news/', {
-      waitUntil: 'networkidle2',
-      timeout: 30000
-    });
-    
-    // Wait for news items to load
-    await page.waitForSelector('article', { timeout: 10000 });
-    
-    // Get article links
-    const articleLinks = await page.evaluate(() => {
-      const links = [];
-      // Look for article links - adjust selector based on current NHK structure
-      const articles = document.querySelectorAll('article a[href*="/news/html/"]');
-      
-      articles.forEach((article, index) => {
-        if (index < 5) { // Get first 5
-          const href = article.href;
-          const title = article.textContent?.trim() || '';
-          
           if (href && title) {
             links.push({ url: href, title });
           }

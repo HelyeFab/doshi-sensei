@@ -7,6 +7,7 @@ import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { STRIPE_CONFIG } from '@/lib/stripe';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useStripePrices } from '@/hooks/useStripePrices';
 
 interface UpgradeSlideUpModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export function UpgradeSlideUpModal({ isOpen, onClose, message, feature }: Upgra
   const { createCheckoutSession } = useSubscription2();
   const strings = useStrings();
   const { trackUpgradeModalShown, track } = useAnalytics();
+  const { prices, loading: pricesLoading, formatPrice } = useStripePrices();
 
   // Track modal shown
   useEffect(() => {
@@ -84,19 +86,35 @@ export function UpgradeSlideUpModal({ isOpen, onClose, message, feature }: Upgra
           <button
             onClick={() => handleUpgrade('yearly')}
             className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium relative"
+            disabled={pricesLoading}
           >
             <div className="absolute top-0 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-b transform translate-y-0">
               {strings.subscriptions?.savePercent || "Save 17%"}
             </div>
-            <div className="text-lg">${yearlyPlan?.price}/year</div>
+            <div className="text-lg">
+              {pricesLoading ? 
+                "Loading..." : 
+                prices?.yearly ? 
+                  `${formatPrice(prices.yearly)}/year` : 
+                  "$89/year"
+              }
+            </div>
             <div className="text-sm opacity-90">{strings.subscriptions?.bestValue || "Best Value"}</div>
           </button>
 
           <button
             onClick={() => handleUpgrade('monthly')}
             className="w-full px-4 py-3 border border-primary text-primary rounded-lg hover:bg-primary/10 transition-colors font-medium"
+            disabled={pricesLoading}
           >
-            <div className="text-lg">${monthlyPlan?.price}/month</div>
+            <div className="text-lg">
+              {pricesLoading ? 
+                "Loading..." : 
+                prices?.monthly ? 
+                  `${formatPrice(prices.monthly)}/month` : 
+                  "$9/month"
+              }
+            </div>
             <div className="text-sm opacity-70">{strings.subscriptions?.monthlyPlan || "Monthly Plan"}</div>
           </button>
         </div>

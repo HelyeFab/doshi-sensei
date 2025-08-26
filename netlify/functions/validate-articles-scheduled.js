@@ -87,37 +87,6 @@ if (!admin.apps.length) {
     }
   } catch (error) {
     console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
-    firebaseInitialized = false;
-  }
-} else {
-  firebaseInitialized = true;
-  db = admin.firestore();
-}
-
-/**
- * Call the AI validation API
- */
-async function validateArticleWithAI(article) {
-  try {
-    const baseUrl = process.env.URL || process.env.DEPLOY_URL || 'https://doshisensei.com';
-    const response = await fetch(`${baseUrl}/api/ai/validate-article`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title: article.title,
-        content: article.content || article.body,
-        source: article.source,
-        currentJlptLevel: article.jlptLevel
-      })
-    });
-
-    if (!response.ok) {
-      console.error(`AI Validation API error: ${response.status}`);
-      return null;
-    }
-
-    return await response.json();
-  } catch (error) {
     console.error('AI validation error:', error);
     return null;
   }

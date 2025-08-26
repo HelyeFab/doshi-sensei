@@ -234,8 +234,6 @@ exports.handler = async (event, context) => {
       { function: 'scrape-watanoc-next', name: 'Watanoc' },
       { function: 'scrape-todaii-next', name: 'Todaii' },
       { function: 'scrape-nhk-easy', name: 'NHK Easy' },
-      { function: 'scrape-nhk-improved', name: 'NHK News' },
-      { function: 'scrape-yahoo-news', name: 'Yahoo News' },
       { function: 'scrape-mainichi-shogakusei', name: 'Mainichi Elementary' },
       { function: 'scrape-mainichi-news', name: 'Mainichi Shimbun' }
     ];

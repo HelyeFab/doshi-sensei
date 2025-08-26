@@ -52,36 +52,40 @@ export function FilterPanel({
       </div>
 
       {/* Lesson Selector */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
-        <button
-          onClick={() => onLessonSelect(null)}
-          className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-            selectedLesson === null
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80'
-          }`}
-        >
-          All Lessons
-        </button>
-        {Array.from({ length: totalLessons }, (_, i) => i + 1).map((lesson) => {
-          const locked = !isPremium && lesson > TEXTBOOK_CONFIG.premiumLimits.freeUserMaxLesson;
-          return (
+      <div className="relative">
+        <div className="overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 md:-mx-2 md:px-2">
+          <div className="flex gap-2 min-w-max">
             <button
-              key={lesson}
-              onClick={() => (locked ? onRequestUpgrade() : onLessonSelect(lesson))}
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-                locked
-                  ? 'bg-muted text-muted-foreground/60 cursor-pointer relative opacity-60 hover:bg-muted/80'
-                  : selectedLesson === lesson
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              onClick={() => onLessonSelect(null)}
+              className={`flex-shrink-0 px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                selectedLesson === null
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
             >
-              {locked && <span className="mr-1">🔒</span>}
-              Lesson {lesson}
+              All
             </button>
-          );
-        })}
+            {Array.from({ length: totalLessons }, (_, i) => i + 1).map((lesson) => {
+              const locked = !isPremium && lesson > TEXTBOOK_CONFIG.premiumLimits.freeUserMaxLesson;
+              return (
+                <button
+                  key={lesson}
+                  onClick={() => (locked ? onRequestUpgrade() : onLessonSelect(lesson))}
+                  className={`flex-shrink-0 px-3 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                    locked
+                      ? 'bg-muted text-muted-foreground/60 cursor-pointer relative opacity-60 hover:bg-muted/80'
+                      : selectedLesson === lesson
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  {locked && <span className="mr-1">🔒</span>}
+                  Lesson {lesson}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Advanced Filters Toggle */}

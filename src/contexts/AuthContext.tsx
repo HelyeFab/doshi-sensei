@@ -17,7 +17,7 @@ import {
   sendEmailVerification,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { auth, db, getAuthInstance } from '@/lib/firebase';
 import { 
   getDefaultSubscription, 
   UserSubscription, 
@@ -153,7 +153,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== 'undefined' && !authInitialized) {
       // Give Firebase a moment to initialize
       const checkAuth = setInterval(() => {
-        if (auth) {
+        const authInstance = getAuthInstance();
+        if (authInstance) {
           console.log('[Auth] Auth instance now available');
           setAuthInitialized(true);
           clearInterval(checkAuth);
@@ -173,14 +174,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const handleRedirectResult = async () => {
       console.log('[Auth] Checking for redirect result...');
       
-      if (!auth) {
+      const authInstance = getAuthInstance();
+      if (!authInstance) {
         console.log('[Auth] No auth instance, skipping redirect check');
         return;
       }
       
       try {
         console.log('[Auth] Calling getRedirectResult...');
-        const result = await getRedirectResult(auth);
+        const result = await getRedirectResult(authInstance);
         
         if (result?.user) {
           console.log('[Auth] ✅ Redirect sign-in successful!', {
@@ -215,13 +217,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     handleRedirectResult();
     
-    if (!auth) {
+    const authInstance = getAuthInstance();
+    if (!authInstance) {
       console.log('[Auth] No auth instance for onAuthStateChanged');
       setLoading(false);
       return;
     }
     
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(authInstance, async (currentUser) => {
       setUser(currentUser);
 
       if (currentUser) {
@@ -250,8 +253,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [authInitialized]);
 
   const signInWithEmail = async (email: string, password: string) => {
-    if (!auth) throw new Error('Auth not initialized');
-    const result = await signInWithEmailAndPassword(auth, email, password);
+    const authInstance = getAuthInstance();
+    if (!authInstance) throw new Error('Auth not initialized');
+    const result = await signInWithEmailAndPassword(authInstance, email, password);
     
     // Fetch subscription after sign in
     if (result.user) {
@@ -267,8 +271,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
-    if (!auth) throw new Error('Auth not initialized');
-    const result = await createUserWithEmailAndPassword(auth, email, password);
+    const authInstance = getAuthInstance();
+    if (!authInstance) throw new Error('Auth not initialized');
+    const result = await createUserWithEmailAndPassword(authInstance, email, password);
 
     // Update the user's display name if provided
     if (displayName && result.user) {
@@ -293,7 +298,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('[Auth] Auth object exists?', !!auth);
     console.log('[Auth] Window location:', window.location.href);
     
-    if (!auth) {
+    const authInstance = getAuthInstance();
+    if (!authInstance) {
       console.error('[Auth] CRITICAL: Auth not initialized!');
       console.error('[Auth] This usually means Firebase config is missing or incorrect');
       throw new Error('Auth not initialized - check Firebase configuration');
@@ -308,20 +314,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     
     console.log('[Auth] Auth config check:', {
-      authDomain: auth.app.options.authDomain,
-      apiKey: auth.app.options.apiKey ? 'SET' : 'MISSING',
-      projectId: auth.app.options.projectId,
-      appName: auth.app.name,
-      currentUser: auth.currentUser?.email || 'none'
+      authDomain: authInstance.app.options.authDomain,
+      apiKey: authInstance.app.options.apiKey ? 'SET' : 'MISSING',
+      projectId: authInstance.app.options.projectId,
+      appName: authInstance.app.name,
+      currentUser: authInstance.currentUser?.email || 'none'
     });
     
     try {
       // Always use redirect method for consistent behavior
       console.log('[Auth] About to call signInWithRedirect...');
       console.log('[Auth] Provider:', provider);
-      console.log('[Auth] Auth instance:', auth);
+      console.log('[Auth] Auth instance:', authInstance);
       
-      await signInWithRedirect(auth, provider);
+      await signInWithRedirect(authInstance, provider);
       
       console.log('[Auth] signInWithRedirect completed - page should redirect to Google now');
       // Note: This function will cause a page redirect, so code after this won't execute
@@ -346,8 +352,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    if (!auth) throw new Error('Auth not initialized');
-    await signOut(auth);
+    const authInstance = getAuthInstance();
+    if (!authInstance) throw new Error('Auth not initialized');
+    await signOut(authInstance);
     setSubscription(null);
     setUserType('guest');
     setUserProfile(createUserProfile('anonymous', 'free'));
@@ -356,23 +363,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resetPassword = async (email: string) => {
     console.log('[Auth] resetPassword called for email:', email);
     
-    if (!auth) {
+    const authInstance = getAuthInstance();
+    if (!authInstance) {
       console.error('[Auth] CRITICAL: Auth not initialized for password reset!');
       throw new Error('Auth not initialized');
     }
     
-    console.log('[Auth] Auth domain for password reset:', auth.app.options.authDomain);
+    console.log('[Auth] Auth domain for password reset:', authInstance.app.options.authDomain);
     
     try {
       console.log('[Auth] Sending password reset email...');
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(authInstance, email);
       console.log('[Auth] Password reset email sent successfully');
     } catch (error: any) {
       console.error('[Auth] Password reset error:', {
         code: error.code,
         message: error.message,
         email: email,
-        authDomain: auth.app.options.authDomain
+        authDomain: authInstance.app.options.authDomain
       });
       throw error;
     }

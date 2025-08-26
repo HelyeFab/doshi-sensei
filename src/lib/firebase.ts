@@ -3,15 +3,15 @@ import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
-// Firebase configuration with fallback values (ensures auth always works)
+// Firebase configuration from environment variables
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyBUGHKkXNi6xPCZ4TGWEQmY5YH_J7khCoE",
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "doshi-sensei.firebaseapp.com",
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "doshi-sensei",
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "doshi-sensei.appspot.com",
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "940013577006",
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:940013577006:web:9b63a063ae91bce3d8f8fa",
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "G-YVBQL71V35"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || ''
 };
 
 // Diagnostic logging for auth issues
@@ -29,6 +29,17 @@ let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 let db: Firestore | null = null;
 let storage: FirebaseStorage | null = null;
+
+// Function to get auth instance (creates it if needed and on client side)
+export const getAuthInstance = (): Auth | null => {
+  if (typeof window === 'undefined') return null;
+  if (auth) return auth;
+  if (app) {
+    auth = getAuth(app);
+    console.log('[Firebase] Auth instance created on demand');
+  }
+  return auth;
+};
 
 // Only initialize Firebase if we have the required configuration
 // This prevents build errors when environment variables are not available

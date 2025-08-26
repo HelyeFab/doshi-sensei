@@ -11,9 +11,19 @@ import { checkEmailAvailability, debounce } from '@/utils/emailValidation';
 import { useToast } from '@/hooks/useToast';
 
 export default function LoginPage() {
-  const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, resetPassword } = useAuth();
+  const authContext = useAuth();
+  const { user, signInWithEmail, signUpWithEmail, signInWithGoogle, resetPassword } = authContext;
   const router = useRouter();
   const { toast } = useToast();
+  
+  // Debug auth context
+  useEffect(() => {
+    console.log('[Login] Auth context loaded:', {
+      hasUser: !!user,
+      hasSignInWithGoogle: typeof signInWithGoogle === 'function',
+      authContextKeys: authContext ? Object.keys(authContext) : 'null'
+    });
+  }, [authContext, user, signInWithGoogle]);
   
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
@@ -26,10 +36,23 @@ export default function LoginPage() {
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
-  // Redirect if already logged in
+  // Redirect if already logged in or handle redirect result
   useEffect(() => {
-    if (user) {
+    // Check if we have a pending Google sign-in
+    const pendingSignIn = sessionStorage.getItem('googleSignInPending');
+    
+    if (pendingSignIn && !user) {
+      // We're returning from Google but auth isn't ready yet
+      setIsLoading(true);
+    } else if (user) {
+      // User is logged in, clear any pending flags and redirect
+      sessionStorage.removeItem('googleSignInPending');
+      toast.success('Welcome back!');
       router.push('/');
+    } else {
+      // No pending sign-in and no user
+      sessionStorage.removeItem('googleSignInPending');
+      setIsLoading(false);
     }
   }, [user, router]);
 
@@ -94,14 +117,28 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
+    console.log('[Login] Google Sign-In button clicked');
+    console.log('[Login] signInWithGoogle type:', typeof signInWithGoogle);
+    
+    if (!signInWithGoogle || typeof signInWithGoogle !== 'function') {
+      console.error('[Login] CRITICAL: signInWithGoogle is not available!');
+      toast.error('Google Sign-In is not available. Please refresh the page.');
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       setIsLoading(true);
+      // Store a flag that we're attempting Google sign-in
+      sessionStorage.setItem('googleSignInPending', 'true');
+      console.log('[Login] Calling signInWithGoogle...');
       await signInWithGoogle();
-      toast.success('Welcome!');
-      router.push('/');
+      console.log('[Login] signInWithGoogle completed (should redirect now)');
+      // The page will redirect to Google, so this code won't execute
     } catch (error: any) {
+      console.error('[Login] Google sign-in error in component:', error);
+      sessionStorage.removeItem('googleSignInPending');
       toast.error(error.message || 'Failed to sign in with Google');
-    } finally {
       setIsLoading(false);
     }
   };

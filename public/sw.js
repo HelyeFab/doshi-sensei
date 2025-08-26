@@ -33,7 +33,7 @@ if (typeof TextDecoder === 'undefined') {
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
 
 // Configuration - INCREMENT THIS ON EACH DEPLOYMENT
-const SW_VERSION = '5.0.1-' + new Date().getTime(); // Force update with timestamp - Added TextEncoder polyfill
+const SW_VERSION = '5.0.2-' + new Date().getTime(); // Fix navigation preload handling
 const APP_NAME = 'doshi-sensei';
 const DEBUG = false;
 
@@ -173,8 +173,13 @@ if (workbox) {
   
   const navigationHandler = async (params) => {
     try {
-      const preloadResponse = await params.preloadResponse;
-      if (preloadResponse) return preloadResponse;
+      // Check if preloadResponse exists and handle it properly
+      if (params.preloadResponse) {
+        const preloadResponse = await params.preloadResponse;
+        if (preloadResponse) return preloadResponse;
+      }
+      
+      // Fallback to NetworkFirst strategy
       return await new workbox.strategies.NetworkFirst({
         cacheName: `${APP_NAME}-pages`,
         plugins: [
@@ -185,6 +190,7 @@ if (workbox) {
         ]
       }).handle(params);
     } catch (error) {
+      // Return offline page or fallback response
       return caches.match('/offline') || new Response('Offline', { status: 503 });
     }
   };

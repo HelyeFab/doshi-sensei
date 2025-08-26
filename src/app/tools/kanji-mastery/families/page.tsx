@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { KANJI_FAMILIES, getFamiliesByCategories, type KanjiFamily } from '@/lib/kanji/families';
 import { useFeature } from '@/hooks/useFeature';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
+import KanjiModal from '@/components/kanji/KanjiModal';
+import { Kanji } from '@/types';
 
 interface KanjiDetails {
   kanji: string;
@@ -48,10 +50,11 @@ export default function KanjiFamiliesPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showCrossFamilies, setShowCrossFamilies] = useState(false);
+  const [modalKanji, setModalKanji] = useState<Kanji | null>(null);
   
   const familiesByCategory = getFamiliesByCategories();
   
-  const loadFamilyData = useCallback(async (familyId: string) => {
+  const loadFamilyData = async (familyId: string, crossFamilies: boolean) => {
     // Check access before loading
     const hasAccess = await checkAndTrack();
     if (!hasAccess) return;
@@ -61,7 +64,7 @@ export default function KanjiFamiliesPage() {
     
     try {
       const response = await fetch(
-        `/api/kanji/by-family?family=${familyId}&details=true&crossFamilies=${showCrossFamilies}`
+        `/api/kanji/by-family?family=${familyId}&details=true&crossFamilies=${crossFamilies}`
       );
       
       if (!response.ok) {
@@ -76,21 +79,31 @@ export default function KanjiFamiliesPage() {
     } finally {
       setLoading(false);
     }
-  }, [checkAndTrack, showCrossFamilies]);
+  };
   
   useEffect(() => {
     if (selectedFamily) {
-      loadFamilyData(selectedFamily);
+      loadFamilyData(selectedFamily, showCrossFamilies);
     }
-  }, [selectedFamily, loadFamilyData]);
+  }, [selectedFamily, showCrossFamilies]);
   
   const handleFamilySelect = (familyId: string) => {
     setSelectedFamily(familyId);
   };
   
-  const handleKanjiClick = (kanji: string) => {
-    // Navigate to kanji detail page
-    router.push(`/kanji-browser?search=${kanji}`);
+  const handleKanjiClick = (kanjiDetail: KanjiDetails) => {
+    // Convert KanjiDetails to Kanji type for modal
+    const kanjiForModal: Kanji = {
+      kanji: kanjiDetail.kanji,
+      meaning: kanjiDetail.meanings?.join(', ') || '',
+      onyomi: kanjiDetail.on_readings || [],
+      kunyomi: kanjiDetail.kun_readings || [],
+      level: kanjiDetail.jlpt ? `N${kanjiDetail.jlpt}` as any : 'N5',
+      grade: kanjiDetail.grade || 0,
+      strokeCount: kanjiDetail.stroke_count || 0,
+      frequency: kanjiDetail.frequency || 0
+    };
+    setModalKanji(kanjiForModal);
   };
   
   const getFilteredFamilies = () => {
@@ -113,50 +126,40 @@ export default function KanjiFamiliesPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="px-4 py-6 bg-card border-b border-border">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <Link
-              href="/tools/kanji-mastery"
-              className="p-2 rounded-lg hover:bg-muted transition-colors"
-              aria-label="Back to Kanji Mastery"
+      <SmartPageHeader
+        title="Kanji Families"
+        actions={
+          <div className="flex gap-2 bg-muted rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1 rounded ${
+                viewMode === 'grid' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-muted-foreground'
+              }`}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </Link>
-            
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-foreground">Kanji Families</h1>
-              <p className="text-sm text-muted-foreground">
-                Learn kanji grouped by shared components and meanings
-              </p>
-            </div>
-            
-            {/* View Mode Toggle */}
-            <div className="flex gap-2 bg-muted rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-3 py-1 rounded ${
-                  viewMode === 'grid' 
-                    ? 'bg-background text-foreground shadow-sm' 
-                    : 'text-muted-foreground'
-                }`}
-              >
-                Grid
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`px-3 py-1 rounded ${
-                  viewMode === 'list' 
-                    ? 'bg-background text-foreground shadow-sm' 
-                    : 'text-muted-foreground'
-                }`}
-              >
-                List
-              </button>
-            </div>
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1 rounded ${
+                viewMode === 'list' 
+                  ? 'bg-background text-foreground shadow-sm' 
+                  : 'text-muted-foreground'
+              }`}
+            >
+              List
+            </button>
           </div>
+        }
+      />
+      
+      {/* Desktop margin wrapper */}
+      <div className="md:mx-16 lg:mx-32 xl:mx-48 2xl:mx-64">
+        <div className="px-4 pb-4 bg-card border-b border-border">
+          <p className="text-sm text-muted-foreground mb-4">
+            Learn kanji grouped by shared components and meanings
+          </p>
           
           {/* Category Filter */}
           <div className="flex gap-2 flex-wrap">
@@ -185,9 +188,8 @@ export default function KanjiFamiliesPage() {
             ))}
           </div>
         </div>
-      </header>
-      
-      <div className="max-w-7xl mx-auto p-4">
+        
+        <div className="p-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Family Selector */}
           <div className="lg:col-span-1">
@@ -307,7 +309,7 @@ export default function KanjiFamiliesPage() {
                     {familyData.kanji.map(kanjiDetail => (
                       <motion.button
                         key={kanjiDetail.kanji}
-                        onClick={() => handleKanjiClick(kanjiDetail.kanji)}
+                        onClick={() => handleKanjiClick(kanjiDetail)}
                         className="bg-background border border-border rounded-lg p-4 hover:border-primary hover:shadow-md transition-all group"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -386,7 +388,22 @@ export default function KanjiFamiliesPage() {
             ) : null}
           </div>
         </div>
+        </div>
       </div>
+      
+      {/* Kanji Detail Modal */}
+      {modalKanji && (
+        <KanjiModal
+          kanji={modalKanji}
+          isOpen={!!modalKanji}
+          onClose={() => setModalKanji(null)}
+          onSave={() => {
+            // Handle save functionality if needed
+            console.log('Save kanji:', modalKanji.kanji);
+          }}
+          isSaved={false}
+        />
+      )}
     </div>
   );
 }

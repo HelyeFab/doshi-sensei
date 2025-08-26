@@ -14,9 +14,9 @@ import { KanjiSelectionProvider } from "@/contexts/KanjiSelectionContext";
 export function CriticalProviders({ children }: { children: React.ReactNode }) {
   return (
     <EnvProvider>
-      <SettingsProvider>
-        <LanguageProvider>
-          <AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <SettingsProvider>
             <UserProfileProvider>
               <ModalProvider>
                 <NotificationProvider>
@@ -26,9 +26,9 @@ export function CriticalProviders({ children }: { children: React.ReactNode }) {
                 </NotificationProvider>
               </ModalProvider>
             </UserProfileProvider>
-          </AuthProvider>
-        </LanguageProvider>
-      </SettingsProvider>
+          </SettingsProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </EnvProvider>
   );
 }

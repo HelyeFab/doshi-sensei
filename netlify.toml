@@ -10,7 +10,14 @@
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
 
+# Scheduled functions
+# AI validation runs every 2 hours to validate questionable articles
+[functions."validate-articles-scheduled"]
+  schedule = "0 */2 * * *"
 
+# News scraping runs every 6 hours
+[functions."scrape-news-scheduled-enhanced"]
+  schedule = "0 */6 * * *"
 
 # Form handling configuration
 # Note: Netlify doesn't support forms configuration in netlify.toml

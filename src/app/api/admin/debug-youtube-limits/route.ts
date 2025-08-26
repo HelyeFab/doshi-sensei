@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { serverFirebaseFunctions } from '@/lib/call-firebase-function';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const idToken = request.headers.get('authorization')?.replace('Bearer ', '');

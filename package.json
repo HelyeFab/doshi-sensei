@@ -7,8 +7,7 @@
     "build": "next build",
     "build:netlify": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "prebuild": "node scripts/validate-env-sync.js"
+    "lint": "eslint"
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",

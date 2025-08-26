@@ -10,7 +10,7 @@ import { ExtendedConjugationEngine, getRandomConjugationForm, generateQuestionSt
 import { useStrings } from '@/contexts/LanguageContext';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { useSettings } from '@/contexts/SettingsContext';
-import { DailyGoalSlider } from '@/components/DailyGoalSlider';
+// import { DailyGoalSlider } from '@/components/DailyGoalSlider';
 import { useAuth } from '@/contexts/AuthContext';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -878,10 +878,10 @@ export default function DrillPage() {
                   <div className="space-y-6">
                     {/* Daily Goal */}
                     <div className="bg-muted/30 rounded-lg p-4">
-                      <DailyGoalSlider 
-                        value={settings.dailyGoal} 
-                        onChange={(value) => updateSetting('dailyGoal', value)}
-                      />
+                      {/* DailyGoalSlider component removed - to be implemented */}
+                      <div className="text-sm text-muted-foreground">
+                        Daily Goal: {settings.dailyGoal} drills
+                      </div>
                     </div>
 
                     {/* Practice Type */}

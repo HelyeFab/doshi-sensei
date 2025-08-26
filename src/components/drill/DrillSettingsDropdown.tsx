@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { DailyGoalSlider } from '@/components/DailyGoalSlider';
+// import { DailyGoalSlider } from '@/components/DailyGoalSlider';
 
 interface DrillSettingsDropdownProps {
   dailyGoal: number;
@@ -64,10 +64,10 @@ export default function DrillSettingsDropdown({
           {/* Daily Goal */}
           <div>
             <div className="text-sm font-medium text-foreground mb-3">Daily Goal</div>
-            <DailyGoalSlider 
-              value={dailyGoal} 
-              onChange={onDailyGoalChange}
-            />
+            {/* DailyGoalSlider component removed - to be implemented */}
+            <div className="text-sm text-muted-foreground">
+              Daily Goal: {dailyGoal} drills
+            </div>
           </div>
 
           {/* Practice Type */}

@@ -44,13 +44,16 @@ if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.project
   }
 
   // Initialize services
-  // Auth is only needed on client side
+  // Initialize Auth (it handles client/server detection internally)
+  auth = getAuth(app);
+  console.log('[Firebase Init] Auth service initialized');
+  
+  // Initialize Storage
   if (typeof window !== 'undefined') {
-    auth = getAuth(app);
     storage = getStorage(app);
-    console.log('[Firebase Init] Auth and Storage services initialized');
+    console.log('[Firebase Init] Storage service initialized');
     
-    // Log auth settings for debugging
+    // Log auth settings for debugging (only on client side)
     auth.onAuthStateChanged((user) => {
       console.log('[Firebase Auth] Auth state changed:', {
         isSignedIn: !!user,

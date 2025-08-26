@@ -26,11 +26,33 @@ export default function LoginPage() {
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
-  // Redirect if already logged in
+  // Redirect if already logged in or handle redirect result
   useEffect(() => {
-    if (user) {
-      router.push('/');
-    }
+    // Check if we're returning from a redirect sign-in
+    const handleRedirect = async () => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const isRedirectReturn = searchParams.has('authuser') || 
+                              searchParams.has('code') || 
+                              window.location.hash.includes('state=');
+      
+      if (isRedirectReturn) {
+        // Show loading state while Firebase processes the redirect
+        setIsLoading(true);
+        // Wait a bit for Firebase to process the redirect result
+        setTimeout(() => {
+          if (user) {
+            router.push('/');
+          } else {
+            setIsLoading(false);
+          }
+        }, 2000);
+      } else if (user) {
+        // Normal redirect for already logged in users
+        router.push('/');
+      }
+    };
+    
+    handleRedirect();
   }, [user, router]);
 
   // Check email availability (for signup)
@@ -97,11 +119,16 @@ export default function LoginPage() {
     try {
       setIsLoading(true);
       await signInWithGoogle();
-      toast.success('Welcome!');
-      router.push('/');
+      // For popup sign-in, we can redirect immediately
+      // For redirect sign-in, the page will reload anyway
+      if (typeof window !== 'undefined' && window.innerWidth > 768) {
+        toast.success('Welcome!');
+        router.push('/');
+      }
+      // For mobile/redirect flow, don't set loading to false 
+      // as the page will redirect
     } catch (error: any) {
       toast.error(error.message || 'Failed to sign in with Google');
-    } finally {
       setIsLoading(false);
     }
   };

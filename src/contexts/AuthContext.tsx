@@ -152,19 +152,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const handleRedirectResult = async () => {
       if (!auth) return;
       try {
+        console.log('[Auth] Checking for redirect result...');
         const result = await getRedirectResult(auth);
         if (result?.user) {
+          console.log('[Auth] Redirect sign-in successful:', result.user.email);
           const sub = await createOrUpdateUserDocument(result.user);
           setSubscription(sub);
           const newUserType = getUserType(sub ?? undefined);
           const newUserProfile = getUserProfile(sub, result.user.uid);
           setUserType(newUserType);
           setUserProfile(newUserProfile);
+          setUser(result.user);
+        } else {
+          console.log('[Auth] No redirect result found');
         }
       } catch (error) {
         // Only log actual errors, not null results
         if ((error as { code?: string })?.code && (error as { code?: string }).code !== 'auth/no-auth-event') {
-          console.error('Redirect sign-in error:', error);
+          console.error('[Auth] Redirect sign-in error:', error);
         }
       }
     };

@@ -150,11 +150,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Handle redirect result from Google sign-in
     const handleRedirectResult = async () => {
-      if (!auth) return;
+      console.log('[Auth] Checking for redirect result...');
+      
+      if (!auth) {
+        console.log('[Auth] No auth instance, skipping redirect check');
+        return;
+      }
+      
       try {
+        console.log('[Auth] Calling getRedirectResult...');
         const result = await getRedirectResult(auth);
+        
         if (result?.user) {
-          console.log('[Auth] Redirect sign-in successful:', result.user.email);
+          console.log('[Auth] ✅ Redirect sign-in successful!', {
+            email: result.user.email,
+            uid: result.user.uid,
+            provider: result.providerId
+          });
+          
           const sub = await createOrUpdateUserDocument(result.user);
           setSubscription(sub);
           const newUserType = getUserType(sub ?? undefined);
@@ -162,11 +175,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUserType(newUserType);
           setUserProfile(newUserProfile);
           setUser(result.user);
+          
+          console.log('[Auth] User state updated after redirect');
+        } else {
+          console.log('[Auth] No redirect result (normal page load)');
         }
-      } catch (error) {
+      } catch (error: any) {
         // Only log actual errors, not null results
-        if ((error as { code?: string })?.code && (error as { code?: string }).code !== 'auth/no-auth-event') {
-          console.error('[Auth] Redirect sign-in error:', error);
+        if (error.code && error.code !== 'auth/no-auth-event') {
+          console.error('[Auth] ❌ Redirect sign-in error:', {
+            code: error.code,
+            message: error.message,
+            details: error.customData
+          });
         }
       }
     };
@@ -246,22 +267,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    if (!auth) throw new Error('Auth not initialized');
+    console.log('[Auth] signInWithGoogle called');
     
+    if (!auth) {
+      console.error('[Auth] CRITICAL: Auth not initialized!');
+      throw new Error('Auth not initialized');
+    }
+    
+    console.log('[Auth] Creating GoogleAuthProvider...');
     const provider = new GoogleAuthProvider();
+    
     // Force account selection
     provider.setCustomParameters({
       prompt: 'select_account'
     });
     
+    console.log('[Auth] Auth config:', {
+      authDomain: auth.app.options.authDomain,
+      apiKey: auth.app.options.apiKey ? 'SET' : 'MISSING',
+      projectId: auth.app.options.projectId
+    });
+    
     try {
       // Always use redirect method for consistent behavior
-      // This avoids popup blockers and CORS issues
       console.log('[Auth] Initiating Google sign-in with redirect...');
+      console.log('[Auth] Current URL:', window.location.href);
+      
       await signInWithRedirect(auth, provider);
+      
+      console.log('[Auth] signInWithRedirect called successfully (page should redirect now)');
       // Note: This function will cause a page redirect, so code after this won't execute
-    } catch (error) {
-      console.error('Google sign-in error:', error);
+    } catch (error: any) {
+      console.error('[Auth] Google sign-in error details:', {
+        code: error.code,
+        message: error.message,
+        customData: error.customData,
+        stack: error.stack
+      });
       throw error;
     }
   };
@@ -275,8 +317,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    if (!auth) throw new Error('Auth not initialized');
-    await sendPasswordResetEmail(auth, email);
+    console.log('[Auth] resetPassword called for email:', email);
+    
+    if (!auth) {
+      console.error('[Auth] CRITICAL: Auth not initialized for password reset!');
+      throw new Error('Auth not initialized');
+    }
+    
+    console.log('[Auth] Auth domain for password reset:', auth.app.options.authDomain);
+    
+    try {
+      console.log('[Auth] Sending password reset email...');
+      await sendPasswordResetEmail(auth, email);
+      console.log('[Auth] Password reset email sent successfully');
+    } catch (error: any) {
+      console.error('[Auth] Password reset error:', {
+        code: error.code,
+        message: error.message,
+        email: email,
+        authDomain: auth.app.options.authDomain
+      });
+      throw error;
+    }
   };
 
   const sendVerificationEmail = async () => {

@@ -116,7 +116,6 @@ export default function VisualLayoutPage() {
       if (response.ok) {
         const data = await response.json();
         // Handle search results
-        console.log('SKIP search results:', data);
       }
     } catch (err) {
       console.error('SKIP code search error:', err);
@@ -429,7 +428,6 @@ export default function VisualLayoutPage() {
           onClose={() => setModalKanji(null)}
           onSave={() => {
             // Handle save functionality if needed
-            console.log('Save kanji:', modalKanji.kanji);
           }}
           isSaved={false}
         />

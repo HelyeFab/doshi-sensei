@@ -522,7 +522,6 @@ export default function KanjiRadicalsPage() {
           onClose={() => setModalKanji(null)}
           onSave={() => {
             // Handle save functionality if needed
-            console.log('Save kanji:', modalKanji.kanji);
           }}
           isSaved={false}
         />

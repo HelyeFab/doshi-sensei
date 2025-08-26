@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { showPasswordPrompt } from '@/utils/dialogHelpers';
+import { authDebug } from '@/utils/authDebug';
 import {
   User,
   signInWithEmailAndPassword,
@@ -140,7 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       const sub = await fetchUserSubscription(user.uid);
       setSubscription(sub);
-      const newUserType = getUserType(sub ?? undefined);
+      const newUserType = getUserType(sub ?? null);
       const newUserProfile = getUserProfile(sub, user.uid);
       setUserType(newUserType);
       setUserProfile(newUserProfile);
@@ -151,20 +152,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Handle redirect result from Google sign-in
     const handleRedirectResult = async () => {
       if (!auth) return;
-      try {
-        const result = await getRedirectResult(auth);
-        if (result?.user) {
-          const sub = await createOrUpdateUserDocument(result.user);
-          setSubscription(sub);
-          const newUserType = getUserType(sub ?? undefined);
-          const newUserProfile = getUserProfile(sub, result.user.uid);
-          setUserType(newUserType);
-          setUserProfile(newUserProfile);
-        }
-      } catch (error) {
-        // Only log actual errors, not null results
-        if ((error as { code?: string })?.code && (error as { code?: string }).code !== 'auth/no-auth-event') {
-          console.error('Redirect sign-in error:', error);
+      
+      // Check if we're expecting a redirect result
+      const isRedirectFlow = sessionStorage.getItem('googleAuthRedirect');
+      
+      // Only check for redirect result if we're expecting one
+      if (isRedirectFlow === 'pending') {
+        try {
+          console.log('Checking for redirect result...');
+          const result = await getRedirectResult(auth);
+          
+          // Clear the redirect flag immediately after checking
+          sessionStorage.removeItem('googleAuthRedirect');
+          
+          if (result?.user) {
+            console.log('Redirect sign-in successful for user:', result.user.email);
+            const sub = await createOrUpdateUserDocument(result.user);
+            setSubscription(sub);
+            const newUserType = getUserType(sub ?? null);
+            const newUserProfile = getUserProfile(sub, result.user.uid);
+            setUserType(newUserType);
+            setUserProfile(newUserProfile);
+          } else if (result === null) {
+            // No redirect result but flag was set - might indicate an issue
+            console.log('No redirect result found despite pending flag');
+            // Run diagnostics to help identify the issue
+            authDebug.checkEnvironment();
+            authDebug.logRedirectInfo();
+            authDebug.diagnoseIssues();
+          }
+        } catch (error) {
+          // Clear the redirect flag on error
+          sessionStorage.removeItem('googleAuthRedirect');
+          
+          // Only log actual errors, not null results
+          if ((error as { code?: string })?.code && (error as { code?: string }).code !== 'auth/no-auth-event') {
+            console.error('Redirect sign-in error:', error);
+            
+            // Log specific error details for debugging
+            const errorCode = (error as { code?: string })?.code;
+            const errorMessage = (error as { message?: string })?.message;
+            console.error('Error details:', { code: errorCode, message: errorMessage });
+            
+            // Run diagnostics on error
+            authDebug.checkEnvironment();
+            authDebug.diagnoseIssues();
+          }
         }
       }
     };
@@ -186,7 +219,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('[AuthContext Debug] Subscription plan:', sub?.plan);
         console.log('[AuthContext Debug] Subscription status:', sub?.status);
         setSubscription(sub);
-        const newUserType = getUserType(sub ?? undefined);
+        const newUserType = getUserType(sub ?? null);
         console.log('[AuthContext Debug] Computed userType:', newUserType);
         const newUserProfile = getUserProfile(sub, currentUser.uid);
         setUserType(newUserType);
@@ -212,7 +245,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (result.user) {
       const sub = await fetchUserSubscription(result.user.uid);
       setSubscription(sub);
-      const newUserType = getUserType(sub ?? undefined);
+      const newUserType = getUserType(sub ?? null);
       const newUserProfile = getUserProfile(sub, result.user.uid);
       setUserType(newUserType);
       setUserProfile(newUserProfile);
@@ -234,7 +267,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (result.user) {
       const sub = await createOrUpdateUserDocument(result.user);
       setSubscription(sub);
-      const newUserType = getUserType(sub ?? undefined);
+      const newUserType = getUserType(sub ?? null);
       const newUserProfile = getUserProfile(sub, result.user.uid);
       setUserType(newUserType);
       setUserProfile(newUserProfile);
@@ -247,39 +280,64 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const provider = new GoogleAuthProvider();
     // Force account selection even if user is already signed in to Google
     provider.setCustomParameters({
-      prompt: 'select_account'
+      prompt: 'select_account',
+      // Add additional parameters for better production handling
+      access_type: 'offline',
+      include_granted_scopes: 'true'
     });
     
     try {
-      // Try popup first (better UX on desktop)
-      if (typeof window !== 'undefined' && window.innerWidth > 768) {
-        try {
-          if (!auth) throw new Error('Auth not initialized');
-          const result = await signInWithPopup(auth, provider);
-          // Create/update user document in Firestore
-          if (result.user) {
-            const sub = await createOrUpdateUserDocument(result.user);
-            setSubscription(sub);
-            const newUserType = getUserType(sub ?? undefined);
-            const newUserProfile = getUserProfile(sub, result.user.uid);
-            setUserType(newUserType);
-            setUserProfile(newUserProfile);
-          }
+      // Check if we're in a redirect flow (important for production)
+      if (typeof window !== 'undefined') {
+        // Set a flag in sessionStorage to track redirect initiation
+        const isRedirectFlow = sessionStorage.getItem('googleAuthRedirect');
+        
+        // If we just initiated a redirect, don't try again
+        if (isRedirectFlow === 'pending') {
+          console.log('Redirect already in progress');
           return;
-        } catch (popupError) {
-          // If popup fails (blocked, COOP issues, etc.), fall back to redirect
-          if ((popupError as { code?: string }).code !== 'auth/popup-closed-by-user') {
-            console.log('Popup blocked or failed, using redirect method');
-            if (auth) await signInWithRedirect(auth, provider);
-          }
-          // If user closed the popup, just return silently (not an error)
         }
-      } else {
-        // Use redirect for mobile devices
-        if (auth) await signInWithRedirect(auth, provider);
+        
+        // Try popup first (better UX on desktop)
+        if (window.innerWidth > 768) {
+          try {
+            if (!auth) throw new Error('Auth not initialized');
+            const result = await signInWithPopup(auth, provider);
+            // Create/update user document in Firestore
+            if (result.user) {
+              const sub = await createOrUpdateUserDocument(result.user);
+              setSubscription(sub);
+              const newUserType = getUserType(sub ?? null);
+              const newUserProfile = getUserProfile(sub, result.user.uid);
+              setUserType(newUserType);
+              setUserProfile(newUserProfile);
+              // Clear any redirect flags
+              sessionStorage.removeItem('googleAuthRedirect');
+            }
+            return;
+          } catch (popupError) {
+            // If popup fails (blocked, COOP issues, etc.), fall back to redirect
+            if ((popupError as { code?: string }).code !== 'auth/popup-closed-by-user') {
+              console.log('Popup blocked or failed, using redirect method');
+              // Mark redirect as pending
+              sessionStorage.setItem('googleAuthRedirect', 'pending');
+              if (auth) await signInWithRedirect(auth, provider);
+            }
+            // If user closed the popup, just return silently (not an error)
+          }
+        } else {
+          // Use redirect for mobile devices
+          // Mark redirect as pending
+          sessionStorage.setItem('googleAuthRedirect', 'pending');
+          if (auth) await signInWithRedirect(auth, provider);
+        }
       }
     } catch (error) {
       console.error('Google sign-in error:', error);
+      // Clear redirect flag on error
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('googleAuthRedirect');
+      }
       throw error;
     }
   };

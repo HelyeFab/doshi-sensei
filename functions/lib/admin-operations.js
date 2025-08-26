@@ -38,8 +38,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCheckoutSession = exports.createPortalSession = exports.updateUserLimit = exports.getSystemHealth = exports.adminDeleteUser = exports.getShareStats = exports.trackShare = exports.updateNotificationPreferences = exports.registerNotificationToken = exports.manageBookmarks = exports.trackArticleView = exports.deleteAccount = exports.cancelSubscription = void 0;
 const functions = __importStar(require("firebase-functions"));
+const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const stripe_1 = __importDefault(require("stripe"));
+const params_1 = require("firebase-functions/params");
+// Define secrets for Stripe configuration
+const stripeSecretKey = (0, params_1.defineSecret)('STRIPE_SECRET_KEY');
 // Get initialized admin instance from index.ts
 const db = admin.firestore();
 const auth = admin.auth();
@@ -449,15 +453,18 @@ exports.updateUserLimit = functions.https.onCall(async (data, context) => {
  * Create Portal Session for Stripe Customer Portal
  * Previously: /api/create-portal-session
  */
-exports.createPortalSession = functions.https.onCall(async (data, context) => {
+exports.createPortalSession = (0, https_1.onCall)({
+    cors: true,
+    secrets: [stripeSecretKey]
+}, async (request) => {
     var _a;
-    if (!context.auth) {
+    if (!request.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
     }
-    const userId = context.auth.uid;
+    const userId = request.auth.uid;
     // Initialize Stripe if not already done
     if (!stripe) {
-        const secretKey = process.env.STRIPE_SECRET_KEY;
+        const secretKey = stripeSecretKey.value();
         if (!secretKey) {
             throw new functions.https.HttpsError('failed-precondition', 'Stripe not configured');
         }
@@ -476,7 +483,7 @@ exports.createPortalSession = functions.https.onCall(async (data, context) => {
         // Create the portal session
         const session = await stripe.billingPortal.sessions.create({
             customer: stripeCustomerId,
-            return_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://doshisensei.com'}/account`,
+            return_url: `https://doshisensei.com/account`,
         });
         return {
             url: session.url,
@@ -492,20 +499,23 @@ exports.createPortalSession = functions.https.onCall(async (data, context) => {
  * Create Checkout Session for new subscriptions
  * Migrated from: /api/create-checkout-session
  */
-exports.createCheckoutSession = functions.https.onCall(async (data, context) => {
+exports.createCheckoutSession = (0, https_1.onCall)({
+    cors: true,
+    secrets: [stripeSecretKey]
+}, async (request) => {
     var _a;
-    if (!context.auth) {
+    if (!request.auth) {
         throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
     }
-    const { priceId } = data;
-    const userId = context.auth.uid;
-    const userEmail = context.auth.token.email;
+    const { priceId } = request.data;
+    const userId = request.auth.uid;
+    const userEmail = request.auth.token.email;
     if (!priceId) {
         throw new functions.https.HttpsError('invalid-argument', 'Price ID is required');
     }
     // Initialize Stripe if not already done
     if (!stripe) {
-        const secretKey = process.env.STRIPE_SECRET_KEY;
+        const secretKey = stripeSecretKey.value();
         if (!secretKey) {
             throw new functions.https.HttpsError('failed-precondition', 'Stripe not configured');
         }
@@ -576,8 +586,8 @@ exports.createCheckoutSession = functions.https.onCall(async (data, context) => 
                 },
             ],
             mode: 'subscription',
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://doshisensei.com'}/account?success=true`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://doshisensei.com'}/account?canceled=true`,
+            success_url: `https://doshisensei.com/account?success=true`,
+            cancel_url: `https://doshisensei.com/account?canceled=true`,
             metadata: {
                 firebaseUID: userId,
             },

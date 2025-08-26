@@ -1,6 +1,13 @@
 import {https} from 'firebase-functions/v2';
+import {defineSecret} from 'firebase-functions/params';
 import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
+
+// Define secrets for Stripe configuration
+const stripeSecretKey = defineSecret('STRIPE_SECRET_KEY');
+const stripeWebhookSecret = defineSecret('STRIPE_WEBHOOK_SECRET');
+const stripeMonthlyPriceId = defineSecret('STRIPE_MONTHLY_PRICE_ID');
+const stripeYearlyPriceId = defineSecret('STRIPE_YEARLY_PRICE_ID');
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -73,15 +80,18 @@ let stripe: Stripe;
  * 
  * UPDATED: Now replaces entire subscription object to prevent mixing old/new structures
  */
-export const stripeWebhook = https.onRequest({cors: true}, async (req, res) => {
+export const stripeWebhook = https.onRequest({
+  cors: true,
+  secrets: [stripeSecretKey, stripeWebhookSecret, stripeMonthlyPriceId, stripeYearlyPriceId]
+}, async (req, res) => {
   console.log('Firebase Function: stripeWebhook called');
   console.log('Method:', req.method);
   
   // Initialize Stripe on first request
   if (!stripe) {
-    const secretKey = process.env.STRIPE_SECRET_KEY;
+    const secretKey = stripeSecretKey.value();
     if (!secretKey) {
-      console.error('STRIPE_SECRET_KEY not found in environment');
+      console.error('STRIPE_SECRET_KEY not found in Secret Manager');
       res.status(500).json({ error: 'Stripe configuration error' });
       return;
     }
@@ -106,10 +116,10 @@ export const stripeWebhook = https.onRequest({cors: true}, async (req, res) => {
   }
 
   const signature = req.headers['stripe-signature'];
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const webhookSecret = stripeWebhookSecret.value();
 
   if (!webhookSecret) {
-    console.error('STRIPE_WEBHOOK_SECRET not configured');
+    console.error('STRIPE_WEBHOOK_SECRET not configured in Secret Manager');
     res.status(500).json({ error: 'Webhook secret not configured' });
     return;
   }
@@ -281,15 +291,15 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription, isNew
   console.log('Subscription status:', status);
   console.log('Is active?:', isActive);
   
-  // Determine the plan based on price ID from environment variables
+  // Determine the plan based on price ID from Secret Manager
   let plan: 'free' | 'monthly' | 'yearly' = 'free';
   
-  const monthlyPriceId = process.env.STRIPE_MONTHLY_PRICE_ID;
-  const yearlyPriceId = process.env.STRIPE_YEARLY_PRICE_ID;
+  const monthlyPriceId = stripeMonthlyPriceId.value();
+  const yearlyPriceId = stripeYearlyPriceId.value();
   
   if (!monthlyPriceId || !yearlyPriceId) {
-    console.error('❌ CRITICAL: Stripe price IDs not configured in environment variables');
-    console.error('Please set STRIPE_MONTHLY_PRICE_ID and STRIPE_YEARLY_PRICE_ID');
+    console.error('❌ CRITICAL: Stripe price IDs not configured in Secret Manager');
+    console.error('Please set STRIPE_MONTHLY_PRICE_ID and STRIPE_YEARLY_PRICE_ID secrets');
   }
   
   if (priceId === monthlyPriceId) {

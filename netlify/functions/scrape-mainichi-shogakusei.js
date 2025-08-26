@@ -1,7 +1,7 @@
 const admin = require('firebase-admin');
 const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
-const { filterArticles, quickValidate } = require('./article-quick-validation');
+const { filterArticles } = require('./article-quick-validation');
 
 // Global variables for Firebase
 let firebaseInitialized = false;
@@ -88,41 +88,6 @@ async function getUnsplashImage(keyword = 'japan elementary school') {
   }
 }
 
-// Initialize Firebase
-let firebaseInitialized = false;
-let db = null;
-
-if (!admin.apps.length) {
-  try {
-    const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-    
-    const serviceAccount = {
-      type: "service_account",
-      project_id: projectId,
-      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      client_email: process.env.FIREBASE_CLIENT_EMAIL,
-      client_id: process.env.FIREBASE_CLIENT_ID,
-      auth_uri: "https://accounts.google.com/o/oauth2/auth",
-      token_uri: "https://oauth2.googleapis.com/token",
-      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
-    };
-
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    });
-
-    firebaseInitialized = true;
-    db = admin.firestore();
-    console.log('✅ Firebase initialized');
-  } catch (error) {
-    console.error('❌ Firebase init failed:', error.message);
-  }
-} else {
-  firebaseInitialized = true;
-  db = admin.firestore();
-}
 
 // Launch browser
 async function launchBrowser() {
@@ -145,6 +110,37 @@ async function launchBrowser() {
       ignoreHTTPSErrors: true
     });
     return browser;
+  } catch (error) {
+    console.error('❌ Failed to launch browser:', error);
+    throw error;
+  }
+}
+
+// Scrape Mainichi Shogakusei Shimbun (Elementary School Newspaper)
+async function scrapeMainichiShogakusei() {
+  const articles = [];
+  let browser;
+  
+  try {
+    console.log('🚀 [Mainichi Shogakusei] Launching browser...');
+    browser = await launchBrowser();
+    const page = await browser.newPage();
+    
+    // Set Japanese user agent
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    
+    // Navigate to Mainichi Shogakusei Shimbun
+    console.log('📖 [Mainichi Shogakusei] Navigating to Mainichi Elementary News...');
+    await page.goto('https://mainichi.jp/maisho/', {
+      waitUntil: 'networkidle2',
+      timeout: 30000
+    });
+    
+    // Wait for news items to load
+    await page.waitForSelector('article, .article-list, .news-list, a[href*="/articles/"]', { timeout: 10000 });
+    
+    // Get article links from the homepage
+    const articleLinks = await page.evaluate(() => {
       const links = [];
       
       // Try multiple selectors for Mainichi
@@ -398,6 +394,8 @@ async function saveArticlesToFirebase(articles) {
 
 // Handler
 exports.handler = async (event, context) => {
+  const startTime = Date.now();
+
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -413,10 +411,9 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const startTime = Date.now();
+
   // Initialize Firebase if needed
   await initializeFirebase();
-
 
   try {
     console.log('🚀 [Mainichi Shogakusei] Starting scraper...');

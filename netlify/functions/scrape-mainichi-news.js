@@ -1,37 +1,6 @@
 const admin = require('firebase-admin');
 const cheerio = require('cheerio');
-const { filterArticles, quickValidate } = require('./article-quick-validation');
-
-// Function to get Unsplash image for articles without covers
-async function getUnsplashImage(keyword = 'japan news') {
-  try {
-    const unsplashAccessKey = process.env.UNSPLASH_ACCESS_KEY;
-    if (!unsplashAccessKey) {
-      console.log('⚠️ Unsplash API key not configured, skipping image fetch');
-      return null;
-    }
-    
-    const response = await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(keyword)}&orientation=landscape&content_filter=high`, {
-      headers: {
-        'Authorization': `Client-ID ${unsplashAccessKey}`,
-        'Accept-Version': 'v1'
-      },
-      signal: AbortSignal.timeout(5000)
-    });
-    
-    if (!response.ok) {
-      console.warn('❌ Unsplash API request failed:', response.status);
-      return null;
-    }
-    
-    const data = await response.json();
-    console.log('✅ Unsplash image fetched:', data.urls.regular);
-    return data.urls.regular;
-  } catch (error) {
-    console.warn('⚠️ Failed to fetch Unsplash image:', error.message);
-    return null;
-  }
-}
+const { filterArticles } = require('./article-quick-validation');
 
 // Global variables for Firebase
 let firebaseInitialized = false;
@@ -91,59 +60,38 @@ async function initializeFirebase() {
   }
 }
 
-// Initialize Firebase at module level (critical for Netlify Functions)
-if (!admin.apps.length) {
+// Function to get Unsplash image for articles without covers
+async function getUnsplashImage(keyword = 'japan news') {
   try {
-    // Try to load from JSON file first (deployed but not in Git)
-    const fs = require('fs');
-    const path = require('path');
-    const configPath = path.join(__dirname, 'firebase-config.json');
-    
-    if (fs.existsSync(configPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-      firebaseInitialized = true;
-      db = admin.firestore();
-      console.log('✅ Firebase Admin SDK initialized from firebase-config.json');
-    } else if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
-      const serviceAccountJson = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf-8');
-      const serviceAccount = JSON.parse(serviceAccountJson);
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-      firebaseInitialized = true;
-      db = admin.firestore();
-      console.log('✅ Firebase Admin SDK initialized from base64');
-    } else {
-      const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-      const serviceAccount = {
-        type: "service_account",
-        project_id: projectId,
-        private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-        private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        client_email: process.env.FIREBASE_CLIENT_EMAIL,
-        client_id: process.env.FIREBASE_CLIENT_ID,
-        auth_uri: "https://accounts.google.com/o/oauth2/auth",
-        token_uri: "https://oauth2.googleapis.com/token",
-        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-        client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
-      };
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-      firebaseInitialized = true;
-      db = admin.firestore();
-      console.log('✅ Firebase Admin SDK initialized from env vars');
+    const unsplashAccessKey = process.env.UNSPLASH_ACCESS_KEY;
+    if (!unsplashAccessKey) {
+      console.log('⚠️ Unsplash API key not configured, skipping image fetch');
+      return null;
     }
+    
+    const response = await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(keyword)}&orientation=landscape&content_filter=high`, {
+      headers: {
+        'Authorization': `Client-ID ${unsplashAccessKey}`,
+        'Accept-Version': 'v1'
+      },
+      signal: AbortSignal.timeout(5000)
+    });
+    
+    if (!response.ok) {
+      console.warn('❌ Unsplash API request failed:', response.status);
+      return null;
+    }
+    
+    const data = await response.json();
+    console.log('✅ Unsplash image fetched:', data.urls.regular);
+    return data.urls.regular;
   } catch (error) {
-    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
-    firebaseInitialized = false;
+    console.warn('⚠️ Failed to fetch Unsplash image:', error.message);
+    return null;
   }
-  db = admin.firestore();
 }
 
+// Global variables for Firebase
 // Enhanced scraping function for Mainichi news
 async function scrapeMainichi() {
   const articles = [];
@@ -460,6 +408,8 @@ async function scrapeMainichi() {
 
 // Main handler function
 exports.handler = async (event, context) => {
+  const startTime = Date.now();
+
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -476,10 +426,11 @@ exports.handler = async (event, context) => {
     };
   }
 
-  console.log('🚀 [Mainichi] Function triggered');
+
   // Initialize Firebase if needed
   await initializeFirebase();
 
+  console.log('🚀 [Mainichi] Function triggered');
 
   try {
     // Check Firebase

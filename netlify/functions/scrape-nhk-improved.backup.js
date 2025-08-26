@@ -3,65 +3,6 @@ const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
 const { filterArticles } = require('./article-quick-validation');
 
-// Global variables for Firebase
-let firebaseInitialized = false;
-let db = null;
-
-// Initialize Firebase function
-async function initializeFirebase() {
-  if (firebaseInitialized || admin.apps.length) {
-    db = admin.firestore();
-    firebaseInitialized = true;
-    return true;
-  }
-  
-  try {
-    // Try to fetch from GitHub Gist first (for production)
-    const gistUrl = 'https://gist.githubusercontent.com/HelyeFab/4a363e7fabaa387b67fa80b5c8cb87d4/raw/firebase-config.json';
-    
-    console.log('🔄 Fetching Firebase credentials from secure source...');
-    const response = await fetch(gistUrl);
-    
-    if (response.ok) {
-      const serviceAccount = await response.json();
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-      firebaseInitialized = true;
-      db = admin.firestore();
-      console.log('✅ Firebase Admin SDK initialized from secure source');
-      return true;
-    } else {
-      throw new Error('Failed to fetch from Gist');
-    }
-  } catch (error) {
-    // Fallback to local file for development
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const configPath = path.join(__dirname, 'firebase-config.json');
-      
-      if (fs.existsSync(configPath)) {
-        const serviceAccount = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        admin.initializeApp({
-          credential: admin.credential.cert(serviceAccount)
-        });
-        firebaseInitialized = true;
-        db = admin.firestore();
-        console.log('✅ Firebase Admin SDK initialized from local file');
-        return true;
-      }
-    } catch (fileError) {
-      console.error('❌ Failed to read local file:', fileError.message);
-    }
-    
-    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
-    firebaseInitialized = false;
-    return false;
-  }
-}
-
-
 // Function to get Unsplash image
 async function getUnsplashImage(keyword = 'japan news') {
   try {
@@ -89,11 +30,48 @@ async function getUnsplashImage(keyword = 'japan news') {
   }
 }
 
+// Initialize Firebase
+let firebaseInitialized = false;
+let db = null;
+
+if (!admin.apps.length) {
+  try {
+    const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+    
+    const serviceAccount = {
+      type: "service_account",
+      project_id: projectId,
+      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+      client_id: process.env.FIREBASE_CLIENT_ID,
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+      client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+    };
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+
+    firebaseInitialized = true;
+    db = admin.firestore();
+    console.log('✅ Firebase initialized');
+  } catch (error) {
+    console.error('❌ Firebase init failed:', error.message);
+  }
+} else {
+  firebaseInitialized = true;
+  db = admin.firestore();
+}
+
 // Launch browser
 async function launchBrowser() {
   // For local testing, try regular puppeteer first
   try {
     const puppeteerRegular = require('puppeteer');
+const { filterArticles, quickValidate } = require('./article-quick-validation');
     return await puppeteerRegular.launch({
       headless: 'new',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -316,8 +294,6 @@ async function saveArticlesToFirebase(articles) {
 
 // Handler
 exports.handler = async (event, context) => {
-  const startTime = Date.now();
-  
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -333,8 +309,7 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Initialize Firebase if needed
-  await initializeFirebase();
+  const startTime = Date.now();
 
   try {
     console.log('🚀 [NHK Improved] Starting scraper...');

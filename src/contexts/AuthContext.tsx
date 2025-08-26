@@ -134,6 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userType, setUserType] = useState<UserType>('guest');
   const [userProfile, setUserProfile] = useState<UserProfile>(createUserProfile('anonymous', 'free'));
   const [loading, setLoading] = useState(true);
+  const [authInitialized, setAuthInitialized] = useState(false);
 
   // Function to refresh subscription data
   const refreshSubscription = async () => {
@@ -147,7 +148,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Wait for auth to be available on client side
   useEffect(() => {
+    if (typeof window !== 'undefined' && !authInitialized) {
+      // Give Firebase a moment to initialize
+      const checkAuth = setInterval(() => {
+        if (auth) {
+          console.log('[Auth] Auth instance now available');
+          setAuthInitialized(true);
+          clearInterval(checkAuth);
+        }
+      }, 100);
+      
+      // Timeout after 3 seconds
+      setTimeout(() => clearInterval(checkAuth), 3000);
+    }
+  }, [authInitialized]);
+  
+  useEffect(() => {
+    // Only run after auth is initialized
+    if (!authInitialized) return;
+    
     // Handle redirect result from Google sign-in
     const handleRedirectResult = async () => {
       console.log('[Auth] Checking for redirect result...');
@@ -195,6 +216,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     handleRedirectResult();
     
     if (!auth) {
+      console.log('[Auth] No auth instance for onAuthStateChanged');
       setLoading(false);
       return;
     }
@@ -225,7 +247,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return unsubscribe;
-  }, []);
+  }, [authInitialized]);
 
   const signInWithEmail = async (email: string, password: string) => {
     if (!auth) throw new Error('Auth not initialized');

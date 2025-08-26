@@ -3,6 +3,64 @@ const chromium = require('@sparticuz/chromium');
 const puppeteer = require('puppeteer-core');
 const { filterArticles, quickValidate } = require('./article-quick-validation');
 
+// Global variables for Firebase
+let firebaseInitialized = false;
+let db = null;
+
+// Initialize Firebase function
+async function initializeFirebase() {
+  if (firebaseInitialized || admin.apps.length) {
+    db = admin.firestore();
+    firebaseInitialized = true;
+    return true;
+  }
+  
+  try {
+    // Try to fetch from GitHub Gist first (for production)
+    const gistUrl = 'https://gist.githubusercontent.com/HelyeFab/4a363e7fabaa387b67fa80b5c8cb87d4/raw/firebase-config.json';
+    
+    console.log('🔄 Fetching Firebase credentials from secure source...');
+    const response = await fetch(gistUrl);
+    
+    if (response.ok) {
+      const serviceAccount = await response.json();
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      firebaseInitialized = true;
+      db = admin.firestore();
+      console.log('✅ Firebase Admin SDK initialized from secure source');
+      return true;
+    } else {
+      throw new Error('Failed to fetch from Gist');
+    }
+  } catch (error) {
+    // Fallback to local file for development
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const configPath = path.join(__dirname, 'firebase-config.json');
+      
+      if (fs.existsSync(configPath)) {
+        const serviceAccount = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount)
+        });
+        firebaseInitialized = true;
+        db = admin.firestore();
+        console.log('✅ Firebase Admin SDK initialized from local file');
+        return true;
+      }
+    } catch (fileError) {
+      console.error('❌ Failed to read local file:', fileError.message);
+    }
+    
+    console.error('❌ Failed to initialize Firebase Admin SDK:', error.message);
+    firebaseInitialized = false;
+    return false;
+  }
+}
+
 // Function to get Unsplash image
 async function getUnsplashImage(keyword = 'japan news') {
   try {
@@ -320,6 +378,9 @@ exports.handler = async (event, context) => {
   }
 
   const startTime = Date.now();
+  // Initialize Firebase if needed
+  await initializeFirebase();
+
 
   try {
     console.log('🚀 [Yahoo News] Starting scraper...');

@@ -40,6 +40,7 @@ export default function VisualLayoutPage() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [skipCodeSearch, setSkipCodeSearch] = useState('');
   const [modalKanji, setModalKanji] = useState<Kanji | null>(null);
+  const [showPatternDropdown, setShowPatternDropdown] = useState(false);
   
   const loadSkipData = async (pattern: SkipPattern | undefined, subcategories: boolean) => {
     // Check access before loading
@@ -206,10 +207,65 @@ export default function VisualLayoutPage() {
           </div>
         </div>
         
-        <div className="p-4">
-        {/* Pattern Selector - Visual Mode */}
+        <div className="p-2 md:p-4">
+        {/* Pattern Selector - Mobile Dropdown */}
+        <div className="md:hidden mb-4">
+          <button
+            onClick={() => setShowPatternDropdown(!showPatternDropdown)}
+            className="w-full flex items-center justify-between px-4 py-3 bg-card border border-border rounded-lg"
+          >
+            <span className="font-medium">
+              {selectedPattern ? SKIP_PATTERNS[selectedPattern]?.name : 'Select a Pattern'}
+            </span>
+            <svg 
+              className={`w-5 h-5 transition-transform ${
+                showPatternDropdown ? 'rotate-180' : ''
+              }`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          
+          {showPatternDropdown && (
+            <div className="absolute left-0 right-0 z-50 mt-2 mx-2 bg-background border border-border rounded-lg shadow-lg overflow-hidden">
+              {Object.entries(SKIP_PATTERNS).map(([key, pattern]) => (
+                <button
+                  key={key}
+                  onClick={() => {
+                    handlePatternSelect(key as SkipPattern);
+                    setShowPatternDropdown(false);
+                  }}
+                  className={`w-full text-left p-3 hover:bg-muted transition-colors ${
+                    selectedPattern === key ? 'bg-primary/10' : ''
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-10 h-10 rounded-lg flex items-center justify-center text-2xl"
+                      style={{ 
+                        backgroundColor: `${pattern.color}20`,
+                        color: pattern.color
+                      }}
+                    >
+                      {pattern.icon}
+                    </div>
+                    <div>
+                      <div className="font-medium">{pattern.name}</div>
+                      <div className="text-xs text-muted-foreground">{pattern.nameJa}</div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        {/* Pattern Selector - Desktop Visual Mode */}
         {viewMode === 'visual' && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {Object.entries(SKIP_PATTERNS).map(([key, pattern]) => (
               <motion.button
                 key={key}
@@ -259,7 +315,7 @@ export default function VisualLayoutPage() {
         )}
         
         {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Subcategory Selector (if pattern selected) */}
           {selectedPattern && showSubcategories && (
             <div className="lg:col-span-1">
@@ -301,7 +357,7 @@ export default function VisualLayoutPage() {
           {/* Kanji Display */}
           <div className={`${selectedPattern && showSubcategories ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
             {!selectedPattern ? (
-              <div className="bg-card rounded-lg border border-border p-12 text-center">
+              <div className="bg-card rounded-lg border border-border p-8 md:p-12 text-center">
                 <div className="text-6xl mb-4">🎨</div>
                 <h3 className="text-xl font-semibold mb-2 text-foreground">
                   Select a Visual Pattern
@@ -363,7 +419,7 @@ export default function VisualLayoutPage() {
                       : `All ${SKIP_PATTERNS[selectedPattern].name} Kanji`}
                   </h3>
                   
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3">
                     {(() => {
                       let kanjiToShow: SkipKanji[] = [];
                       
@@ -377,7 +433,7 @@ export default function VisualLayoutPage() {
                         <motion.button
                           key={kanjiDetail.kanji}
                           onClick={() => handleKanjiClick(kanjiDetail)}
-                          className="bg-background border border-border rounded-lg p-4 hover:border-primary hover:shadow-md transition-all group relative"
+                          className="bg-background border border-border rounded-lg p-3 md:p-4 hover:border-primary hover:shadow-md transition-all group relative"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >

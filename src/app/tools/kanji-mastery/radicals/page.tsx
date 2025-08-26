@@ -34,6 +34,8 @@ export default function KanjiRadicalsPage() {
   const [showSubThemes, setShowSubThemes] = useState(true);
   const [expandedThemes, setExpandedThemes] = useState<Set<string>>(new Set());
   const [modalKanji, setModalKanji] = useState<Kanji | null>(null);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showRadicalDropdown, setShowRadicalDropdown] = useState(false);
   
   const radicalsByCategory = getRadicalsByCategory();
   
@@ -164,8 +166,61 @@ export default function KanjiRadicalsPage() {
             Explore kanji through their semantic components and meaning clusters
           </p>
           
-          {/* Category Filter */}
-          <div className="flex gap-2 flex-wrap">
+          {/* Category Filter - Mobile Dropdown */}
+          <div className="md:hidden mb-4">
+            <button
+              onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+              className="w-full flex items-center justify-between px-4 py-3 bg-background border border-border rounded-lg"
+            >
+              <span className="font-medium">
+                {selectedCategory === 'all' ? 'All Radicals' : RADICAL_CATEGORIES[selectedCategory]?.label || selectedCategory}
+              </span>
+              <svg 
+                className={`w-5 h-5 transition-transform ${
+                  showCategoryDropdown ? 'rotate-180' : ''
+                }`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {showCategoryDropdown && (
+              <div className="absolute left-0 right-0 z-50 mt-2 mx-4 bg-background border border-border rounded-lg shadow-lg overflow-hidden">
+                <button
+                  onClick={() => {
+                    setSelectedCategory('all');
+                    setShowCategoryDropdown(false);
+                  }}
+                  className={`w-full px-4 py-3 text-left hover:bg-muted transition-colors ${
+                    selectedCategory === 'all' ? 'bg-primary/10 text-primary' : ''
+                  }`}
+                >
+                  All Radicals
+                </button>
+                {Object.entries(RADICAL_CATEGORIES).map(([key, category]) => (
+                  <button
+                    key={key}
+                    onClick={() => {
+                      setSelectedCategory(key);
+                      setShowCategoryDropdown(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left hover:bg-muted transition-colors ${
+                      selectedCategory === key ? 'bg-primary/10 text-primary' : ''
+                    }`}
+                  >
+                    <span className="mr-2">{category.icon}</span>
+                    {category.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Category Filter - Desktop */}
+          <div className="hidden md:flex gap-2 flex-wrap">
             <button
               onClick={() => setSelectedCategory('all')}
               className={`px-3 py-1 rounded-full text-sm transition-all ${
@@ -193,10 +248,67 @@ export default function KanjiRadicalsPage() {
           </div>
         </div>
         
-        <div className="p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Radical Selector */}
-          <div className="lg:col-span-1">
+        <div className="p-2 md:p-4">
+        {/* Mobile Radical Dropdown */}
+        <div className="md:hidden mb-4">
+          <button
+            onClick={() => setShowRadicalDropdown(!showRadicalDropdown)}
+            className="w-full flex items-center justify-between px-4 py-3 bg-card border border-border rounded-lg"
+          >
+            <span className="font-medium">
+              {selectedRadical ? SEMANTIC_RADICALS[selectedRadical]?.meaning : 'Select a Radical'}
+            </span>
+            <svg 
+              className={`w-5 h-5 transition-transform ${
+                showRadicalDropdown ? 'rotate-180' : ''
+              }`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+          </button>
+          
+          {showRadicalDropdown && (
+            <div className="absolute left-0 right-0 z-50 mt-2 mx-2 bg-background border border-border rounded-lg shadow-lg max-h-96 overflow-y-auto">
+              {getFilteredRadicals().map(radical => (
+                <button
+                  key={radical.id}
+                  onClick={() => {
+                    handleRadicalSelect(radical.id);
+                    setShowRadicalDropdown(false);
+                  }}
+                  className={`w-full text-left p-3 hover:bg-muted transition-colors ${
+                    selectedRadical === radical.id ? 'bg-primary/10' : ''
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl font-bold"
+                      style={{ 
+                        backgroundColor: `${radical.color}20`,
+                        color: radical.color
+                      }}
+                    >
+                      {radical.radical}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-foreground">{radical.meaning}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {radical.meaningJa} • {radical.icon}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* Radical Selector - Desktop */}
+          <div className="hidden md:block lg:col-span-1">
             <div className="bg-card rounded-lg border border-border p-4">
               <h2 className="font-semibold mb-4 text-foreground">Select a Radical</h2>
               
@@ -246,7 +358,7 @@ export default function KanjiRadicalsPage() {
           {/* Kanji Display */}
           <div className="lg:col-span-2">
             {!selectedRadical ? (
-              <div className="bg-card rounded-lg border border-border p-12 text-center">
+              <div className="bg-card rounded-lg border border-border p-8 md:p-12 text-center">
                 <div className="text-6xl mb-4">⚛️</div>
                 <h3 className="text-xl font-semibold mb-2 text-foreground">
                   Select a Semantic Radical
@@ -348,12 +460,12 @@ export default function KanjiRadicalsPage() {
                                   <p className="text-xs text-muted-foreground mb-3">
                                     Keywords: {theme.keywords.join(', ')}
                                   </p>
-                                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 md:gap-2">
                                     {themeKanji.map(kanjiDetail => (
                                       <motion.button
                                         key={kanjiDetail.kanji}
                                         onClick={() => handleKanjiClick(kanjiDetail)}
-                                        className="bg-background border border-border rounded-lg p-3 hover:border-primary hover:shadow-md transition-all group"
+                                        className="bg-background border border-border rounded-lg p-2 md:p-3 hover:border-primary hover:shadow-md transition-all group"
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                       >

@@ -3,14 +3,16 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { AppSettings } from '@/types/settings';
 import { applyTheme } from '@/utils/themes';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription2 } from '@/hooks/useSubscription2';
+import { hasPaidPlan } from '@/lib/subscriptions/helpers';
 
 // Default settings
 const defaultSettings: AppSettings = {
   theme: 'light',
   colorScheme: 'default',
-  showRomaji: true,
-  showFurigana: true,
-  dailyGoal: 10,
   practiceReminders: false,
   showCompanion: true,
   companionHistory: {
@@ -55,15 +57,44 @@ const SETTINGS_KEY = 'doshi_sensei_settings';
 export function SettingsProvider({ children }: SettingsProviderProps) {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
+  const { subscription } = useSubscription2();
 
-  // Load settings from localStorage on mount
+  // Load settings - Firebase first for paid users, then localStorage
   useEffect(() => {
-    const loadSettings = () => {
+    const loadSettings = async () => {
       try {
+        // For paid users, try Firebase first
+        if (user && hasPaidPlan(subscription)) {
+          console.log('🎨 Loading settings from Firebase for paid user');
+          try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              if (userData.settings) {
+                console.log('✅ Settings loaded from Firebase');
+                const cloudSettings = userData.settings as AppSettings;
+                setSettings({
+                  ...defaultSettings,
+                  ...cloudSettings,
+                  companionHistory: cloudSettings.companionHistory || defaultSettings.companionHistory,
+                  navigationPreferences: cloudSettings.navigationPreferences || defaultSettings.navigationPreferences
+                });
+                // Also save to localStorage for offline access
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(cloudSettings));
+                setIsLoading(false);
+                return;
+              }
+            }
+          } catch (error) {
+            console.error('Error loading settings from Firebase:', error);
+          }
+        }
+        
+        // Fall back to localStorage
         const savedSettings = localStorage.getItem(SETTINGS_KEY);
         if (savedSettings) {
           const parsedSettings = JSON.parse(savedSettings) as AppSettings;
-          // Merge with default settings to ensure all fields exist
           setSettings({
             ...defaultSettings,
             ...parsedSettings,
@@ -79,18 +110,33 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
     };
 
     loadSettings();
-  }, []);
+  }, [user, subscription]);
 
-  // Save settings to localStorage whenever they change
+  // Save settings to localStorage and Firebase whenever they change
   useEffect(() => {
     if (!isLoading) {
-      try {
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      } catch (error) {
-        console.error('Error saving settings:', error);
-      }
+      const saveSettings = async () => {
+        try {
+          // Always save to localStorage for offline access
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+          
+          // Save to Firebase for paid users
+          if (user && hasPaidPlan(subscription)) {
+            console.log('💾 Saving settings to Firebase');
+            await setDoc(
+              doc(db, 'users', user.uid),
+              { settings },
+              { merge: true }
+            );
+          }
+        } catch (error) {
+          console.error('Error saving settings:', error);
+        }
+      };
+      
+      saveSettings();
     }
-  }, [settings, isLoading]);
+  }, [settings, isLoading, user, subscription]);
 
   // Apply theme when settings change
   useEffect(() => {

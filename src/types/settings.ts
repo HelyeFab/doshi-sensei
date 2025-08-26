@@ -50,9 +50,6 @@ export interface TTSSettings {
 export interface AppSettings {
   theme: ThemeMode;
   colorScheme: ColorScheme;
-  showRomaji: boolean;
-  showFurigana?: boolean; // Show furigana above kanji
-  dailyGoal: number;
   practiceReminders: boolean;
   showCompanion: boolean; // Toggle to show/hide virtual companion
   companionHistory: CompanionHistory;

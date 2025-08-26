@@ -28,31 +28,22 @@ export default function LoginPage() {
 
   // Redirect if already logged in or handle redirect result
   useEffect(() => {
-    // Check if we're returning from a redirect sign-in
-    const handleRedirect = async () => {
-      const searchParams = new URLSearchParams(window.location.search);
-      const isRedirectReturn = searchParams.has('authuser') || 
-                              searchParams.has('code') || 
-                              window.location.hash.includes('state=');
-      
-      if (isRedirectReturn) {
-        // Show loading state while Firebase processes the redirect
-        setIsLoading(true);
-        // Wait a bit for Firebase to process the redirect result
-        setTimeout(() => {
-          if (user) {
-            router.push('/');
-          } else {
-            setIsLoading(false);
-          }
-        }, 2000);
-      } else if (user) {
-        // Normal redirect for already logged in users
-        router.push('/');
-      }
-    };
+    // Check if we have a pending Google sign-in
+    const pendingSignIn = sessionStorage.getItem('googleSignInPending');
     
-    handleRedirect();
+    if (pendingSignIn && !user) {
+      // We're returning from Google but auth isn't ready yet
+      setIsLoading(true);
+    } else if (user) {
+      // User is logged in, clear any pending flags and redirect
+      sessionStorage.removeItem('googleSignInPending');
+      toast.success('Welcome back!');
+      router.push('/');
+    } else {
+      // No pending sign-in and no user
+      sessionStorage.removeItem('googleSignInPending');
+      setIsLoading(false);
+    }
   }, [user, router]);
 
   // Check email availability (for signup)
@@ -118,16 +109,13 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
+      // Store a flag that we're attempting Google sign-in
+      sessionStorage.setItem('googleSignInPending', 'true');
       await signInWithGoogle();
-      // For popup sign-in, we can redirect immediately
-      // For redirect sign-in, the page will reload anyway
-      if (typeof window !== 'undefined' && window.innerWidth > 768) {
-        toast.success('Welcome!');
-        router.push('/');
-      }
-      // For mobile/redirect flow, don't set loading to false 
-      // as the page will redirect
+      // The page will redirect to Google, so this code won't execute
     } catch (error: any) {
+      console.error('Google sign-in error:', error);
+      sessionStorage.removeItem('googleSignInPending');
       toast.error(error.message || 'Failed to sign in with Google');
       setIsLoading(false);
     }

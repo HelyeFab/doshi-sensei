@@ -152,7 +152,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const handleRedirectResult = async () => {
       if (!auth) return;
       try {
-        console.log('[Auth] Checking for redirect result...');
         const result = await getRedirectResult(auth);
         if (result?.user) {
           console.log('[Auth] Redirect sign-in successful:', result.user.email);
@@ -163,8 +162,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUserType(newUserType);
           setUserProfile(newUserProfile);
           setUser(result.user);
-        } else {
-          console.log('[Auth] No redirect result found');
         }
       } catch (error) {
         // Only log actual errors, not null results
@@ -249,40 +246,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
+    if (!auth) throw new Error('Auth not initialized');
+    
     const provider = new GoogleAuthProvider();
-    // Force account selection even if user is already signed in to Google
+    // Force account selection
     provider.setCustomParameters({
       prompt: 'select_account'
     });
     
     try {
-      // Try popup first (better UX on desktop)
-      if (typeof window !== 'undefined' && window.innerWidth > 768) {
-        try {
-          if (!auth) throw new Error('Auth not initialized');
-          const result = await signInWithPopup(auth, provider);
-          // Create/update user document in Firestore
-          if (result.user) {
-            const sub = await createOrUpdateUserDocument(result.user);
-            setSubscription(sub);
-            const newUserType = getUserType(sub ?? undefined);
-            const newUserProfile = getUserProfile(sub, result.user.uid);
-            setUserType(newUserType);
-            setUserProfile(newUserProfile);
-          }
-          return;
-        } catch (popupError) {
-          // If popup fails (blocked, COOP issues, etc.), fall back to redirect
-          if ((popupError as { code?: string }).code !== 'auth/popup-closed-by-user') {
-            console.log('Popup blocked or failed, using redirect method');
-            if (auth) await signInWithRedirect(auth, provider);
-          }
-          // If user closed the popup, just return silently (not an error)
-        }
-      } else {
-        // Use redirect for mobile devices
-        if (auth) await signInWithRedirect(auth, provider);
-      }
+      // Always use redirect method for consistent behavior
+      // This avoids popup blockers and CORS issues
+      console.log('[Auth] Initiating Google sign-in with redirect...');
+      await signInWithRedirect(auth, provider);
+      // Note: This function will cause a page redirect, so code after this won't execute
     } catch (error) {
       console.error('Google sign-in error:', error);
       throw error;

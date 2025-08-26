@@ -478,10 +478,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const firestore = getFirestoreInstance();
         await deleteDoc(doc(firestore, 'users', uid));
-            } catch (error) {
+      } catch (error) {
         // Error deleting Firestore data
         // Continue anyway
-        }
       }
       
       // Now delete the auth user account (this should work after reauthentication)

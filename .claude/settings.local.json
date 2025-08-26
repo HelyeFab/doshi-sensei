@@ -19,7 +19,8 @@
       "Bash(firebase functions:log:*)",
       "Bash(git log:*)",
       "Bash(git grep:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Read(//home/mate/Dev/NextProjects/doshi-sensei-old/**)"
     ],
     "deny": [],
     "ask": []

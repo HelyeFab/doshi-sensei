@@ -18,7 +18,7 @@ import {
   sendEmailVerification,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { auth, db, getAuthInstance, ensureFirebaseInitialized, getFirestoreInstance } from '@/lib/firebase';
+import { auth, db, storage } from '@/lib/firebase';
 import { 
   getDefaultSubscription, 
   UserSubscription, 
@@ -72,8 +72,8 @@ export function useAuth() {
 const createOrUpdateUserDocument = async (user: User) => {
   if (!user) return null;
   
-  const firestore = getFirestoreInstance();
-  const userRef = doc(firestore, 'users', user.uid);
+  if (!db) return null;
+  const userRef = doc(db, 'users', user.uid);
 
   try {
     // Check if user document already exists
@@ -119,8 +119,8 @@ const fetchUserSubscription = async (userId: string): Promise<UserSubscription |
   if (!userId) return null;
 
   try {
-    const firestore = getFirestoreInstance();
-    const userRef = doc(firestore, 'users', userId);
+    if (!db) return null;
+    const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
@@ -155,20 +155,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Initialize Firebase on mount
+  // Check if auth is available on mount
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    ensureFirebaseInitialized()
-      .then(() => {
-        console.log('[Auth] Firebase initialized successfully');
-        setAuthInitialized(true);
-      })
-      .catch((error) => {
-        console.error('[Auth] Firebase initialization failed:', error);
-        setAuthInitialized(true); // Set true to prevent infinite loading
-        setLoading(false);
-      });
+    // Auth should be available immediately if Firebase is configured
+    if (auth) {
+      console.log('[Auth] Firebase auth is available');
+      setAuthInitialized(true);
+    } else {
+      console.error('[Auth] Firebase auth not available - check configuration');
+      setAuthInitialized(true); // Prevent infinite loading
+      setLoading(false);
+    }
   }, []);
   
   useEffect(() => {
@@ -177,9 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // Handle redirect result from Google sign-in
     const handleRedirectResult = async () => {
-      try {
-        await ensureFirebaseInitialized();
-        const authInstance = getAuthInstance();
+      if (!auth) return;
         
         // Check if we're expecting a redirect result
         const isRedirectFlow = sessionStorage.getItem('googleAuthRedirect');
@@ -188,7 +185,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (isRedirectFlow === 'pending') {
           try {
             // Checking for redirect result
-            const result = await getRedirectResult(authInstance);
+            const result = await getRedirectResult(auth);
           
           // Clear the redirect flag immediately after checking
           sessionStorage.removeItem('googleAuthRedirect');
@@ -237,9 +234,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // Set up auth state listener
     try {
-      const authInstance = getAuthInstance();
+      const auth = getAuthInstance();
       
-      const unsubscribe = onAuthStateChanged(authInstance, async (currentUser) => {
+      const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
 
       if (currentUser) {
@@ -271,9 +268,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [authInitialized]);
 
   const signInWithEmail = async (email: string, password: string) => {
-    await ensureFirebaseInitialized();
-    const authInstance = getAuthInstance();
-    const result = await signInWithEmailAndPassword(authInstance, email, password);
+    if (!auth) throw new Error('Auth not initialized');
+    const result = await signInWithEmailAndPassword(auth, email, password);
     
     // Fetch subscription after sign in
     if (result.user) {
@@ -289,9 +285,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
-    await ensureFirebaseInitialized();
-    const authInstance = getAuthInstance();
-    const result = await createUserWithEmailAndPassword(authInstance, email, password);
+    if (!auth) throw new Error('Auth not initialized');
+    const result = await createUserWithEmailAndPassword(auth, email, password);
 
     // Update the user's display name if provided
     if (displayName && result.user) {
@@ -315,15 +310,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('[Auth] signInWithGoogle called');
     
     // Get auth instance
-    const authInstance = getAuthInstance();
+    const auth = getAuthInstance();
     
-    if (!authInstance) {
+    if (!auth) {
       console.error('[Auth] CRITICAL: Auth not initialized!');
       console.error('[Auth] This usually means Firebase config is missing or incorrect');
       throw new Error('Auth not initialized - check Firebase configuration');
     }
     
-    console.log('[Auth] Auth object exists?', !!authInstance);
+    console.log('[Auth] Auth object exists?', !!auth);
     console.log('[Auth] Window location:', window.location.href);
     
     console.log('[Auth] Creating GoogleAuthProvider...');
@@ -338,11 +333,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     
     console.log('[Auth] Auth config check:', {
-      authDomain: authInstance.app.options.authDomain,
-      apiKey: authInstance.app.options.apiKey ? 'SET' : 'MISSING',
-      projectId: authInstance.app.options.projectId,
-      appName: authInstance.app.name,
-      currentUser: authInstance.currentUser?.email || 'none'
+      authDomain: auth.app.options.authDomain,
+      apiKey: auth.app.options.apiKey ? 'SET' : 'MISSING',
+      projectId: auth.app.options.projectId,
+      appName: auth.app.name,
+      currentUser: auth.currentUser?.email || 'none'
     });
     
     try {
@@ -360,8 +355,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Try popup first (better UX on desktop)
         if (window.innerWidth > 768) {
           try {
-            // Auth is already initialized via authInstance
-            const result = await signInWithPopup(authInstance, provider);
+            // Auth is already initialized via auth
+            const result = await signInWithPopup(auth, provider);
             // Create/update user document in Firestore
             if (result.user) {
               const sub = await createOrUpdateUserDocument(result.user);
@@ -380,7 +375,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               // Popup blocked or failed, using redirect method
               // Mark redirect as pending
               sessionStorage.setItem('googleAuthRedirect', 'pending');
-              await signInWithRedirect(authInstance, provider);
+              await signInWithRedirect(auth, provider);
             }
             // If user closed the popup, just return silently (not an error)
           }
@@ -388,7 +383,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Use redirect for mobile devices
           // Mark redirect as pending
           sessionStorage.setItem('googleAuthRedirect', 'pending');
-          await signInWithRedirect(authInstance, provider);
+          await signInWithRedirect(auth, provider);
         }
       }
     } catch (error) {
@@ -402,9 +397,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    await ensureFirebaseInitialized();
-    const authInstance = getAuthInstance();
-    await signOut(authInstance);
+    if (!auth) throw new Error('Auth not initialized');
+    await signOut(auth);
     setSubscription(null);
     setUserType('guest');
     setUserProfile(createUserProfile('anonymous', 'free'));
@@ -413,21 +407,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resetPassword = async (email: string) => {
     console.log('[Auth] resetPassword called for email:', email);
     
-    await ensureFirebaseInitialized();
-    const authInstance = getAuthInstance();
+    if (!auth) throw new Error('Auth not initialized');
     
-    console.log('[Auth] Auth domain for password reset:', authInstance.app.options.authDomain);
+    console.log('[Auth] Auth domain for password reset:', auth.app.options.authDomain);
     
     try {
       console.log('[Auth] Sending password reset email...');
-      await sendPasswordResetEmail(authInstance, email);
+      await sendPasswordResetEmail(auth, email);
       console.log('[Auth] Password reset email sent successfully');
     } catch (error: any) {
       console.error('[Auth] Password reset error:', {
         code: error.code,
         message: error.message,
         email: email,
-        authDomain: authInstance.app.options.authDomain
+        authDomain: auth.app.options.authDomain
       });
       throw error;
     }
@@ -476,8 +469,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Delete Firestore data first (while we still have auth)
       try {
-        const firestore = getFirestoreInstance();
-        await deleteDoc(doc(firestore, 'users', uid));
+        if (db) {
+          await deleteDoc(doc(db, 'users', uid));
+        }
       } catch (error) {
         // Error deleting Firestore data
         // Continue anyway

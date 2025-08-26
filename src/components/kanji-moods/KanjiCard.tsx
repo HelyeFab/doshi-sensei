@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { KanjiCardProps } from '@/types/moodBoard';
 import { Kanji } from '@/types';
 import KanjiModal from './KanjiModal';
@@ -11,6 +11,7 @@ import StudyListManager from '@/utils/studyListManager';
 import { SaveWordModal } from '@/components/drill/SaveWordModal';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useToast } from '@/hooks/useToast';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 export default function KanjiCard({
   kanji,
@@ -24,10 +25,46 @@ export default function KanjiCard({
   const { user } = useAuth();
   const { track } = useAnalytics();
   const { toast } = useToast();
+  
+  // Universal Learning Analytics
+  const { track: trackLearning } = useLearnTracking();
+  const viewStartTime = useRef(Date.now());
 
   // Check if kanji is already saved when component mounts
   useEffect(() => {
     checkIfKanjiSaved();
+    
+    // Track kanji view with Universal Learning Analytics
+    trackLearning({
+      type: 'view',
+      category: 'kanji',
+      content: {
+        value: kanji.char,
+        jlptLevel: kanji.jlpt,
+        metadata: {
+          meanings: [kanji.meaning],
+          readings: {
+            on: kanji.readings?.on || [],
+            kun: kanji.readings?.kun || []
+          },
+          source: 'kanji_card',
+          difficulty: kanji.difficulty
+        }
+      }
+    });
+    
+    // Track duration on unmount
+    return () => {
+      const duration = Date.now() - viewStartTime.current;
+      if (duration > 1000) { // Only track if viewed for more than 1 second
+        trackLearning({
+          type: 'complete',
+          category: 'kanji',
+          content: { value: kanji.char },
+          metrics: { duration }
+        });
+      }
+    };
   }, [kanji.char]);
 
   const checkIfKanjiSaved = async () => {
@@ -74,6 +111,20 @@ export default function KanjiCard({
       toast.warning('Sign in required', 'Please sign in to save kanji to your study lists');
       return;
     }
+    
+    // Track save attempt
+    trackLearning({
+      type: 'save',
+      category: 'kanji',
+      content: {
+        value: kanji.char,
+        metadata: {
+          action: 'bookmark_click',
+          alreadySaved: isKanjiSaved
+        }
+      }
+    });
+    
     setShowSaveModal(true);
   };
 

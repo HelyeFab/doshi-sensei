@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useConfirmDialog } from '@/components/ConfirmDialog';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
 import type { ExampleSentence } from '@/types/sentences';
@@ -19,6 +19,7 @@ import { ExampleSentencesBlock } from '@/components/vocabulary/ExampleSentencesB
 import StrokeOrderModal from '@/components/kanji/StrokeOrderModal';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import { SaveWordModal } from '@/components/drill/SaveWordModal';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 // Add JMdict search utility import (to be implemented)
 import { searchJMdictWords, loadJMdictData, getDidYouMeanSuggestion, SearchResult } from '@/utils/jmdictLocalSearch';
@@ -33,6 +34,11 @@ export default function VocabularyClient() {
   const { subscription, userType } = useSubscription2();
   const strings = useStrings();
   const { track } = useAnalytics();
+  
+  // Universal Learning Analytics
+  const { track: trackLearning } = useLearnTracking();
+  const searchStartTime = useRef<number>();
+  
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
@@ -102,6 +108,23 @@ export default function VocabularyClient() {
     try {
       setError(null);
       setDidYouMean(null);
+      searchStartTime.current = Date.now();
+      
+      // Track search initiation with Universal Learning Analytics
+      trackLearning({
+        type: 'search',
+        category: 'vocabulary',
+        content: {
+          value: term,
+          metadata: {
+            searchLength: term.length,
+            hasKanji: /[\u4e00-\u9faf]/.test(term),
+            hasKana: /[\u3040-\u309f\u30a0-\u30ff]/.test(term),
+            isRomaji: /^[a-zA-Z\s]+$/.test(term),
+            source: searchSource
+          }
+        }
+      });
 
       let searchResults: SearchResult[] = [];
       if (searchSource === 'wanikani') {
@@ -126,19 +149,37 @@ export default function VocabularyClient() {
       setCurrentSearchResults(searchResults);
       setCurrentSearchTerm(term);
       setShowSearchResults(true);
+      
+      // Track search completion
+      const searchDuration = Date.now() - (searchStartTime.current || Date.now());
+      trackLearning({
+        type: 'complete',
+        category: 'vocabulary',
+        content: { value: term },
+        metrics: {
+          duration: searchDuration,
+          resultsCount: searchResults.length
+        },
+        metadata: {
+          source: searchSource,
+          hasResults: searchResults.length > 0,
+          topResultJLPT: searchResults[0]?.jlptLevel,
+          topResultCommon: searchResults[0]?.isCommon
+        }
+      });
 
       // Save to search history
       await SearchHistoryManager2.addSearchEntry(term, searchResults, user, mapUserType(userType), searchSource);
       await loadSearchHistory(); // Reload history to show the new entry
 
-      // Track vocabulary search analytics
+      // Track vocabulary search analytics (legacy)
       Analytics.trackVocabularySearch(user?.uid, {
         searchTerm: term,
         resultsCount: searchResults.length,
         searchedAt: new Date().toISOString(),
       });
       
-      // Track in new analytics system
+      // Track in new analytics system (legacy)
       track('word_search', { 
         searchTerm: term, 
         resultsCount: searchResults.length,
@@ -153,8 +194,29 @@ export default function VocabularyClient() {
     }
   };
 
-  const handleWordClick = (word: JapaneseWord) => {
+  const handleWordClick = (word: JapaneseWord, resultIndex?: number) => {
     setSelectedWord(word);
+    
+    // Track vocabulary view with Universal Learning Analytics
+    trackLearning({
+      type: 'view',
+      category: 'vocabulary',
+      content: {
+        id: word.id,
+        value: word.kanji || word.kana || word.word || '',
+        jlptLevel: word.jlptLevel || word.jlpt,
+        metadata: {
+          meanings: word.meanings || [word.meaning],
+          readings: word.readings || { kun: word.kana ? [word.kana] : [], on: [] },
+          searchQuery: currentSearchTerm,
+          resultIndex: resultIndex,
+          resultTotal: currentSearchResults.length,
+          source: 'vocabulary_search',
+          isCommon: word.isCommon,
+          frequency: word.frequency
+        }
+      }
+    });
   };
 
   const handleCloseModal = () => {
@@ -439,11 +501,11 @@ export default function VocabularyClient() {
 
               {currentSearchResults.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {currentSearchResults.map((word) => (
+                  {currentSearchResults.map((word, index) => (
                     <WordCard
                       key={word.id}
                       word={word}
-                      onWordClick={() => handleWordClick(word)}
+                      onWordClick={() => handleWordClick(word, index)}
                     />
                   ))}
                 </div>

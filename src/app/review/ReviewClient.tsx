@@ -16,7 +16,7 @@ type TabType = 'activity' | 'session' | 'dashboard' | 'settings';
 export default function ReviewClient() {
   const [activeTab, setActiveTab] = useState<TabType>('activity');
   const [showSession, setShowSession] = useState(false);
-  const { engine, isLoading, isReady, getTotalDueCount } = useUnifiedReview();
+  const { engine, isLoading, isReady } = useUnifiedReview();
   const [reviewStats, setReviewStats] = useState<any>(null);
   
   // Universal Learning Analytics
@@ -69,7 +69,10 @@ export default function ReviewClient() {
       if (!isReady || !engine) return;
       
       try {
-        const dueCount = await getTotalDueCount();
+        // Get due items count
+        const dueItems = await engine.getDueItems();
+        const dueCount = dueItems.length;
+        
         const stats = await engine.getStats();
         
         setReviewStats({
@@ -79,12 +82,12 @@ export default function ReviewClient() {
           accuracy: stats.retentionRate
         });
       } catch (error) {
-        console.error('Failed to load review stats:', error);
+        // Silently handle error
       }
     };
 
     loadStats();
-  }, [isReady, engine, getTotalDueCount]);
+  }, [isReady, engine]);
 
   const tabs = [
     { id: 'activity' as TabType, label: 'Learning Activity', icon: '📊' },
@@ -119,6 +122,82 @@ export default function ReviewClient() {
       abandon: '🚪'
     };
     return emojiMap[type] || '📌';
+  };
+  
+  // Format event content for user-friendly display
+  const formatEventContent = (event: LearningEvent): string => {
+    const { type, category, content } = event;
+    const value = content.value;
+    
+    // Handle page navigation events
+    if (category === 'page' || value.startsWith('/')) {
+      const pageNames: Record<string, string> = {
+        '/kanji-browser': 'Browsed Kanji',
+        '/review': 'Opened Review Page',
+        '/': 'Visited Homepage',
+        '/games': 'Explored Games',
+        '/practice': 'Started Practice',
+        '/drill': 'Started Drill',
+        '/tools': 'Used Tools',
+        '/settings': 'Adjusted Settings'
+      };
+      return pageNames[value] || 'Navigated to page';
+    }
+    
+    // Handle kanji/vocabulary items
+    if (category === 'kanji') {
+      // Clean up the kanji value - remove prefixes like "kanji_"
+      const cleanKanji = value.replace(/^kanji_/, '').replace(/_/g, '');
+      if (type === 'save') return `Saved kanji: ${cleanKanji}`;
+      if (type === 'practice') return `Practiced kanji: ${cleanKanji}`;
+      if (type === 'success') return `Mastered kanji: ${cleanKanji}`;
+      if (type === 'view') return `Studied kanji: ${cleanKanji}`;
+      return `Kanji: ${cleanKanji}`;
+    }
+    
+    if (category === 'vocabulary') {
+      if (type === 'save') return `Saved word: ${value}`;
+      if (type === 'practice') return `Practiced: ${value}`;
+      if (type === 'success') return `Learned: ${value}`;
+      if (type === 'search') return `Looked up: ${value}`;
+      return value;
+    }
+    
+    // Handle study lists
+    if (value.includes('study_list')) {
+      if (type === 'save') return 'Created new study list';
+      if (type === 'view') return 'Opened study list';
+      return 'Updated study list';
+    }
+    
+    // Handle games
+    if (category === 'game') {
+      const gameNames: Record<string, string> = {
+        'kanji_quest': 'Kanji Quest',
+        'kana_drop': 'Kana Drop',
+        'memory_match': 'Memory Match',
+        'stroke_order': 'Stroke Order Practice'
+      };
+      const gameName = gameNames[value] || 'game';
+      if (type === 'complete') return `Completed ${gameName}`;
+      if (type === 'practice') return `Playing ${gameName}`;
+      return `Started ${gameName}`;
+    }
+    
+    // Handle drills
+    if (category === 'drill') {
+      if (value === 'conjugation_drill') return 'Practiced conjugations';
+      if (value === 'particle_drill') return 'Practiced particles';
+      return 'Completed drill';
+    }
+    
+    // Default formatting
+    if (type === 'complete') return 'Completed activity';
+    if (type === 'success') return 'Correct answer!';
+    if (type === 'failure') return 'Keep practicing!';
+    
+    // Return a cleaned version of the value
+    return value.replace(/_/g, ' ').replace(/\//g, '');
   };
 
   // Get color for category
@@ -231,40 +310,51 @@ export default function ReviewClient() {
                             No learning activity yet. Start studying to see your progress here!
                           </p>
                         ) : (
-                          recentEvents.map((event) => (
-                            <div 
-                              key={event.id} 
-                              className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
-                            >
-                              <div className="text-2xl">{getEventEmoji(event.type)}</div>
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(event.category)}`}>
-                                    {event.category}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {formatTimeAgo(event.timestamp)}
-                                  </span>
-                                </div>
-                                <div className="font-medium text-foreground">
-                                  {event.content.value}
-                                </div>
-                                {event.metrics && (
-                                  <div className="flex gap-4 mt-1 text-xs text-muted-foreground">
-                                    {event.metrics.duration && (
-                                      <span>⏱️ {Math.round(event.metrics.duration / 1000)}s</span>
-                                    )}
-                                    {event.metrics.accuracy !== undefined && (
-                                      <span>🎯 {event.metrics.accuracy}%</span>
-                                    )}
-                                    {event.metrics.score !== undefined && (
-                                      <span>⭐ {event.metrics.score}</span>
-                                    )}
+                          recentEvents
+                            // Filter out pure navigation events unless they're important
+                            .filter(event => {
+                              // Skip page navigation events
+                              if (event.category === 'page' || event.content.value.startsWith('/')) {
+                                return false;
+                              }
+                              // Keep all learning-related events
+                              return true;
+                            })
+                            .slice(0, 20) // Show only recent 20 events
+                            .map((event) => (
+                              <div 
+                                key={event.id} 
+                                className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                              >
+                                <div className="text-2xl">{getEventEmoji(event.type)}</div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(event.category)}`}>
+                                      {event.category}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {formatTimeAgo(event.timestamp)}
+                                    </span>
                                   </div>
-                                )}
+                                  <div className="font-medium text-foreground">
+                                    {formatEventContent(event)}
+                                  </div>
+                                  {event.metrics && (
+                                    <div className="flex gap-4 mt-1 text-xs text-muted-foreground">
+                                      {event.metrics.duration && event.metrics.duration > 1000 && (
+                                        <span>⏱️ {Math.round(event.metrics.duration / 1000)}s</span>
+                                      )}
+                                      {event.metrics.accuracy !== undefined && (
+                                        <span>🎯 {event.metrics.accuracy}%</span>
+                                      )}
+                                      {event.metrics.score !== undefined && (
+                                        <span>⭐ {event.metrics.score}</span>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          ))
+                            ))
                         )}
                       </div>
                     </div>

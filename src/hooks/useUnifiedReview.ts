@@ -79,7 +79,7 @@ export function useUnifiedReview() {
         setEngine(engineInstance);
         setIsReady(true);
       } catch (error) {
-        console.error('Failed to initialize review engine:', error);
+        // Failed to initialize review engine
         // Create fallback guest engine
         engineInstance = new UnifiedReviewEngine({
           userId: 'guest',

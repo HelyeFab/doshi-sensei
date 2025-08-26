@@ -18,6 +18,7 @@ import { PageHeader } from '@/components/PageHeader';
 import dynamic from 'next/dynamic';
 import ShadowingAudioPlayer from '@/components/audio/ShadowingAudioPlayer';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 // Dynamic import to avoid SSR issues
 const EnhancedArticleAudioPlayer = dynamic(
@@ -164,6 +165,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   const { userType } = useSubscription2();
   const { speakSentence, isPlaying, isCacheLoading } = useStoryTTS();
   const { trackArticleView, trackArticleComplete } = useAnalytics();
+  const { track: trackLearning } = useLearnTracking();
 
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [startTime] = useState(new Date());
@@ -204,6 +206,26 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       // Track in analytics system
       const level = story.jlptLevel || 'N5';
       trackArticleView(`stories.${level}`, story.id);
+      
+      // Track with ULAS
+      trackLearning({
+        type: 'view',
+        category: 'story',
+        content: {
+          value: story.id,
+          metadata: {
+            title: story.title,
+            theme: story.theme,
+            jlptLevel: story.jlptLevel,
+            pages: story.pages.length,
+            hasQuiz: !!story.quiz,
+            wordsToLearn: story.wordsToLearn || [],
+            grammarPoints: story.grammarPoints || [],
+            totalContent: story.pages.reduce((acc, page) => acc + page.text.length, 0),
+            isAiGenerated: story.id.startsWith('ai-')
+          }
+        }
+      });
 
       // Cache story for offline reading
       storyOfflineManager.cacheStory(story).catch(error => {
@@ -254,6 +276,34 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
             const readingTime = Math.ceil((Date.now() - startTime.getTime()) / 1000); // in seconds
             const level = story.jlptLevel || 'N5';
             trackArticleComplete(`stories.${level}`, readingTime, story.id);
+            
+            // Track with ULAS
+            trackLearning({
+              type: 'complete',
+              category: 'story',
+              content: {
+                value: story.id,
+                metadata: {
+                  title: story.title,
+                  theme: story.theme,
+                  jlptLevel: story.jlptLevel,
+                  quizScore: quizScore,
+                  savedWords: Array.from(savedWords),
+                  settings: {
+                    fontSize: settings.fontSize,
+                    showFurigana: settings.showFurigana,
+                    highlightMode: settings.highlightMode
+                  },
+                  isAiGenerated: story.id.startsWith('ai-')
+                }
+              },
+              metrics: {
+                duration: readingTime * 1000, // Convert to milliseconds
+                pagesRead: story.pages.length,
+                wordsEncountered: savedWords.size,
+                quizScore: quizScore || 0
+              }
+            });
 
             setHasTrackedCompletion(true);
             

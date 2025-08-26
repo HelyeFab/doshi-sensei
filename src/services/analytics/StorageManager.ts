@@ -19,6 +19,12 @@ export class StorageManager {
   async init(): Promise<void> {
     if (this.db) return;
     
+    // Check if we're in a browser environment
+    if (typeof window === 'undefined' || typeof indexedDB === 'undefined') {
+      // IndexedDB not available (SSR or unsupported browser)
+      return;
+    }
+    
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
       
@@ -65,6 +71,11 @@ export class StorageManager {
   async saveEvent(event: LearningEvent): Promise<void> {
     await this.init();
     
+    if (!this.db) {
+      // Database not initialized, cannot save event
+      return;
+    }
+    
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORES.EVENTS], 'readwrite');
       const store = transaction.objectStore(STORES.EVENTS);
@@ -77,6 +88,11 @@ export class StorageManager {
   
   async saveEvents(events: LearningEvent[]): Promise<void> {
     await this.init();
+    
+    if (!this.db) {
+      // Database not initialized, cannot save events
+      return;
+    }
     
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORES.EVENTS], 'readwrite');
@@ -123,6 +139,11 @@ export class StorageManager {
     }
   ): Promise<LearningEvent[]> {
     await this.init();
+    
+    if (!this.db) {
+      // Database not initialized, returning empty array
+      return [];
+    }
     
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORES.EVENTS], 'readonly');

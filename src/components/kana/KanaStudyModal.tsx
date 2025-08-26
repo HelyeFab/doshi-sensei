@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { kanaData, KanaCharacter, playKanaAudio } from '@/data/kanaData';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 interface KanaStudyModalProps {
   isOpen: boolean;
@@ -20,6 +21,12 @@ export default function KanaStudyModal({
   const [showAnswer, setShowAnswer] = useState(false);
   const [studyKana, setStudyKana] = useState<KanaCharacter[]>([]);
   const [mode, setMode] = useState<'recognition' | 'recall'>('recognition');
+  
+  // Tracking
+  const { track: trackLearning } = useLearnTracking();
+  const studyStartTime = useRef(Date.now());
+  const cardStartTime = useRef(Date.now());
+  const cardsViewed = useRef(0);
 
   useEffect(() => {
     if (isOpen && selectedKanaIds.length > 0) {
@@ -29,20 +36,88 @@ export default function KanaStudyModal({
       setStudyKana(shuffled);
       setCurrentIndex(0);
       setShowAnswer(false);
+      
+      // Reset tracking
+      studyStartTime.current = Date.now();
+      cardStartTime.current = Date.now();
+      cardsViewed.current = 0;
+      
+      // Track study session start
+      trackLearning({
+        type: 'practice',
+        category: 'kana',
+        content: {
+          value: `${studyType}_study_started`,
+          metadata: {
+            studyType,
+            mode: 'recognition', // Initial mode
+            totalCards: shuffled.length,
+            kanaSelection: shuffled.map(k => ({
+              id: k.id,
+              romaji: k.romaji,
+              kana: studyType === 'hiragana' ? k.hiragana : k.katakana
+            }))
+          }
+        }
+      });
     }
-  }, [isOpen, selectedKanaIds]);
+  }, [isOpen, selectedKanaIds, studyType]);
 
   const currentKana = studyKana[currentIndex];
   const displayKana = currentKana && (studyType === 'hiragana' ? currentKana.hiragana : currentKana.katakana);
   const progress = studyKana.length > 0 ? ((currentIndex + 1) / studyKana.length) * 100 : 0;
 
   const handleNext = () => {
+    // Track current card view
+    if (currentKana) {
+      trackLearning({
+        type: 'view',
+        category: 'kana',
+        content: {
+          value: currentKana.romaji,
+          metadata: {
+            kana: displayKana,
+            romaji: currentKana.romaji,
+            studyType,
+            mode,
+            cardIndex: currentIndex,
+            totalCards: studyKana.length,
+            viewDuration: Date.now() - cardStartTime.current,
+            sawAnswer: showAnswer
+          }
+        },
+        metrics: {
+          duration: Date.now() - cardStartTime.current
+        }
+      });
+      cardsViewed.current++;
+    }
+    
     if (currentIndex < studyKana.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setShowAnswer(false);
+      cardStartTime.current = Date.now(); // Reset timer for new card
     } else {
       // Study session complete
-      onClose(true);
+      trackLearning({
+        type: 'complete',
+        category: 'kana',
+        content: {
+          value: `${studyType}_study_completed`,
+          metadata: {
+            studyType,
+            mode,
+            totalCards: studyKana.length,
+            cardsCompleted: cardsViewed.current + 1
+          }
+        },
+        metrics: {
+          duration: Date.now() - studyStartTime.current,
+          completionRate: 100,
+          cardsViewed: cardsViewed.current + 1
+        }
+      });
+      handleClose(true);
     }
   };
 
@@ -57,6 +132,32 @@ export default function KanaStudyModal({
     if (currentKana) {
       await playKanaAudio(currentKana.id, studyType);
     }
+  };
+  
+  const handleClose = (completed: boolean) => {
+    if (!completed && studyKana.length > 0 && cardsViewed.current > 0) {
+      // Track abandonment if user viewed at least one card
+      trackLearning({
+        type: 'abandon',
+        category: 'kana',
+        content: {
+          value: `${studyType}_study_abandoned`,
+          metadata: {
+            studyType,
+            mode,
+            totalCards: studyKana.length,
+            cardsViewed: cardsViewed.current,
+            progressPercent: Math.round((cardsViewed.current / studyKana.length) * 100)
+          }
+        },
+        metrics: {
+          duration: Date.now() - studyStartTime.current,
+          completionRate: Math.round((cardsViewed.current / studyKana.length) * 100),
+          cardsViewed: cardsViewed.current
+        }
+      });
+    }
+    onClose(completed);
   };
 
   const handleKeyPress = (e: KeyboardEvent) => {
@@ -86,7 +187,7 @@ export default function KanaStudyModal({
             {studyType === 'hiragana' ? 'Hiragana' : 'Katakana'} Study
           </h2>
           <button
-            onClick={() => onClose(false)}
+            onClick={() => handleClose(false)}
             className="p-2 rounded-lg hover:bg-muted transition-colors"
             aria-label="Close"
           >

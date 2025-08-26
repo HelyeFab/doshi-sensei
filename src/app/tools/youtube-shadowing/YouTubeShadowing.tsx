@@ -14,6 +14,7 @@ import { practiceHistoryService } from '@/services/practiceHistory/PracticeHisto
 import { TranscriptCacheManager } from '@/utils/transcriptCache';
 import { videoHistoryService } from '@/services/videoHistory';
 import { AccordionItem } from '@/components/Accordion';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 import YouTubeInput from './components/YouTubeInput';
 import FileUploader from './components/FileUploader';
 import AudioExtractor from './components/AudioExtractor';
@@ -75,6 +76,7 @@ export default function YouTubeShadowing() {
   });
   const { isPremium, userType } = useSubscription2();
   const { user } = useAuth();
+  const { track: trackLearning } = useLearnTracking();
   const searchParams = useSearchParams();
   const [session, setSession] = useState<ShadowingSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -289,6 +291,21 @@ export default function YouTubeShadowing() {
           transcript: [],
           currentLineIndex: 0
         });
+        
+        // Track with ULAS
+        trackLearning({
+          type: 'practice',
+          category: 'video',
+          content: {
+            value: videoId,
+            metadata: {
+              videoUrl: url,
+              source: 'youtube',
+              isFirstTime: false,
+              fromHistory: true
+            }
+          }
+        });
       } else {
         // New video - check access limits
         debugLog('VIDEO_ACCESS', 'New video - checking limits', { videoId });
@@ -314,6 +331,20 @@ export default function YouTubeShadowing() {
           videoUrl: url,
           transcript: [],
           currentLineIndex: 0
+        });
+        
+        // Track with ULAS
+        trackLearning({
+          type: 'practice',
+          category: 'video',
+          content: {
+            value: videoId,
+            metadata: {
+              videoUrl: url,
+              source: 'youtube',
+              isFirstTime: true
+            }
+          }
         });
       }
     } catch (err) {
@@ -359,6 +390,22 @@ export default function YouTubeShadowing() {
         audioUrl: blobUrl // Set audioUrl for both video and audio to trigger transcription
       });
       
+      // Track with ULAS
+      trackLearning({
+        type: 'practice',
+        category: isVideo ? 'video' : 'audio',
+        content: {
+          value: file.name,
+          metadata: {
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type,
+            source: 'upload',
+            mediaType: isVideo ? 'video' : 'audio'
+          }
+        }
+      });
+      
       debugLog('FILE_UPLOAD', 'File uploaded successfully', {
         fileName: file.name,
         fileSize: file.size,
@@ -398,6 +445,25 @@ export default function YouTubeShadowing() {
         transcript,
         ...(videoTitle && { videoTitle }),
         ...(videoMetadata && { videoMetadata })
+      });
+      
+      // Track transcript generation with ULAS
+      trackLearning({
+        type: 'complete',
+        category: 'video',
+        content: {
+          value: videoId || session.fileInfo?.name || 'unknown',
+          metadata: {
+            transcriptGenerated: true,
+            transcriptLines: transcript.length,
+            videoTitle: videoTitle || session.videoTitle,
+            source: session.fileInfo ? 'upload' : 'youtube',
+            duration: videoMetadata?.duration
+          }
+        },
+        metrics: {
+          transcriptLines: transcript.length
+        }
       });
       
       // Save to practice history if it's a YouTube video AND user is authenticated

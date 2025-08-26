@@ -7,6 +7,7 @@ import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { DesktopContainer } from '@/components/layout/DesktopContainer';
 import { motion } from 'framer-motion';
 import KanjiConnectionsIntroDialog from '@/components/dialogs/KanjiConnectionsIntroDialog';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 export default function KanjiConnectionsPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function KanjiConnectionsPage() {
     showModal: true,
     trackUsage: true
   });
+  const { track: trackLearning } = useLearnTracking();
   
   const [showIntroDialog, setShowIntroDialog] = useState(false);
   
@@ -79,6 +81,19 @@ export default function KanjiConnectionsPage() {
               onClick={async () => {
                 const hasAccess = await checkAndTrack();
                 if (hasAccess) {
+                  // Track with ULAS
+                  trackLearning({
+                    type: 'view',
+                    category: 'kanji',
+                    content: {
+                      value: 'kanji_families',
+                      metadata: {
+                        feature: 'kanji_connections',
+                        subFeature: 'families',
+                        description: 'Kanji Families - Component patterns and shared meanings'
+                      }
+                    }
+                  });
                   router.push('/tools/kanji-mastery/families');
                 }
               }}
@@ -126,6 +141,19 @@ export default function KanjiConnectionsPage() {
               onClick={async () => {
                 const hasAccess = await checkAndTrack();
                 if (hasAccess) {
+                  // Track with ULAS
+                  trackLearning({
+                    type: 'view',
+                    category: 'kanji',
+                    content: {
+                      value: 'semantic_radicals',
+                      metadata: {
+                        feature: 'kanji_connections',
+                        subFeature: 'radicals',
+                        description: 'Semantic Radicals - Grouped by meaning components'
+                      }
+                    }
+                  });
                   router.push('/tools/kanji-mastery/radicals');
                 }
               }}

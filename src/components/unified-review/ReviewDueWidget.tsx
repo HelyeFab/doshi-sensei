@@ -119,17 +119,21 @@ export default function ReviewDueWidget({
         total: 0
       };
 
-      // Get due items for each content type
-      for (const contentType of Object.values(ContentType)) {
-        const dueCount = await engine.getDueItemsCount(contentType);
-        breakdown[contentType] = dueCount;
-        breakdown.total += dueCount;
+      // Get all due items and count by content type
+      const dueItems = await engine.getDueItems();
+      
+      // Count items by content type
+      for (const item of dueItems) {
+        if (item.contentType && breakdown.hasOwnProperty(item.contentType)) {
+          breakdown[item.contentType as ContentType]++;
+          breakdown.total++;
+        }
       }
 
       setDueItems(breakdown);
       setLastUpdate(new Date());
     } catch (error) {
-      console.error('Failed to fetch due items:', error);
+      // Silently handle error
     }
   };
 

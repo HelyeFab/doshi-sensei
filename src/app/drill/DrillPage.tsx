@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { JapaneseWord, DrillQuestion, WordList, KanjiList, WordType } from '@/types';
 import { ExtendedConjugationForms } from '@/types/conjugation-extended';
@@ -24,6 +24,7 @@ import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
 import { PracticeCache } from '@/utils/practiceCache';
 import { DesktopContainer } from '@/components/layout/DesktopContainer';
 import DrillSettingsDropdown from '@/components/drill/DrillSettingsDropdown';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 // Structured Data for Drill Page
 const drillStructuredData = {
@@ -72,6 +73,7 @@ export default function DrillPage() {
   const { isPremium, userType } = useSubscription2();
   const { trackDrillComplete } = useAnalytics();
   const { updateProgress } = useAchievements();
+  const { track: trackLearning } = useLearnTracking();
   const strings = useStrings();
 
   // Conjugation drill state
@@ -90,6 +92,10 @@ export default function DrillPage() {
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [drillMode, setDrillMode] = useState<'random' | 'lists'>('random');
   const [autoAdvance, setAutoAdvance] = useState(false);
+  
+  // Timing refs for tracking
+  const questionStartTime = useRef(Date.now());
+  const drillStartTime = useRef(Date.now());
 
   // Existing conjugation drill functions
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -524,10 +530,38 @@ export default function DrillPage() {
     setSelectedAnswer(answer);
     setShowResult(true);
 
-    const newScore = answer === currentQuestion.correctAnswer ? score + 1 : score;
-    if (answer === currentQuestion.correctAnswer) {
+    const isCorrect = answer === currentQuestion.correctAnswer;
+    const newScore = isCorrect ? score + 1 : score;
+    if (isCorrect) {
       setScore(newScore);
     }
+
+    // Track each question attempt
+    trackLearning({
+      type: isCorrect ? 'success' : 'failure',
+      category: 'drill',
+      content: {
+        value: currentQuestion.word.kanji,
+        metadata: {
+          word: currentQuestion.word.kanji,
+          kana: currentQuestion.word.kana,
+          meaning: currentQuestion.word.meaning || currentQuestion.word.english,
+          targetForm: currentQuestion.targetForm,
+          correctAnswer: currentQuestion.correctAnswer,
+          userAnswer: answer,
+          isCorrect,
+          questionIndex: currentQuestionIndex,
+          totalQuestions: questions.length,
+          wordType: currentQuestion.word.type,
+          drillMode: drillMode,
+          wordTypeFilter: wordTypeFilter
+        }
+      },
+      metrics: {
+        responseTime: Date.now() - questionStartTime.current,
+        accuracy: newScore / (currentQuestionIndex + 1)
+      }
+    });
 
     const isLastQuestion = currentQuestionIndex >= questions.length - 1;
     if (isLastQuestion && gameStarted && questions.length > 0) {
@@ -572,6 +606,26 @@ export default function DrillPage() {
       setSelectedAnswer(null);
       setShowResult(false);
       setShowRules(false);
+      
+      // Reset timer for new question
+      questionStartTime.current = Date.now();
+      
+      // Track new question view
+      const nextQuestion = questions[currentQuestionIndex + 1];
+      trackLearning({
+        type: 'view',
+        category: 'drill',
+        content: {
+          value: nextQuestion.word.kanji,
+          metadata: {
+            word: nextQuestion.word.kanji,
+            kana: nextQuestion.word.kana,
+            targetForm: nextQuestion.targetForm,
+            questionIndex: currentQuestionIndex + 1,
+            totalQuestions: questions.length
+          }
+        }
+      });
     } else {
       if (gameStarted && questions.length > 0) {
         await recordDrillSession();
@@ -600,6 +654,43 @@ export default function DrillPage() {
     }
 
     setGameStarted(true);
+    drillStartTime.current = Date.now();
+    questionStartTime.current = Date.now();
+    
+    // Track drill start and first question
+    trackLearning({
+      type: 'practice',
+      category: 'drill',
+      content: {
+        value: 'drill_started',
+        metadata: {
+          drillType: 'conjugation',
+          mode: drillMode,
+          wordTypeFilter,
+          totalQuestions: questions.length,
+          selectedLists: drillMode === 'lists' ? selectedLists : [],
+          autoAdvance
+        }
+      }
+    });
+    
+    // Track first question view
+    if (questions.length > 0) {
+      trackLearning({
+        type: 'view',
+        category: 'drill',
+        content: {
+          value: questions[0].word.kanji,
+          metadata: {
+            word: questions[0].word.kanji,
+            kana: questions[0].word.kana,
+            targetForm: questions[0].targetForm,
+            questionIndex: 0,
+            totalQuestions: questions.length
+          }
+        }
+      });
+    }
   };
 
   const handleListToggle = (listId: string) => {
@@ -621,6 +712,36 @@ export default function DrillPage() {
       
       // Track in new analytics system
       trackDrillComplete('conjugation', actualScore, questions.length);
+      
+      // Track drill completion with ULAS
+      trackLearning({
+        type: 'complete',
+        category: 'drill',
+        content: {
+          value: 'drill_completed',
+          metadata: {
+            drillType: 'conjugation',
+            mode: drillMode,
+            wordTypeFilter,
+            totalQuestions: questions.length,
+            wordsStudied: questions.map(q => ({
+              kanji: q.word.kanji,
+              kana: q.word.kana,
+              type: q.word.type,
+              targetForm: q.targetForm
+            })),
+            selectedLists: drillMode === 'lists' ? selectedLists : [],
+            autoAdvance
+          }
+        },
+        metrics: {
+          score: actualScore,
+          totalQuestions: questions.length,
+          accuracy: Math.round((actualScore / questions.length) * 100),
+          duration: Date.now() - drillStartTime.current,
+          averageResponseTime: Math.round((Date.now() - drillStartTime.current) / questions.length)
+        }
+      });
 
       // Usage tracking is now handled automatically by checkAndTrack
     } catch (err) {

@@ -12,6 +12,7 @@ import ScoreDisplay from './ScoreDisplay';
 import GameOverModal from './GameOverModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 // Using localStorage directly for game-specific data
 
@@ -53,6 +54,7 @@ interface StrokeOrderProgress {
 }
 
 export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
+  const { track: trackLearning } = useLearnTracking();
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const [inputMode, setInputMode] = useState<InputMode>('click');
   const [strokePaths, setStrokePaths] = useState<string[]>([]);
@@ -171,6 +173,27 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
       const difficultyMultiplier = difficulty === 'easy' ? 1 : difficulty === 'medium' ? 1.5 : difficulty === 'hard' ? 2 : 3;
       const strokeScore = Math.floor((10 + timeBonus + comboBonus) * difficultyMultiplier);
 
+      // Track correct stroke with ULAS
+      trackLearning({
+        type: 'success',
+        category: 'kanji',
+        content: {
+          value: currentKanji,
+          metadata: {
+            practiceType: 'stroke_order',
+            strokeNumber: strokeIndex + 1,
+            totalStrokes: totalStrokesInKanji,
+            difficulty,
+            inputMode,
+            combo: newCombo,
+            scoreEarned: strokeScore,
+            timeTaken: (Date.now() - gameState.kanjiStartTime) / 1000,
+            practiceSetId: practiceSet.id,
+            practiceSetName: practiceSet.name
+          }
+        }
+      });
+
       const newCorrectStrokes = [...gameState.correctStrokes, strokeIndex];
       
       setGameState(prev => ({
@@ -193,6 +216,27 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
     } else {
       // Incorrect stroke
       setIsCorrect(false);
+      
+      // Track incorrect stroke with ULAS
+      trackLearning({
+        type: 'failure',
+        category: 'kanji',
+        content: {
+          value: currentKanji,
+          metadata: {
+            practiceType: 'stroke_order',
+            expectedStroke: expectedStroke + 1,
+            actualStroke: strokeIndex + 1,
+            totalStrokes: totalStrokesInKanji,
+            difficulty,
+            inputMode,
+            incorrectAttempts: gameState.incorrectAttempts + 1,
+            practiceSetId: practiceSet.id,
+            practiceSetName: practiceSet.name
+          }
+        }
+      });
+      
       setGameState(prev => ({
         ...prev,
         incorrectAttempts: prev.incorrectAttempts + 1,
@@ -303,6 +347,31 @@ export default function StrokeOrderGame({ practiceSet, onBack }: Props) {
         const accuracy = Math.round((gameState.totalStrokes / Math.max(gameState.totalStrokes + gameState.incorrectAttempts, 1)) * 100);
         trackGamePlayed('stroke-order-practice', gameState.score, gameState.completedKanji, gameState.completedKanji).catch(error => {
           console.error('Failed to track game completion:', error);
+        });
+
+        // Track game completion with ULAS
+        trackLearning({
+          type: 'complete',
+          category: 'game',
+          content: {
+            value: `stroke_order_${practiceSet.id}`,
+            metadata: {
+              practiceType: 'stroke_order',
+              practiceSetId: practiceSet.id,
+              practiceSetName: practiceSet.name,
+              score: gameState.score,
+              completedKanji: gameState.completedKanji,
+              totalKanji: practiceSet.kanji.length,
+              correctStrokes: gameState.totalStrokes,
+              incorrectAttempts: gameState.incorrectAttempts,
+              accuracy,
+              maxCombo: gameState.maxCombo,
+              hintsUsed: gameState.hintsUsed,
+              difficulty,
+              inputMode,
+              timePlayedSeconds: Math.floor(timePlayed / 1000)
+            }
+          }
         });
       }
       

@@ -12,6 +12,7 @@ import { JapaneseWord } from "@/types";
 import { searchJMdictWords } from "@/utils/jmdictLocalSearch";
 import { useFeature } from "@/hooks/useFeature";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { useLearnTracking } from "@/hooks/useLearnTracking";
 import { useTTS } from "@/hooks/useTTS";
 import { QuickContextSelection } from "./QuickContextProvider";
 import { cleanFurigana } from "@/utils/cleanFurigana";
@@ -65,6 +66,7 @@ export default function QuickContextBubble({
     trackUsage: true
   });
   const { track } = useAnalytics();
+  const { track: trackLearning } = useLearnTracking();
   const { speak: speakTTS, stop: stopTTS, state: ttsState } = useTTS();
   const [remainingUses, setRemainingUses] = useState<number | null>(null);
 
@@ -166,6 +168,22 @@ export default function QuickContextBubble({
 
       track("quick_context_save", { text: selectedText });
 
+      // Track save action with ULAS
+      trackLearning({
+        type: 'save',
+        category: isKanji ? 'kanji' : 'vocabulary',
+        content: {
+          value: selectedText,
+          metadata: {
+            feature: 'quick_context',
+            action: 'save_to_list',
+            textType,
+            hasWordData: !!wordData,
+            context: surroundingContext?.substring(0, 100)
+          }
+        }
+      });
+
       // Create a word object if we don't have one
       const wordToSave = wordData || {
         id: `quick_${Date.now()}`,
@@ -202,6 +220,21 @@ export default function QuickContextBubble({
     if (!canUse) return;
 
     track("quick_context_lookup", { text: selectedText });
+
+    // Track lookup action with ULAS
+    trackLearning({
+      type: 'search',
+      category: isKanji ? 'kanji' : 'vocabulary',
+      content: {
+        value: selectedText,
+        metadata: {
+          feature: 'quick_context',
+          action: 'dictionary_lookup',
+          textType,
+          context: surroundingContext?.substring(0, 100)
+        }
+      }
+    });
 
     // Clean furigana from text before searching
     const cleanText = cleanFurigana(selectedText);

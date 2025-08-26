@@ -15,6 +15,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 import { kanaData, getBasicKana } from '@/data/kanaData';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 import SlideUpModal from '@/components/SlideUpModal';
 
 interface KanaDropModalProps {
@@ -32,6 +33,7 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
   });
   const { isPremium, userType } = useSubscription2();
   const { trackGameComplete } = useAnalytics();
+  const { track: trackLearning } = useLearnTracking();
 
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(false);
@@ -217,11 +219,31 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
 
         // Start game
         setCountdown(null);
+        const startTime = Date.now();
         setGameState(prev => ({
           ...prev,
           isPlaying: true,
-          startTime: Date.now()
+          startTime
         }));
+        
+        // Track game start with ULAS
+        trackLearning({
+          type: 'practice',
+          category: 'game',
+          content: {
+            value: 'kana_drop_started',
+            metadata: {
+              gameType: 'kana_drop',
+              selectedKana: effectiveSelectedKana.map(k => ({
+                kana: k.kana,
+                romaji: k.romaji,
+                type: k.type
+              })),
+              kanaCount: effectiveSelectedKana.length
+            }
+          }
+        });
+        
         // Play start sound
         audioManager.playSound('start').catch(() => {
 
@@ -270,6 +292,37 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
         
         // Track with new analytics (no accuracy metric for this game)
         trackGameComplete('kana_drop', finalScore);
+        
+        // Track with ULAS
+        trackLearning({
+          type: 'complete',
+          category: 'game',
+          content: {
+            value: 'kana_drop_completed',
+            metadata: {
+              gameType: 'kana_drop',
+              selectedKana: gameState.selectedKana.map(k => ({
+                kana: k.kana,
+                romaji: k.romaji,
+                type: k.type
+              })),
+              kanaCount: gameState.selectedKana.length,
+              isWin: finalScore >= GAME_CONSTANTS.WINNING_SCORE,
+              isLoss: finalScore <= -50
+            }
+          },
+          metrics: {
+            score: finalScore,
+            duration: timePlayed,
+            correctClicks: gameState.clicks.correct,
+            wrongClicks: gameState.clicks.wrong,
+            distractorClicks: gameState.clicks.distractor,
+            totalClicks: gameState.clicks.correct + gameState.clicks.wrong + gameState.clicks.distractor,
+            accuracy: (gameState.clicks.correct + gameState.clicks.wrong + gameState.clicks.distractor) > 0
+              ? Math.round((gameState.clicks.correct / (gameState.clicks.correct + gameState.clicks.wrong + gameState.clicks.distractor)) * 100)
+              : 0
+          }
+        });
 
         setHasIncrementedUsage(true);
         setLastGameScore(0); // Reset for next game
@@ -373,6 +426,31 @@ export default function KanaDropModal({ isOpen, onClose, selectedKana }: KanaDro
         // Track with new analytics (no accuracy metric for this game)
         trackGameComplete('kana_drop', finalScore);
         console.log('[KanaDrop] Analytics tracked (early exit):', { game: 'kana_drop', score: finalScore });
+        
+        // Track early exit with ULAS
+        trackLearning({
+          type: 'abandon',
+          category: 'game',
+          content: {
+            value: 'kana_drop_abandoned',
+            metadata: {
+              gameType: 'kana_drop',
+              selectedKana: gameState.selectedKana.map(k => ({
+                kana: k.kana,
+                romaji: k.romaji,
+                type: k.type
+              })),
+              kanaCount: gameState.selectedKana.length
+            }
+          },
+          metrics: {
+            score: finalScore,
+            duration: timePlayed,
+            correctClicks: gameState.clicks.correct,
+            wrongClicks: gameState.clicks.wrong,
+            distractorClicks: gameState.clicks.distractor
+          }
+        });
 
         setHasIncrementedUsage(true);
       }

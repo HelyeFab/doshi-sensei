@@ -6,6 +6,7 @@ import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import StrokeOrderGame from './components/StrokeOrderGame';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import SlideUpModal from '@/components/SlideUpModal';
 
@@ -58,6 +59,7 @@ export default function StrokeOrderPracticePage() {
     trackUsage: true
   });
   const { isPremium } = useSubscription2();
+  const { track: trackLearning } = useLearnTracking();
   const [showInstructions, setShowInstructions] = useState(true);
   
   useEffect(() => {
@@ -79,6 +81,25 @@ export default function StrokeOrderPracticePage() {
   const handleSelectSet = async (setId: string) => {
     const canAccess = await checkAndTrack();
     if (canAccess) {
+      const practiceSet = PRACTICE_SETS.find(set => set.id === setId);
+      
+      // Track practice set selection with ULAS
+      trackLearning({
+        type: 'practice',
+        category: 'kanji',
+        content: {
+          value: setId,
+          metadata: {
+            practiceType: 'stroke_order',
+            setName: practiceSet?.name,
+            description: practiceSet?.description,
+            kanjiCount: practiceSet?.kanji.length,
+            kanjiList: practiceSet?.kanji,
+            action: 'start_practice'
+          }
+        }
+      });
+      
       setSelectedSet(setId);
       setShowGame(true);
     }

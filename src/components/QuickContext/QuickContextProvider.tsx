@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import QuickContextBubble from './QuickContextBubble';
 import { cleanFurigana } from '@/utils/cleanFurigana';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 interface QuickContextProviderProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ export default function QuickContextProvider({
   enabled = true,
   selector = '.japanese-text, .font-ja, [data-quickcontext="true"], .prose p, .vocabulary-item, article p, .story-content, .news-content, .drill-content, .game-text, .practice-text, .reading-text'
 }: QuickContextProviderProps) {
+  const { track: trackLearning } = useLearnTracking();
   const [selectedText, setSelectedText] = useState('');
   const [bubblePosition, setBubblePosition] = useState({ x: 0, y: 0 });
   const [showBubble, setShowBubble] = useState(false);
@@ -185,6 +187,26 @@ export default function QuickContextProvider({
     
     // Add to history
     addToHistory(text, type, context);
+    
+    // Track text selection with ULAS
+    trackLearning({
+      type: 'search',
+      category: type === 'kanji' ? 'kanji' : 'vocabulary',
+      content: {
+        value: text,
+        metadata: {
+          feature: 'quick_context',
+          textType: type,
+          textLength: text.length,
+          context: context.substring(0, 100), // Limit context for tracking
+          sourceElement: parentElement?.tagName?.toLowerCase(),
+          hasKanji: kanjiRegex.test(text),
+          hasHiragana: hiraganaRegex.test(text),
+          hasKatakana: katakanaRegex.test(text),
+          action: 'text_selected'
+        }
+      }
+    });
   }, [enabled, selector]);
 
   // Handle click/tap on Japanese text elements for quick activation

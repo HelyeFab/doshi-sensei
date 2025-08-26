@@ -17,7 +17,7 @@ import {
   sendPasswordResetEmail,
   sendEmailVerification,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { 
   getDefaultSubscription, 
@@ -81,21 +81,25 @@ const createOrUpdateUserDocument = async (user: User) => {
     if (!userSnap.exists()) {
       // Create new user document with default free subscription
       const defaultSubscription = getDefaultSubscription('free');
+      
+      // Clean subscription data - remove any undefined values and fix dates
+      const cleanSubscription = JSON.parse(JSON.stringify(defaultSubscription));
+      
       await setDoc(userRef, {
-        email: user.email,
-        displayName: user.displayName,
-        subscription: defaultSubscription,
-        createdAt: new Date(),
-        lastLoginAt: new Date(),
+        email: user.email || '',
+        displayName: user.displayName || '',
+        subscription: cleanSubscription,
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
         isActive: true,
       });
       return defaultSubscription;
     } else {
       // Update existing user document with latest info
       await updateDoc(userRef, {
-        email: user.email,
-        displayName: user.displayName,
-        lastLoginAt: new Date(),
+        email: user.email || '',
+        displayName: user.displayName || '',
+        lastLoginAt: serverTimestamp(),
         isActive: true,
       });
       
@@ -104,7 +108,7 @@ const createOrUpdateUserDocument = async (user: User) => {
       return userData?.subscription || getDefaultSubscription('free');
     }
   } catch (error) {
-    console.error('Error creating/updating user document:', error);
+    // Error creating/updating user document
     return null;
   }
 };
@@ -124,7 +128,7 @@ const fetchUserSubscription = async (userId: string): Promise<UserSubscription |
     
     return null;
   } catch (error) {
-    console.error('Error fetching user subscription:', error);
+    // Error fetching user subscription
     return null;
   }
 };
@@ -159,14 +163,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Only check for redirect result if we're expecting one
       if (isRedirectFlow === 'pending') {
         try {
-          console.log('Checking for redirect result...');
+          // Checking for redirect result
           const result = await getRedirectResult(auth);
           
           // Clear the redirect flag immediately after checking
           sessionStorage.removeItem('googleAuthRedirect');
           
           if (result?.user) {
-            console.log('Redirect sign-in successful for user:', result.user.email);
+            // Redirect sign-in successful
             const sub = await createOrUpdateUserDocument(result.user);
             setSubscription(sub);
             const newUserType = getUserType(sub ?? null);
@@ -175,7 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUserProfile(newUserProfile);
           } else if (result === null) {
             // No redirect result but flag was set - might indicate an issue
-            console.log('No redirect result found despite pending flag');
+            // No redirect result found despite pending flag
             // Run diagnostics to help identify the issue
             authDebug.checkEnvironment();
             authDebug.logRedirectInfo();
@@ -187,12 +191,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           
           // Only log actual errors, not null results
           if ((error as { code?: string })?.code && (error as { code?: string }).code !== 'auth/no-auth-event') {
-            console.error('Redirect sign-in error:', error);
+            // Redirect sign-in error
             
             // Log specific error details for debugging
             const errorCode = (error as { code?: string })?.code;
             const errorMessage = (error as { message?: string })?.message;
-            console.error('Error details:', { code: errorCode, message: errorMessage });
+            // Error details logged
             
             // Run diagnostics on error
             authDebug.checkEnvironment();
@@ -215,12 +219,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentUser) {
         // Create/update user document and fetch subscription
         const sub = await createOrUpdateUserDocument(currentUser);
-        console.log('[AuthContext Debug] Subscription data:', sub);
-        console.log('[AuthContext Debug] Subscription plan:', sub?.plan);
-        console.log('[AuthContext Debug] Subscription status:', sub?.status);
+        // Subscription data loaded
         setSubscription(sub);
         const newUserType = getUserType(sub ?? null);
-        console.log('[AuthContext Debug] Computed userType:', newUserType);
+        // User type computed
         const newUserProfile = getUserProfile(sub, currentUser.uid);
         setUserType(newUserType);
         setUserProfile(newUserProfile);
@@ -294,7 +296,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // If we just initiated a redirect, don't try again
         if (isRedirectFlow === 'pending') {
-          console.log('Redirect already in progress');
+          // Redirect already in progress
           return;
         }
         
@@ -318,7 +320,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           } catch (popupError) {
             // If popup fails (blocked, COOP issues, etc.), fall back to redirect
             if ((popupError as { code?: string }).code !== 'auth/popup-closed-by-user') {
-              console.log('Popup blocked or failed, using redirect method');
+              // Popup blocked or failed, using redirect method
               // Mark redirect as pending
               sessionStorage.setItem('googleAuthRedirect', 'pending');
               if (auth) await signInWithRedirect(auth, provider);
@@ -333,7 +335,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch (error) {
-      console.error('Google sign-in error:', error);
+      // Google sign-in error
       // Clear redirect flag on error
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem('googleAuthRedirect');
@@ -395,7 +397,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           await deleteDoc(doc(db, 'users', uid));
         } catch (error) {
-          console.log('Error deleting Firestore data:', error);
+          // Error deleting Firestore data
           // Continue anyway
         }
       }
@@ -408,9 +410,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUserType('guest');
       setUserProfile(createUserProfile('anonymous', 'free'));
       
-      console.log('Account deleted successfully');
+      // Account deleted successfully
     } catch (error: any) {
-      console.error('Delete account error:', error);
+      // Delete account error
       
       if (error.code === 'auth/requires-recent-login') {
         throw new Error('Authentication failed. Please try again.');

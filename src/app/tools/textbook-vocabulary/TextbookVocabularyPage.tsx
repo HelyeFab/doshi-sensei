@@ -8,6 +8,7 @@ import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { VocabularyLearningView } from './components/VocabularyLearningView';
 import { StructuredData } from '@/components/StructuredData';
 import { structuredData } from '@/utils/seo';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 const pageStructuredData = {
   "@context": "https://schema.org",
@@ -26,6 +27,7 @@ export default function TextbookVocabularyPage() {
     showToast: true,
     trackUsage: true
   });
+  const { track: trackLearning } = useLearnTracking();
   const [selectedTextbook, setSelectedTextbook] = useState<Textbook>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -121,6 +123,26 @@ export default function TextbookVocabularyPage() {
   const handleTextbookSelect = (textbook: Textbook) => {
     setIsLoading(true);
     setSelectedTextbook(textbook);
+    
+    // Track textbook selection with ULAS
+    const textbookInfo = textbooks.find(t => t.id === textbook);
+    if (textbookInfo) {
+      trackLearning({
+        type: 'view',
+        category: 'textbook',
+        content: {
+          value: textbook,
+          metadata: {
+            textbookTitle: textbookInfo.title,
+            subtitle: textbookInfo.subtitle,
+            level: textbookInfo.level,
+            lessons: textbookInfo.lessons,
+            totalWords: textbookInfo.words
+          }
+        }
+      });
+    }
+    
     // Simulate loading
     setTimeout(() => setIsLoading(false), 500);
   };

@@ -14,6 +14,7 @@ import { AIStoryDraft, AIGenerationProgress, AICharacterSheet } from '@/types/ai
 import { storyManager } from '@/utils/storyManager';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AdminLayout } from '@/components/admin/AdminLayout';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 export default function GenerateStoryClient() {
   const strings = useStrings();
@@ -21,6 +22,7 @@ export default function GenerateStoryClient() {
   const { user } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();
   const { showNotification } = useNotification();
+  const { track: trackLearning } = useLearnTracking();
 
   // Form state
   const [theme, setTheme] = useState<string>('');
@@ -70,6 +72,23 @@ export default function GenerateStoryClient() {
 
     // Generate draft ID early so we can use it for storage paths
     const draftId = `ai-draft-${Date.now()}`;
+    
+    // Track story generation start with ULAS
+    trackLearning({
+      type: 'practice',
+      category: 'story',
+      content: {
+        value: draftId,
+        metadata: {
+          action: 'generation_started',
+          theme,
+          jlptLevel,
+          pageCount,
+          generateImages,
+          isAiGenerated: true
+        }
+      }
+    });
 
     try {
       // Step 1: Generate character sheet ONLY

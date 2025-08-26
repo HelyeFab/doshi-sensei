@@ -6,6 +6,7 @@
 import React from 'react';
 import { useTTS, TTSOptions } from '@/hooks/useTTS';
 import { useStrings } from '@/contexts/LanguageContext';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 interface TTSButtonProps {
   text: string;
@@ -34,12 +35,36 @@ export function TTSButton({
 }: TTSButtonProps) {
   const strings = useStrings();
   const { state, speak } = useTTS();
+  const { track: trackLearning } = useLearnTracking();
 
   const handleClick = async () => {
     if (disabled || state.isLoading) return;
 
     // Use reading if provided (for kanji), otherwise use text
     const textToSpeak = reading || text;
+    
+    // Track TTS usage with ULAS
+    const hasKanji = /[\u4E00-\u9FAF]/.test(text);
+    const hasKana = /[\u3040-\u309F\u30A0-\u30FF]/.test(text);
+    
+    trackLearning({
+      type: 'practice',
+      category: 'audio',
+      content: {
+        value: text,
+        metadata: {
+          feature: 'tts',
+          reading: reading || undefined,
+          voice: options.voice || 'default',
+          speed: options.speed || 1.0,
+          hasKanji,
+          hasKana,
+          textLength: text.length,
+          context: options.context || 'unknown'
+        }
+      }
+    });
+    
     await speak(textToSpeak, options);
   };
 

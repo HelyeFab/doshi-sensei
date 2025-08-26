@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 import StudyListManager from '@/utils/studyListManager';
 import { SaveWordModal } from '@/components/drill/SaveWordModal';
 import { AnkiSRSImproved, ReviewRating, AnkiSRSData, AnkiConfig, DEFAULT_ANKI_CONFIG } from '@/utils/ankiSRSImproved';
@@ -101,6 +102,7 @@ export default function FlashcardReviewPage() {
     trackUsage: true
   });
   const { track } = useAnalytics();
+  const { track: trackLearning } = useLearnTracking();
   const { isPremium, userType, subscription } = useSubscription2();
   const strings = useStrings();
   const { speak: speakTTS, state: ttsState } = useTTS();
@@ -129,6 +131,7 @@ export default function FlashcardReviewPage() {
   const cardSettingsRef = useRef<HTMLDivElement>(null);
   const [srsConfig, setSrsConfig] = useState<AnkiConfig>(DEFAULT_ANKI_CONFIG);
   const srsAlgorithm = useRef(new AnkiSRSImproved(srsConfig));
+  const showAnswerTime = useRef<number>(Date.now());
   
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState({
@@ -514,6 +517,7 @@ export default function FlashcardReviewPage() {
 
   const handleShowAnswer = async () => {
     setShowAnswer(true);
+    showAnswerTime.current = Date.now();
     
     // Auto-play audio if enabled
     if (cardSettings.autoPlayAudio) {
@@ -627,6 +631,32 @@ export default function FlashcardReviewPage() {
       currentCard.id,
       rating === 'easy' || rating === 'good'
     );
+    
+    // Track with ULAS
+    if (currentCard) {
+      const cardText = getFlashcardDisplayText(currentCard, 'front');
+      trackLearning({
+        type: rating === 'easy' || rating === 'good' ? 'success' : 'failure',
+        category: 'flashcard',
+        content: {
+          value: currentCard.id,
+          metadata: {
+            cardText,
+            cardType: isAnkiCard(currentCard) ? 'anki' : 'word',
+            rating,
+            flipDirection: cardSettings.flipDirection,
+            sessionMode: reviewMode,
+            cardIndex: currentCardIndex,
+            totalCards: cards.length,
+            srsData: srsDataMap.get(currentCard.id)
+          }
+        },
+        metrics: {
+          responseTime: Date.now() - (showAnswerTime.current || Date.now()),
+          sessionProgress: Math.round((newStats.reviewed / cards.length) * 100)
+        }
+      });
+    }
 
     // Move to next card
     if (currentCardIndex < cards.length - 1) {

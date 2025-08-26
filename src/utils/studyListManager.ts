@@ -6,6 +6,8 @@ import { analyticsTracker } from '@/lib/analytics/analyticsTracker';
 import { largeDataStorage } from './largeDataStorage';
 import { AnkiMediaStore } from './ankiMediaStore';
 import { AchievementManager } from '@/lib/achievements/manager';
+import { eventQueueManager } from '@/services/analytics/EventQueueManager';
+import { v4 as uuidv4 } from 'uuid';
 
 // Color palette for study lists
 const STUDY_LIST_COLORS = [
@@ -74,7 +76,7 @@ export class StudyListManager {
         updatedAt: new Date(list.updatedAt)
       }));
     } catch (error) {
-      console.error('Error loading study lists:', error);
+      // Error loading study lists
       return [];
     }
   }
@@ -146,10 +148,37 @@ export class StudyListManager {
         listName: name,
         hasDescription: !!description
       });
+      
+      // Track with ULAS
+      eventQueueManager.queueEvent({
+        id: uuidv4(),
+        userId: user?.uid || 'guest',
+        timestamp: Date.now(),
+        type: 'save',
+        category: 'study_list',
+        content: {
+          value: newList.id,
+          metadata: {
+            action: 'create_list',
+            listName: name,
+            listType: type,
+            description: description,
+            color: color
+          }
+        },
+        sessionId: `session_${Date.now()}`,
+        context: {
+          page: typeof window !== 'undefined' ? window.location.pathname : '',
+          feature: 'study_lists',
+          device: 'web',
+          platform: 'web'
+        },
+        synced: false
+      }).catch(() => {});
 
       return newList;
     } catch (error) {
-      console.error('Error creating study list:', error);
+      // Error creating study list
       throw error;
     }
   }
@@ -233,7 +262,7 @@ export class StudyListManager {
       const list = lists.find(l => l.id === listId);
       return list ? list.itemIds.includes(itemId) : false;
     } catch (error) {
-      console.error('Error checking item in list:', error);
+      // Error checking item in list
       return false;
     }
   }
@@ -368,12 +397,43 @@ export class StudyListManager {
           }
         }
       } catch (error) {
-        console.error('Error updating achievement progress for word saving:', error);
+        // Error updating achievement progress
       }
+      
+      // Track with ULAS
+      const itemName = itemType === 'word' ? (item as JapaneseWord).kanji || (item as JapaneseWord).kana 
+                     : itemType === 'kanji' ? (item as Kanji).kanji
+                     : (item as Sentence).japanese;
+                     
+      eventQueueManager.queueEvent({
+        id: uuidv4(),
+        userId: user?.uid || 'guest',
+        timestamp: Date.now(),
+        type: 'save',
+        category: itemType === 'word' ? 'vocabulary' : itemType,
+        content: {
+          value: itemId,
+          metadata: {
+            action: 'add_to_list',
+            itemType,
+            itemName,
+            listsAdded: validListIds,
+            listCount: validListIds.length
+          }
+        },
+        sessionId: `session_${Date.now()}`,
+        context: {
+          page: typeof window !== 'undefined' ? window.location.pathname : '',
+          feature: 'study_lists',
+          device: 'web',
+          platform: 'web'
+        },
+        synced: false
+      }).catch(() => {});
 
       return { success: true, errors };
     } catch (error) {
-      console.error('Error adding item to lists:', error);
+      // Error adding item to lists
       return { success: false, errors: ['Failed to save item'] };
     }
   }
@@ -431,7 +491,7 @@ export class StudyListManager {
       await this.autoSyncLists(user, subscriptionStatus);
 
     } catch (error) {
-      console.error('Error removing item from list:', error);
+      // Error removing item from list
       throw error;
     }
   }
@@ -481,7 +541,7 @@ export class StudyListManager {
         listCount: item.listIds.length
       });
     } catch (error) {
-      console.error('Error saving item:', error);
+      // Error saving item
       throw error;
     }
   }
@@ -515,7 +575,7 @@ export class StudyListManager {
         metadataKeys: Object.keys(metadata)
       });
     } catch (error) {
-      console.error('Error updating list metadata:', error);
+      // Error updating list metadata
       throw error;
     }
   }
@@ -580,7 +640,7 @@ export class StudyListManager {
       await this.autoSyncLists(user, subscriptionStatus);
 
     } catch (error) {
-      console.error('Error deleting study list:', error);
+      // Error deleting study list
       throw error;
     }
   }
@@ -618,7 +678,7 @@ export class StudyListManager {
 
       return { words, kanji, sentences, ankiCards, allItems: listItems };
     } catch (error) {
-      console.error('Error getting items in list:', error);
+      // Error getting items in list
       return { words: [], kanji: [], sentences: [], ankiCards: [], allItems: [] };
     }
   }
@@ -655,7 +715,7 @@ export class StudyListManager {
           await largeDataStorage.saveAllItems(savedItems);
           // Don't remove from localStorage yet, keep as backup
         } catch (migrationError) {
-          console.error('Failed to migrate to IndexedDB:', migrationError);
+          // Failed to migrate to IndexedDB
         }
       }
       
@@ -665,7 +725,7 @@ export class StudyListManager {
         savedAt: new Date(saved.savedAt)
       }));
     } catch (error) {
-      console.error('Error loading saved study items:', error);
+      // Error loading saved study items
       return [];
     }
   }
@@ -687,7 +747,7 @@ export class StudyListManager {
       const allLists = await this.getAllStudyLists();
       return allLists.filter(list => savedItem.listIds.includes(list.id));
     } catch (error) {
-      console.error('Error getting lists containing item:', error);
+      // Error getting lists containing item
       return [];
     }
   }
@@ -719,7 +779,7 @@ export class StudyListManager {
         });
       }
     } catch (error) {
-      console.error('Study lists auto-sync failed:', error);
+      // Study lists auto-sync failed
       // Don't throw - auto-sync should be silent
     }
   }
@@ -747,7 +807,7 @@ export class StudyListManager {
         });
       }
     } catch (error) {
-      console.error('Saved study items auto-sync failed:', error);
+      // Saved study items auto-sync failed
       // Don't throw - auto-sync should be silent
     }
   }
@@ -854,7 +914,7 @@ export class StudyListManager {
 
       return true;
     } catch (error) {
-      console.error('Failed to sync from cloud:', error);
+      // Failed to sync from cloud
       return false;
     }
   }
@@ -874,7 +934,7 @@ export class StudyListManager {
     try {
       localStorage.setItem(STUDY_LISTS_KEY, JSON.stringify(studyLists));
     } catch (error) {
-      console.error('Error saving study lists to storage:', error);
+      // Error saving study lists to storage
       throw error;
     }
   }
@@ -888,14 +948,14 @@ export class StudyListManager {
       const data = JSON.stringify(savedItems);
       const sizeInBytes = new Blob([data]).size;
       const sizeInMB = sizeInBytes / (1024 * 1024);
-      console.log(`Saving ${savedItems.length} items, size: ${sizeInMB.toFixed(2)} MB`);
+      // Saving items to storage
       
       // Save to IndexedDB (no size limits!)
       try {
         await largeDataStorage.saveAllItems(savedItems);
 
       } catch (dbError) {
-        console.error('Failed to save to IndexedDB, falling back to localStorage:', dbError);
+        // Failed to save to IndexedDB, falling back to localStorage
         
         // Fallback to localStorage if IndexedDB fails
         // Check localStorage quota
@@ -912,9 +972,9 @@ export class StudyListManager {
 
       }
     } catch (error) {
-      console.error('Error saving study items to storage:', error);
+      // Error saving study items to storage
       if (error.name === 'QuotaExceededError') {
-        console.error('LocalStorage quota exceeded! This is why we need IndexedDB.');
+        // LocalStorage quota exceeded
       }
       throw error;
     }

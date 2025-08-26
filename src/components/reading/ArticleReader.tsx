@@ -36,6 +36,7 @@ import { cleanTextForTTS } from '@/utils/japaneseParser';
 import { useStrings } from '@/contexts/LanguageContext';
 import { trackArticleRead } from '@/lib/stats/trackingEvents';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 // Ruby tag parser for enhanced reading
 function parseWithRubyTags(text: string): string {
@@ -348,6 +349,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const isPremium = userType === 'monthly' || userType === 'yearly';
   const router = useRouter();
   const { trackArticleView, trackArticleComplete } = useAnalytics();
+  const { track: trackLearning } = useLearnTracking();
 
   const [settings, setSettings] = useState<ReadingSettings>(() => {
     // Load settings from localStorage
@@ -394,6 +396,25 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   useEffect(() => {
     const category = article.category || 'uncategorized';
     trackArticleView(category, article.id);
+    
+    // Track with ULAS
+    trackLearning({
+      type: 'view',
+      category: 'article',
+      content: {
+        value: article.id,
+        metadata: {
+          title: article.title,
+          category: article.category || 'uncategorized',
+          difficulty: article.difficulty,
+          wordCount: article.content?.length || 0,
+          hasAudio: !!article.audioUrl,
+          hasImage: !!article.imageUrl,
+          date: article.date,
+          source: article.source || 'NHK News Web Easy'
+        }
+      }
+    });
 
   }, [article.id, article.category, trackArticleView]);
   const [userRequestedStats, setUserRequestedStats] = useState(false);
@@ -463,6 +484,24 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
           y: rect.top + window.scrollY
         }
       });
+      
+      // Track vocabulary lookup with ULAS
+      trackLearning({
+        type: 'search',
+        category: 'vocabulary',
+        content: {
+          value: word,
+          metadata: {
+            source: 'article',
+            articleId: article.id,
+            articleTitle: article.title,
+            context: 'article_reading'
+          }
+        }
+      });
+      
+      // Add to vocabulary encountered
+      setVocabularyEncountered(prev => new Set([...prev, word]));
     }
   };
 
@@ -609,6 +648,34 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
       // Track in new analytics system
       const category = article.category || 'uncategorized';
       trackArticleComplete(category, readingTime * 60, article.id); // Convert minutes to seconds
+      
+      // Track with ULAS
+      trackLearning({
+        type: 'complete',
+        category: 'article',
+        content: {
+          value: article.id,
+          metadata: {
+            title: article.title,
+            category: article.category || 'uncategorized',
+            difficulty: article.difficulty,
+            comprehensionScore,
+            vocabularyEncounteredCount: vocabularyEncountered.size,
+            vocabularyWords: Array.from(vocabularyEncountered),
+            settings: {
+              fontSize: settings.fontSize,
+              showFurigana: settings.showFurigana,
+              highlightMode: settings.highlightMode
+            }
+          }
+        },
+        metrics: {
+          duration: readingTime * 60000, // Convert to milliseconds
+          readingSpeed: stableWPM,
+          comprehensionScore,
+          vocabularyCount: vocabularyEncountered.size
+        }
+      });
     }
   };
 

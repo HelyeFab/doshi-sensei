@@ -104,19 +104,11 @@ export function useLearnTracking(
       synced: false
     };
     
-    // Debug logging
-    if (debug || process.env.NODE_ENV === 'development') {
-      console.log('📊 [ULAS] Tracking Event:', {
-        type: event.type,
-        category: event.category,
-        content: event.content.value,
-        metrics: event.metrics
-      });
-    }
+    // Event created successfully
     
     // Queue the event
-    eventQueueManager.queueEvent(event).catch(error => {
-      console.error('Failed to queue event:', error);
+    eventQueueManager.queueEvent(event).catch(() => {
+      // Failed to queue event
     });
   }, [enabled, user, pathname, debug]);
   
@@ -136,7 +128,7 @@ export function useLearnTracking(
       
       return stats;
     } catch (error) {
-      console.error('Failed to get user stats:', error);
+      // Failed to get user stats
       return null;
     }
   }, [user]);
@@ -147,7 +139,7 @@ export function useLearnTracking(
     try {
       return await storageManager.getRecentEvents(user.uid, limit);
     } catch (error) {
-      console.error('Failed to get recent events:', error);
+      // Failed to get recent events
       return [];
     }
   }, [user]);
@@ -158,7 +150,7 @@ export function useLearnTracking(
     try {
       await storageManager.clearUserData(user.uid);
     } catch (error) {
-      console.error('Failed to clear events:', error);
+      // Failed to clear events
     }
   }, [user]);
   

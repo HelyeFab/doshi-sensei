@@ -5,7 +5,7 @@
 import { LearningEvent } from '@/types/analytics';
 import { storageManager } from './StorageManager';
 import { doc, setDoc, collection, writeBatch } from 'firebase/firestore';
-import { db } from '@/config/firebase';
+import { db } from '@/lib/firebase';
 
 class EventQueueManager {
   private queue: LearningEvent[] = [];
@@ -35,7 +35,7 @@ class EventQueueManager {
     try {
       await storageManager.init();
     } catch (error) {
-      console.error('Failed to initialize storage:', error);
+      // Silently handle storage initialization error
     }
   }
   
@@ -47,7 +47,7 @@ class EventQueueManager {
     try {
       await storageManager.saveEvent(event);
     } catch (error) {
-      console.error('Failed to save event to storage:', error);
+      // Silently handle storage save error
     }
     
     // Schedule sync if needed
@@ -80,7 +80,7 @@ class EventQueueManager {
     
     // Don't sync if offline
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      console.log('📊 [ULAS] Offline - skipping sync');
+      // Offline - skipping sync
       return;
     }
     
@@ -109,10 +109,10 @@ class EventQueueManager {
       const eventIds = eventsToSync.map(e => e.id);
       await storageManager.markEventsSynced(eventIds);
       
-      console.log(`📊 [ULAS] Synced ${eventsToSync.length} events`);
+      // Successfully synced events
       
     } catch (error) {
-      console.error('Failed to sync batch:', error);
+      // Failed to sync batch
       // Re-queue events on failure
       this.queue.push(...this.queue);
     } finally {
@@ -144,11 +144,71 @@ class EventQueueManager {
         const eventIds = unsyncedEvents.map(e => e.id);
         await storageManager.markEventsSynced(eventIds);
         
-        console.log(`📊 [ULAS] Synced ${unsyncedEvents.length} events from storage`);
+        // Synced events from storage
       }
     } catch (error) {
-      console.error('Failed to sync from storage:', error);
+      // Failed to sync from storage
     }
+  }
+  
+  private cleanEventData(data: any): any {
+    // Handle null and undefined
+    if (data === null || data === undefined) {
+      return null;
+    }
+    
+    // Handle arrays
+    if (Array.isArray(data)) {
+      return data.map(item => this.cleanEventData(item)).filter(item => item !== undefined);
+    }
+    
+    // Handle Date objects
+    if (data instanceof Date) {
+      return data.toISOString();
+    }
+    
+    // Handle functions (remove them)
+    if (typeof data === 'function') {
+      return null;
+    }
+    
+    // Handle regular objects
+    if (typeof data === 'object' && data !== null) {
+      // Check for special objects that can't be serialized
+      if (data.constructor && data.constructor.name !== 'Object') {
+        // Try to convert to plain object or string
+        try {
+          return JSON.parse(JSON.stringify(data));
+        } catch {
+          return String(data);
+        }
+      }
+      
+      const cleaned: any = {};
+      for (const [key, value] of Object.entries(data)) {
+        // Skip undefined values, functions, and keys starting with underscore
+        if (value !== undefined && typeof value !== 'function' && !key.startsWith('_')) {
+          const cleanedValue = this.cleanEventData(value);
+          // Only add if the cleaned value is not undefined and not null
+          // Also skip empty arrays and empty objects
+          if (cleanedValue !== undefined && cleanedValue !== null) {
+            if (Array.isArray(cleanedValue) && cleanedValue.length === 0) {
+              // Skip empty arrays
+              continue;
+            }
+            if (typeof cleanedValue === 'object' && Object.keys(cleanedValue).length === 0) {
+              // Skip empty objects
+              continue;
+            }
+            cleaned[key] = cleanedValue;
+          }
+        }
+      }
+      return cleaned;
+    }
+    
+    // Handle primitives (string, number, boolean)
+    return data;
   }
   
   private async syncToFirebase(events: LearningEvent[]): Promise<void> {
@@ -166,20 +226,42 @@ class EventQueueManager {
           collection(db, 'analytics', user.uid, 'events'),
           event.id
         );
-        batch.set(eventRef, {
+        
+        // Clean the event data - remove undefined values
+        const cleanEvent = this.cleanEventData({
           ...event,
           synced: true,
           syncedAt: Date.now()
         });
+        
+        // Validate the cleaned event doesn't have any invalid fields
+        try {
+          // Ensure no invalid field names or values
+          const validatedEvent = JSON.parse(JSON.stringify(cleanEvent));
+          batch.set(eventRef, validatedEvent);
+        } catch (e) {
+          // Skip this event if it can't be serialized
+          // Silently handle the error
+        }
       });
       
-      await batch.commit();
+      // Only commit if there are valid operations
+      try {
+        await batch.commit();
+      } catch (error: any) {
+        // Check if it's a field validation error and handle silently
+        if (error?.message?.includes('Unsupported field value')) {
+          // Skip this batch silently
+          return;
+        }
+        throw error;
+      }
       
       // Also update aggregated stats
       await this.updateFirebaseStats(user.uid, events);
       
     } catch (error) {
-      console.error('Failed to sync to Firebase:', error);
+      // Failed to sync to Firebase
       throw error;
     }
   }
@@ -192,20 +274,21 @@ class EventQueueManager {
       
       // Update stats document in Firebase
       const statsRef = doc(db, 'analytics', userId, 'stats', 'current');
-      await setDoc(statsRef, {
+      const cleanStats = this.cleanEventData({
         ...stats,
         lastUpdated: Date.now()
-      }, { merge: true });
+      });
+      await setDoc(statsRef, cleanStats, { merge: true });
       
     } catch (error) {
-      console.error('Failed to update Firebase stats:', error);
+      // Failed to update Firebase stats
     }
   }
   
   private async getCurrentUser(): Promise<{ uid: string } | null> {
     // Import dynamically to avoid circular dependencies
     try {
-      const { auth } = await import('@/config/firebase');
+      const { auth } = await import('@/lib/firebase');
       return auth.currentUser;
     } catch {
       return null;
@@ -216,7 +299,7 @@ class EventQueueManager {
     try {
       // Check user subscription status
       const { doc, getDoc } = await import('firebase/firestore');
-      const { db } = await import('@/config/firebase');
+      const { db } = await import('@/lib/firebase');
       
       const userDoc = await getDoc(doc(db, 'users', userId));
       if (!userDoc.exists()) return false;
@@ -226,7 +309,7 @@ class EventQueueManager {
       
       return plan === 'monthly' || plan === 'yearly';
     } catch (error) {
-      console.error('Failed to check premium status:', error);
+      // Failed to check premium status
       return false;
     }
   }

@@ -12,6 +12,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 import { useTTS } from '@/hooks/useTTS';
 import { trackGamePlayed } from '@/lib/stats/trackingEvents';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 
 // Types
 interface StudySession {
@@ -131,6 +132,7 @@ export default function KanjiQuest({
   const { showNotification } = useNotification();
   const { speak } = useTTS();
   const { trackGameComplete } = useAnalytics();
+  const { track: trackLearning } = useLearnTracking();
   const battleMusicRef = useRef<HTMLAudioElement | null>(null);
   const [isMuted, setIsMuted] = useState(false);
 
@@ -337,6 +339,24 @@ export default function KanjiQuest({
       setQuizQuestions([]);
       setCurrentQuestionIndex(0);
       setUserAnswers([]);
+
+      // Track game start with ULAS
+      trackLearning({
+        type: 'view',
+        category: 'game',
+        content: {
+          value: `kanji_quest_n${jlptLevel}`,
+          metadata: {
+            gameName: 'Kanji Quest',
+            jlptLevel: `N${jlptLevel}`,
+            pokemonId: newSession.pokemonId,
+            kanjiCount: selectedKanji.length,
+            kanjiCharacters: selectedKanji.map(k => k.character),
+            sessionStartTime: newSession.startTime,
+            isCustomSelection: !!customKanji
+          }
+        }
+      });
 
       // Initialize battle state based on JLPT level
       const baseHP = getKanjiHP(jlptLevel);
@@ -901,6 +921,29 @@ export default function KanjiQuest({
 
     setIsAttacking(true);
 
+    // Track battle answer with ULAS
+    trackLearning({
+      type: isCorrect ? 'success' : 'failure',
+      category: 'game',
+      content: {
+        value: currentKanji.character,
+        metadata: {
+          gameName: 'Kanji Quest',
+          battlePhase: 'battle',
+          jlptLevel: `N${jlptLevel}`,
+          questionType: currentQuestion.type,
+          question: currentQuestion.question,
+          userAnswer: currentQuestion.options[answerIndex],
+          correctAnswer: currentQuestion.options[currentQuestion.correctIndex],
+          isCorrect,
+          attackType,
+          kanjiHP: kanjiHP,
+          trainerHP: trainerHP,
+          pokemonId: session.pokemonId
+        }
+      }
+    });
+
     // Handle answer result
     if (isCorrect) {
       // Trigger Pokeball animation
@@ -1329,6 +1372,27 @@ export default function KanjiQuest({
       const accuracy = questionsAnswered > 0 ? (correctAnswers / questionsAnswered) * 100 : 0;
       trackGameComplete('kanji_quest', score, accuracy);
 
+      // Track game completion with ULAS
+      trackLearning({
+        type: 'complete',
+        category: 'game',
+        content: {
+          value: `kanji_quest_n${jlptLevel}`,
+          metadata: {
+            gameName: 'Kanji Quest',
+            jlptLevel: `N${jlptLevel}`,
+            pokemonId: session.pokemonId,
+            kanjiStudied: session.kanji.map(k => k.character),
+            score,
+            passed,
+            questionsTotal: questionsAnswered,
+            questionsCorrect: correctAnswers,
+            accuracy,
+            timeTakenSeconds: timeTaken,
+            pokemonCaught: passed
+          }
+        }
+      });
     }
 
     if (passed) {

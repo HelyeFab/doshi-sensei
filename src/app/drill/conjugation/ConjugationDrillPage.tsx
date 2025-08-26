@@ -25,6 +25,7 @@ import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { Analytics } from '@/utils/analytics';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useLearnTracking } from '@/hooks/useLearnTracking';
 import StudyListManager from '@/utils/studyListManager';
 import { trackDrillCompleted } from '@/lib/stats/trackingEvents';
 import { QuickDrillPreview } from '@/components/drill/QuickDrillPreview';
@@ -83,6 +84,7 @@ export default function ConjugationDrillPage() {
   });
   const { isPremium, userType } = useSubscription2();
   const { track } = useAnalytics();
+  const { track: trackLearning } = useLearnTracking();
   const strings = useStrings();
 
   // Drill state
@@ -281,6 +283,24 @@ export default function ConjugationDrillPage() {
       autoAdvance
     });
 
+    // Track drill start with ULAS
+    trackLearning({
+      type: 'practice',
+      category: 'drill',
+      content: {
+        value: 'conjugation_drill',
+        metadata: {
+          drillType: 'conjugation',
+          mode: drillMode,
+          wordTypeFilter,
+          selectedListsCount: selectedLists.length,
+          selectedListNames: drillMode === 'lists' ? conjugableLists.filter(l => selectedLists.includes(l.id)).map(l => l.name) : [],
+          autoAdvance,
+          description: 'Japanese verb and adjective conjugation practice'
+        }
+      }
+    });
+
     setGameStarted(true);
     setScore(0);
     setCurrentQuestionIndex(0);
@@ -325,15 +345,37 @@ export default function ConjugationDrillPage() {
     setShowResult(true);
     
     const currentQuestion = questions[currentQuestionIndex];
-    if (answer === currentQuestion.correctAnswer) {
+    const isCorrect = answer === currentQuestion.correctAnswer;
+    if (isCorrect) {
       setScore(score + 1);
     }
+
+    // Track answer with ULAS (grammar explanation tracking)
+    trackLearning({
+      type: isCorrect ? 'success' : 'failure',
+      category: 'grammar',
+      content: {
+        value: currentQuestion.word?.kanji || currentQuestion.word?.kana || '',
+        metadata: {
+          drillType: 'conjugation',
+          questionType: currentQuestion.targetForm,
+          question: currentQuestion.question,
+          userAnswer: answer,
+          correctAnswer: currentQuestion.correctAnswer,
+          isCorrect,
+          wordType: currentQuestion.word?.type,
+          wordMeaning: currentQuestion.word?.meaning,
+          questionNumber: currentQuestionIndex + 1,
+          totalQuestions: questions.length
+        }
+      }
+    });
 
     // Auto-advance after a delay if enabled
     if (autoAdvance) {
       setTimeout(() => {
         handleNextQuestion();
-      }, answer === currentQuestion.correctAnswer ? 1000 : 2000);
+      }, isCorrect ? 1000 : 2000);
     }
   };
 
@@ -351,6 +393,26 @@ export default function ConjugationDrillPage() {
         accuracy: (score / questions.length) * 100,
         mode: drillMode,
         wordTypeFilter
+      });
+
+      // Track drill completion with ULAS
+      trackLearning({
+        type: 'complete',
+        category: 'drill',
+        content: {
+          value: 'conjugation_drill',
+          metadata: {
+            drillType: 'conjugation',
+            score,
+            totalQuestions: questions.length,
+            correctAnswers: score,
+            accuracy: (score / questions.length) * 100,
+            mode: drillMode,
+            wordTypeFilter,
+            passed: score / questions.length >= 0.7,
+            description: 'Completed Japanese conjugation drill'
+          }
+        }
       });
     }
   };

@@ -1,5 +1,29 @@
 [
   {
+    "id": "minna-2-6-1550042194700",
+    "japanese": "嫌［な］",
+    "reading": "嫌［な］",
+    "meaning": "hateful, disagreeable",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "嫌[いや]［な］",
+        "reading": "",
+        "english": "31"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-6",
+      "minna-2"
+    ],
+    "lesson": 6,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-6-1550040860362",
     "japanese": "続けます",
     "reading": "続けます",
@@ -712,30 +736,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-6-1550042109810",
-    "japanese": "村",
-    "reading": "村",
-    "meaning": "village",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "村[むら]",
-        "reading": "",
-        "english": "31"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-6",
-      "minna-2"
-    ],
-    "lesson": 6,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-6-1550042149238",
     "japanese": "卒業します",
     "reading": "卒業します",
@@ -771,54 +771,6 @@
     "examples": [
       {
         "japanese": "映画[えいが] 館[かん]",
-        "reading": "",
-        "english": "31"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-6",
-      "minna-2"
-    ],
-    "lesson": 6,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-6-1550042194700",
-    "japanese": "嫌［な］",
-    "reading": "嫌［な］",
-    "meaning": "hateful, disagreeable",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "嫌[いや]［な］",
-        "reading": "",
-        "english": "31"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-6",
-      "minna-2"
-    ],
-    "lesson": 6,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-6-1550042207774",
-    "japanese": "空",
-    "reading": "空",
-    "meaning": "sky",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "空[そら]",
         "reading": "",
         "english": "31"
       }
@@ -873,54 +825,6 @@
     ],
     "tags": [
       "n4",
-      "lesson-6",
-      "minna-2"
-    ],
-    "lesson": 6,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-6-1550042266690",
-    "japanese": "子どもたち",
-    "reading": "子どもたち",
-    "meaning": "children",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "子[こ]どもたち",
-        "reading": "",
-        "english": "31"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-6",
-      "minna-2"
-    ],
-    "lesson": 6,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-6-1550042355387",
-    "japanese": "自由に",
-    "reading": "自由に",
-    "meaning": "freely",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "自由[じゆう]に",
-        "reading": "",
-        "english": "31"
-      }
-    ],
-    "tags": [
-      "n5",
       "lesson-6",
       "minna-2"
     ],

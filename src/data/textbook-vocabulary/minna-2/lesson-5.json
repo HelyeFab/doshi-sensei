@@ -1,5 +1,53 @@
 [
   {
+    "id": "minna-2-5-1549962655523",
+    "japanese": "お知らせ",
+    "reading": "お知らせ",
+    "meaning": "notice",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "お 知[し]らせ",
+        "reading": "",
+        "english": "30"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-5",
+      "minna-2"
+    ],
+    "lesson": 5,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-5-1549962979172",
+    "japanese": "壁",
+    "reading": "壁",
+    "meaning": "wall",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "壁[かべ]",
+        "reading": "",
+        "english": "30"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-5",
+      "minna-2"
+    ],
+    "lesson": 5,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-5-1549962191471",
     "japanese": "はります",
     "reading": "はります",
@@ -382,30 +430,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-5-1549962655523",
-    "japanese": "お知らせ",
-    "reading": "お知らせ",
-    "meaning": "notice",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "お 知[し]らせ",
-        "reading": "",
-        "english": "30"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-5",
-      "minna-2"
-    ],
-    "lesson": 5,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-5-1549962672127",
     "japanese": "ガイドブック",
     "reading": "ガイドブック",
@@ -651,30 +675,6 @@
     "examples": [
       {
         "japanese": "廊下[ろうか]",
-        "reading": "",
-        "english": "30"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-5",
-      "minna-2"
-    ],
-    "lesson": 5,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-5-1549962979172",
-    "japanese": "壁",
-    "reading": "壁",
-    "meaning": "wall",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "壁[かべ]",
         "reading": "",
         "english": "30"
       }
@@ -1033,100 +1033,6 @@
     ],
     "tags": [
       "n4",
-      "lesson-5",
-      "minna-2"
-    ],
-    "lesson": 5,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-5-1549963420774",
-    "japanese": "うれしい",
-    "reading": "うれしい",
-    "meaning": "glad, happy",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "i-adjective"
-    ],
-    "examples": [
-      {
-        "japanese": "うれしい",
-        "reading": "",
-        "english": "30"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-5",
-      "minna-2"
-    ],
-    "lesson": 5,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-5-1549963444719",
-    "japanese": "嫌［な］",
-    "reading": "嫌［な］",
-    "meaning": "hateful, disagreeable",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "嫌[いや]［な］",
-        "reading": "",
-        "english": "30"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-5",
-      "minna-2"
-    ],
-    "lesson": 5,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-5-1549963462216",
-    "japanese": "すると",
-    "reading": "すると",
-    "meaning": "and, then",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "すると",
-        "reading": "",
-        "english": "30"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-5",
-      "minna-2"
-    ],
-    "lesson": 5,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-5-1549963496377",
-    "japanese": "目が 覚めます",
-    "reading": "目が 覚めます",
-    "meaning": "to wake up",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "目[め]が　 覚[さ]めます",
-        "reading": "",
-        "english": "30"
-      }
-    ],
-    "tags": [
-      "n5",
       "lesson-5",
       "minna-2"
     ],

@@ -178,27 +178,27 @@ export default function SubscriptionAnalytics() {
     <div className="space-y-6">
       {/* Revenue Metrics */}
       <div className="bg-card rounded-lg p-6 shadow-sm">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
           <h2 className="text-xl font-bold">Revenue Metrics</h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={handleCleanupPhantom}
               disabled={isCleaning}
-              className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+              className="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 transition-colors whitespace-nowrap"
             >
               {isCleaning ? 'Cleaning...' : 'Clean Phantom'}
             </button>
             <button
               onClick={handleSyncSubscriptions}
               disabled={isFixing}
-              className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
+              className="px-4 py-2 text-sm bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 transition-colors whitespace-nowrap"
             >
               {isFixing ? 'Syncing...' : 'Sync from Stripe'}
             </button>
             <button
               onClick={handleDebug}
               disabled={isDebugging}
-              className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+              className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors whitespace-nowrap"
             >
               {isDebugging ? 'Debugging...' : 'Debug'}
             </button>

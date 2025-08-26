@@ -1,5 +1,125 @@
 [
   {
+    "id": "minna-2-22-1550481599189",
+    "japanese": "関係",
+    "reading": "関係",
+    "meaning": "relationship",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "関係[かんけい]",
+        "reading": "",
+        "english": "47"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-22",
+      "minna-2"
+    ],
+    "lesson": 22,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-22-1550481406097",
+    "japanese": "恋人",
+    "reading": "恋人",
+    "meaning": "sweetheart, boyfriend, girlfriend",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "恋人[こいびと]",
+        "reading": "",
+        "english": "47"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-22",
+      "minna-2"
+    ],
+    "lesson": 22,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-22-1550481416287",
+    "japanese": "相手",
+    "reading": "相手",
+    "meaning": "the other person",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "相手[あいて]",
+        "reading": "",
+        "english": "47"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-22",
+      "minna-2"
+    ],
+    "lesson": 22,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-22-1550481590816",
+    "japanese": "理由",
+    "reading": "理由",
+    "meaning": "reason",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "理由[りゆう]",
+        "reading": "",
+        "english": "47"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-22",
+      "minna-2"
+    ],
+    "lesson": 22,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-22-1550481430916",
+    "japanese": "知り合います",
+    "reading": "知り合います",
+    "meaning": "to get acquainted",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "知り合[しりあ]います",
+        "reading": "",
+        "english": "47"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-22",
+      "minna-2"
+    ],
+    "lesson": 22,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-22-1550479750615",
     "japanese": "吹きます［風が〜］",
     "reading": "吹きます［風が〜］",
@@ -570,78 +690,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-22-1550481406097",
-    "japanese": "恋人",
-    "reading": "恋人",
-    "meaning": "sweetheart, boyfriend, girlfriend",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "恋人[こいびと]",
-        "reading": "",
-        "english": "47"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-22",
-      "minna-2"
-    ],
-    "lesson": 22,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-22-1550481416287",
-    "japanese": "相手",
-    "reading": "相手",
-    "meaning": "the other person",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "相手[あいて]",
-        "reading": "",
-        "english": "47"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-22",
-      "minna-2"
-    ],
-    "lesson": 22,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-22-1550481430916",
-    "japanese": "知り合います",
-    "reading": "知り合います",
-    "meaning": "to get acquainted",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "知り合[しりあ]います",
-        "reading": "",
-        "english": "47"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-22",
-      "minna-2"
-    ],
-    "lesson": 22,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-22-1550481451749",
     "japanese": "検証",
     "reading": "検証",
@@ -659,30 +707,6 @@
     ],
     "tags": [
       "n5",
-      "lesson-22",
-      "minna-2"
-    ],
-    "lesson": 22,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-22-1550481495294",
-    "japanese": "世話を します",
-    "reading": "世話を します",
-    "meaning": "to take care of",
-    "jlptLevel": "N4",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "世話[せわ]を　します",
-        "reading": "",
-        "english": "47"
-      }
-    ],
-    "tags": [
-      "n4",
       "lesson-22",
       "minna-2"
     ],
@@ -749,54 +773,6 @@
     "examples": [
       {
         "japanese": "長生[ながい]き",
-        "reading": "",
-        "english": "47"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-22",
-      "minna-2"
-    ],
-    "lesson": 22,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-22-1550481590816",
-    "japanese": "理由",
-    "reading": "理由",
-    "meaning": "reason",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "理由[りゆう]",
-        "reading": "",
-        "english": "47"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-22",
-      "minna-2"
-    ],
-    "lesson": 22,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-22-1550481599189",
-    "japanese": "関係",
-    "reading": "関係",
-    "meaning": "relationship",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "関係[かんけい]",
         "reading": "",
         "english": "47"
       }

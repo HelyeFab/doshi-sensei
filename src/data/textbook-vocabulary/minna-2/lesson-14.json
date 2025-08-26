@@ -1,5 +1,99 @@
 [
   {
+    "id": "minna-2-14-1550385306843",
+    "japanese": "うれしい",
+    "reading": "うれしい",
+    "meaning": "glad, happy",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "i-adjective"
+    ],
+    "examples": [
+      {
+        "japanese": "うれしい",
+        "reading": "",
+        "english": "39"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-14",
+      "minna-2"
+    ],
+    "lesson": 14,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-14-1550385316599",
+    "japanese": "悲しい",
+    "reading": "悲しい",
+    "meaning": "sad",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "i-adjective"
+    ],
+    "examples": [
+      {
+        "japanese": "悲[かな]しい",
+        "reading": "",
+        "english": "39"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-14",
+      "minna-2"
+    ],
+    "lesson": 14,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-14-1550388035806",
+    "japanese": "しかし",
+    "reading": "しかし",
+    "meaning": "however, but",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "しかし",
+        "reading": "",
+        "english": "39"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-14",
+      "minna-2"
+    ],
+    "lesson": 14,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-14-1550385168753",
+    "japanese": "けんかします",
+    "reading": "けんかします",
+    "meaning": "to quarrel, fight",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "けんかします",
+        "reading": "",
+        "english": "39"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-14",
+      "minna-2"
+    ],
+    "lesson": 14,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-14-1550384960606",
     "japanese": "答えます［質問に〜］",
     "reading": "答えます［質問に〜］",
@@ -155,30 +249,6 @@
     "examples": [
       {
         "japanese": "安心[あんしん]します",
-        "reading": "",
-        "english": "39"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-14",
-      "minna-2"
-    ],
-    "lesson": 14,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-14-1550385168753",
-    "japanese": "けんかします",
-    "reading": "けんかします",
-    "meaning": "to quarrel, fight",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "けんかします",
         "reading": "",
         "english": "39"
       }
@@ -371,54 +441,6 @@
     "examples": [
       {
         "japanese": "汚[きたな]い",
-        "reading": "",
-        "english": "39"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-14",
-      "minna-2"
-    ],
-    "lesson": 14,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-14-1550385306843",
-    "japanese": "うれしい",
-    "reading": "うれしい",
-    "meaning": "glad, happy",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "i-adjective"
-    ],
-    "examples": [
-      {
-        "japanese": "うれしい",
-        "reading": "",
-        "english": "39"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-14",
-      "minna-2"
-    ],
-    "lesson": 14,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-14-1550385316599",
-    "japanese": "悲しい",
-    "reading": "悲しい",
-    "meaning": "sad",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "i-adjective"
-    ],
-    "examples": [
-      {
-        "japanese": "悲[かな]しい",
         "reading": "",
         "english": "39"
       }
@@ -1009,50 +1031,6 @@
     "examples": [
       {
         "japanese": "大人[おとな]",
-        "reading": "",
-        "english": "39"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-14",
-      "minna-2"
-    ],
-    "lesson": 14,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-14-1550388035806",
-    "japanese": "しかし",
-    "reading": "しかし",
-    "meaning": "however, but",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "しかし",
-        "reading": "",
-        "english": "39"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-14",
-      "minna-2"
-    ],
-    "lesson": 14,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-14-1550388042626",
-    "japanese": "また",
-    "reading": "また",
-    "meaning": "and",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "また",
         "reading": "",
         "english": "39"
       }

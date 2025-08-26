@@ -629,7 +629,7 @@ export default function DrillPage() {
   };
 
   // Check drill limits
-  if (!featureLoading && access && !access.allowed && remaining === 0) {
+  if (!featureLoading && !canUse && remaining === 0) {
     return (
       <div className="min-h-screen bg-background">
         <SmartPageHeader title={strings.drill.title} />
@@ -640,7 +640,7 @@ export default function DrillPage() {
               Daily Drill Limit Reached
             </h3>
             <p className="text-muted-foreground mb-6">
-              You've completed {access.usage || 0} out of {access.limit || 3} drills today.
+              You've reached your daily drill limit for today.
             </p>
             <button
               onClick={() => router.push('/account')}

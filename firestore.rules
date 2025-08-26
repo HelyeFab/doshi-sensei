@@ -671,12 +671,37 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // User Video History - tracks which videos users have accessed
+    match /userVideoHistory/{userId} {
+      // Users can read their own video history
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can create and update their own video history
+      allow create: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['videoIds', 'lastUpdated']) &&
+        request.resource.data.videoIds is list &&
+        request.resource.data.lastUpdated is string;
+      
+      allow update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['videoIds', 'lastUpdated']) &&
+        request.resource.data.videoIds is list &&
+        request.resource.data.lastUpdated is string;
+      
+      // Users can delete their own video history
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
     // User Practice History - users can only access their own history
-    match /userPracticeHistory/{document} {
-      // Users can read their own practice history
-      // Allow read if document doesn't exist (for checking before create) or if userId matches
-      // OR if reading for popular videos aggregation (any authenticated user)
-      allow read: if request.auth != null;
+    match /userPracticeHistory/{documentId} {
+      // Users can read their own practice history or when document doesn't exist yet
+      // Allow read for: 1) own documents 2) checking if doc exists 3) admin access
+      allow read: if request.auth != null && (
+        resource == null || // Allow checking if document exists
+        resource.data.userId == request.auth.uid || // User owns the document
+        isAdmin() // Admin can read all
+      );
       
       // Users can create practice history for themselves
       allow create: if request.auth != null && 

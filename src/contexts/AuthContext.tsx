@@ -182,8 +182,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentUser) {
         // Create/update user document and fetch subscription
         const sub = await createOrUpdateUserDocument(currentUser);
+        console.log('[AuthContext Debug] Subscription data:', sub);
+        console.log('[AuthContext Debug] Subscription plan:', sub?.plan);
+        console.log('[AuthContext Debug] Subscription status:', sub?.status);
         setSubscription(sub);
         const newUserType = getUserType(sub ?? undefined);
+        console.log('[AuthContext Debug] Computed userType:', newUserType);
         const newUserProfile = getUserProfile(sub, currentUser.uid);
         setUserType(newUserType);
         setUserProfile(newUserProfile);

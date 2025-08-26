@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { KANJI_FAMILIES } from '@/lib/kanji/families';
+import { getKanjiByComponents } from '@/services/kanji-data-service';
 
 const KANJI_API = 'https://kanjiapi.dev/v1';
 
@@ -318,26 +319,29 @@ export async function GET(req: NextRequest) {
   }
   
   try {
-    // Fetch kanji for each component in the family
-    const kanjiLists = await Promise.all(
-      family.components.map(component => fetchKanjiByComponent(component))
-    );
-    
-    // Merge and deduplicate
-    const allKanji = Array.from(new Set(kanjiLists.flat()));
+    // Use our data service to get kanji with full details
+    const kanjiData = await getKanjiByComponents(family.components);
     
     // Limit if needed
-    const limitedKanji = allKanji.slice(0, limit);
+    const limitedKanji = kanjiData.slice(0, limit);
     
-    // Fetch details if requested
+    // Convert to expected format
     let kanjiWithDetails: KanjiDetails[] = [];
     if (includeDetails) {
-      const detailsPromises = limitedKanji.map(k => fetchKanjiDetails(k));
-      const details = await Promise.all(detailsPromises);
-      kanjiWithDetails = details.filter(Boolean) as KanjiDetails[];
+      kanjiWithDetails = limitedKanji.map(k => ({
+        kanji: k.kanji,
+        grade: k.grade,
+        jlpt: k.jlpt,
+        stroke_count: k.stroke_count,
+        meanings: k.meanings || [k.meaning],
+        kun_readings: k.kunyomi,
+        on_readings: k.onyomi,
+        frequency: k.frequency,
+        components: family.components
+      }));
       kanjiWithDetails = sortKanjiByDifficulty(kanjiWithDetails);
     } else {
-      kanjiWithDetails = limitedKanji.map(k => ({ kanji: k }));
+      kanjiWithDetails = limitedKanji.map(k => ({ kanji: k.kanji }));
     }
     
     // Find cross-family kanji if requested

@@ -480,30 +480,6 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-3-1544776574333",
-    "japanese": "会社",
-    "reading": "会社",
-    "meaning": "company",
-    "jlptLevel": "N4",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "会社[かいしゃ]",
-        "reading": "",
-        "english": "3"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-3",
-      "minna-1"
-    ],
-    "lesson": 3,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-3-1544776574334",
     "japanese": "うち",
     "reading": "うち",

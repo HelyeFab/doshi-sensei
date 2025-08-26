@@ -902,28 +902,6 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-8-1544776574610",
-    "japanese": "レストラン",
-    "reading": "レストラン",
-    "meaning": "restaurant",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "レストラン",
-        "reading": "",
-        "english": "8"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-8",
-      "minna-1"
-    ],
-    "lesson": 8,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-8-1544776574611",
     "japanese": "生活",
     "reading": "生活",
@@ -1358,17 +1336,17 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-8-1550630535858",
-    "japanese": "そうですね。",
-    "reading": "そうですね。",
-    "meaning": "Well let me see. (pausing)",
+    "id": "minna-1-8-1609729372843",
+    "japanese": "えーと",
+    "reading": "えーと",
+    "meaning": "well, let me see",
     "jlptLevel": "N5",
     "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "そうですね。",
+        "japanese": "4",
         "reading": "",
-        "english": "8"
+        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
       }
     ],
     "tags": [
@@ -1505,28 +1483,6 @@
         "japanese": "beige",
         "reading": "",
         "english": "8"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-8",
-      "minna-1"
-    ],
-    "lesson": 8,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-8-1609729372843",
-    "japanese": "えーと",
-    "reading": "えーと",
-    "meaning": "well, let me see",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "4",
-        "reading": "",
-        "english": "そうですね。= Well let me see.(pausing) (8), うーん。= Let me see. (22)"
       }
     ],
     "tags": [

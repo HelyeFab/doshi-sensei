@@ -32,6 +32,7 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
   const [quote, setQuote] = useState<string>('');
   const [isAnimated, setIsAnimated] = useState(false);
   const [showDoshiModal, setShowDoshiModal] = useState(false);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
   
   // Show banner if not installed (regardless of install prompt availability for now)
   const showInstallBanner = !isInstalled;
@@ -91,8 +92,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
         className={`relative bg-card rounded-2xl shadow-2xl w-full max-w-md flex flex-col transition-all duration-500 ${isAnimated ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
           }`}
         style={{
-          border: '2px solid white',
-          boxShadow: 'inset 0 0 0 1px var(--primary), 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          border: '2px solid hsl(var(--border))',
+          boxShadow: 'inset 0 0 0 1px hsl(var(--primary)), 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
         }}
       >
         {/* Content wrapper */}
@@ -269,8 +270,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
                   if (canInstall) {
                     install();
                   } else {
-                    // Show instructions for manual installation
-                    alert('To install this app:\n\n• On Chrome: Click the install icon in the address bar\n• On Safari: Tap Share → Add to Home Screen\n• On Edge: Click ⋯ menu → Apps → Install this site');
+                    // Show install guide modal instead of alert
+                    setShowInstallGuide(true);
                   }
                 }}
                 disabled={isInstalling}
@@ -342,6 +343,83 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
               className="mt-4 px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
             >
               Got it! ✨
+            </button>
+          </div>
+        </div>
+      </SlideUpModal>
+
+      {/* PWA Install Guide Modal */}
+      <SlideUpModal
+        isOpen={showInstallGuide}
+        onClose={() => setShowInstallGuide(false)}
+        title="How to Install Dōshi Sensei"
+        height="auto"
+        showHandle={false}
+      >
+        <div className="px-6 py-6">
+          <div className="space-y-6">
+            {/* Icon */}
+            <div className="flex justify-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center">
+                <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="space-y-4">
+              <p className="text-center text-muted-foreground">
+                Install the app for quick access from your home screen and offline support!
+              </p>
+
+              {/* Chrome */}
+              <div className="bg-muted/50 rounded-xl p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🌐</span>
+                  <h3 className="font-semibold text-foreground">Chrome / Edge</h3>
+                </div>
+                <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside ml-7">
+                  <li>Look for the install icon in the address bar</li>
+                  <li>Click it and select "Install"</li>
+                  <li>Or click the ⋯ menu → Apps → Install this site</li>
+                </ol>
+              </div>
+
+              {/* Safari */}
+              <div className="bg-muted/50 rounded-xl p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🍎</span>
+                  <h3 className="font-semibold text-foreground">Safari (iOS)</h3>
+                </div>
+                <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside ml-7">
+                  <li>Tap the Share button (box with arrow)</li>
+                  <li>Scroll down and tap "Add to Home Screen"</li>
+                  <li>Name it and tap "Add"</li>
+                </ol>
+              </div>
+
+              {/* Android */}
+              <div className="bg-muted/50 rounded-xl p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🤖</span>
+                  <h3 className="font-semibold text-foreground">Android</h3>
+                </div>
+                <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside ml-7">
+                  <li>Tap the ⋮ menu in your browser</li>
+                  <li>Select "Add to Home screen"</li>
+                  <li>Name it and tap "Add"</li>
+                </ol>
+              </div>
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowInstallGuide(false)}
+              className="w-full px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-medium transition-all duration-200 transform hover:scale-[1.02]"
+            >
+              Got it! 👍
             </button>
           </div>
         </div>

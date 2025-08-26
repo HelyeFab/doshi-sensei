@@ -45,6 +45,20 @@ const permissionMap: Record<string, string> = {
   'youtube_series': 'browse_series',
   'my_videos': 'manage_videos',
   
+  // Kanji advanced features
+  'kanji_families': 'explore_kanji_families',
+  'kanji_radicals': 'explore_kanji_radicals',
+  'kanji_visual_layout': 'explore_kanji_patterns',
+  'kanji_connections': 'access_kanji_connections',
+  
+  // AI Feature permissions
+  'ai_context_explanation': 'explain_context',
+  'ai_transcript_formatting': 'format_transcripts',
+  'ai_article_validation': 'validate_articles',
+  'audio_transcription': 'transcribe_audio',
+  'ai_cover_generation': 'generate_covers',
+  'quick_context': 'use_quick_context',
+  
   // Storage permissions
   'study_lists': 'manage_lists',
   'saved_items': 'save_items',
@@ -207,10 +221,15 @@ export class AccessControl {
       const limitKey = featureManager.getEffectiveLimitKey(featureId);
       const limit = await entitlementManager.getLimit(userType, limitKey, feature.limitType);
       
-      // If a limit is explicitly set (0 or higher), this grants access
-      // -999 means explicitly no access, anything else means check permissions
-      if (limit >= 0) {
-        // Access is granted via limit configuration, now check usage
+      // Handle limits based on value:
+      // -1 = unlimited (check via checkLimit which handles -1)
+      // 0 = no access (check via checkLimit which denies)
+      // > 0 = limited access (check usage via checkLimit)
+      // -999 = explicitly denied
+      // any other negative = fall through to permissions
+      
+      if (limit === -1 || limit >= 0) {
+        // Let checkLimit handle all these cases
         const limitCheck = await this.checkLimit(userId, featureId, feature.limitType, userType);
         return limitCheck;
       } else if (limit === -999) {
@@ -298,13 +317,15 @@ export class AccessControl {
       };
     }
     
-    // Simple access (0) always passes (no numeric limit)
-    // But we should still return remaining = null to indicate no limit tracking
+    // Limit of 0 means NO ACCESS AT ALL
     if (limit === 0) {
       return { 
-        allowed: true, 
-        userType,
-        remaining: null
+        allowed: false,
+        reason: 'no_permission',
+        limit: 0,
+        usage: 0,
+        remaining: 0,
+        userType
       };
     }
     

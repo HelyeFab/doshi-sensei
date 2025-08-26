@@ -213,7 +213,30 @@ export function useFeature(
         break;
 
       case 'no_permission':
-        if (showToast) {
+        // For guest users, show login modal
+        if (result.userType === 'guest') {
+          if (onLoginRequired) {
+            onLoginRequired();
+          } else if (showModal) {
+            setModalMessage(`Please log in to access ${featureName}`);
+            setShowLoginModal(true);
+          } else if (showToast) {
+            toast.warning('Login Required', 'Please sign in to use this feature');
+          }
+        } 
+        // For free users, show upgrade modal
+        else if (result.userType === 'free') {
+          if (onSubscriptionRequired) {
+            onSubscriptionRequired();
+          } else if (showModal) {
+            setModalMessage(`${featureName} is a premium feature. Upgrade to access unlimited kanji learning tools!`);
+            setShowUpgradeModal(true);
+          } else if (showToast) {
+            toast.warning('Premium Feature', 'Upgrade to access this feature');
+          }
+        }
+        // For other cases, show generic error
+        else if (showToast) {
           toast.error('Access Denied', 'You don\'t have permission to use this feature');
         }
         break;
@@ -359,6 +382,18 @@ export function useFeature(
     returnValue.AccessModals = () => {
       // Try to lazy load modal components
       try {
+        // Special modal for Kanji Connections
+        if (featureId === 'kanji_connections') {
+          const KanjiConnectionsUpgradeModal = require('@/components/modals/KanjiConnectionsUpgradeModal').default;
+          return React.createElement(KanjiConnectionsUpgradeModal, {
+            isOpen: showUpgradeModal || showLoginModal,
+            onClose: () => {
+              setShowUpgradeModal(false);
+              setShowLoginModal(false);
+            }
+          });
+        }
+        
         // We'll need to check if these components exist
         // For now, return null as placeholder
         // The actual modal components will be imported when they're migrated

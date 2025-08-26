@@ -862,6 +862,74 @@
     "textbook": "genki-1"
   },
   {
+    "id": "genki-1-1-4",
+    "japanese": "会社",
+    "reading": "かいしゃ",
+    "meaning": "company",
+    "jlptLevel": "N4",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "会社で働いています。",
+        "reading": "",
+        "english": "I work at a company."
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-1",
+      "genki-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1609729373827",
+    "japanese": "もう",
+    "reading": "もう",
+    "meaning": "already",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "8",
+        "reading": "",
+        "english": "９時ですからもう失礼します。"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-1",
+      "genki-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
+    "id": "genki-1-1-1609729373807",
+    "japanese": "ずっと",
+    "reading": "ずっと",
+    "meaning": "by far",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "12",
+        "reading": "",
+        "english": "東京はニューヨークより人がずっと多いです。"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-1",
+      "genki-1"
+    ],
+    "lesson": 1,
+    "textbook": "genki-1"
+  },
+  {
     "id": "genki-1-1-1550630688292",
     "japanese": "飲みます",
     "reading": "飲みます",
@@ -5784,28 +5852,6 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-1-1609729373807",
-    "japanese": "ずっと",
-    "reading": "ずっと",
-    "meaning": "by far",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "12",
-        "reading": "",
-        "english": "東京はニューヨークより人がずっと多いです。"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-1",
-      "genki-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
     "id": "genki-1-1-1609729373809",
     "japanese": "一番[いちばん]～",
     "reading": "一番[いちばん]～",
@@ -6009,28 +6055,6 @@
         "japanese": "14",
         "reading": "",
         "english": "あなたが直ぐにそこへ行くことが必要だ。"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-1",
-      "genki-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-1609729373827",
-    "japanese": "もう",
-    "reading": "もう",
-    "meaning": "already",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "8",
-        "reading": "",
-        "english": "９時ですからもう失礼します。"
       }
     ],
     "tags": [
@@ -6795,30 +6819,6 @@
     ],
     "tags": [
       "n5",
-      "lesson-1",
-      "genki-1"
-    ],
-    "lesson": 1,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-1-4",
-    "japanese": "会社",
-    "reading": "かいしゃ",
-    "meaning": "company",
-    "jlptLevel": "N4",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "会社で働いています。",
-        "reading": "",
-        "english": "I work at a company."
-      }
-    ],
-    "tags": [
-      "n4",
       "lesson-1",
       "genki-1"
     ],

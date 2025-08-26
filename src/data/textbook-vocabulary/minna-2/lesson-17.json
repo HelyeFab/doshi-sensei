@@ -1,5 +1,121 @@
 [
   {
+    "id": "minna-2-17-1550466859910",
+    "japanese": "子どもたち",
+    "reading": "子どもたち",
+    "meaning": "children",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "子[こ]どもたち",
+        "reading": "",
+        "english": "42"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-17",
+      "minna-2"
+    ],
+    "lesson": 17,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-17-1550467151031",
+    "japanese": "材料",
+    "reading": "材料",
+    "meaning": "material, ingredient",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "材料[ざいりょう]",
+        "reading": "",
+        "english": "42"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-17",
+      "minna-2"
+    ],
+    "lesson": 17,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-17-1550467399226",
+    "japanese": "どんぶり",
+    "reading": "どんぶり",
+    "meaning": "bowl",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "どんぶり",
+        "reading": "",
+        "english": "42"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-17",
+      "minna-2"
+    ],
+    "lesson": 17,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-17-1550467179163",
+    "japanese": "一生懸命",
+    "reading": "一生懸命",
+    "meaning": "with all of one's effort",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "一生懸命[いっしょうけんめい]",
+        "reading": "",
+        "english": "42"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-17",
+      "minna-2"
+    ],
+    "lesson": 17,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-17-1550467163004",
+    "japanese": "ある 〜",
+    "reading": "ある 〜",
+    "meaning": "a certain ~, one ~",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ある　〜",
+        "reading": "",
+        "english": "42"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-17",
+      "minna-2"
+    ],
+    "lesson": 17,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-17-1550466735335",
     "japanese": "包みます",
     "reading": "包みます",
@@ -201,30 +317,6 @@
     "examples": [
       {
         "japanese": "音楽家[おんがくか]",
-        "reading": "",
-        "english": "42"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-17",
-      "minna-2"
-    ],
-    "lesson": 17,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-17-1550466859910",
-    "japanese": "子どもたち",
-    "reading": "子どもたち",
-    "meaning": "children",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "子[こ]どもたち",
         "reading": "",
         "english": "42"
       }
@@ -734,76 +826,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-17-1550467151031",
-    "japanese": "材料",
-    "reading": "材料",
-    "meaning": "material, ingredient",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "材料[ざいりょう]",
-        "reading": "",
-        "english": "42"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-17",
-      "minna-2"
-    ],
-    "lesson": 17,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-17-1550467163004",
-    "japanese": "ある 〜",
-    "reading": "ある 〜",
-    "meaning": "a certain ~, one ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ある　〜",
-        "reading": "",
-        "english": "42"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-17",
-      "minna-2"
-    ],
-    "lesson": 17,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-17-1550467179163",
-    "japanese": "一生懸命",
-    "reading": "一生懸命",
-    "meaning": "with all of one's effort",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "一生懸命[いっしょうけんめい]",
-        "reading": "",
-        "english": "42"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-17",
-      "minna-2"
-    ],
-    "lesson": 17,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-17-1550467185387",
     "japanese": "なぜ",
     "reading": "なぜ",
@@ -1045,28 +1067,6 @@
     "examples": [
       {
         "japanese": "〜に　よって",
-        "reading": "",
-        "english": "42"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-17",
-      "minna-2"
-    ],
-    "lesson": 17,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-17-1550467399226",
-    "japanese": "どんぶり",
-    "reading": "どんぶり",
-    "meaning": "bowl",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どんぶり",
         "reading": "",
         "english": "42"
       }

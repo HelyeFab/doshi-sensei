@@ -1,5 +1,29 @@
 [
   {
+    "id": "genki-1-6-1550634584512",
+    "japanese": "何",
+    "reading": "何",
+    "meaning": "what",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "何[なに]",
+        "reading": "",
+        "english": "6"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-6",
+      "genki-1"
+    ],
+    "lesson": 6,
+    "textbook": "genki-1"
+  },
+  {
     "id": "genki-1-6-1544776574475",
     "japanese": "食べます",
     "reading": "食べます",
@@ -1144,19 +1168,17 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-6-1550634584512",
-    "japanese": "何",
-    "reading": "何",
-    "meaning": "what",
+    "id": "genki-1-6-1609729373195",
+    "japanese": "レストラン",
+    "reading": "レストラン",
+    "meaning": "restaurant",
     "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
+    "partOfSpeech": [],
     "examples": [
       {
-        "japanese": "何[なに]",
+        "japanese": "6",
         "reading": "",
-        "english": "6"
+        "english": ""
       }
     ],
     "tags": [
@@ -1685,28 +1707,6 @@
     ],
     "tags": [
       "n4",
-      "lesson-6",
-      "genki-1"
-    ],
-    "lesson": 6,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-6-1609729373195",
-    "japanese": "レストラン",
-    "reading": "レストラン",
-    "meaning": "restaurant",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "6",
-        "reading": "",
-        "english": ""
-      }
-    ],
-    "tags": [
-      "n5",
       "lesson-6",
       "genki-1"
     ],

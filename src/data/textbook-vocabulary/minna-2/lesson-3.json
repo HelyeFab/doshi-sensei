@@ -1,5 +1,53 @@
 [
   {
+    "id": "minna-2-3-1549956051176",
+    "japanese": "自分",
+    "reading": "自分",
+    "meaning": "oneself",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "自分[じぶん]",
+        "reading": "",
+        "english": "28"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-2"
+    ],
+    "lesson": 3,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-3-1549956089983",
+    "japanese": "将来",
+    "reading": "将来",
+    "meaning": "future",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "将来[しょうらい]",
+        "reading": "",
+        "english": "28"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-3",
+      "minna-2"
+    ],
+    "lesson": 3,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-3-1549953553062",
     "japanese": "売れます ［パンが〜］",
     "reading": "売れます ［パンが〜］",
@@ -854,54 +902,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-3-1549956051176",
-    "japanese": "自分",
-    "reading": "自分",
-    "meaning": "oneself",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "自分[じぶん]",
-        "reading": "",
-        "english": "28"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3",
-      "minna-2"
-    ],
-    "lesson": 3,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-3-1549956089983",
-    "japanese": "将来",
-    "reading": "将来",
-    "meaning": "future",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "将来[しょうらい]",
-        "reading": "",
-        "english": "28"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3",
-      "minna-2"
-    ],
-    "lesson": 3,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-3-1549956145713",
     "japanese": "しばらく",
     "reading": "しばらく",
@@ -1088,30 +1088,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-3-1549956370549",
-    "japanese": "お知らせ",
-    "reading": "お知らせ",
-    "meaning": "notice",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "お 知[し]らせ",
-        "reading": "",
-        "english": "28"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3",
-      "minna-2"
-    ],
-    "lesson": 3,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-3-1549956400627",
     "japanese": "参加します",
     "reading": "参加します",
@@ -1219,30 +1195,6 @@
     "examples": [
       {
         "japanese": "無料[むりょう]",
-        "reading": "",
-        "english": "28"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-3",
-      "minna-2"
-    ],
-    "lesson": 3,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-3-1549956531534",
-    "japanese": "誘います",
-    "reading": "誘います",
-    "meaning": "to invite, ask someone to join",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "誘[さそ]います",
         "reading": "",
         "english": "28"
       }

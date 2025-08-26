@@ -810,28 +810,6 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-7-1544776574561",
-    "japanese": "もう",
-    "reading": "もう",
-    "meaning": "already",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "もう",
-        "reading": "",
-        "english": "7"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-7",
-      "minna-1"
-    ],
-    "lesson": 7,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-7-1544776574562",
     "japanese": "まだ",
     "reading": "まだ",
@@ -1051,6 +1029,28 @@
         "japanese": "スパイン",
         "reading": "",
         "english": "7"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-7",
+      "minna-1"
+    ],
+    "lesson": 7,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-7-1609729373375",
+    "japanese": "チケット",
+    "reading": "チケット",
+    "meaning": "ticket",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "9",
+        "reading": "",
+        "english": "切符[きっぷ] = ticket (7)"
       }
     ],
     "tags": [
@@ -2335,28 +2335,6 @@
         "japanese": "(someone else's) children",
         "reading": "",
         "english": "7"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-7",
-      "minna-1"
-    ],
-    "lesson": 7,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-7-1609729373375",
-    "japanese": "チケット",
-    "reading": "チケット",
-    "meaning": "ticket",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "9",
-        "reading": "",
-        "english": "切符[きっぷ] = ticket (7)"
       }
     ],
     "tags": [

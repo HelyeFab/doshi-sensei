@@ -568,6 +568,28 @@
     "textbook": "genki-2"
   },
   {
+    "id": "genki-2-19-1609729373665",
+    "japanese": "ケーキ",
+    "reading": "ケーキ",
+    "meaning": "cake",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19",
+      "genki-2"
+    ],
+    "lesson": 19,
+    "textbook": "genki-2"
+  },
+  {
     "id": "genki-2-19-1550630837949",
     "japanese": "お茶",
     "reading": "お茶",
@@ -767,28 +789,6 @@
         "japanese": "19",
         "reading": "",
         "english": "(～を します: go on a diet)"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19",
-      "genki-2"
-    ],
-    "lesson": 19,
-    "textbook": "genki-2"
-  },
-  {
-    "id": "genki-2-19-1609729373665",
-    "japanese": "ケーキ",
-    "reading": "ケーキ",
-    "meaning": "cake",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": ""
       }
     ],
     "tags": [

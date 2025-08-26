@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useStrings } from '@/contexts/LanguageContext';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
@@ -28,9 +27,8 @@ interface StudySettings {
 }
 
 export default function KanjiMasteryDashboard() {
-  const strings = useStrings();
   const router = useRouter();
-  const { checkAndTrack, feature, access, remaining } = useFeature('kanji_mastery');
+  const { checkAndTrack, remaining } = useFeature('kanji_mastery');
   const { isPremium, userType } = useSubscription2();
   
   // Define getMaxSessionSize first
@@ -85,7 +83,7 @@ export default function KanjiMasteryDashboard() {
 
     try {
       // Check access
-      const canUse = await checkAndTrack('kanji_mastery');
+      const canUse = await checkAndTrack();
       if (!canUse) {
         setIsStarting(false);
         return;
@@ -116,15 +114,15 @@ export default function KanjiMasteryDashboard() {
         }}
       />
 
+      {/* Smart Page Header - Outside DesktopContainer */}
+      <SmartPageHeader 
+        title="Kanji Mastery"
+        showBack={true}
+        customBackUrl="/"
+      />
+
       <DesktopContainer>
         <div className="mobile-nav-padding">
-        {/* Smart Page Header */}
-        <SmartPageHeader 
-          title="Kanji Mastery"
-          subtitle="Learn kanji with spaced repetition"
-          showBackButton={true}
-        />
-
         {/* Usage Info */}
         {remaining !== null && remaining !== -1 && (
           <div className="px-4 mb-4">
@@ -137,7 +135,6 @@ export default function KanjiMasteryDashboard() {
             </div>
           </div>
         )}
-
 
         {/* Main Content */}
         <div className="px-4 space-y-6">
@@ -405,18 +402,6 @@ export default function KanjiMasteryDashboard() {
                 <span>Start Learning Session</span>
               )}
             </button>
-            
-            {/* Kanji Families Link */}
-            <Link 
-              href="/tools/kanji-mastery/families"
-              className="w-full mt-3 py-3 px-4 bg-card text-foreground font-medium rounded-lg border border-border hover:bg-muted transition-colors flex items-center justify-center gap-2"
-            >
-              <span className="text-lg">👨‍👩‍👧‍👦</span>
-              <span>Explore Kanji Families</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
           </div>
 
 

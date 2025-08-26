@@ -686,28 +686,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-10-1549520393139",
-    "japanese": "もっと",
-    "reading": "もっと",
-    "meaning": "more",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "もっと",
-        "reading": "",
-        "english": "35"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-10",
-      "minna-2"
-    ],
-    "lesson": 10,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-10-1549520432247",
     "japanese": "これで 終わりましょう。",
     "reading": "これで 終わりましょう。",
@@ -885,30 +863,6 @@
     "examples": [
       {
         "japanese": "交[まじ]わります",
-        "reading": "",
-        "english": "35"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-10",
-      "minna-2"
-    ],
-    "lesson": 10,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-10-1549520857768",
-    "japanese": "関係",
-    "reading": "関係",
-    "meaning": "relationship",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "関係[かんけい]",
         "reading": "",
         "english": "35"
       }

@@ -538,28 +538,6 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-10-1544776574706",
-    "japanese": "ビル",
-    "reading": "ビル",
-    "meaning": "building",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ビル&nbsp;",
-        "reading": "",
-        "english": "10"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-10",
-      "minna-1"
-    ],
-    "lesson": 10,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-10-1544776574707",
     "japanese": "ATM",
     "reading": "ATM",

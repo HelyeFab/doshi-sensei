@@ -1,16 +1,44 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+
+const KANJI_CHARACTERS = ['愛', '学', '美', '心', '道', '師', '和', '知', '光', '夢'];
+
+const LOADING_MESSAGES = [
+  "Teaching Dōshi-kun new verb forms...",
+  "Convincing kanji to stay in order...",
+  "Feeding the digital tanuki...",
+  "Calibrating the furigana generator...",
+  "Organizing the particle party...",
+  "Waking up the sleepy senpai...",
+  "Polishing the virtual genkan...",
+  "Charging the kawaii meters...",
+  "Summoning the grammar gods...",
+  "Bribing the JLPT dragons...",
+  "Untangling the keigo knots...",
+  "Warming up the wa particles...",
+  "Debugging the dakuten...",
+  "Alphabetizing the あいうえお...",
+  "Caffeinating the code monkeys...",
+  "Negotiating with nihongo...",
+  "Downloading more RAM-en...",
+  "Reticulating splines in Japanese...",
+  "Pressing X to pay respects (敬語)...",
+  "404: Humor not found. Just kidding!",
+];
 
 interface SplashScreenProps {
   duration?: number; // Duration in milliseconds
   forceShow?: boolean; // For testing purposes
 }
 
-export default function SplashScreen({ duration = 2000, forceShow = false }: SplashScreenProps) {
+export default function SplashScreen({ duration = 3000, forceShow = false }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const [loadingMessage] = useState(() => 
+    LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)]
+  );
 
   useEffect(() => {
     if (!forceShow) {
@@ -27,130 +55,179 @@ export default function SplashScreen({ duration = 2000, forceShow = false }: Spl
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500"
+          className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #ffc371 100%)',
+            backgroundSize: '400% 400%',
+            animation: 'gradientShift 8s ease infinite'
+          }}
         >
-          {/* Background pattern */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-20 left-10 text-[120px] text-white/10 animate-pulse font-bold">道</div>
-            <div className="absolute bottom-20 right-20 text-[120px] text-white/10 animate-pulse font-bold" style={{ animationDelay: '0.5s' }}>師</div>
-            <div className="absolute top-1/3 right-1/4 text-[100px] text-white/10 animate-pulse font-bold" style={{ animationDelay: '1s' }}>先</div>
-            <div className="absolute bottom-1/3 left-1/3 text-[100px] text-white/10 animate-pulse font-bold" style={{ animationDelay: '0.75s' }}>生</div>
+          {/* Floating Kanji Background */}
+          <div className="absolute inset-0">
+            {KANJI_CHARACTERS.map((kanji, index) => (
+              <motion.div
+                key={kanji}
+                className="absolute text-white/10 select-none"
+                style={{
+                  fontSize: `${Math.random() * 60 + 40}px`,
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{
+                  opacity: [0, 0.3, 0],
+                  scale: [0, 1.2, 0.8],
+                  rotate: [0, 180, 360],
+                  x: [0, Math.random() * 200 - 100],
+                  y: [0, Math.random() * 200 - 100],
+                }}
+                transition={{
+                  duration: 3,
+                  delay: index * 0.2,
+                  repeat: Infinity,
+                  repeatDelay: 1,
+                }}
+              >
+                {kanji}
+              </motion.div>
+            ))}
           </div>
 
-          {/* Content */}
-          <div className="relative z-10 flex flex-col items-center">
-            {/* Logo with Yokoso */}
+          {/* Center Content */}
+          <motion.div
+            className="relative z-10 flex flex-col items-center"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            {/* Doshi Logo */}
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ 
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-                duration: 0.8
+              animate={{
+                scale: [1, 1.1, 1],
+                rotate: [0, 5, -5, 0],
               }}
-              className="mb-8 relative"
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="mb-8"
             >
-              {/* Yokoso text in semicircle above mascot */}
-              <div className="absolute -top-20 left-1/2 transform -translate-x-1/2">
-                <div className="relative">
-                  {['よ', 'う', 'こ', 'そ', '！'].map((char, i) => {
-                    const angle = -50 + (i * 25); // Spread from -50 to +50 degrees
-                    const radius = 85; // Increased distance from center
-                    const x = Math.sin(angle * Math.PI / 180) * radius;
-                    const y = -Math.cos(angle * Math.PI / 180) * radius + 30;
-                    
-                    return (
-                      <motion.span
-                        key={i}
-                        className="absolute text-white font-bold text-4xl" // Increased from text-2xl to text-4xl
-                        style={{
-                          left: `${x}px`,
-                          top: `${y}px`,
-                          transform: 'translate(-50%, -50%)',
-                          textShadow: '0 4px 12px rgba(0, 0, 0, 0.3)', // Added text shadow for better visibility
-                        }}
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{
-                          scale: [1, 1.3, 1], // Increased animation scale
-                          opacity: 1,
-                        }}
-                        transition={{
-                          delay: 0.5 + i * 0.1,
-                          scale: {
-                            duration: 2,
-                            repeat: Infinity,
-                            delay: 0.5 + i * 0.1,
-                          },
-                          opacity: {
-                            duration: 0.3,
-                          }
-                        }}
-                      >
-                        {char}
-                      </motion.span>
-                    );
-                  })}
-                </div>
-              </div>
-              
-              <div className="relative">
-                <div className="absolute inset-0 bg-white/20 rounded-full blur-2xl"></div>
-                <Image
-                  src="/doshi.png"
-                  alt="Dōshi Sensei"
-                  width={120}
-                  height={120}
-                  className="relative drop-shadow-2xl"
-                  priority
-                />
-              </div>
+              <Image
+                src="/doshi.png"
+                alt="Doshi Sensei"
+                width={120}
+                height={120}
+                className="drop-shadow-2xl"
+                priority
+              />
             </motion.div>
 
-            {/* App Name */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="text-center"
-            >
-              <h1 className="text-4xl font-bold text-white mb-2">
-                Dōshi Sensei
-              </h1>
-              <p className="text-lg text-white/90">
-                Master Japanese, One Step at a Time
-              </p>
-            </motion.div>
+            {/* Animated Kanji Row */}
+            <div className="flex gap-4 mb-8">
+              {['道', '師', '先', '生'].map((kanji, index) => (
+                <motion.div
+                  key={kanji}
+                  className="text-4xl font-bold text-white"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: 0.5 + index * 0.1,
+                    duration: 0.5,
+                  }}
+                  style={{
+                    textShadow: '0 0 20px rgba(255,255,255,0.5)',
+                  }}
+                >
+                  {kanji}
+                </motion.div>
+              ))}
+            </div>
 
-            {/* Loading indicator */}
-            <motion.div
+            {/* Title with macron */}
+            <motion.h1
+              className="text-2xl font-bold text-white mb-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+            >
+              Dōshi Sensei
+            </motion.h1>
+
+            {/* Loading Message */}
+            <motion.p
+              className="text-lg text-white/90 mb-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="mt-12"
+              transition={{ delay: 1, duration: 0.5 }}
+              style={{
+                textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+              }}
             >
-              <div className="flex space-x-3">
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="w-4 h-4 bg-white rounded-full shadow-lg"
-                    animate={{
-                      y: ["0%", "-60%", "0%"],
-                      scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                      duration: 0.6,
-                      repeat: Infinity,
-                      delay: i * 0.15,
-                    }}
-                  />
-                ))}
-              </div>
-            </motion.div>
+              {loadingMessage}
+            </motion.p>
+
+            {/* Loading Dots */}
+            <div className="flex gap-2">
+              {[0, 1, 2].map((index) => (
+                <motion.div
+                  key={index}
+                  className="w-3 h-3 bg-white rounded-full"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.5, 1, 0.5],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: index * 0.2,
+                  }}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Particle Effects */}
+          <div className="absolute inset-0 pointer-events-none">
+            {Array.from({ length: 20 }).map((_, index) => (
+              <motion.div
+                key={index}
+                className="absolute w-1 h-1 bg-white rounded-full"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  scale: [0, 1, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
           </div>
+
+          {/* CSS for gradient animation */}
+          <style jsx global>{`
+            @keyframes gradientShift {
+              0% {
+                background-position: 0% 50%;
+              }
+              50% {
+                background-position: 100% 50%;
+              }
+              100% {
+                background-position: 0% 50%;
+              }
+            }
+          `}</style>
         </motion.div>
       )}
     </AnimatePresence>

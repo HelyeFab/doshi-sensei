@@ -890,30 +890,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-1-1549518626005",
-    "japanese": "宇宙",
-    "reading": "宇宙",
-    "meaning": "space, universe",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "宇宙[うちゅう]",
-        "reading": "",
-        "english": "26"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-1",
-      "minna-2"
-    ],
-    "lesson": 1,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-1-1549518666514",
     "japanese": "〜様",
     "reading": "〜様",

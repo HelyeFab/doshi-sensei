@@ -35,9 +35,13 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'kana_drop': 3,           // Enough to get hooked
       'memory_match': 3,        // Enough to get hooked
       'stroke_order_practice': 5, // More practices
+      'view_stroke_order': 10, // Limited views per day for guests
       'kanji_mastery': 0,       // Must sign up (requires saving)
       'kanji_browser': -1,      // Unlimited browsing
       'kanji_families': 10,     // More family explorations per day
+      'kanji_radicals': 10,     // Semantic radical explorations per day
+      'kanji_visual_layout': 10, // Visual layout explorations per day
+      'kanji_connections': 0,   // Premium-only feature
       'kanji_moods': 0,         // Must sign up (requires saving)
       'kanji_simon': 3,         // Enough to get hooked
       'sentence_scramble': 3,   // Enough to get hooked
@@ -55,6 +59,14 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'anki_import': 0,         // Must sign up
       'youtube_series': -1,     // Unlimited access
       'my_videos': 0,           // Must sign up
+      
+      // AI Features
+      'ai_context_explanation': 0,     // Must sign up (API costs)
+      'ai_transcript_formatting': 0,   // Must sign up (API costs)
+      'ai_article_validation': 0,      // Admin only
+      'audio_transcription': 0,        // Must sign up (API costs)
+      'ai_cover_generation': 0,        // Admin only
+      'quick_context': 5,               // Limited uses for guests
       
       // Storage - all require sign up
       'study_lists': 0,
@@ -112,9 +124,13 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'kana_drop': 3,           // Few games per day
       'memory_match': 5,        // More memory games
       'stroke_order_practice': 10, // Some practices
+      'view_stroke_order': 30, // More views for free users
       'kanji_mastery': 3,       // Limited sessions
       'kanji_browser': -1,      // Unlimited browsing
       'kanji_families': 20,     // Many family explorations per day
+      'kanji_radicals': 20,     // Many radical explorations per day
+      'kanji_visual_layout': 20, // Many visual layout explorations per day
+      'kanji_connections': 0,   // Premium-only feature
       'kanji_moods': 1,         // One mood board per day
       'kanji_simon': 5,         // Several games per day
       'sentence_scramble': 3,   // Few games per day
@@ -125,6 +141,14 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'youtube_shadowing': 3,   // Few videos per day
       'uploaded_media_shadowing': 2, // Two uploads per day
       'news_reader': 5,         // Several articles
+      
+      // AI Features
+      'ai_context_explanation': 10,    // 10 explanations per day
+      'ai_transcript_formatting': 3,   // 3 transcript formats per day
+      'ai_article_validation': 0,      // Admin only
+      'audio_transcription': 3,        // 3 transcriptions per day
+      'ai_cover_generation': 0,        // Admin only
+      'quick_context': 20,              // 20 uses per day for free users
       'article_reading': 5,     // Several articles per day
       'anki_import': 0,         // Premium only
       'youtube_series': -1,     // Unlimited access
@@ -186,9 +210,13 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'kana_drop': -1,
       'memory_match': -1,
       'stroke_order_practice': -1,
+      'view_stroke_order': -1, // Unlimited for premium
       'kanji_mastery': -1,      // Unlimited sessions
       'kanji_browser': -1,      // Unlimited browsing
       'kanji_families': -1,     // Unlimited family explorations
+      'kanji_radicals': -1,     // Unlimited radical explorations
+      'kanji_visual_layout': -1, // Unlimited visual layout explorations
+      'kanji_connections': -1,  // Unlimited access to premium feature
       'kanji_moods': -1,        // Unlimited mood boards
       'kanji_simon': -1,        // Unlimited games
       'sentence_scramble': -1,  // Unlimited games
@@ -206,6 +234,14 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'anki_import': -1,
       'youtube_series': -1,
       'my_videos': -1,
+      
+      // AI Features - all unlimited for premium
+      'ai_context_explanation': -1,    // Unlimited explanations
+      'ai_transcript_formatting': -1,  // Unlimited formatting
+      'ai_article_validation': -1,     // Admin feature
+      'audio_transcription': -1,       // Unlimited transcriptions
+      'ai_cover_generation': -1,       // Admin feature
+      'quick_context': -1,              // Unlimited QuickContext uses
       
       // Storage - all unlimited
       'study_lists': -1,
@@ -263,9 +299,13 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'kana_drop': -1,
       'memory_match': -1,
       'stroke_order_practice': -1,
+      'view_stroke_order': -1, // Unlimited for premium
       'kanji_mastery': -1,      // Unlimited sessions
       'kanji_browser': -1,      // Unlimited browsing
       'kanji_families': -1,     // Unlimited family explorations
+      'kanji_radicals': -1,     // Unlimited radical explorations
+      'kanji_visual_layout': -1, // Unlimited visual layout explorations
+      'kanji_connections': -1,  // Unlimited access to premium feature
       'kanji_moods': -1,        // Unlimited mood boards
       'kanji_simon': -1,        // Unlimited games
       'sentence_scramble': -1,  // Unlimited games
@@ -283,6 +323,14 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'anki_import': -1,
       'youtube_series': -1,
       'my_videos': -1,
+      
+      // AI Features - all unlimited for premium
+      'ai_context_explanation': -1,    // Unlimited explanations
+      'ai_transcript_formatting': -1,  // Unlimited formatting
+      'ai_article_validation': -1,     // Admin feature
+      'audio_transcription': -1,       // Unlimited transcriptions
+      'ai_cover_generation': -1,       // Admin feature
+      'quick_context': -1,              // Unlimited QuickContext uses
       
       // Storage - all unlimited
       'study_lists': -1,

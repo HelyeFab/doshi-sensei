@@ -1,5 +1,27 @@
 [
   {
+    "id": "minna-1-23-1609729373423",
+    "japanese": "ビル",
+    "reading": "ビル",
+    "meaning": "building",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "10",
+        "reading": "",
+        "english": "建物[たてもの] = building (23)"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23",
+      "minna-1"
+    ],
+    "lesson": 23,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-23-1544776575172",
     "japanese": "聞きます［先生に～］",
     "reading": "聞きます［先生に～］",
@@ -559,28 +581,6 @@
         "japanese": "It was delicious.",
         "reading": "",
         "english": "23"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23",
-      "minna-1"
-    ],
-    "lesson": 23,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-23-1609729373423",
-    "japanese": "ビル",
-    "reading": "ビル",
-    "meaning": "building",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "10",
-        "reading": "",
-        "english": "建物[たてもの] = building (23)"
       }
     ],
     "tags": [

@@ -1,5 +1,53 @@
 [
   {
+    "id": "minna-2-12-1550378361930",
+    "japanese": "ー世紀",
+    "reading": "ー世紀",
+    "meaning": "-th century",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "ー 世紀[せいき]",
+        "reading": "",
+        "english": "37"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-12",
+      "minna-2"
+    ],
+    "lesson": 12,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-12-1550377788229",
+    "japanese": "誘います",
+    "reading": "誘います",
+    "meaning": "to invite, ask someone to join",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "誘[さそ]います",
+        "reading": "",
+        "english": "37"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-12",
+      "minna-2"
+    ],
+    "lesson": 12,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-12-1550377755361",
     "japanese": "褒めます",
     "reading": "褒めます",
@@ -35,30 +83,6 @@
     "examples": [
       {
         "japanese": "しかります",
-        "reading": "",
-        "english": "37"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-12",
-      "minna-2"
-    ],
-    "lesson": 12,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-12-1550377788229",
-    "japanese": "誘います",
-    "reading": "誘います",
-    "meaning": "to invite, ask someone to join",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "誘[さそ]います",
         "reading": "",
         "english": "37"
       }
@@ -620,30 +644,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-12-1550378361930",
-    "japanese": "ー世紀",
-    "reading": "ー世紀",
-    "meaning": "-th century",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "ー 世紀[せいき]",
-        "reading": "",
-        "english": "37"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-12",
-      "minna-2"
-    ],
-    "lesson": 12,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-12-1550378381466",
     "japanese": "何語",
     "reading": "何語",
@@ -1178,30 +1178,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-12-1550379064349",
-    "japanese": "眠ります",
-    "reading": "眠ります",
-    "meaning": "to sleep",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "眠[ねむ]ります",
-        "reading": "",
-        "english": "37"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-12",
-      "minna-2"
-    ],
-    "lesson": 12,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-12-1550379085713",
     "japanese": "彫ります",
     "reading": "彫ります",
@@ -1250,28 +1226,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-12-1550379141973",
-    "japanese": "しかし",
-    "reading": "しかし",
-    "meaning": "however, but",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "しかし",
-        "reading": "",
-        "english": "37"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-12",
-      "minna-2"
-    ],
-    "lesson": 12,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-12-1550379157565",
     "japanese": "その あと",
     "reading": "その あと",
@@ -1281,30 +1235,6 @@
     "examples": [
       {
         "japanese": "その　あと",
-        "reading": "",
-        "english": "37"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-12",
-      "minna-2"
-    ],
-    "lesson": 12,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-12-1550379193513",
-    "japanese": "一生懸命",
-    "reading": "一生懸命",
-    "meaning": "with all of one's effort",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "一生懸命[いっしょうけんめい]",
         "reading": "",
         "english": "37"
       }
@@ -1351,30 +1281,6 @@
     "examples": [
       {
         "japanese": "一匹[いっぴき]も　いません。",
-        "reading": "",
-        "english": "37"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-12",
-      "minna-2"
-    ],
-    "lesson": 12,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-12-1550379300507",
-    "japanese": "東照宮",
-    "reading": "東照宮",
-    "meaning": "shrine dedicated to Tokugawa Ieyasu in Nikko, Tochigi prefecture",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "東照宮[とうしょうぐう]",
         "reading": "",
         "english": "37"
       }

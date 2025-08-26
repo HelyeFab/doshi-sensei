@@ -1,5 +1,29 @@
 [
   {
+    "id": "minna-2-21-1550479571477",
+    "japanese": "鳴ります",
+    "reading": "鳴ります",
+    "meaning": "to ring",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "鳴[な]ります",
+        "reading": "",
+        "english": "46"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-21",
+      "minna-2"
+    ],
+    "lesson": 21,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-21-1550478593799",
     "japanese": "渡します",
     "reading": "渡します",
@@ -649,30 +673,6 @@
     "examples": [
       {
         "japanese": "ベル",
-        "reading": "",
-        "english": "46"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-21",
-      "minna-2"
-    ],
-    "lesson": 21,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-21-1550479571477",
-    "japanese": "鳴ります",
-    "reading": "鳴ります",
-    "meaning": "to ring",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "鳴[な]ります",
         "reading": "",
         "english": "46"
       }

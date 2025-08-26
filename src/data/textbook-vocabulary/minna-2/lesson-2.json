@@ -678,54 +678,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-2-1549952760712",
-    "japanese": "子どもたち",
-    "reading": "子どもたち",
-    "meaning": "children",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "子[こ]どもたち",
-        "reading": "",
-        "english": "27"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-2",
-      "minna-2"
-    ],
-    "lesson": 2,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-2-1549952798416",
-    "japanese": "大好き［な］",
-    "reading": "大好き［な］",
-    "meaning": "like very much",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "大好[だいす]き［な］",
-        "reading": "",
-        "english": "27"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-2",
-      "minna-2"
-    ],
-    "lesson": 2,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-2-1549952843479",
     "japanese": "主人公",
     "reading": "主人公",
@@ -798,52 +750,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-2-1549952908000",
-    "japanese": "ポケット",
-    "reading": "ポケット",
-    "meaning": "pocket",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ポケット",
-        "reading": "",
-        "english": "27"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-2",
-      "minna-2"
-    ],
-    "lesson": 2,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-2-1549952942127",
-    "japanese": "例えば",
-    "reading": "例えば",
-    "meaning": "for example",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "例[たと]えば",
-        "reading": "",
-        "english": "27"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-2",
-      "minna-2"
-    ],
-    "lesson": 2,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-2-1549952974451",
     "japanese": "付けます",
     "reading": "付けます",
@@ -868,30 +774,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-2-1549953022227",
-    "japanese": "空",
-    "reading": "空",
-    "meaning": "sky",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "空[そら]",
-        "reading": "",
-        "english": "27"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-2",
-      "minna-2"
-    ],
-    "lesson": 2,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-2-1549953043914",
     "japanese": "飛びます",
     "reading": "飛びます",
@@ -901,54 +783,6 @@
     "examples": [
       {
         "japanese": "飛[と]びます",
-        "reading": "",
-        "english": "27"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-2",
-      "minna-2"
-    ],
-    "lesson": 2,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-2-1549953076463",
-    "japanese": "自分",
-    "reading": "自分",
-    "meaning": "oneself",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "自分[じぶん]",
-        "reading": "",
-        "english": "27"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-2",
-      "minna-2"
-    ],
-    "lesson": 2,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-2-1549953101080",
-    "japanese": "将来",
-    "reading": "将来",
-    "meaning": "future",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "将来[しょうらい]",
         "reading": "",
         "english": "27"
       }

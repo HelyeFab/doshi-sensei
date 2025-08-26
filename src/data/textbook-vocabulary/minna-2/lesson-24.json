@@ -24,6 +24,30 @@
     "textbook": "minna-2"
   },
   {
+    "id": "minna-2-24-1550482564384",
+    "japanese": "あいさつ",
+    "reading": "あいさつ",
+    "meaning": "greeting, address (〜を　します：to greet, give an address)",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "あいさつ",
+        "reading": "",
+        "english": "49"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-24",
+      "minna-2"
+    ],
+    "lesson": 24,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-24-1550482230914",
     "japanese": "勤めます［会社に〜］",
     "reading": "勤めます［会社に〜］",
@@ -227,30 +251,6 @@
     "examples": [
       {
         "japanese": "ご 存[ぞん]じです",
-        "reading": "",
-        "english": "49"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-24",
-      "minna-2"
-    ],
-    "lesson": 24,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-24-1550482564384",
-    "japanese": "あいさつ",
-    "reading": "あいさつ",
-    "meaning": "greeting, address (〜を　します：to greet, give an address)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "あいさつ",
         "reading": "",
         "english": "49"
       }

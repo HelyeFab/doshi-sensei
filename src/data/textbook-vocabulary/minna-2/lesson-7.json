@@ -1,5 +1,53 @@
 [
   {
+    "id": "minna-2-7-1550211348954",
+    "japanese": "空",
+    "reading": "空",
+    "meaning": "sky",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "空[そら]",
+        "reading": "",
+        "english": "32"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-7",
+      "minna-2"
+    ],
+    "lesson": 7,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-7-1550211413906",
+    "japanese": "西",
+    "reading": "西",
+    "meaning": "west",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "西[にし]",
+        "reading": "",
+        "english": "32"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-7",
+      "minna-2"
+    ],
+    "lesson": 7,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-7-1550210368628",
     "japanese": "運動します",
     "reading": "運動します",
@@ -526,30 +574,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-7-1550211348954",
-    "japanese": "空",
-    "reading": "空",
-    "meaning": "sky",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "空[そら]",
-        "reading": "",
-        "english": "32"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-7",
-      "minna-2"
-    ],
-    "lesson": 7,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-7-1550211362012",
     "japanese": "太陽",
     "reading": "太陽",
@@ -633,30 +657,6 @@
     "examples": [
       {
         "japanese": "東[ひがし]",
-        "reading": "",
-        "english": "32"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-7",
-      "minna-2"
-    ],
-    "lesson": 7,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-7-1550211413906",
-    "japanese": "西",
-    "reading": "西",
-    "meaning": "west",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "西[にし]",
         "reading": "",
         "english": "32"
       }
@@ -1234,30 +1234,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-7-1550211964788",
-    "japanese": "健康",
-    "reading": "健康",
-    "meaning": "health",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "健康[けんこう]",
-        "reading": "",
-        "english": "32"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-7",
-      "minna-2"
-    ],
-    "lesson": 7,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-7-1550212003775",
     "japanese": "恋愛",
     "reading": "恋愛",
@@ -1269,30 +1245,6 @@
     "examples": [
       {
         "japanese": "恋愛[れんあい]",
-        "reading": "",
-        "english": "32"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-7",
-      "minna-2"
-    ],
-    "lesson": 7,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-7-1550212020865",
-    "japanese": "恋人",
-    "reading": "恋人",
-    "meaning": "sweetheart, boyfriend, girlfriend",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "恋人[こいびと]",
         "reading": "",
         "english": "32"
       }

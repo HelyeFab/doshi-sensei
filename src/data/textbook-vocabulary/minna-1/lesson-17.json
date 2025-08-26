@@ -898,6 +898,30 @@
     "textbook": "minna-1"
   },
   {
+    "id": "minna-1-17-1609729373625",
+    "japanese": "先生",
+    "reading": "先生",
+    "meaning": "先生[せんせい]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "doctor",
+        "reading": "",
+        "english": "17"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-17",
+      "minna-1"
+    ],
+    "lesson": 17,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-17-1609729373603",
     "japanese": "問題",
     "reading": "問題",
@@ -1147,30 +1171,6 @@
     "examples": [
       {
         "japanese": "underwear",
-        "reading": "",
-        "english": "17"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-17",
-      "minna-1"
-    ],
-    "lesson": 17,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-17-1609729373625",
-    "japanese": "先生",
-    "reading": "先生",
-    "meaning": "先生[せんせい]",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "doctor",
         "reading": "",
         "english": "17"
       }

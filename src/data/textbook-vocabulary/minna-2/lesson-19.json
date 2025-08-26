@@ -1,5 +1,75 @@
 [
   {
+    "id": "minna-2-19-1550471444051",
+    "japanese": "例えば",
+    "reading": "例えば",
+    "meaning": "for example",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "例[たと]えば",
+        "reading": "",
+        "english": "44"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19",
+      "minna-2"
+    ],
+    "lesson": 19,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-19-1550470680788",
+    "japanese": "眠ります",
+    "reading": "眠ります",
+    "meaning": "to sleep",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "眠[ねむ]ります",
+        "reading": "",
+        "english": "44"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19",
+      "minna-2"
+    ],
+    "lesson": 19,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-19-1550471326970",
+    "japanese": "また",
+    "reading": "また",
+    "meaning": "and",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "また",
+        "reading": "",
+        "english": "44"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19",
+      "minna-2"
+    ],
+    "lesson": 19,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-19-1550470659773",
     "japanese": "泣きます",
     "reading": "泣きます",
@@ -35,30 +105,6 @@
     "examples": [
       {
         "japanese": "笑[わら]います",
-        "reading": "",
-        "english": "44"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19",
-      "minna-2"
-    ],
-    "lesson": 19,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-19-1550470680788",
-    "japanese": "眠ります",
-    "reading": "眠ります",
-    "meaning": "to sleep",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "眠[ねむ]ります",
         "reading": "",
         "english": "44"
       }
@@ -824,28 +870,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-19-1550471326970",
-    "japanese": "また",
-    "reading": "また",
-    "meaning": "and",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "また",
-        "reading": "",
-        "english": "44"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19",
-      "minna-2"
-    ],
-    "lesson": 19,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-19-1550471332007",
     "japanese": "うまく",
     "reading": "うまく",
@@ -927,30 +951,6 @@
     "examples": [
       {
         "japanese": "表現[ひょうげん]",
-        "reading": "",
-        "english": "44"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19",
-      "minna-2"
-    ],
-    "lesson": 19,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-19-1550471444051",
-    "japanese": "例えば",
-    "reading": "例えば",
-    "meaning": "for example",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "例[たと]えば",
         "reading": "",
         "english": "44"
       }

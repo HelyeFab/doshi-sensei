@@ -902,28 +902,6 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-8-1544776574610",
-    "japanese": "レストラン",
-    "reading": "レストラン",
-    "meaning": "restaurant",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "レストラン",
-        "reading": "",
-        "english": "8"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-8",
-      "genki-1"
-    ],
-    "lesson": 8,
-    "textbook": "genki-1"
-  },
-  {
     "id": "genki-1-8-1544776574611",
     "japanese": "生活",
     "reading": "生活",
@@ -1345,28 +1323,6 @@
     "examples": [
       {
         "japanese": "富士山[ふじさん]",
-        "reading": "",
-        "english": "8"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-8",
-      "genki-1"
-    ],
-    "lesson": 8,
-    "textbook": "genki-1"
-  },
-  {
-    "id": "genki-1-8-1550630535858",
-    "japanese": "そうですね。",
-    "reading": "そうですね。",
-    "meaning": "Well let me see. (pausing)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "そうですね。",
         "reading": "",
         "english": "8"
       }

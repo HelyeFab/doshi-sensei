@@ -6,10 +6,11 @@
     "prebuild": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
-    "stripe": "^14.14.0",
-    "firebase-admin": "^11.11.1",
-    "cheerio": "^1.0.0-rc.12",
     "@sparticuz/chromium": "^133.0.0",
-    "puppeteer-core": "^24.10.2"
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^17.2.1",
+    "firebase-admin": "^11.11.1",
+    "puppeteer-core": "^24.10.2",
+    "stripe": "^14.14.0"
   }
 }

@@ -1,5 +1,101 @@
 [
   {
+    "id": "minna-2-13-1550382984239",
+    "japanese": "運びます",
+    "reading": "運びます",
+    "meaning": "to carry, transport",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "運[はこ]びます",
+        "reading": "",
+        "english": "38"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-13",
+      "minna-2"
+    ],
+    "lesson": 13,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-13-1550384224108",
+    "japanese": "大好き［な］",
+    "reading": "大好き［な］",
+    "meaning": "like very much",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "大好[だいす]き［な］",
+        "reading": "",
+        "english": "38"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-13",
+      "minna-2"
+    ],
+    "lesson": 13,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-13-1550383509365",
+    "japanese": "村",
+    "reading": "村",
+    "meaning": "village",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "村[むら]",
+        "reading": "",
+        "english": "38"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-13",
+      "minna-2"
+    ],
+    "lesson": 13,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-13-1550383583772",
+    "japanese": "健康",
+    "reading": "健康",
+    "meaning": "health",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "健康[けんこう]",
+        "reading": "",
+        "english": "38"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-13",
+      "minna-2"
+    ],
+    "lesson": 13,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-13-1550382948588",
     "japanese": "参加します［旅行に〜］",
     "reading": "参加します［旅行に〜］",
@@ -35,30 +131,6 @@
     "examples": [
       {
         "japanese": "育[そだ]てます",
-        "reading": "",
-        "english": "38"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-13",
-      "minna-2"
-    ],
-    "lesson": 13,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-13-1550382984239",
-    "japanese": "運びます",
-    "reading": "運びます",
-    "meaning": "to carry, transport",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "運[はこ]びます",
         "reading": "",
         "english": "38"
       }
@@ -456,30 +528,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-13-1550383509365",
-    "japanese": "村",
-    "reading": "村",
-    "meaning": "village",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "村[むら]",
-        "reading": "",
-        "english": "38"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-13",
-      "minna-2"
-    ],
-    "lesson": 13,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-13-1550383519340",
     "japanese": "かな",
     "reading": "かな",
@@ -563,30 +611,6 @@
     "examples": [
       {
         "japanese": "習慣[しゅうかん]",
-        "reading": "",
-        "english": "38"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-13",
-      "minna-2"
-    ],
-    "lesson": 13,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-13-1550383583772",
-    "japanese": "健康",
-    "reading": "健康",
-    "meaning": "health",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "健康[けんこう]",
         "reading": "",
         "english": "38"
       }
@@ -1114,54 +1138,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-13-1550384162425",
-    "japanese": "優しい",
-    "reading": "優しい",
-    "meaning": "kind, gentle, tender-hearted",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "i-adjective"
-    ],
-    "examples": [
-      {
-        "japanese": "優[やさ]しい",
-        "reading": "",
-        "english": "38"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-13",
-      "minna-2"
-    ],
-    "lesson": 13,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-13-1550384177921",
-    "japanese": "世話を します",
-    "reading": "世話を します",
-    "meaning": "to take care of",
-    "jlptLevel": "N4",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "世話[せわ]を　します",
-        "reading": "",
-        "english": "38"
-      }
-    ],
-    "tags": [
-      "n4",
-      "lesson-13",
-      "minna-2"
-    ],
-    "lesson": 13,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-13-1550384203826",
     "japanese": "時間が たちます",
     "reading": "時間が たちます",
@@ -1171,30 +1147,6 @@
     "examples": [
       {
         "japanese": "時間[じかん]が　たちます",
-        "reading": "",
-        "english": "38"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-13",
-      "minna-2"
-    ],
-    "lesson": 13,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-13-1550384224108",
-    "japanese": "大好き［な］",
-    "reading": "大好き［な］",
-    "meaning": "like very much",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "大好[だいす]き［な］",
         "reading": "",
         "english": "38"
       }
@@ -1243,30 +1195,6 @@
     "examples": [
       {
         "japanese": "気[き]が　 強[つよ]い",
-        "reading": "",
-        "english": "38"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-13",
-      "minna-2"
-    ],
-    "lesson": 13,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-13-1550384294791",
-    "japanese": "けんかします",
-    "reading": "けんかします",
-    "meaning": "to quarrel, fight",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "けんかします",
         "reading": "",
         "english": "38"
       }

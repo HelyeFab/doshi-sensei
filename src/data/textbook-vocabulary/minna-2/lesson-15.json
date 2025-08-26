@@ -1,5 +1,53 @@
 [
   {
+    "id": "minna-2-15-1550462633863",
+    "japanese": "ー個",
+    "reading": "ー個",
+    "meaning": "counter for small objects",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "counter"
+    ],
+    "examples": [
+      {
+        "japanese": "ー 個[こ]",
+        "reading": "",
+        "english": "40"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-15",
+      "minna-2"
+    ],
+    "lesson": 15,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-15-1550463040635",
+    "japanese": "東照宮",
+    "reading": "東照宮",
+    "meaning": "shrine dedicated to Tokugawa Ieyasu in Nikko, Tochigi prefecture",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "東照宮[とうしょうぐう]",
+        "reading": "",
+        "english": "40"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-15",
+      "minna-2"
+    ],
+    "lesson": 15,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-15-1550462040221",
     "japanese": "数えます",
     "reading": "数えます",
@@ -714,30 +762,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-15-1550462633863",
-    "japanese": "ー個",
-    "reading": "ー個",
-    "meaning": "counter for small objects",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "counter"
-    ],
-    "examples": [
-      {
-        "japanese": "ー 個[こ]",
-        "reading": "",
-        "english": "40"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-15",
-      "minna-2"
-    ],
-    "lesson": 15,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-15-1550462697571",
     "japanese": "ー本 ーぽん、ーぼん",
     "reading": "ー本 ーぽん、ーぼん",
@@ -981,30 +1005,6 @@
     "examples": [
       {
         "japanese": "七夕[たなばた] 祭[まつ]り",
-        "reading": "",
-        "english": "40"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-15",
-      "minna-2"
-    ],
-    "lesson": 15,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-15-1550463040635",
-    "japanese": "東照宮",
-    "reading": "東照宮",
-    "meaning": "shrine dedicated to Tokugawa Ieyasu in Nikko, Tochigi prefecture",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "東照宮[とうしょうぐう]",
         "reading": "",
         "english": "40"
       }
@@ -1298,30 +1298,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-15-1550463318143",
-    "japanese": "急に",
-    "reading": "急に",
-    "meaning": "suddenly",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "急[きゅう]に",
-        "reading": "",
-        "english": "40"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-15",
-      "minna-2"
-    ],
-    "lesson": 15,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-15-1550463335485",
     "japanese": "動かします",
     "reading": "動かします",
@@ -1346,30 +1322,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-15-1550463364838",
-    "japanese": "一生懸命",
-    "reading": "一生懸命",
-    "meaning": "with all of one's effort",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "一生懸命[いっしょうけんめい]",
-        "reading": "",
-        "english": "40"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-15",
-      "minna-2"
-    ],
-    "lesson": 15,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-15-1550463382812",
     "japanese": "犯人",
     "reading": "犯人",
@@ -1381,30 +1333,6 @@
     "examples": [
       {
         "japanese": "犯人[はんにん]",
-        "reading": "",
-        "english": "40"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-15",
-      "minna-2"
-    ],
-    "lesson": 15,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-15-1550463392503",
-    "japanese": "男",
-    "reading": "男",
-    "meaning": "man",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "男[おとこ]",
         "reading": "",
         "english": "40"
       }

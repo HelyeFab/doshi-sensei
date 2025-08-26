@@ -1192,28 +1192,6 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-9-1550634473717",
-    "japanese": "チケット",
-    "reading": "チケット",
-    "meaning": "ticket",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "チケット",
-        "reading": "",
-        "english": "9"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-9",
-      "genki-1"
-    ],
-    "lesson": 9,
-    "textbook": "genki-1"
-  },
-  {
     "id": "genki-1-9-1609729372883",
     "japanese": "一緒に いかがですか。",
     "reading": "一緒に いかがですか。",

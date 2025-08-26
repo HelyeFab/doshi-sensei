@@ -1,5 +1,51 @@
 [
   {
+    "id": "minna-2-8-1550213502386",
+    "japanese": "もっと",
+    "reading": "もっと",
+    "meaning": "more",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "もっと",
+        "reading": "",
+        "english": "33"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-8",
+      "minna-2"
+    ],
+    "lesson": 8,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-8-1550213432899",
+    "japanese": "地震",
+    "reading": "地震",
+    "meaning": "earthquake",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "地震[じしん]",
+        "reading": "",
+        "english": "33"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-8",
+      "minna-2"
+    ],
+    "lesson": 8,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-8-1550212146305",
     "japanese": "逃げます",
     "reading": "逃げます",
@@ -968,30 +1014,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-8-1550213432899",
-    "japanese": "地震",
-    "reading": "地震",
-    "meaning": "earthquake",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "地震[じしん]",
-        "reading": "",
-        "english": "33"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-8",
-      "minna-2"
-    ],
-    "lesson": 8,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-8-1550213454625",
     "japanese": "起きます",
     "reading": "起きます",
@@ -1049,100 +1071,6 @@
     "examples": [
       {
         "japanese": "もともと",
-        "reading": "",
-        "english": "33"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-8",
-      "minna-2"
-    ],
-    "lesson": 8,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-8-1550213494511",
-    "japanese": "悲しい",
-    "reading": "悲しい",
-    "meaning": "sad",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "i-adjective"
-    ],
-    "examples": [
-      {
-        "japanese": "悲[かな]しい",
-        "reading": "",
-        "english": "33"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-8",
-      "minna-2"
-    ],
-    "lesson": 8,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-8-1550213502386",
-    "japanese": "もっと",
-    "reading": "もっと",
-    "meaning": "more",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "もっと",
-        "reading": "",
-        "english": "33"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-8",
-      "minna-2"
-    ],
-    "lesson": 8,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-8-1550213533745",
-    "japanese": "あいさつ",
-    "reading": "あいさつ",
-    "meaning": "greeting, address (〜を　します：to greet, give an address)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "あいさつ",
-        "reading": "",
-        "english": "33"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-8",
-      "minna-2"
-    ],
-    "lesson": 8,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-8-1550213546506",
-    "japanese": "相手",
-    "reading": "相手",
-    "meaning": "the other person",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "相手[あいて]",
         "reading": "",
         "english": "33"
       }

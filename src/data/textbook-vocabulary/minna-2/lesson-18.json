@@ -1,5 +1,29 @@
 [
   {
+    "id": "minna-2-18-1550468536115",
+    "japanese": "優しい",
+    "reading": "優しい",
+    "meaning": "kind, gentle, tender-hearted",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "i-adjective"
+    ],
+    "examples": [
+      {
+        "japanese": "優[やさ]しい",
+        "reading": "",
+        "english": "43"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-18",
+      "minna-2"
+    ],
+    "lesson": 18,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-18-1550467702652",
     "japanese": "増えます［輸出が〜］",
     "reading": "増えます［輸出が〜］",
@@ -336,30 +360,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-18-1550468536115",
-    "japanese": "優しい",
-    "reading": "優しい",
-    "meaning": "kind, gentle, tender-hearted",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "i-adjective"
-    ],
-    "examples": [
-      {
-        "japanese": "優[やさ]しい",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18",
-      "minna-2"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-18-1550468545106",
     "japanese": "ガソリン",
     "reading": "ガソリン",
@@ -518,30 +518,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-18-1550468619296",
-    "japanese": "理由",
-    "reading": "理由",
-    "meaning": "reason",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "理由[りゆう]",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18",
-      "minna-2"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-18-1550468630873",
     "japanese": "謝ります",
     "reading": "謝ります",
@@ -553,30 +529,6 @@
     "examples": [
       {
         "japanese": "謝[あやま]ります",
-        "reading": "",
-        "english": "43"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-18",
-      "minna-2"
-    ],
-    "lesson": 18,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-18-1550468646317",
-    "japanese": "知り合います",
-    "reading": "知り合います",
-    "meaning": "to get acquainted",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "知り合[しりあ]います",
         "reading": "",
         "english": "43"
       }

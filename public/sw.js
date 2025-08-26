@@ -4,10 +4,36 @@
  * while still providing offline functionality
  */
 
+// Polyfill for TextEncoder/TextDecoder if not available in service worker context
+if (typeof TextEncoder === 'undefined') {
+  self.TextEncoder = class TextEncoder {
+    encode(str) {
+      const utf8 = unescape(encodeURIComponent(str));
+      const result = new Uint8Array(utf8.length);
+      for (let i = 0; i < utf8.length; i++) {
+        result[i] = utf8.charCodeAt(i);
+      }
+      return result;
+    }
+  };
+}
+
+if (typeof TextDecoder === 'undefined') {
+  self.TextDecoder = class TextDecoder {
+    decode(bytes) {
+      let result = '';
+      for (let i = 0; i < bytes.length; i++) {
+        result += String.fromCharCode(bytes[i]);
+      }
+      return decodeURIComponent(escape(result));
+    }
+  };
+}
+
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
 
 // Configuration - INCREMENT THIS ON EACH DEPLOYMENT
-const SW_VERSION = '5.0.0-' + new Date().getTime(); // Force update with timestamp
+const SW_VERSION = '5.0.1-' + new Date().getTime(); // Force update with timestamp - Added TextEncoder polyfill
 const APP_NAME = 'doshi-sensei';
 const DEBUG = false;
 

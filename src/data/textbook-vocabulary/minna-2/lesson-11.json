@@ -1,5 +1,29 @@
 [
   {
+    "id": "minna-2-11-1549947467583",
+    "japanese": "宇宙",
+    "reading": "宇宙",
+    "meaning": "space, universe",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "宇宙[うちゅう]",
+        "reading": "",
+        "english": "36"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-11",
+      "minna-2"
+    ],
+    "lesson": 11,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-11-1549946946844",
     "japanese": "あいます［事故に〜］",
     "reading": "あいます［事故に〜］",
@@ -177,30 +201,6 @@
     "examples": [
       {
         "japanese": "ラッシュ",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11",
-      "minna-2"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549947467583",
-    "japanese": "宇宙",
-    "reading": "宇宙",
-    "meaning": "space, universe",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "宇宙[うちゅう]",
         "reading": "",
         "english": "36"
       }
@@ -684,30 +684,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-11-1549948567258",
-    "japanese": "ー世紀",
-    "reading": "ー世紀",
-    "meaning": "-th century",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "ー 世紀[せいき]",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11",
-      "minna-2"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-11-1549948612785",
     "japanese": "遠く",
     "reading": "遠く",
@@ -717,30 +693,6 @@
     "examples": [
       {
         "japanese": "遠[とお]く",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11",
-      "minna-2"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948642937",
-    "japanese": "珍しい",
-    "reading": "珍しい",
-    "meaning": "rare, uncommon",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "i-adjective"
-    ],
-    "examples": [
-      {
-        "japanese": "珍[めずら]しい",
         "reading": "",
         "english": "36"
       }
@@ -813,78 +765,6 @@
     "examples": [
       {
         "japanese": "大勢[たいせい]の　〜",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11",
-      "minna-2"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948804953",
-    "japanese": "運びます",
-    "reading": "運びます",
-    "meaning": "to carry, transport",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "運[はこ]びます",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11",
-      "minna-2"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948847172",
-    "japanese": "利用します",
-    "reading": "利用します",
-    "meaning": "to use",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "利用[りよう]します",
-        "reading": "",
-        "english": "36"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-11",
-      "minna-2"
-    ],
-    "lesson": 11,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-11-1549948870691",
-    "japanese": "自由に",
-    "reading": "自由に",
-    "meaning": "freely",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "自由[じゆう]に",
         "reading": "",
         "english": "36"
       }

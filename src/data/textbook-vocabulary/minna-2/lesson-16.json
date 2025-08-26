@@ -1,5 +1,75 @@
 [
   {
+    "id": "minna-2-16-1550463786488",
+    "japanese": "珍しい",
+    "reading": "珍しい",
+    "meaning": "rare, uncommon",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "i-adjective"
+    ],
+    "examples": [
+      {
+        "japanese": "珍[めずら]しい",
+        "reading": "",
+        "english": "41"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-16",
+      "minna-2"
+    ],
+    "lesson": 16,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-16-1550465067796",
+    "japanese": "すると",
+    "reading": "すると",
+    "meaning": "and, then",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "すると",
+        "reading": "",
+        "english": "41"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-16",
+      "minna-2"
+    ],
+    "lesson": 16,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-16-1550464929264",
+    "japanese": "男",
+    "reading": "男",
+    "meaning": "man",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "男[おとこ]",
+        "reading": "",
+        "english": "41"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-16",
+      "minna-2"
+    ],
+    "lesson": 16,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-16-1550463650550",
     "japanese": "いただきます",
     "reading": "いただきます",
@@ -155,30 +225,6 @@
     "examples": [
       {
         "japanese": "かわいい",
-        "reading": "",
-        "english": "41"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-16",
-      "minna-2"
-    ],
-    "lesson": 16,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-16-1550463786488",
-    "japanese": "珍しい",
-    "reading": "珍しい",
-    "meaning": "rare, uncommon",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "i-adjective"
-    ],
-    "examples": [
-      {
-        "japanese": "珍[めずら]しい",
         "reading": "",
         "english": "41"
       }
@@ -1060,76 +1106,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-16-1550464922594",
-    "japanese": "ある 〜",
-    "reading": "ある 〜",
-    "meaning": "a certain ~, one ~",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ある　〜",
-        "reading": "",
-        "english": "41"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-16",
-      "minna-2"
-    ],
-    "lesson": 16,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-16-1550464929264",
-    "japanese": "男",
-    "reading": "男",
-    "meaning": "man",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "男[おとこ]",
-        "reading": "",
-        "english": "41"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-16",
-      "minna-2"
-    ],
-    "lesson": 16,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-16-1550464941270",
-    "japanese": "子どもたち",
-    "reading": "子どもたち",
-    "meaning": "children",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "子[こ]どもたち",
-        "reading": "",
-        "english": "41"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-16",
-      "minna-2"
-    ],
-    "lesson": 16,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-16-1550464968638",
     "japanese": "いじめます",
     "reading": "いじめます",
@@ -1187,30 +1163,6 @@
     "examples": [
       {
         "japanese": "助[たす]けます",
-        "reading": "",
-        "english": "41"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-16",
-      "minna-2"
-    ],
-    "lesson": 16,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-16-1550465016473",
-    "japanese": "優しい",
-    "reading": "優しい",
-    "meaning": "kind, gentle, tender-hearted",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "i-adjective"
-    ],
-    "examples": [
-      {
-        "japanese": "優[やさ]しい",
         "reading": "",
         "english": "41"
       }
@@ -1283,28 +1235,6 @@
     "examples": [
       {
         "japanese": "陸[りく]",
-        "reading": "",
-        "english": "41"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-16",
-      "minna-2"
-    ],
-    "lesson": 16,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-16-1550465067796",
-    "japanese": "すると",
-    "reading": "すると",
-    "meaning": "and, then",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "すると",
         "reading": "",
         "english": "41"
       }

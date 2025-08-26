@@ -1,5 +1,27 @@
 [
   {
+    "id": "minna-2-4-1549961215800",
+    "japanese": "ポケット",
+    "reading": "ポケット",
+    "meaning": "pocket",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "ポケット",
+        "reading": "",
+        "english": "29"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4",
+      "minna-2"
+    ],
+    "lesson": 4,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-4-1549957307728",
     "japanese": "開きます［ドアが〜］",
     "reading": "開きます［ドアが〜］",
@@ -834,28 +856,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-4-1549961215800",
-    "japanese": "ポケット",
-    "reading": "ポケット",
-    "meaning": "pocket",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ポケット",
-        "reading": "",
-        "english": "29"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4",
-      "minna-2"
-    ],
-    "lesson": 4,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-4-1549961258894",
     "japanese": "〜辺",
     "reading": "〜辺",
@@ -976,54 +976,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-4-1549961414430",
-    "japanese": "地震",
-    "reading": "地震",
-    "meaning": "earthquake",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "地震[じしん]",
-        "reading": "",
-        "english": "29"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4",
-      "minna-2"
-    ],
-    "lesson": 4,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-4-1549961428875",
-    "japanese": "壁",
-    "reading": "壁",
-    "meaning": "wall",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "壁[かべ]",
-        "reading": "",
-        "english": "29"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4",
-      "minna-2"
-    ],
-    "lesson": 4,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-4-1549961450224",
     "japanese": "針",
     "reading": "針",
@@ -1107,30 +1059,6 @@
     "examples": [
       {
         "japanese": "倒[たお]れます",
-        "reading": "",
-        "english": "29"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4",
-      "minna-2"
-    ],
-    "lesson": 4,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-4-1549961537975",
-    "japanese": "西",
-    "reading": "西",
-    "meaning": "west",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "西[にし]",
         "reading": "",
         "english": "29"
       }

@@ -568,6 +568,28 @@
     "textbook": "minna-1"
   },
   {
+    "id": "minna-1-19-1609729373665",
+    "japanese": "ケーキ",
+    "reading": "ケーキ",
+    "meaning": "cake",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "19",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19",
+      "minna-1"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-19-1550630837949",
     "japanese": "お茶",
     "reading": "お茶",
@@ -603,6 +625,30 @@
     "examples": [
       {
         "japanese": "Bottoms up./Cheers!",
+        "reading": "",
+        "english": "19"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-19",
+      "minna-1"
+    ],
+    "lesson": 19,
+    "textbook": "minna-1"
+  },
+  {
+    "id": "minna-1-19-1609729373659",
+    "japanese": "お茶",
+    "reading": "お茶",
+    "meaning": "お 茶[ちゃ]",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "noun"
+    ],
+    "examples": [
+      {
+        "japanese": "tea ceremony",
         "reading": "",
         "english": "19"
       }
@@ -708,30 +754,6 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-19-1609729373659",
-    "japanese": "お茶",
-    "reading": "お茶",
-    "meaning": "お 茶[ちゃ]",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "tea ceremony",
-        "reading": "",
-        "english": "19"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19",
-      "minna-1"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-19-1609729373661",
     "japanese": "日",
     "reading": "日",
@@ -767,28 +789,6 @@
         "japanese": "19",
         "reading": "",
         "english": "(～を します: go on a diet)"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-19",
-      "minna-1"
-    ],
-    "lesson": 19,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-19-1609729373665",
-    "japanese": "ケーキ",
-    "reading": "ケーキ",
-    "meaning": "cake",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "19",
-        "reading": "",
-        "english": ""
       }
     ],
     "tags": [

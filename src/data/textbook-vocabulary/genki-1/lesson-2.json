@@ -776,30 +776,6 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-2-1544776574300",
-    "japanese": "何",
-    "reading": "何",
-    "meaning": "what",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "何[なん]",
-        "reading": "",
-        "english": "2"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-2",
-      "genki-1"
-    ],
-    "lesson": 2,
-    "textbook": "genki-1"
-  },
-  {
     "id": "genki-1-2-1544776574301",
     "japanese": "そう",
     "reading": "そう",

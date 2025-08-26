@@ -14,6 +14,7 @@ import PWAUpdateNotification from "@/components/PWAUpdateNotification";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import SplashScreenMeta from "@/components/SplashScreenMeta";
 import SplashScreen from "@/components/SplashScreen";
+import QuickContextProvider from "@/components/QuickContext/QuickContextProvider";
 
 const rubik = localFont({
   src: [
@@ -102,17 +103,19 @@ export default function RootLayout({
             <BackgroundSyncProvider>
               <VirtualCompanionProvider>
                 <ToastProvider>
-                  <SplashScreen />
-                  <div className="min-h-screen pb-16 md:pb-0">
-                    {children}
-                  </div>
-                  <StunningBottomNavbar />
-                  <DesktopNavMenu />
-                  <FloatingDonateButton />
-                  <GlobalVirtualCompanion />
-                  <UnifiedNotificationProvider />
-                  <PWAUpdateNotification />
-                  <PWAInstallPrompt />
+                  <QuickContextProvider>
+                    <SplashScreen />
+                    <div className="min-h-screen pb-16 md:pb-0">
+                      {children}
+                    </div>
+                    <StunningBottomNavbar />
+                    <DesktopNavMenu />
+                    <FloatingDonateButton />
+                    <GlobalVirtualCompanion />
+                    <UnifiedNotificationProvider />
+                    <PWAUpdateNotification />
+                    <PWAInstallPrompt />
+                  </QuickContextProvider>
                 </ToastProvider>
               </VirtualCompanionProvider>
             </BackgroundSyncProvider>

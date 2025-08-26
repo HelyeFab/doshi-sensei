@@ -966,28 +966,6 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-9-1544776574676",
-    "japanese": "いいですよ。",
-    "reading": "いいですよ。",
-    "meaning": "Sure./Certainly.",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "いいですよ。",
-        "reading": "",
-        "english": "9"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-9",
-      "minna-1"
-    ],
-    "lesson": 9,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-9-1544776574677",
     "japanese": "ざんねんです［が］",
     "reading": "ざんねんです［が］",
@@ -1179,28 +1157,6 @@
     "examples": [
       {
         "japanese": "よく",
-        "reading": "",
-        "english": "9"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-9",
-      "minna-1"
-    ],
-    "lesson": 9,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-9-1550634473717",
-    "japanese": "チケット",
-    "reading": "チケット",
-    "meaning": "ticket",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "チケット",
         "reading": "",
         "english": "9"
       }

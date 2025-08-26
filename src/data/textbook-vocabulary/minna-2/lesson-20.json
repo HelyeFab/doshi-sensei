@@ -1,5 +1,53 @@
 [
   {
+    "id": "minna-2-20-1550478305620",
+    "japanese": "目が 覚めます",
+    "reading": "目が 覚めます",
+    "meaning": "to wake up",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "目[め]が　 覚[さ]めます",
+        "reading": "",
+        "english": "45"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-20",
+      "minna-2"
+    ],
+    "lesson": 20,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-20-1550478024456",
+    "japanese": "急に",
+    "reading": "急に",
+    "meaning": "suddenly",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "急[きゅう]に",
+        "reading": "",
+        "english": "45"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-20",
+      "minna-2"
+    ],
+    "lesson": 20,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-20-1550477637443",
     "japanese": "信じます",
     "reading": "信じます",
@@ -262,30 +310,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-20-1550478024456",
-    "japanese": "急に",
-    "reading": "急に",
-    "meaning": "suddenly",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "急[きゅう]に",
-        "reading": "",
-        "english": "45"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20",
-      "minna-2"
-    ],
-    "lesson": 20,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-20-1550478034730",
     "japanese": "無理に",
     "reading": "無理に",
@@ -520,30 +544,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-20-1550478305620",
-    "japanese": "目が 覚めます",
-    "reading": "目が 覚めます",
-    "meaning": "to wake up",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "目[め]が　 覚[さ]めます",
-        "reading": "",
-        "english": "45"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20",
-      "minna-2"
-    ],
-    "lesson": 20,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-20-1550478316576",
     "japanese": "大学生",
     "reading": "大学生",
@@ -579,30 +579,6 @@
     "examples": [
       {
         "japanese": "回答[かいとう]",
-        "reading": "",
-        "english": "45"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-20",
-      "minna-2"
-    ],
-    "lesson": 20,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-20-1550478455993",
-    "japanese": "鳴ります",
-    "reading": "鳴ります",
-    "meaning": "to ring",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "鳴[な]ります",
         "reading": "",
         "english": "45"
       }

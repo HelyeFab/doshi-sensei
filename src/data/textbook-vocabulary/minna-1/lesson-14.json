@@ -1,5 +1,27 @@
 [
   {
+    "id": "minna-1-14-1609729372919",
+    "japanese": "いいですよ。",
+    "reading": "いいですよ。",
+    "meaning": "Sure./Certainly.",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "14",
+        "reading": "",
+        "english": ""
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-14",
+      "minna-1"
+    ],
+    "lesson": 14,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-14-1544776574873",
     "japanese": "つけます&nbsp;",
     "reading": "つけます&nbsp;",
@@ -1049,28 +1071,6 @@
         "japanese": "お 釣[つ]り",
         "reading": "",
         "english": "14"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-14",
-      "minna-1"
-    ],
-    "lesson": 14,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-14-1609729372919",
-    "japanese": "いいですよ。",
-    "reading": "いいですよ。",
-    "meaning": "Sure./Certainly.",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "14",
-        "reading": "",
-        "english": ""
       }
     ],
     "tags": [

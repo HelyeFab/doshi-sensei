@@ -1,5 +1,53 @@
 [
   {
+    "id": "minna-2-23-1550481808563",
+    "japanese": "自由に",
+    "reading": "自由に",
+    "meaning": "freely",
+    "jlptLevel": "N5",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "自由[じゆう]に",
+        "reading": "",
+        "english": "48"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-23",
+      "minna-2"
+    ],
+    "lesson": 23,
+    "textbook": "minna-2"
+  },
+  {
+    "id": "minna-2-23-1550481731758",
+    "japanese": "世話を します",
+    "reading": "世話を します",
+    "meaning": "to take care of",
+    "jlptLevel": "N4",
+    "partOfSpeech": [
+      "verb"
+    ],
+    "examples": [
+      {
+        "japanese": "世話[せわ]を　します",
+        "reading": "",
+        "english": "48"
+      }
+    ],
+    "tags": [
+      "n4",
+      "lesson-23",
+      "minna-2"
+    ],
+    "lesson": 23,
+    "textbook": "minna-2"
+  },
+  {
     "id": "minna-2-23-1550481706565",
     "japanese": "降ろします、下ろします",
     "reading": "降ろします、下ろします",
@@ -41,30 +89,6 @@
     ],
     "tags": [
       "n5",
-      "lesson-23",
-      "minna-2"
-    ],
-    "lesson": 23,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-23-1550481731758",
-    "japanese": "世話を します",
-    "reading": "世話を します",
-    "meaning": "to take care of",
-    "jlptLevel": "N4",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "世話[せわ]を　します",
-        "reading": "",
-        "english": "48"
-      }
-    ],
-    "tags": [
-      "n4",
       "lesson-23",
       "minna-2"
     ],
@@ -177,30 +201,6 @@
     "examples": [
       {
         "japanese": "ファイル",
-        "reading": "",
-        "english": "48"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-23",
-      "minna-2"
-    ],
-    "lesson": 23,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-23-1550481808563",
-    "japanese": "自由に",
-    "reading": "自由に",
-    "meaning": "freely",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "verb"
-    ],
-    "examples": [
-      {
-        "japanese": "自由[じゆう]に",
         "reading": "",
         "english": "48"
       }

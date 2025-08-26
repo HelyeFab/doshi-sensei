@@ -66,6 +66,7 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
   const coreLearningCards = [
     { title: 'Kanji', icon: '漢', href: '/kanji-browser', description: 'Browse and learn kanji' },
     { title: 'Kanji Mastery', icon: '🎯', href: '/tools/kanji-mastery', description: 'Master kanji with SRS' },
+    { title: 'Kanji Connections', icon: '🔮', href: '/tools/kanji-connections', description: 'Premium: Families, Radicals & Patterns' },
     { title: 'Mood Boards', icon: '🗺️', href: '/kanji-moods', description: 'Learn kanji by themes' },
     { title: 'Textbook Vocab', icon: '📚', href: '/tools/textbook-vocabulary', description: 'Study textbook vocabulary' },
     { title: 'Vocabulary', icon: '📖', href: '/vocabulary', description: 'Explore Japanese vocabulary' },
@@ -95,13 +96,13 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
 
   const renderCardSection = (title: string, cards: typeof foundationCards) => (
     <section>
-      <h3 className="text-lg font-bold text-gray-900 mb-3">{title}</h3>
+      <h3 className="text-lg font-bold text-foreground mb-3">{title}</h3>
       <div className="space-y-3">
         {cards.map((card) => (
           <Link key={card.href} href={card.href} className="block">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+            <div className="bg-card rounded-lg shadow-sm border border-border p-4 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-blue-50">
+                <div className="flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
                   {card.icon.startsWith('/') ? (
                     <Image
                       src={card.icon}
@@ -115,10 +116,10 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
                   )}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">{card.title}</h3>
-                  <p className="text-sm text-gray-500">{card.description}</p>
+                  <h3 className="font-medium text-foreground">{card.title}</h3>
+                  <p className="text-sm text-muted-foreground">{card.description}</p>
                 </div>
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -130,7 +131,7 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* SEO Structured Data */}
       <script
         type="application/ld+json"
@@ -154,7 +155,7 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
             
             {/* Greeting Text */}
             <div className="flex-1">
-              <h1 className="text-xl font-semibold text-gray-900">
+              <h1 className="text-xl font-semibold text-foreground">
                 {/* Show first name on mobile, full name on desktop */}
                 <span className="md:hidden">
                   {strings.home.greeting} {firstName}-san! <span className="inline-block animate-wave">👋</span>
@@ -163,25 +164,25 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
                   {strings.home.greeting} {fullDisplayName}-san! <span className="inline-block animate-wave">👋</span>
                 </span>
               </h1>
-              <p className="text-sm text-gray-600">{strings.home.readyToPractice}</p>
+              <p className="text-sm text-muted-foreground">{strings.home.readyToPractice}</p>
             </div>
           </div>
         </header>
 
         {/* Today's Date Section */}
         <section className="px-4 pb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-2">
+          <h2 className="text-lg font-medium text-foreground mb-2">
             Today, {initialDate}
           </h2>
           
           {/* Day Progress Bar - Thin like in old app */}
-          <div className="relative h-0.5 w-full bg-gray-200 overflow-hidden">
+          <div className="relative h-0.5 w-full bg-muted overflow-hidden">
             <div 
-              className="absolute left-0 top-0 h-full bg-blue-600 transition-all duration-300 ease-out"
+              className="absolute left-0 top-0 h-full bg-primary transition-all duration-300 ease-out"
               style={{ width: `${initialProgress}%` }}
             />
           </div>
-          <p className="text-xs text-gray-500 mt-1">Day progress</p>
+          <p className="text-xs text-muted-foreground mt-1">Day progress</p>
         </section>
 
         {/* Smart Review Widget - Shows when reviews are due */}
@@ -202,25 +203,25 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
             {renderCardSection('Foundation', foundationCards)}
 
             {/* Divider */}
-            <div className="border-t border-gray-200"></div>
+            <div className="border-t border-border"></div>
 
             {/* Core Learning Section */}
             {renderCardSection('Core Learning', coreLearningCards)}
 
             {/* Divider */}
-            <div className="border-t border-gray-200"></div>
+            <div className="border-t border-border"></div>
 
             {/* Practice & Review Section */}
             {renderCardSection('Practice & Review', practiceCards)}
 
             {/* Divider */}
-            <div className="border-t border-gray-200"></div>
+            <div className="border-t border-border"></div>
 
             {/* Immersion Section */}
             {renderCardSection('Immersion', immersionCards)}
 
             {/* Divider */}
-            <div className="border-t border-gray-200"></div>
+            <div className="border-t border-border"></div>
 
             {/* Tools & Resources Section */}
             {renderCardSection('Tools & Resources', toolsCards)}

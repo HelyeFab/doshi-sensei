@@ -280,28 +280,6 @@
     "textbook": "minna-1"
   },
   {
-    "id": "minna-1-22-1544776575157",
-    "japanese": "ケーキ",
-    "reading": "ケーキ",
-    "meaning": "cake",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ケーキ",
-        "reading": "",
-        "english": "22"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-22",
-      "minna-1"
-    ],
-    "lesson": 22,
-    "textbook": "minna-1"
-  },
-  {
     "id": "minna-1-22-1544776575158",
     "japanese": "［お］弁当",
     "reading": "［お］弁当",
@@ -403,28 +381,6 @@
     "examples": [
       {
         "japanese": "よく",
-        "reading": "",
-        "english": "22"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-22",
-      "minna-1"
-    ],
-    "lesson": 22,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-22-1544776575163",
-    "japanese": "えーと",
-    "reading": "えーと",
-    "meaning": "well, let me see",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "えーと",
         "reading": "",
         "english": "22"
       }

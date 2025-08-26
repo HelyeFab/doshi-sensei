@@ -970,28 +970,6 @@
     "textbook": "genki-1"
   },
   {
-    "id": "genki-1-12-1544776574834",
-    "japanese": "ずっと",
-    "reading": "ずっと",
-    "meaning": "by far",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "ずっと",
-        "reading": "",
-        "english": "12"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-12",
-      "genki-1"
-    ],
-    "lesson": 12,
-    "textbook": "genki-1"
-  },
-  {
     "id": "genki-1-12-1544776574835",
     "japanese": "初めて",
     "reading": "初めて",

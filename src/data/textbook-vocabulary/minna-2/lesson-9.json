@@ -822,30 +822,6 @@
     "textbook": "minna-2"
   },
   {
-    "id": "minna-2-9-1550214820432",
-    "japanese": "材料",
-    "reading": "材料",
-    "meaning": "material, ingredient",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "noun"
-    ],
-    "examples": [
-      {
-        "japanese": "材料[ざいりょう]",
-        "reading": "",
-        "english": "34"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-9",
-      "minna-2"
-    ],
-    "lesson": 9,
-    "textbook": "minna-2"
-  },
-  {
     "id": "minna-2-9-1550214846159",
     "japanese": "〜分",
     "reading": "〜分",
@@ -879,30 +855,6 @@
     "examples": [
       {
         "japanese": "ーグラム",
-        "reading": "",
-        "english": "34"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-9",
-      "minna-2"
-    ],
-    "lesson": 9,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-9-1550214888519",
-    "japanese": "ー個",
-    "reading": "ー個",
-    "meaning": "counter for small objects",
-    "jlptLevel": "N5",
-    "partOfSpeech": [
-      "counter"
-    ],
-    "examples": [
-      {
-        "japanese": "ー 個[こ]",
         "reading": "",
         "english": "34"
       }
@@ -1115,28 +1067,6 @@
     "examples": [
       {
         "japanese": "煮[に]えます",
-        "reading": "",
-        "english": "34"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-9",
-      "minna-2"
-    ],
-    "lesson": 9,
-    "textbook": "minna-2"
-  },
-  {
-    "id": "minna-2-9-1550215077334",
-    "japanese": "どんぶり",
-    "reading": "どんぶり",
-    "meaning": "bowl",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "どんぶり",
         "reading": "",
         "english": "34"
       }

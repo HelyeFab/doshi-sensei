@@ -1308,6 +1308,28 @@
     "textbook": "minna-1"
   },
   {
+    "id": "minna-1-4-1609729372871",
+    "japanese": "そうですね。",
+    "reading": "そうですね。",
+    "meaning": "Well let me see. (pausing)",
+    "jlptLevel": "N5",
+    "partOfSpeech": [],
+    "examples": [
+      {
+        "japanese": "8",
+        "reading": "",
+        "english": "えーと = well, let me see (4), うーん。= Let me see. (22)"
+      }
+    ],
+    "tags": [
+      "n5",
+      "lesson-4",
+      "minna-1"
+    ],
+    "lesson": 4,
+    "textbook": "minna-1"
+  },
+  {
     "id": "minna-1-4-1609729372841",
     "japanese": "大変ですね。",
     "reading": "大変ですね。",
@@ -1369,28 +1391,6 @@
         "japanese": "Certainly (sir, madam).",
         "reading": "",
         "english": "4"
-      }
-    ],
-    "tags": [
-      "n5",
-      "lesson-4",
-      "minna-1"
-    ],
-    "lesson": 4,
-    "textbook": "minna-1"
-  },
-  {
-    "id": "minna-1-4-1609729372871",
-    "japanese": "そうですね。",
-    "reading": "そうですね。",
-    "meaning": "Well let me see. (pausing)",
-    "jlptLevel": "N5",
-    "partOfSpeech": [],
-    "examples": [
-      {
-        "japanese": "8",
-        "reading": "",
-        "english": "えーと = well, let me see (4), うーん。= Let me see. (22)"
       }
     ],
     "tags": [

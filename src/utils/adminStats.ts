@@ -200,37 +200,82 @@ export async function getFeatureStats(): Promise<FeatureStats> {
     let moodBoardViews = 0;
     let mostPopularMoodBoard = 'No data';
     let avgSessionMinutes = 0;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const todayTimestamp = Timestamp.fromDate(new Date(today));
 
+    // First, try to aggregate usage from all users' usage subcollections
     try {
-      // Try to get today's stats from the statsTracker collection
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayTimestamp = Timestamp.fromDate(today);
-
-      const statsTrackerRef = collection(db, 'statsTracker');
-      const todayStatsQuery = query(
-        statsTrackerRef,
-        where('timestamp', '>=', todayTimestamp),
-        orderBy('timestamp', 'desc'),
-        limit(1)
-      );
-
-      const statsSnapshot = await getDocs(todayStatsQuery);
-
-      if (!statsSnapshot.empty) {
-        const latestStats = statsSnapshot.docs[0].data();
-        drillsCompleted = latestStats.drillsCompleted || 0;
-        // Estimate other stats based on games played and articles read
-        vocabularySearches = Math.floor((latestStats.gamesPlayed || 0) * 2.5); // Rough estimate
-        moodBoardViews = Math.floor((latestStats.articlesRead || 0) * 0.8); // Rough estimate
+      const usersRef = collection(db, 'users');
+      const usersSnapshot = await getDocs(usersRef);
+      
+      console.log(`Aggregating usage from ${usersSnapshot.size} users for date: ${today}`);
+      
+      for (const userDoc of usersSnapshot.docs) {
+        try {
+          // Get the current usage document for each user
+          const usageDoc = await getDoc(doc(db, 'users', userDoc.id, 'usage', 'current'));
+          
+          if (usageDoc.exists()) {
+            const usageData = usageDoc.data();
+            
+            // Check if the date matches today
+            if (usageData.date === today && usageData.daily) {
+              // Aggregate drill practice features
+              drillsCompleted += (usageData.daily['drill_practice'] || 0) +
+                                (usageData.daily['conjugation_drill'] || 0) +
+                                (usageData.daily['flashcard_review'] || 0) +
+                                (usageData.daily['kanji_drill'] || 0) +
+                                (usageData.daily['hiragana_practice'] || 0) +
+                                (usageData.daily['katakana_practice'] || 0);
+              
+              // Aggregate vocabulary search features
+              vocabularySearches += (usageData.daily['vocabulary_search'] || 0) +
+                                  (usageData.daily['quick_context'] || 0) +
+                                  (usageData.daily['textbook_vocabulary'] || 0);
+              
+              // Aggregate mood board views
+              moodBoardViews += (usageData.daily['mood_boards'] || 0) +
+                              (usageData.daily['kanji_moods'] || 0);
+            }
+          }
+        } catch (userUsageError) {
+          // Skip user if we can't access their usage
+          continue;
+        }
       }
-    } catch (statsError) {
-
-      // Continue with default values
+      
+      console.log(`Aggregated stats - Drills: ${drillsCompleted}, Searches: ${vocabularySearches}, MoodBoards: ${moodBoardViews}`);
+    } catch (aggregateError) {
+      console.error('Error aggregating user usage:', aggregateError);
     }
 
+    // Fallback: check if there's a global stats tracker collection
+    if (drillsCompleted === 0 && vocabularySearches === 0 && moodBoardViews === 0) {
+      try {
+        const statsTrackerRef = collection(db, 'statsTracker');
+        const todayStatsQuery = query(
+          statsTrackerRef,
+          where('timestamp', '>=', todayTimestamp),
+          orderBy('timestamp', 'desc'),
+          limit(1)
+        );
+
+        const statsSnapshot = await getDocs(todayStatsQuery);
+
+        if (!statsSnapshot.empty) {
+          const latestStats = statsSnapshot.docs[0].data();
+          drillsCompleted = latestStats.drillsCompleted || 0;
+          vocabularySearches = Math.floor((latestStats.gamesPlayed || 0) * 2.5);
+          moodBoardViews = Math.floor((latestStats.articlesRead || 0) * 0.8);
+        }
+      } catch (statsError) {
+        // Continue with aggregated values
+      }
+    }
+
+    // Get most popular mood board
     try {
-      // Try to get mood board popularity from kanji_mood_boards collection
       const moodBoardsRef = collection(db, 'kanji_mood_boards');
       const moodBoardsQuery = query(moodBoardsRef, orderBy('viewCount', 'desc'), limit(1));
       const moodBoardsSnapshot = await getDocs(moodBoardsQuery);
@@ -240,19 +285,28 @@ export async function getFeatureStats(): Promise<FeatureStats> {
         mostPopularMoodBoard = topBoard.theme || topBoard.name || 'Unknown';
       }
     } catch (moodBoardError) {
-
       // Continue with default value
     }
 
-    // Calculate average session duration (rough estimate based on activity)
-    avgSessionMinutes = drillsCompleted > 0 ? 15.5 : 0; // Average 15.5 minutes per active session
+    // Calculate average session duration based on activity
+    if (drillsCompleted > 0 || vocabularySearches > 0 || moodBoardViews > 0) {
+      // Estimate based on typical interaction times
+      const drillMinutes = drillsCompleted * 2.5; // ~2.5 min per drill
+      const searchMinutes = vocabularySearches * 0.5; // ~30 sec per search  
+      const viewMinutes = moodBoardViews * 1; // ~1 min per mood board view
+      
+      // Estimate active users (assume average 10 actions per session)
+      const estimatedSessions = Math.max(1, Math.ceil((drillsCompleted + vocabularySearches + moodBoardViews) / 10));
+      avgSessionMinutes = (drillMinutes + searchMinutes + viewMinutes) / estimatedSessions;
+      avgSessionMinutes = Math.min(60, Math.max(0, avgSessionMinutes)); // Cap at 60 minutes
+    }
 
     return {
       drillsCompletedToday: drillsCompleted,
       vocabularySearchesToday: vocabularySearches,
       moodBoardViewsToday: moodBoardViews,
       mostPopularMoodBoard: mostPopularMoodBoard,
-      averageSessionDuration: avgSessionMinutes,
+      averageSessionDuration: parseFloat(avgSessionMinutes.toFixed(1)),
     };
   } catch (error) {
     console.error('Error fetching feature stats:', error);

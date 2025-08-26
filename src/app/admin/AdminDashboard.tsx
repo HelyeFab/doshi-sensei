@@ -6,6 +6,7 @@ import { AdminLayout } from '@/components/admin/AdminLayout';
 import { StatsOverviewEnhanced } from '@/components/admin/StatsOverviewEnhanced';
 import { ArticleMonitoringDashboard } from '@/components/admin/ArticleMonitoringDashboard';
 import SubscriptionAnalytics from '@/components/admin/SubscriptionAnalytics';
+import { PaymentMonitorSummary } from '@/components/admin/PaymentMonitorSummary';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
@@ -118,6 +119,9 @@ export default function AdminDashboard() {
       case 'system-health':
         router.push('/admin/system-health');
         break;
+      case 'payment-monitor':
+        router.push('/admin/payment-monitor');
+        break;
       case 'maintenance':
         router.push('/admin/maintenance');
         break;
@@ -151,6 +155,9 @@ export default function AdminDashboard() {
         {/* Subscription Analytics */}
         <SubscriptionAnalytics />
 
+        {/* Payment System Monitor */}
+        <PaymentMonitorSummary />
+
         {/* Quick actions */}
         <div>
           <h3 className="text-lg font-semibold text-foreground mb-4">{strings.admin.quickActions}</h3>
@@ -161,6 +168,12 @@ export default function AdminDashboard() {
               description="Emergency shutdown control"
               icon="🔴"
               onClick={() => handleQuickAction('maintenance')}
+            />
+            <QuickAction
+              title="💳 Payment Monitor"
+              description="Real-time Stripe & webhook health"
+              icon="🔍"
+              onClick={() => handleQuickAction('payment-monitor')}
             />
             <QuickAction
               title={strings.admin.manageUsers}

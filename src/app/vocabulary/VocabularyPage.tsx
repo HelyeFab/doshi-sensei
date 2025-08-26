@@ -81,6 +81,11 @@ export default function VocabularyPage() {
   const { subscription, userType } = useSubscription2();
   const strings = useStrings();
   const { track } = useAnalytics();
+  const { checkAndTrack: trackVocabSearch } = useFeature('vocabulary_search', {
+    showModal: false,
+    showToast: false,
+    trackUsage: true
+  });
   const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([]);
   const [currentSearchResults, setCurrentSearchResults] = useState<SearchResult[]>([]);
   const [currentSearchTerm, setCurrentSearchTerm] = useState('');
@@ -151,6 +156,9 @@ export default function VocabularyPage() {
       setSearching(true);
       setError(null);
       setDidYouMean(null);
+
+      // Track vocabulary search usage
+      await trackVocabSearch();
 
       let searchResults: SearchResult[] = [];
       if (searchSource === 'wanikani') {

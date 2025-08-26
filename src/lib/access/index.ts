@@ -363,8 +363,9 @@ export class AccessControl {
    */
   async trackUsage(userId: string | null, featureId: string): Promise<void> {
     const feature = featureManager.getFeature(featureId);
-    if (!feature || feature.limitType === 'none') return;
+    if (!feature) return;
     
+    // Always track usage for statistics, even if there are no limits
     const limitKey = featureManager.getEffectiveLimitKey(featureId);
     await usageTracker.incrementUsage(userId, limitKey);
   }

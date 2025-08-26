@@ -12,7 +12,7 @@ import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
 export default function HiraganaClient() {
   const router = useRouter();
-  const { showToast } = useToast();
+  const { toast } = useToast();
 
   // Hiragana states
   const [selectedHiragana, setSelectedHiragana] = useState<Set<string>>(new Set());
@@ -185,10 +185,7 @@ export default function HiraganaClient() {
           onClose={(completed) => {
             setShowKanaStudyModal(false);
             if (completed) {
-              showToast({
-                message: 'Study session completed! Great job! 🎉',
-                type: 'success'
-              });
+              toast.success('Study session completed! Great job! 🎉');
             }
           }}
         />

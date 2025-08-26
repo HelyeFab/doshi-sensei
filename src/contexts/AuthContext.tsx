@@ -18,7 +18,7 @@ import {
   sendEmailVerification,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
-import { auth, db, getAuthInstance } from '@/lib/firebase';
+import { auth, db, getAuthInstance, ensureFirebaseInitialized } from '@/lib/firebase';
 import { 
   getDefaultSubscription, 
   UserSubscription, 

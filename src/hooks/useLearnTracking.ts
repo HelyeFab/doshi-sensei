@@ -3,8 +3,8 @@
  * The core "bug" that tracks everything
  */
 
-import { useCallback, useRef, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useCallback, useRef, useEffect, useContext } from 'react';
+import { AuthContext } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { 
@@ -39,7 +39,11 @@ export function useLearnTracking(
   options: UseLearnTrackingOptions = {}
 ): UseLearnTrackingReturn {
   const { enabled = true, debug = false, autoTrack = true } = options;
-  const { user } = useAuth();
+  
+  // Use context directly to avoid errors when AuthContext is not available
+  const authContext = useContext(AuthContext);
+  const user = authContext?.user || null;
+  
   const pathname = usePathname();
   const sessionId = useRef(generateSessionId());
   const pageLoadTime = useRef(Date.now());

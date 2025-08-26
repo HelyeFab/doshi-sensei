@@ -30,6 +30,56 @@ let auth: Auth | null = null;
 let db: Firestore | null = null;
 let storage: FirebaseStorage | null = null;
 
+// Track initialization state
+let isInitialized = false;
+let initializationPromise: Promise<void> | null = null;
+
+// Function to ensure Firebase is initialized
+export const ensureFirebaseInitialized = async (): Promise<void> => {
+  if (isInitialized) return;
+  
+  if (initializationPromise) {
+    return initializationPromise;
+  }
+  
+  initializationPromise = new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve();
+      return;
+    }
+    
+    // Check if already initialized
+    if (auth) {
+      isInitialized = true;
+      resolve();
+      return;
+    }
+    
+    // Wait for app to be available
+    const checkInterval = setInterval(() => {
+      if (app) {
+        if (!auth) {
+          auth = getAuth(app);
+          storage = getStorage(app);
+          console.log('[Firebase] Auth and Storage initialized via ensureFirebaseInitialized');
+        }
+        isInitialized = true;
+        clearInterval(checkInterval);
+        resolve();
+      }
+    }, 10);
+    
+    // Timeout after 5 seconds
+    setTimeout(() => {
+      clearInterval(checkInterval);
+      console.error('[Firebase] Initialization timeout');
+      resolve(); // Resolve anyway to prevent hanging
+    }, 5000);
+  });
+  
+  return initializationPromise;
+};
+
 // Function to get auth instance (creates it if needed and on client side)
 export const getAuthInstance = (): Auth => {
   if (typeof window === 'undefined') {
@@ -37,6 +87,7 @@ export const getAuthInstance = (): Auth => {
   }
   if (!auth && app) {
     auth = getAuth(app);
+    storage = getStorage(app);
     console.log('[Firebase] Auth instance created on demand');
   }
   if (!auth) {
@@ -63,6 +114,7 @@ if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.project
   if (typeof window !== 'undefined') {
     auth = getAuth(app);
     storage = getStorage(app);
+    isInitialized = true;
     console.log('[Firebase Init] Auth and Storage services initialized');
     
     // Log auth settings for debugging

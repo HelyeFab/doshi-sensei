@@ -185,16 +185,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // Handle redirect result from Google sign-in
     const handleRedirectResult = async () => {
-      if (!auth) return;
-      
-      // Check if we're expecting a redirect result
-      const isRedirectFlow = sessionStorage.getItem('googleAuthRedirect');
-      
-      // Only check for redirect result if we're expecting one
-      if (isRedirectFlow === 'pending') {
-        try {
-          // Checking for redirect result
-          const result = await getRedirectResult(auth);
+      try {
+        await ensureFirebaseInitialized();
+        const authInstance = getAuthInstance();
+        
+        // Check if we're expecting a redirect result
+        const isRedirectFlow = sessionStorage.getItem('googleAuthRedirect');
+        
+        // Only check for redirect result if we're expecting one
+        if (isRedirectFlow === 'pending') {
+          try {
+            // Checking for redirect result
+            const result = await getRedirectResult(authInstance);
           
           // Clear the redirect flag immediately after checking
           sessionStorage.removeItem('googleAuthRedirect');
@@ -232,22 +234,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             authDebug.checkEnvironment();
             authDebug.diagnoseIssues();
           }
+          }
         }
+      } catch (error) {
+        console.log('[Auth] handleRedirectResult - Firebase not ready yet');
       }
     };
     
     handleRedirectResult();
     
-    let authInstance: any;
-    try {
-      authInstance = getAuthInstance();
-    } catch (error) {
-      console.log('[Auth] No auth instance for onAuthStateChanged');
-      setLoading(false);
-      return;
-    }
-    
-    const unsubscribe = onAuthStateChanged(authInstance, async (currentUser) => {
+    // Set up auth state listener after ensuring Firebase is initialized
+    ensureFirebaseInitialized().then(() => {
+      try {
+        const authInstance = getAuthInstance();
+        
+        const unsubscribe = onAuthStateChanged(authInstance, async (currentUser) => {
       setUser(currentUser);
 
       if (currentUser) {
@@ -270,12 +271,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    return unsubscribe;
+        return unsubscribe;
+      } catch (error) {
+        console.log('[Auth] Failed to set up auth listener:', error);
+        setLoading(false);
+      }
+    }).catch(error => {
+      console.error('[Auth] Firebase initialization failed:', error);
+      setLoading(false);
+    });
+    
+    return () => {};
   }, [authInitialized]);
 
   const signInWithEmail = async (email: string, password: string) => {
-    if (!auth) throw new Error('Auth not initialized');
-    const result = await signInWithEmailAndPassword(auth, email, password);
+    await ensureFirebaseInitialized();
+    const authInstance = getAuthInstance();
+    const result = await signInWithEmailAndPassword(authInstance, email, password);
     
     // Fetch subscription after sign in
     if (result.user) {
@@ -291,8 +303,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
-    if (!auth) throw new Error('Auth not initialized');
-    const result = await createUserWithEmailAndPassword(auth, email, password);
+    await ensureFirebaseInitialized();
+    const authInstance = getAuthInstance();
+    const result = await createUserWithEmailAndPassword(authInstance, email, password);
 
     // Update the user's display name if provided
     if (displayName && result.user) {
@@ -403,8 +416,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    if (!auth) throw new Error('Auth not initialized');
-    await signOut(auth);
+    await ensureFirebaseInitialized();
+    const authInstance = getAuthInstance();
+    await signOut(authInstance);
     setSubscription(null);
     setUserType('guest');
     setUserProfile(createUserProfile('anonymous', 'free'));
@@ -413,16 +427,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resetPassword = async (email: string) => {
     console.log('[Auth] resetPassword called for email:', email);
     
-    if (!auth) {
-      console.error('[Auth] CRITICAL: Auth not initialized for password reset!');
-      throw new Error('Auth not initialized');
-    }
+    await ensureFirebaseInitialized();
+    const authInstance = getAuthInstance();
     
-    console.log('[Auth] Auth domain for password reset:', auth.app.options.authDomain);
+    console.log('[Auth] Auth domain for password reset:', authInstance.app.options.authDomain);
     
     try {
       console.log('[Auth] Sending password reset email...');
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(authInstance, email);
       console.log('[Auth] Password reset email sent successfully');
     } catch (error: any) {
       console.error('[Auth] Password reset error:', {

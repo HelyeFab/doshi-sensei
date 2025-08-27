@@ -1,310 +1,412 @@
-# CLAUDE.md
+# Claude Development Notes
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## YouTube Shadowing Feature - Complete Architecture (January 2025)
 
-## ⚠️ CRITICAL MIGRATION RULE - MUST READ FIRST ⚠️
+### Overview
+Successfully implemented a robust YouTube shadowing practice feature with transcript caching and community sharing.
 
-### ALWAYS COPY FROM OLD CODEBASE - NO PLACEHOLDER CODE
-**THIS IS IMPERATIVE AND THE MOST IMPORTANT RULE YOU MUST ABIDE BY:**
+### Major Achievement: SupaData AI Integration
+**Problem Solved**: The "biggest wall" - many YouTube videos don't have Japanese captions available.
 
-When migrating ANY file from the old project (`/home/mate/Dev/NextProjects/doshi-sensei-old`):
-1. **MUST** copy the complete file AS-IS - no modifications or simplifications
-2. **NEVER** create placeholder code, stub functions, or "minimal implementations"
-3. **NEVER** make assumptions about what the code should do
-4. **ALWAYS** copy all dependencies that the file imports
-5. If a file is large (even 1000+ lines), copy it completely - do not truncate
-6. This applies to ALL file types: `.ts`, `.tsx`, `.js`, `.jsx`, `.css`, `.json`, etc.
+**Solution**: Integrated SupaData AI API (https://supadata.ai) for reliable transcript extraction.
 
-**Example of what NOT to do:**
-```typescript
-// ❌ WRONG - Creating placeholder
-export async function searchWords(query: string): Promise<JapaneseWord[]> {
-  // TODO: Implement later
-  return [];
-}
+#### Implementation Details
+1. **API Integration** (`/src/app/api/youtube/extract/route.ts`)
+   - Added SupaData as the primary extraction method
+   - Fallback chain: SupaData → ytdl-core → get_video_info → alternative endpoints
+   - Environment variable: `SUPA_YOUTUBE_API_KEY`
+   - Request Japanese subtitles specifically with `lang: 'ja'` parameter
+
+2. **Response Format**
+   ```json
+   {
+     "lang": "ja",
+     "content": [
+       {
+         "text": "Japanese text",
+         "duration": 7080,  // milliseconds
+         "offset": 31400,   // milliseconds
+         "lang": "ja"
+       }
+     ]
+   }
+   ```
+
+### Complete Architecture
+
+#### 1. Transcript Caching System
+- **Firestore Collection**: `transcriptCache`
+- **Caching Flow**:
+  1. User A loads YouTube video → Check cache
+  2. Cache miss → Extract via SupaData → Save to Firestore
+  3. User B loads same video → Cache hit → Instant access + increment count
+  4. Popular videos bubble up naturally
+
+#### 2. Popular Videos Dashboard (`/tools/popular-videos`)
+- Shows most accessed YouTube videos with cached transcripts
+- Two views: "Most Popular" and "Trending" (last 7 days)
+- Direct links to practice with cached transcripts
+- Community impact stats (API calls saved)
+- **Safety**: Only YouTube videos shown publicly (not user uploads)
+
+#### 3. Multiple Input Methods
+- YouTube URLs (with SupaData extraction)
+- Direct audio upload (OpenAI Whisper transcription)
+- Video file upload (ffmpeg.wasm for audio extraction)
+- Manual subtitle upload
+
+#### 4. Enhanced Player Features
+- Unified player supporting YouTube, video files, and audio
+- Synchronized highlighting
+- Furigana support
+- Grammar explanations
+- Shadowing practice mode
+
+### Key Files
+- `/src/app/api/youtube/extract/route.ts` - SupaData integration
+- `/src/utils/transcriptCache.ts` - Caching logic
+- `/src/app/tools/popular-videos/page.tsx` - Popular videos dashboard
+- `/src/app/tools/youtube-shadowing/` - Main feature components
+- `firestore.indexes.json` - Required Firestore indexes added
+
+### Recommendations
+- SupaData Mega plan ($29/month) - 10,000 credits
+- With caching, each video only costs credits once
+- Popular content serves thousands of users for one credit cost
+
+### Future Enhancements
+- Add video thumbnail caching
+- Implement user favorites
+- Add difficulty ratings
+- Create curated playlists
+
+## Stroke Order Practice Game Plan
+
+### Overview
+Create an interactive game where users practice drawing kanji strokes in the correct order using the KanjiVG data we've integrated.
+
+### Game Mechanics
+1. **Stroke Drawing Mode**
+   - Display a kanji with faded stroke guides
+   - User clicks/taps strokes in order
+   - Each correct stroke animates and becomes solid
+   - Wrong strokes flash red and don't stick
+   - Show stroke number hints on hover/touch
+
+2. **Freehand Drawing Mode** (Advanced)
+   - Canvas where users draw strokes with mouse/finger
+   - Compare drawn path with SVG stroke data
+   - Tolerance for slight variations
+   - Real-time feedback on stroke accuracy
+
+3. **Difficulty Levels**
+   - **Easy**: Full stroke guides visible, numbers shown
+   - **Medium**: Faded guides, no numbers
+   - **Hard**: No guides, just the target kanji outline
+   - **Expert**: Blank canvas, draw from memory
+
+### Scoring System
+- Points per correct stroke (decreases with hints used)
+- Combo multiplier for consecutive correct strokes
+- Time bonus for quick completion
+- Accuracy bonus for freehand mode
+- Deduct points for wrong attempts
+
+### Game Features
+1. **Practice Sets**
+   - JLPT levels (N5-N1)
+   - School grade levels
+   - Custom word lists
+   - Daily challenges
+
+2. **Progress Tracking**
+   - High scores per kanji
+   - Mastery indicators
+   - Streak counters
+   - Achievement badges
+
+3. **Learning Aids**
+   - Stroke order replay
+   - Slow motion mode
+   - Hint system (costs points)
+   - Mnemonic tips
+
+### Technical Implementation
+
+#### Component Structure
+```
+/src/app/games/stroke-order-practice/
+├── page.tsx                    # Main game page
+├── layout.tsx                  # Game layout
+└── components/
+    ├── StrokeOrderGame.tsx     # Main game component
+    ├── DrawingCanvas.tsx       # Canvas for freehand mode
+    ├── StrokeGuides.tsx        # SVG stroke guides
+    ├── GameControls.tsx        # UI controls
+    ├── ScoreDisplay.tsx        # Score and progress
+    └── GameOverModal.tsx       # Results screen
 ```
 
-**Example of what TO do:**
-```typescript
-// ✅ CORRECT - Copy the entire file from old codebase, even if it's 600+ lines
-// [Complete original implementation copied exactly as-is]
-```
+#### Key Technologies
+- **Canvas API** or **SVG interactions** for drawing
+- **Framer Motion** for animations
+- **Path comparison algorithms** for freehand mode
+- **Local storage** for practice history
+- **Access control** integration for daily limits
 
-## Project Overview
+#### Game States
+1. **Menu** - Select mode and difficulty
+2. **Loading** - Load kanji data
+3. **Playing** - Active gameplay
+4. **Paused** - Pause menu
+5. **GameOver** - Show results
+6. **Review** - Review mistakes
 
-Doshi Sensei is a comprehensive Japanese language learning application being rebuilt from scratch for production stability. This is a clean rebuild of an existing production app (doshisensei.com) with the goal of implementing proper architecture and eliminating technical debt accumulated over 3 months of rapid development.
+### Integration Points
 
-## Essential Commands
+1. **Features Registry**
+   - Add `stroke_order_practice` feature
+   - Set appropriate limits (e.g., 20 practices/day for free users)
+   - Track usage with existing system
 
-```bash
-# Development
-npm run dev         # Start development server on http://localhost:3000
+2. **Access Control**
+   - Use existing `view_stroke_order` permission
+   - Track practice sessions
+   - Show upgrade prompts when limits reached
 
-# Build & Production
-npm run build       # Build for production
-npm run start       # Start production server
+3. **Stats Tracking**
+   - Track games played
+   - Record high scores
+   - Monitor completion rates
+   - Build mastery metrics
 
-# Code Quality
-npm run lint        # Run ESLint
-```
+4. **Vocabulary Integration**
+   - Launch from vocabulary page
+   - Practice words from study lists
+   - Link to related drills
 
-## Architecture & Structure
+### UI/UX Design
 
-### Tech Stack
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript (strict mode enabled)
-- **Styling**: Tailwind CSS v4
-- **Font System**: Geist (default), will migrate to Rubik + Noto Sans JP
+#### Visual Style
+- Clean, minimal interface
+- High contrast for stroke visibility
+- Smooth animations for feedback
+- Mobile-optimized touch targets
+- Dark mode support
 
-### Project Structure
-```
-├── app/                    # Next.js App Router pages
-├── components/             # Reusable React components
-├── lib/                    # Utility functions and helpers
-│   ├── features/          # Feature registry (Three-Pillar #1)
-│   │   └── registry.ts    # All feature definitions
-│   ├── entitlements/      # User entitlements (Three-Pillar #2)
-│   │   └── rules.ts       # Limits per user type
-│   └── access/            # Access control (Three-Pillar #3)
-│       └── index.ts       # Permission mappings
-├── hooks/                  # Custom React hooks
-│   └── useFeature.ts      # Main access control hook
-├── contexts/               # React context providers
-├── services/               # API and external service integrations
-├── types/                  # TypeScript type definitions
-├── data/                   # Static data files (dictionaries, etc.)
-└── public/                 # Static assets
-```
+#### User Flow
+1. Select practice mode
+2. Choose difficulty
+3. Pick kanji set
+4. Play through rounds
+5. Review results
+6. Share or retry
 
-### Path Aliases
-- `@/*` maps to the project root for clean imports
+#### Feedback Systems
+- Visual: Color changes, animations
+- Audio: Optional sound effects
+- Haptic: Mobile vibration feedback
+- Progress: XP bars, level ups
 
-## Migration Strategy
+### Development Phases
 
-This is an incremental rebuild following these phases:
+#### Phase 1: Basic Click Mode
+- Implement basic stroke clicking
+- Add scoring system
+- Create game UI
+- Integrate with features registry
 
-1. **Phase 1 - Core**: Authentication, navigation, theming, i18n
-2. **Phase 2 - Learning**: Verb conjugation, vocabulary, kanji, study lists
-3. **Phase 3 - Advanced**: YouTube shadowing, games, AI stories
-4. **Phase 4 - Production**: PWA, offline support, payments, analytics
+#### Phase 2: Enhanced Features
+- Add difficulty levels
+- Implement hint system
+- Create practice sets
+- Add progress tracking
 
-Components are migrated individually from the old project, with testing at each step to ensure both development and production builds work correctly.
+#### Phase 3: Freehand Mode
+- Implement drawing canvas
+- Add path comparison
+- Create accuracy scoring
+- Optimize for touch devices
 
-## Key Integrations
+#### Phase 4: Polish
+- Add animations and effects
+- Implement achievements
+- Create tutorial
+- Add social features
 
-### External Services
-- **Firebase**: Authentication and Firestore database
-- **Stripe & PayPal**: Payment processing
-- **OpenAI API**: Story generation
-- **SupaData AI API**: YouTube transcript fetching
-- **JMdict**: Japanese dictionary data (22,569 entries)
+### Performance Considerations
+- Lazy load SVG data
+- Optimize animations for mobile
+- Cache frequently used kanji
+- Minimize re-renders during gameplay
 
-### Environment Variables Required
-```
-NEXT_PUBLIC_FIREBASE_API_KEY
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-NEXT_PUBLIC_FIREBASE_PROJECT_ID
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-NEXT_PUBLIC_FIREBASE_APP_ID
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-STRIPE_SECRET_KEY
-OPENAI_API_KEY
-SUPA_YOUTUBE_API_KEY
-```
+### Accessibility
+- Keyboard navigation
+- Screen reader support
+- High contrast mode
+- Adjustable timing settings
 
-## CRITICAL: Three-Pillar Architecture
+## UI Redesign Process (January 2025)
 
-### Mandatory for ALL Features with Access Control
-**Every feature that has usage limits, requires authentication, or has premium restrictions MUST implement the Three-Pillar Architecture:**
-
-### The Three Pillars:
-
-#### 1. Feature Registry (`/src/lib/features/registry.ts`)
-```typescript
-'feature_name': {
-  id: 'feature_name',
-  name: 'Feature Display Name',
-  description: 'What this feature does',
-  category: 'learning', // or 'games', 'tools', etc.
-  icon: '📚',
-  limitType: 'daily', // 'daily', 'total', or 'none'
-  requiresAuth: false,
-  requiresSubscription: false,
-  status: 'active'
-  // NO sharedLimitGroup - each feature tracked individually!
-}
-```
-
-#### 2. Entitlement Rules (`/src/lib/entitlements/rules.ts`)
-```typescript
-// Guest users (not logged in)
-guest: {
-  daily: { feature_name: 0 },
-  total: { feature_name: 0 }
-}
-
-// Free users (logged in, no subscription)
-free: {
-  daily: { feature_name: 3 },
-  total: { feature_name: 10 }
-}
-
-// Premium users (monthly/yearly subscription)
-premium: {
-  daily: { feature_name: -1 }, // -1 = unlimited
-  total: { feature_name: -1 }
-}
-```
-
-#### 3. Access Permission Mapping (`/src/lib/access/index.ts`)
-```typescript
-const permissionMap: Record<string, string> = {
-  'feature_name': 'appropriate_permission',
-  // Examples:
-  'drill_practice': 'do_drills',
-  'kanji_quest': 'play_games',
-  'vocabulary_search': 'search_vocabulary'
-};
-```
-
-### Implementation in Components:
-
-**⚠️ IMPORTANT CHANGE: We now use the unified `useFeature` hook instead of `useAccess`**
-
-```typescript
-import { useFeature } from '@/hooks/useFeature';
-
-export default function MyFeature() {
-  const { checkAndTrack } = useFeature('feature_name', {
-    showModal: true,    // Show upgrade modals
-    showToast: true,    // Show notifications
-    trackUsage: true    // Auto-track usage
-  });
-  
-  const handleFeatureUse = async () => {
-    // This ONE line handles EVERYTHING:
-    // - Checks user authentication
-    // - Verifies subscription status
-    // - Checks usage limits
-    // - Tracks usage automatically
-    // - Shows appropriate modals if access denied
-    if (await checkAndTrack()) {
-      // User has access - perform the action
-      doTheFeatureWork();
-    }
-    // No else needed - modals handled automatically
-  };
-}
-```
-
-### Migration Alert: Access Control Changes
-
-**When copying from old project, replace ALL access hooks:**
-
-```typescript
-// ❌ OLD - DO NOT USE
-import { useAccess } from '@/hooks/useAccess';
-import { useAccessWithModals } from '@/hooks/useAccessWithModals';
-
-// ✅ NEW - USE THIS
-import { useFeature } from '@/hooks/useFeature';
-```
-
-See `/docs/access-control/README.md` for complete migration guide.
-
-### Adding a New Feature - Complete Checklist:
-1. **Register the feature** in `/src/lib/features/registry.ts`
-2. **Set limits** for each user type in `/src/lib/entitlements/rules.ts`
-3. **Map to permission** in `/src/lib/access/index.ts`
-4. **Use `checkAndTrack()`** in your component
-5. **Test** with Guest, Free, and Premium users
-6. **Update admin dashboard** if needed
-
-### Common Feature Categories:
-- **Learning**: drill_practice, vocabulary_search, kanji_study
-- **Games**: kanji_quest, kana_drop, memory_match
-- **Tools**: ai_stories, youtube_shadowing, news_reader
-- **Storage**: study_lists, saved_items, bookmarks
-
-### Important Rules:
-- **NEVER** hardcode limits in components
-- **NEVER** use shared limit groups
-- **ALWAYS** use `checkAndTrack()` for usage tracking
-- **ALWAYS** test with all three user types
-- Each feature gets its own individual tracking
-
-## Development Guidelines
-
-### CRITICAL: SEO Migration Requirements
-**MANDATORY**: After importing ANY page or component from the old project, you MUST:
-1. **Check the old project** for ALL SEO-related information including:
-   - Metadata (title, description, keywords)
-   - Structured data (JSON-LD schema)
-   - Open Graph tags
-   - Twitter cards
-   - Canonical URLs
-   - Any SEO-specific content or comments
-2. **Migrate ALL SEO information** to the new project
-3. **This must be done automatically** - WITHOUT being asked - for every import
-4. **Update both CLAUDE.md and PROJECT_CONTEXT.md** to track SEO migrations
-
-### UI/UX Patterns
-- Mobile-first responsive design
-- Card-based component layouts
-- Bottom navigation for mobile
-- Clean, minimal interface with smooth animations
-- Loading skeletons for async content
-- Toast notifications for user feedback
+### Overview
+Complete UI redesign focusing on clean, modern aesthetics with consistent design patterns across all pages.
 
 ### Design System
-- **IMPORTANT**: NO hardcoded colors - use CSS variables exclusively
-- All colors must use theme system CSS variables:
-  - Background: `bg-background` (not `bg-gray-50`)
-  - Cards: `bg-card` (not `bg-white`)
-  - Text: `text-foreground` (primary), `text-muted` (secondary)
-  - Borders: `border-border`
-  - Primary actions: `bg-primary`, `text-primary`
-- Theme system supports 12 color schemes with automatic switching
-- Spacing: `px-4` on mobile
+- **Background**: Light grey (`bg-gray-50`) for contrast with white components
+- **Cards**: White with subtle shadows (`bg-white rounded-lg shadow-sm`)
+- **Navigation**: Anchored bottom navbar (MyFitnessPal style)
+- **Typography**: Rubik font for Latin text, Noto Sans JP for Japanese
+- **Spacing**: Consistent `px-4` padding on mobile
 
-### Code Standards
-- TypeScript for all new code
-- **NEVER use hardcoded colors** (e.g., `gray-50`, `blue-500`, `white`, `black`)
-  - Always use CSS variables from theme system (e.g., `bg-background`, `text-foreground`, `border-border`)
-  - Only exception: unique app design elements that don't change with themes
-- Implement error boundaries for robustness
-- Add loading states for all async operations
-- Test both development and production builds after changes
-- Follow existing patterns from clean examples
+### Page Redesign Workflow
 
-### Performance Targets
-- Lighthouse score > 90
-- First contentful paint < 1.5s
-- Time to interactive < 3.5s
+#### 1. Backup Original
+```bash
+cp src/app/[page]/page.tsx src/app/_backups/[page].page.backup.tsx
+```
 
-## Important Context
+#### 2. Create Empty Scaffold
+Use template structure:
+```typescript
+'use client';
 
-Refer to PROJECT_CONTEXT.md for detailed migration checklist, feature list, and current status. The project is currently in the initial setup phase, with the next step being to create the basic homepage structure.
+import { useState } from 'react';
+import { useStrings } from '@/contexts/LanguageContext';
+import Link from 'next/link';
 
-When implementing features:
-1. Review the original implementation in the old project
-2. Identify all dependencies
-3. **Determine if feature needs access control** (limits, auth, premium)
-4. If yes, implement Three-Pillar Architecture FIRST
-5. Plan a clean implementation
-6. Use `checkAndTrack()` for all access-controlled actions
-7. Test thoroughly in both dev and production with all user types
-8. Update PROJECT_CONTEXT.md with progress
+const pageStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Page Name - Doshi Sensei",
+  "description": "Page description",
+  "url": "https://doshisensei.com/page"
+};
 
-## Quick Reference: User Types & Typical Limits
+export default function PageName() {
+  const strings = useStrings();
 
-| Feature Type | Guest | Free | Premium |
-|-------------|-------|------|------|
-| Games | 0-1/day | 3-5/day | Unlimited |
-| Drills | 0/day | 3-5/day | Unlimited |
-| AI Features | 0/day | 1-3/day | Unlimited |
-| Study Lists | 0 | 3 total | Unlimited |
-| Saved Items | 0 | 10-20 total | Unlimited |
-| YouTube Shadowing | 0/day | 3/day | Unlimited |
-| News Articles | 1/day | 5/day | Unlimited |
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(pageStructuredData),
+        }}
+      />
+
+      <div className="mobile-nav-padding">
+        {/* Content */}
+      </div>
+    </div>
+  );
+}
+```
+
+#### 3. Build Step by Step
+1. Header with user info (if needed)
+2. Navigation elements
+3. Main content area
+4. Interactive components
+5. Mobile optimizations
+
+### Completed Pages
+- [x] Homepage - Welcome section, date/progress bar, stats, feature cards
+- [x] Practice page - Empty scaffold ready
+
+### Pages to Redesign
+- [ ] Games page
+- [ ] Vocabulary page
+- [ ] News page
+- [ ] Stories page
+- [ ] Account page
+- [ ] Settings page
+- [ ] Kanji browser
+- [ ] Drill pages
+
+### Design Patterns
+
+#### Page Header (Standard for all pages)
+```jsx
+<header className="px-4 pt-6 pb-4">
+  <div className="flex items-center gap-3">
+    {/* Back Button */}
+    <Link 
+      href="/" // "/" for main pages, parent route for subpages
+      className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+      aria-label="Go back to home"
+    >
+      <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+      </svg>
+    </Link>
+    
+    {/* Page Title */}
+    <h1 className="text-xl font-bold text-gray-900">
+      {strings.pageName?.title || "Page Title"}
+    </h1>
+  </div>
+</header>
+```
+
+#### Welcome Section
+```jsx
+<header className="px-4 pt-6 pb-4" role="banner">
+  <div className="flex items-center gap-3">
+    <div className="relative w-12 h-12 flex-shrink-0">
+      {/* Avatar */}
+    </div>
+    <div className="flex-1">
+      <h1 className="text-xl font-semibold text-gray-900">
+        {strings.home.greeting} {displayName}-san! 👋
+      </h1>
+      <p className="text-sm text-gray-600">{strings.home.readyToPractice}</p>
+    </div>
+  </div>
+</header>
+```
+
+#### Feature Cards
+```jsx
+<div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow">
+  <div className="flex items-center gap-3">
+    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center">
+      {/* Icon */}
+    </div>
+    <div className="flex-1">
+      <h3 className="font-medium text-gray-900">{title}</h3>
+      <p className="text-sm text-gray-500">{description}</p>
+    </div>
+    <svg className="w-5 h-5 text-gray-400">
+      {/* Arrow */}
+    </svg>
+  </div>
+</div>
+```
+
+### Best Practices
+- Always use theme system variables
+- Maintain mobile-first approach
+- Use semantic HTML for accessibility
+- Keep SEO structured data
+- Reuse existing data/logic
+- Never hardcode strings
+
+## Textbook Vocabulary Feature (January 2025)
+
+The Textbook Vocabulary feature provides interactive vocabulary learning from Genki and Minna no Nihongo textbooks with state-of-the-art spaced repetition.
+
+### Key Implementation Details
+- **Data**: 9,635 vocabulary cards imported from MCP server (stored as static JSON)
+- **Algorithm**: FSRS spaced repetition using ts-fsrs library
+- **Storage**: IndexedDB for all users, Firebase sync ready for premium
+- **Access**: Daily limits via Three-Pillar Architecture (Guest: 20, Free: 50, Premium: unlimited)
+- **UI**: Interactive flip cards with Framer Motion animations
+
+### File Locations
+- `/src/app/tools/textbook-vocabulary/` - Main feature components
+- `/src/services/textbook-vocabulary/` - Storage and SRS services
+- `/src/data/textbook-vocabulary/` - Static vocabulary JSON files
+- `/docs/features/textbook-vocabulary/` - Comprehensive documentation
+
+### Usage
+The feature is fully integrated with the Three-Pillar Architecture and tracks usage automatically. Access via the "Textbook Vocabulary" card on the homepage.

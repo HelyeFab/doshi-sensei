@@ -23,7 +23,14 @@
       "Read(//home/mate/Dev/NextProjects/doshi-sensei-old/**)",
       "Bash(lsof:*)",
       "Bash(find:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(echo $XDG_SESSION_TYPE)",
+      "Bash(pacman:*)",
+      "Bash(firebase login:ci:*)",
+      "Bash(firebase login:*)",
+      "Bash(firebase use:*)",
+      "Bash(npm run export:*)",
+      "Bash(npx next:*)"
     ],
     "deny": [],
     "ask": []

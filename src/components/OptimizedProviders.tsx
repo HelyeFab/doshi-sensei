@@ -39,5 +39,6 @@ export function CriticalProviders({ children }: { children: React.ReactNode }) {
 // Non-critical providers that can be loaded after initial render
 export function NonCriticalProviders({ children }: { children: React.ReactNode }) {
   // AdminProvider moved to CriticalProviders since components depend on it
-  return <>{children}</>;
+  // Using React.Fragment explicitly to avoid hydration issues
+  return <React.Fragment>{children}</React.Fragment>;
 }

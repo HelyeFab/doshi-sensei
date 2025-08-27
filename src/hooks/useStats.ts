@@ -90,6 +90,22 @@ export function useStats(): UseStatsReturn {
     return unsubscribe;
   }, []);
 
+  // Listen for stats-synced event from forceSyncFromFirebase
+  useEffect(() => {
+    const handleStatsSync = async () => {
+      // Reinitialize stats with fresh data from cloud
+      if (user && subscription) {
+        await statsTracker.initialize(user, subscription);
+        setStats(statsTracker.getStats());
+        const activitiesData = await statsTracker.getActivitiesData();
+        setActivities(activitiesData);
+      }
+    };
+
+    window.addEventListener('stats-synced', handleStatsSync);
+    return () => window.removeEventListener('stats-synced', handleStatsSync);
+  }, [user, subscription]);
+
   // Remove periodic refresh - it's overkill for users not playing Kanji Quest
   // Pokemon count will update immediately when caught via pokemonManager
 

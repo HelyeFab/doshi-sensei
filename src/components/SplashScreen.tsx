@@ -62,10 +62,19 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
   }, []);
 
   useEffect(() => {
-    // Only show splash screen on client after mount
+    // Only show splash screen once per session
     setIsMounted(true);
-    setIsVisible(true);
-  }, []);
+    
+    // Check if splash has already been shown this session
+    const hasShownSplash = sessionStorage.getItem('splash-shown') === 'true';
+    
+    if (!hasShownSplash && !forceShow) {
+      setIsVisible(true);
+      sessionStorage.setItem('splash-shown', 'true');
+    } else if (forceShow) {
+      setIsVisible(true);
+    }
+  }, [forceShow]);
 
   useEffect(() => {
     if (!forceShow && isMounted && isVisible) {

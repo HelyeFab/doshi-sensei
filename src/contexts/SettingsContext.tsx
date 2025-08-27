@@ -225,12 +225,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   // Force sync from Firebase (for manual trigger)
   const forceSyncFromFirebase = async (): Promise<boolean> => {
     if (!user || !db) {
-      console.log('❌ Cannot sync: User not authenticated or DB not available');
       return false;
     }
 
     try {
-      console.log('⚡ Force sync triggered by user');
       
       // Parallel sync all data types
       const syncPromises: Promise<void>[] = [];
@@ -281,13 +279,10 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
               // Cloud has stats - use as source of truth
               const cloudStats = statsDoc.data();
               localStorage.setItem('doshi_sensei_achievements', JSON.stringify(cloudStats));
-              console.log('✅ Achievement stats synced from Firebase');
             } else if (localStats) {
               // No cloud stats but have local - upload them
-              console.log('📤 Uploading local achievement stats to cloud...');
               const { AchievementPremiumSync } = await import('@/lib/achievements/premiumSync');
               await AchievementPremiumSync.syncUserStats(user, localStats, subscription);
-              console.log('✅ Achievement stats uploaded to Firebase');
             }
           }).catch(error => console.warn('Could not sync achievement stats:', error))
         );
@@ -307,20 +302,16 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
               
               // If we have local achievements but no cloud achievements, upload them
               if (localAchievements.length > 0 && (!cloudAchievements || cloudAchievements.length === 0)) {
-                console.log('📤 Uploading local achievements to cloud...');
                 for (const achievement of localAchievements) {
                   await AchievementPremiumSync.syncUnlockedAchievement(user, achievement, subscription);
                 }
-                console.log(`✅ Uploaded ${localAchievements.length} achievements to cloud`);
               } else if (cloudAchievements && cloudAchievements.length > 0) {
                 // Cloud has achievements, use them (cloud wins)
-                console.log('📥 Using cloud achievements as source of truth');
                 await EnhancedStorageManager.clearUnlockedAchievements();
                 for (const achievement of cloudAchievements) {
                   await EnhancedStorageManager.saveUnlockedAchievement(achievement);
                 }
               } else {
-                console.log('ℹ️ No achievements to sync');
               }
             } catch (error) {
               console.warn('Could not sync achievements:', error);
@@ -338,14 +329,11 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
               // Cloud has stats - use as source of truth
               const cloudStats = statsDoc.data();
               localStorage.setItem('doshi_sensei_stats', JSON.stringify(cloudStats));
-              console.log('✅ User stats synced from Firebase');
             } else if (localStats) {
               // No cloud stats but have local - upload them
-              console.log('📤 Uploading local user stats to cloud...');
               // Clean stats object - remove undefined values
               const cleanStats = JSON.parse(JSON.stringify(localStats));
               await setDoc(doc(db, 'userStats', user.uid), cleanStats);
-              console.log('✅ User stats uploaded to Firebase');
             }
           }).catch(error => console.warn('Could not sync user stats:', error))
         );
@@ -354,12 +342,23 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       // Wait for all syncs to complete
       await Promise.all(syncPromises);
       
+      // Force statsTracker to reinitialize with fresh cloud data
+      // This ensures all devices show the same stats
+      if (hasPaidPlan(subscription)) {
+        const { statsTracker } = await import('@/lib/stats/statsTracker');
+        await statsTracker.initialize(user, subscription);
+        // Trigger a manual sync to ensure cloud is up to date
+        await statsTracker.forceSync();
+      }
+      
       setLastSyncTime(new Date());
-      console.log('✅ Force sync completed successfully');
       
       // Dispatch a custom event for achievements to reload
       // Don't dispatch 'storage' event as it can cause infinite loops
       window.dispatchEvent(new CustomEvent('achievements-synced'));
+      
+      // Also dispatch event for stats reload
+      window.dispatchEvent(new CustomEvent('stats-synced'));
       
       return true;
       

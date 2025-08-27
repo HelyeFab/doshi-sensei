@@ -368,6 +368,7 @@ export function applyTheme(scheme: ColorScheme, mode: ThemeMode) {
   // Save to localStorage for the blocking script
   try {
     localStorage.setItem('theme', effectiveMode);
+    localStorage.setItem('colorScheme', scheme);
   } catch (e) {
     // Fail silently if localStorage is not available
   }

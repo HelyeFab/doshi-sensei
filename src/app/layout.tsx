@@ -14,6 +14,7 @@ import PWAUpdateNotification from "@/components/PWAUpdateNotification";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import SplashScreenMeta from "@/components/SplashScreenMeta";
 import SplashScreen from "@/components/SplashScreen";
+import ThemeInitScript from "@/components/ThemeInitScript";
 import QuickContextProvider from "@/components/QuickContext/QuickContextProvider";
 import SyncInitializer from "@/components/SyncInitializer";
 
@@ -93,6 +94,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={rubik.variable} suppressHydrationWarning>
       <head>
+        <ThemeInitScript />
         <SplashScreenMeta />
         <script src="/register-sw.js" defer />
       </head>

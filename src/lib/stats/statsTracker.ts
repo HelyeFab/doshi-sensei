@@ -227,18 +227,6 @@ export class StatsTracker {
       }
     }
     
-    // Debug logging after processing
-    if (this.stats) {
-      console.log(`📊 [STATS DEBUG] After tracking ${type} activity:`, {
-        type,
-        timestamp: new Date().toISOString(),
-        currentStreak: this.stats.currentStreak,
-        longestStreak: this.stats.longestStreak,
-        lastActiveDate: this.stats.lastActiveDate,
-        totalDaysActive: this.stats.totalDaysActive,
-        totalActivities: this.stats.totalActivities
-      });
-    }
   }
 
   /**
@@ -280,12 +268,35 @@ export class StatsTracker {
   }
 
   /**
+   * Force reload from cloud, clearing local data first
+   * Used when syncing across devices to ensure consistency
+   */
+  async forceReloadFromCloud(): Promise<void> {
+    if (!this.currentUser || !hasPaidPlan(this.subscription)) {
+      return;
+    }
+
+    // Clear local data first
+    await this.clearLocalData();
+    
+    // Reload from cloud
+    await this.loadStats();
+    
+    // Notify listeners of the update
+    this.notifyListeners();
+  }
+
+  /**
    * Load stats from storage
    */
   private async loadStats(): Promise<void> {
     try {
       // For users with paid plans, ALWAYS load from cloud first
       if (this.currentUser && hasPaidPlan(this.subscription)) {
+        // IMPORTANT: Clear local data first to ensure cloud is source of truth
+        // This prevents stale local data from interfering
+        await this.clearLocalData();
+        
         const cloudStats = await this.loadFromCloud();
         
         if (cloudStats) {
@@ -293,11 +304,12 @@ export class StatsTracker {
           // Save cloud stats locally for offline access
           await this.saveToIndexedDB();
         } else {
-          // Fall back to local if cloud fails
-          const localStats = await this.loadFromIndexedDB();
-          if (localStats) {
-            this.stats = localStats;
-          }
+          // For premium users, if cloud is empty, start fresh
+          // DO NOT fall back to local data as it may be stale from another device
+          this.stats = this.createInitialStats();
+          await this.saveToIndexedDB();
+          // Save initial stats to cloud
+          await this.saveToCloud();
         }
       } else {
         // For free users or when not logged in, use local storage
@@ -380,6 +392,45 @@ export class StatsTracker {
 
     } catch (error) {
       console.error('❌ [StatsTracker] Error saving to IndexedDB:', error);
+    }
+  }
+
+  /**
+   * Clear local IndexedDB data for current user
+   * Used to ensure cloud data is source of truth for premium users
+   */
+  private async clearLocalData(): Promise<void> {
+    if (!this.currentUser) return;
+    
+    try {
+      // Clear stats from IndexedDB
+      await UserScopedStorage.deleteFromStore(
+        StatsTracker.STATS_STORE,
+        'userStats',
+        this.currentUser.uid
+      );
+      
+      // Clear activities from IndexedDB
+      const thirtyDaysAgo = this.getDateString(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const today = this.getDateString(Date.now());
+      const current = new Date(thirtyDaysAgo);
+      const end = new Date(today);
+      
+      while (current <= end) {
+        const dateStr = this.getDateString(current.getTime());
+        await UserScopedStorage.deleteFromStore(
+          StatsTracker.ACTIVITIES_STORE,
+          dateStr,
+          this.currentUser.uid
+        );
+        current.setDate(current.getDate() + 1);
+      }
+      
+      // Clear in-memory cache
+      this.activities.clear();
+      
+    } catch (error) {
+      console.error('❌ [StatsTracker] Error clearing local data:', error);
     }
   }
 

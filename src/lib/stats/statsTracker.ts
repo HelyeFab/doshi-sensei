@@ -6,6 +6,7 @@ import { db } from '@/lib/firebase';
 import { updateTimeBasedStats } from '@/utils/timeBasedStats';
 import { Subscription } from '@/lib/subscriptions/types';
 import { hasPaidPlan, getUserSubscription } from '@/lib/subscriptions/helpers';
+import { isSystemEnabled } from '@/config/debug';
 
 // Activity event types
 export type ActivityType = 'drill' | 'story' | 'article' | 'kanji' | 'game' | 'vocab' | 'flashcard' | 'practice';
@@ -193,6 +194,12 @@ export class StatsTracker {
    * Track an activity
    */
   async trackActivity(type: ActivityType, details: Partial<ActivityEvent['details']> = {}): Promise<void> {
+    // Check if system is disabled for debugging
+    if (!isSystemEnabled('stats')) {
+      console.log('📊 [StatsTracker] System DISABLED for debugging');
+      return;
+    }
+    
     const event: ActivityEvent = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type,
@@ -521,6 +528,11 @@ export class StatsTracker {
    * Save stats to cloud
    */
   private async saveToCloud(): Promise<void> {
+    // Check if system is disabled for debugging
+    if (!isSystemEnabled('stats')) {
+      console.log('📊 [StatsTracker] Cloud save DISABLED for debugging');
+      return;
+    }
 
     // First check if user exists and has a valid uid
     if (!this.currentUser || !this.currentUser.uid) {
@@ -1141,6 +1153,12 @@ export class StatsTracker {
    * Sync stats to cloud
    */
   private async syncToCloud(): Promise<void> {
+    // Check if system is disabled for debugging
+    if (!isSystemEnabled('stats')) {
+      console.log('📊 [StatsTracker] Sync DISABLED for debugging');
+      return;
+    }
+    
     // First check if user exists and has a valid uid
     if (!this.currentUser || !this.currentUser.uid) {
 

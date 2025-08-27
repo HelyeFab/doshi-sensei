@@ -16,8 +16,8 @@ const defaultSettings: AppSettings = {
   practiceReminders: false,
   showCompanion: true,
   companionHistory: {
-    recentCharacters: [],
-    lastShownDate: undefined
+    recentCharacters: []
+    // Note: lastShownDate is optional and should not be set to undefined
   },
   navigationPreferences: {
     customNavItems: ['drill', 'kanji-moods', 'resources'],
@@ -62,6 +62,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+  const [skipNextSave, setSkipNextSave] = useState(false);
   const { user } = useAuth();
   const { subscription } = useSubscription2();
 
@@ -71,13 +72,13 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       try {
         // For ALL authenticated users, Firebase is the source of truth
         if (user && db) {
-          console.log('🎨 Loading settings from Firebase (source of truth)');
+          // console.log('🎨 Loading settings from Firebase (source of truth)');
           try {
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             if (userDoc.exists()) {
               const userData = userDoc.data();
               if (userData.settings) {
-                console.log('✅ Settings loaded from Firebase - overwriting local');
+                // console.log('✅ Settings loaded from Firebase - overwriting local');
                 const cloudSettings = userData.settings as AppSettings;
                 const mergedSettings = {
                   ...defaultSettings,
@@ -87,6 +88,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
                 };
                 
                 // Firebase wins - update both state and localStorage
+                setSkipNextSave(true); // Skip saving what we just loaded
                 setSettings(mergedSettings);
                 localStorage.setItem(SETTINGS_KEY, JSON.stringify(mergedSettings));
                 setLastSyncTime(new Date());
@@ -111,12 +113,14 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
               // Save to Firebase for first time
               if (hasPaidPlan(subscription)) {
                 try {
+                  // Clean settings object - remove undefined values
+                  const cleanSettings = JSON.parse(JSON.stringify(mergedSettings));
                   await setDoc(
                     doc(db, 'users', user.uid),
-                    { settings: mergedSettings },
+                    { settings: cleanSettings },
                     { merge: true }
                   );
-                  console.log('📤 Initial settings uploaded to Firebase');
+                  // console.log('📤 Initial settings uploaded to Firebase');
                 } catch (error) {
                   console.warn('Could not upload initial settings:', error);
                 }
@@ -163,6 +167,12 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
   // Save settings to localStorage and Firebase whenever they change
   useEffect(() => {
+    // Skip save if we just loaded from Firebase
+    if (skipNextSave) {
+      setSkipNextSave(false);
+      return;
+    }
+    
     if (!isLoading) {
       const saveSettings = async () => {
         try {
@@ -171,12 +181,16 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
           
           // Save to Firebase for paid users
           if (user && hasPaidPlan(subscription) && db) {
-            console.log('💾 Saving settings to Firebase');
+            // Remove excessive logging
+            // console.log('💾 Saving settings to Firebase');
             try {
+              // Clean settings object - remove undefined values
+              const cleanSettings = JSON.parse(JSON.stringify(settings));
+              
               const userRef = doc(db, 'users', user.uid);
               await setDoc(
                 userRef,
-                { settings },
+                { settings: cleanSettings },
                 { merge: true }
               );
             } catch (fbError) {
@@ -191,7 +205,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       
       saveSettings();
     }
-  }, [settings, isLoading, user, subscription]);
+  }, [settings, isLoading, user, subscription, skipNextSave]);
 
   // Apply theme when settings change
   useEffect(() => {
@@ -238,16 +252,19 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
             
             setSettings(mergedSettings);
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(mergedSettings));
-            console.log('✅ Settings synced from Firebase');
+            // console.log('✅ Settings synced from Firebase');
           } else if (settings && Object.keys(settings).length > 0) {
             // No cloud settings but have local - upload them
-            console.log('📤 Uploading local settings to cloud...');
+            // console.log('📤 Uploading local settings to cloud...');
+            // Clean settings object - remove undefined values
+            const cleanSettings = JSON.parse(JSON.stringify(settings));
+            
             await setDoc(
               doc(db, 'users', user.uid),
-              { settings },
+              { settings: cleanSettings },
               { merge: true }
             );
-            console.log('✅ Settings uploaded to Firebase');
+            // console.log('✅ Settings uploaded to Firebase');
           }
         }).catch(error => console.warn('Could not sync settings:', error))
       );
@@ -325,7 +342,9 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
             } else if (localStats) {
               // No cloud stats but have local - upload them
               console.log('📤 Uploading local user stats to cloud...');
-              await setDoc(doc(db, 'userStats', user.uid), localStats);
+              // Clean stats object - remove undefined values
+              const cleanStats = JSON.parse(JSON.stringify(localStats));
+              await setDoc(doc(db, 'userStats', user.uid), cleanStats);
               console.log('✅ User stats uploaded to Firebase');
             }
           }).catch(error => console.warn('Could not sync user stats:', error))

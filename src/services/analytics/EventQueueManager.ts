@@ -169,6 +169,20 @@ class EventQueueManager {
       return data.toISOString();
     }
     
+    // Handle Set objects - convert to array
+    if (data instanceof Set) {
+      return Array.from(data);
+    }
+    
+    // Handle Map objects - convert to object
+    if (data instanceof Map) {
+      const obj: any = {};
+      data.forEach((value, key) => {
+        obj[key] = this.cleanEventData(value);
+      });
+      return obj;
+    }
+    
     // Handle functions (remove them)
     if (typeof data === 'function') {
       return null;
@@ -177,7 +191,7 @@ class EventQueueManager {
     // Handle regular objects
     if (typeof data === 'object' && data !== null) {
       // Check for special objects that can't be serialized
-      if (data.constructor && data.constructor.name !== 'Object') {
+      if (data.constructor && data.constructor.name !== 'Object' && data.constructor.name !== 'Array') {
         // Try to convert to plain object or string
         try {
           return JSON.parse(JSON.stringify(data));

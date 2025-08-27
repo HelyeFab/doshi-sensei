@@ -25,6 +25,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { storageManager } from './StorageManager';
+import { isSystemEnabled } from '@/config/debug';
 
 export type UserTier = 'guest' | 'free' | 'monthly' | 'yearly';
 
@@ -153,6 +154,12 @@ class LearningEventsService {
    * Track a learning event
    */
   async trackEvent(event: LearningEvent): Promise<void> {
+    // Check if system is disabled for debugging
+    if (!isSystemEnabled('learning')) {
+      console.log('[LearningEvents] System DISABLED for debugging');
+      return;
+    }
+    
     const config = this.STORAGE_CONFIG[this.userTier];
     
     // Add user context
@@ -322,11 +329,11 @@ class LearningEventsService {
     }
 
     // Calculate statistics
+    const uniqueContent = new Set<string>();
     const stats = {
       totalEvents: events.length,
       byType: {} as Record<string, number>,
       byCategory: {} as Record<string, number>,
-      uniqueContent: new Set<string>(),
       successRate: 0,
       userTier: this.userTier
     };
@@ -343,7 +350,7 @@ class LearningEventsService {
       
       // Track unique content
       if (event.content?.id) {
-        stats.uniqueContent.add(event.content.id);
+        uniqueContent.add(event.content.id);
       }
       
       // Calculate success rate
@@ -359,9 +366,7 @@ class LearningEventsService {
 
     return {
       ...stats,
-      uniqueContentCount: stats.uniqueContent.size,
-      // Don't include the Set itself in the returned object
-      uniqueContent: undefined
+      uniqueContentCount: uniqueContent.size
     };
   }
 
@@ -369,6 +374,12 @@ class LearningEventsService {
    * Sync events to cloud (for premium users only)
    */
   private async syncToCloud(force: boolean = false): Promise<void> {
+    // Check if system is disabled for debugging
+    if (!isSystemEnabled('learning')) {
+      console.log('[LearningEvents] Sync DISABLED for debugging');
+      return;
+    }
+    
     // Only sync for premium users
     if (this.userTier !== 'monthly' && this.userTier !== 'yearly') {
       return;
@@ -466,17 +477,12 @@ class LearningEventsService {
       const stats = await this.getStats();
       const statsRef = doc(db, 'learning_events', this.currentUser.uid, 'stats', 'current');
       
-      // Convert Set to array before sending to Firebase
+      // Stats are already clean now - no Set objects
       const statsForFirebase = {
         ...stats,
-        // Convert the Set to an array if it exists
-        uniqueContentCount: stats.uniqueContent instanceof Set ? stats.uniqueContent.size : 0,
         lastUpdated: serverTimestamp(),
         userTier: this.userTier
       };
-      
-      // Remove the Set object itself
-      delete (statsForFirebase as any).uniqueContent;
       
       await setDoc(statsRef, statsForFirebase, { merge: true });
     } catch (error) {

@@ -72,7 +72,7 @@ export function useStats(): UseStatsReturn {
     };
 
     initializeStats();
-  }, [profile, subscription, isPremiumUser]);
+  }, [profile?.id, user?.uid, subscription?.plan, isPremiumUser]); // Use stable dependencies
 
   // Subscribe to stats updates
   useEffect(() => {
@@ -136,7 +136,7 @@ export function useStats(): UseStatsReturn {
     } catch (err) {
       console.error('❌ [useStats] Refresh error:', err);
     }
-  }, [profile, subscription, isPremiumUser]);
+  }, [profile?.id, user, subscription]); // Use stable dependencies
 
   return {
     stats,

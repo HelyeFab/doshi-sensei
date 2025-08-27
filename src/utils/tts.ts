@@ -72,12 +72,6 @@ export class TTSManager {
     
     this.isInitialized = true;
     
-    if (this.googleApiKey) {
-      console.log('✅ Google TTS initialized (primary provider)');
-    }
-    if (this.elevenLabsApiKey) {
-      console.log('✅ ElevenLabs TTS initialized (fallback provider)');
-    }
     if (!this.elevenLabsApiKey && !this.googleApiKey) {
 
     }

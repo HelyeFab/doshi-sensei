@@ -142,12 +142,6 @@ class LearningEventsService {
       this.stopSync();
     }
 
-    console.log(`[LearningEvents] User tier set to: ${this.userTier}`, {
-      userId: user.uid,
-      plan,
-      subscription,
-      syncEnabled: this.userTier === 'monthly' || this.userTier === 'yearly'
-    });
   }
 
   /**
@@ -156,7 +150,6 @@ class LearningEventsService {
   async trackEvent(event: LearningEvent): Promise<void> {
     // Check if system is disabled for debugging
     if (!isSystemEnabled('learning')) {
-      console.log('[LearningEvents] System DISABLED for debugging');
       return;
     }
     
@@ -191,7 +184,6 @@ class LearningEventsService {
           synced: false // Will be converted to 0 by StorageManager
         };
         await storageManager.saveEvent(eventToSave);
-        console.log(`[LearningEvents] Event saved locally for ${this.userTier} user`);
       } catch (error) {
         console.error('[LearningEvents] Failed to save locally:', error);
       }
@@ -200,7 +192,6 @@ class LearningEventsService {
     // Queue for cloud sync if enabled (monthly, yearly)
     if (config.enableCloud && this.currentUser) {
       // Cloud sync happens in batches via the sync timer
-      console.log(`[LearningEvents] Event queued for cloud sync (${this.userTier})`);
     }
   }
 
@@ -376,7 +367,6 @@ class LearningEventsService {
   private async syncToCloud(force: boolean = false): Promise<void> {
     // Check if system is disabled for debugging
     if (!isSystemEnabled('learning')) {
-      console.log('[LearningEvents] Sync DISABLED for debugging');
       return;
     }
     
@@ -401,7 +391,6 @@ class LearningEventsService {
         return;
       }
 
-      console.log(`[LearningEvents] Syncing ${unsyncedEvents.length} events to cloud`);
 
       // Batch write to Firestore
       const batch = writeBatch(db);
@@ -426,7 +415,6 @@ class LearningEventsService {
       // Mark events as synced in local storage
       await storageManager.markEventsSynced(processedIds);
 
-      console.log(`[LearningEvents] Successfully synced ${processedIds.length} events`);
 
       // Update user stats document
       await this.updateCloudStats();
@@ -506,7 +494,6 @@ class LearningEventsService {
         config.retentionDays
       );
       
-      console.log(`[LearningEvents] Cleaned up ${deletedCount} old events`);
 
       // Clean cloud storage for premium users
       if (config.enableCloud) {
@@ -539,7 +526,6 @@ class LearningEventsService {
       
       await batch.commit();
       
-      console.log(`[LearningEvents] Cleaned up ${snapshot.size} old cloud events`);
     } catch (error) {
       console.error('[LearningEvents] Cloud cleanup failed:', error);
     }
@@ -559,7 +545,6 @@ class LearningEventsService {
       this.syncToCloud();
     }, this.SYNC_INTERVAL);
     
-    console.log('[LearningEvents] Started cloud sync for premium user');
   }
 
   /**
@@ -569,7 +554,6 @@ class LearningEventsService {
     if (this.syncTimer) {
       clearInterval(this.syncTimer);
       this.syncTimer = null;
-      console.log('[LearningEvents] Stopped cloud sync');
     }
   }
 
@@ -622,7 +606,6 @@ class LearningEventsService {
         
         await batch.commit();
         
-        console.log('[LearningEvents] Deleted all user data');
       } catch (error) {
         console.error('[LearningEvents] Failed to delete cloud data:', error);
       }

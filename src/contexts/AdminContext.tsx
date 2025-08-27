@@ -2,9 +2,10 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { ADMIN_EMAIL, AdminContextType, AdminSection } from '@/types/admin';
+import { AdminContextType, AdminSection } from '@/types/admin';
 import { logAdminAction } from '@/utils/adminLogs';
 import { safeNavigator } from '@/utils/browserCheck';
+import { auth } from '@/lib/firebase';
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
@@ -19,32 +20,70 @@ export function useAdmin() {
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [currentSection, setCurrentSection] = useState<AdminSection>('dashboard');
   const [hasLoggedLogin, setHasLoggedLogin] = useState(false);
 
-  // Check if current user is admin
-  const isAdmin = user?.email === ADMIN_EMAIL;
-
+  // Verify admin status through server-side API
   useEffect(() => {
-    if (!authLoading) {
-      setLoading(false);
-      
-      // Log admin login when user is authenticated as admin
-      if (isAdmin && !hasLoggedLogin) {
-        logAdminAction({
-          action: 'admin_login',
-          details: {
-            loginTime: new Date().toISOString(),
-            userAgent: safeNavigator?.userAgent || 'unknown',
-          },
-        }).then(() => {
-          setHasLoggedLogin(true);
-        }).catch(err => {
-          console.error('Failed to log admin login:', err);
-        });
+    const verifyAdminStatus = async () => {
+      if (!authLoading && user) {
+        try {
+          // Get the current user's ID token
+          const token = await auth?.currentUser?.getIdToken();
+          if (!token) {
+            setIsAdmin(false);
+            setLoading(false);
+            return;
+          }
+
+          // Call the server-side verification endpoint
+          const response = await fetch('/api/admin/verify-role', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setIsAdmin(data.isAdmin === true);
+            
+            // Log admin login if verified as admin
+            if (data.isAdmin && !hasLoggedLogin) {
+              logAdminAction({
+                action: 'admin_login',
+                details: {
+                  loginTime: new Date().toISOString(),
+                  userAgent: safeNavigator?.userAgent || 'unknown',
+                  verificationMethod: data.verificationMethod,
+                },
+              }).then(() => {
+                setHasLoggedLogin(true);
+              }).catch(err => {
+                console.error('Failed to log admin login:', err);
+              });
+            }
+          } else {
+            setIsAdmin(false);
+          }
+        } catch (error) {
+          console.error('Failed to verify admin status:', error);
+          setIsAdmin(false);
+        }
+      } else if (!authLoading && !user) {
+        // No user logged in
+        setIsAdmin(false);
       }
-    }
-  }, [authLoading, isAdmin, hasLoggedLogin]);
+      
+      if (!authLoading) {
+        setLoading(false);
+      }
+    };
+
+    verifyAdminStatus();
+  }, [authLoading, user, hasLoggedLogin]);
 
   const value: AdminContextType = {
     isAdmin,

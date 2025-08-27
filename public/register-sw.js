@@ -20,7 +20,6 @@
         updateViaCache: 'none'
       })
       .then(function(registration) {
-        console.log('[PWA] Service Worker registered successfully:', registration.scope);
         
         // Check for updates periodically
         setInterval(() => {
@@ -34,7 +33,6 @@
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New service worker available
-                console.log('[PWA] New service worker available');
                 // Dispatch custom event for update notification
                 window.dispatchEvent(new CustomEvent('sw-update', { detail: { registration } }));
               }
@@ -48,7 +46,6 @@
       
     // Handle controller change
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('[PWA] Controller changed, reloading page');
       window.location.reload();
     });
   });

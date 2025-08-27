@@ -40,7 +40,7 @@ export class AuthService {
   
   private constructor() {
     this.initializeAuthListener();
-    this.checkRedirectResult();
+    // Removed checkRedirectResult since we're using popup
   }
   
   static getInstance(): AuthService {
@@ -166,14 +166,27 @@ export class AuthService {
       // Add scope for profile picture
       provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
       
-      // Always use redirect flow to avoid COOP issues
-      // Modern browsers with strict security policies block popups from closing
-      await signInWithRedirect(auth, provider);
+      // Use popup for immediate sign-in
+      const result = await signInWithPopup(auth, provider);
       
-      // This will redirect the page, result will be handled by checkRedirectResult()
+      if (result.user) {
+        const authUser = await this.createAuthUser(result.user, 'google');
+        
+        // Log security event
+        await this.securityMonitor.logEvent(result.user.uid, 'login_success', {
+          provider: 'google',
+          ...metadata,
+        });
+        
+        return {
+          success: true,
+          user: authUser,
+        };
+      }
+      
       return {
-        success: true,
-        message: 'Redirecting to Google sign-in...',
+        success: false,
+        message: 'Failed to sign in with Google',
       };
     } catch (error: any) {
       console.error('Google sign in error:', error);

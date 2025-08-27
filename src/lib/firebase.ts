@@ -25,10 +25,8 @@ if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.project
   // Initialize Firebase (works on both client and server)
   if (!getApps().length) {
     app = initializeApp(firebaseConfig);
-    console.log('[Firebase] App initialized successfully');
   } else {
     app = getApps()[0];
-    console.log('[Firebase] Using existing app');
   }
 
   // Initialize services
@@ -36,12 +34,10 @@ if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.project
   if (typeof window !== 'undefined') {
     auth = getAuth(app);
     storage = getStorage(app);
-    console.log('[Firebase] Auth and Storage services initialized');
   }
 
   // Firestore is needed on both client and server (for caching)
   db = getFirestore(app);
-  console.log('[Firebase] Firestore service initialized');
 } else {
   console.error('[Firebase] Missing required configuration:', {
     apiKey: !!firebaseConfig.apiKey,

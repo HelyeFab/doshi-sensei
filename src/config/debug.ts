@@ -30,8 +30,3 @@ export function isSystemEnabled(system: 'learning' | 'stats' | 'queue'): boolean
   }
 }
 
-console.log('🔍 Debug Configuration Active:', {
-  learningEvents: isSystemEnabled('learning') ? 'ENABLED' : 'DISABLED',
-  statsTracker: isSystemEnabled('stats') ? 'ENABLED' : 'DISABLED',
-  eventQueue: isSystemEnabled('queue') ? 'ENABLED' : 'DISABLED',
-});

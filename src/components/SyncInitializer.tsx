@@ -39,18 +39,12 @@ export default function SyncInitializer() {
     };
 
     if (shouldSync()) {
-      console.log('🚀 Auto-sync triggered:', {
-        reason: !hasInitialSynced.current ? 'App launch' : 'User change',
-        userId: user?.uid
-      });
 
       // Delay slightly to ensure Firebase is fully initialized
       const timer = setTimeout(() => {
         forceSyncFromFirebase().then(success => {
           if (success) {
-            console.log('✅ Auto-sync completed successfully');
           } else {
-            console.log('ℹ️ Auto-sync: No changes detected');
           }
         }).catch(error => {
           console.error('❌ Auto-sync failed:', error);

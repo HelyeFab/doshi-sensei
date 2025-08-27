@@ -6,6 +6,8 @@
 import {
   User,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -38,6 +40,7 @@ export class AuthService {
   
   private constructor() {
     this.initializeAuthListener();
+    this.checkRedirectResult();
   }
   
   static getInstance(): AuthService {
@@ -45,6 +48,30 @@ export class AuthService {
       AuthService.instance = new AuthService();
     }
     return AuthService.instance;
+  }
+
+  /**
+   * Check for redirect result from Google Sign-In
+   */
+  private async checkRedirectResult(): Promise<void> {
+    if (!auth || typeof window === 'undefined') return;
+    
+    try {
+      const result = await getRedirectResult(auth);
+      if (result?.user) {
+        // User signed in via redirect
+        const authUser = await this.createAuthUser(result.user, 'google');
+        
+        // Log security event
+        await this.securityMonitor.logEvent(result.user.uid, 'login_success', {
+          provider: 'google',
+          method: 'redirect',
+        });
+      }
+    } catch (error) {
+      // Silently handle redirect errors (usually means no redirect was pending)
+      console.debug('No redirect result pending:', error);
+    }
   }
 
   /**
@@ -139,21 +166,39 @@ export class AuthService {
       // Add scope for profile picture
       provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
       
-      const result = await signInWithPopup(auth, provider);
-      
-      if (result.user) {
-        const authUser = await this.createAuthUser(result.user, 'google');
+      // Try popup first, but fall back to redirect if it fails due to COOP
+      try {
+        const result = await signInWithPopup(auth, provider);
         
-        // Log security event
-        await this.securityMonitor.logEvent(result.user.uid, 'login_success', {
-          provider: 'google',
-          ...metadata,
-        });
-        
-        return {
-          success: true,
-          user: authUser,
-        };
+        if (result.user) {
+          const authUser = await this.createAuthUser(result.user, 'google');
+          
+          // Log security event
+          await this.securityMonitor.logEvent(result.user.uid, 'login_success', {
+            provider: 'google',
+            ...metadata,
+          });
+          
+          return {
+            success: true,
+            user: authUser,
+          };
+        }
+      } catch (popupError: any) {
+        // If popup fails due to COOP or other reasons, use redirect
+        if (popupError.code === 'auth/popup-blocked' || 
+            popupError.code === 'auth/cancelled-popup-request' ||
+            popupError.message?.includes('Cross-Origin-Opener-Policy')) {
+          // Use redirect flow instead
+          await signInWithRedirect(auth, provider);
+          // This will redirect the page, so we won't return here
+          return {
+            success: true,
+            message: 'Redirecting to Google sign-in...',
+          };
+        }
+        // Re-throw if it's a different error
+        throw popupError;
       }
       
       return {

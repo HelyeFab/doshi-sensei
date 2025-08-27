@@ -217,46 +217,75 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
 
     try {
       console.log('⚡ Force sync triggered by user');
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
       
-      if (userDoc.exists() && userDoc.data().settings) {
-        const cloudSettings = userDoc.data().settings as AppSettings;
-        const mergedSettings = {
-          ...defaultSettings,
-          ...cloudSettings,
-          companionHistory: cloudSettings.companionHistory || defaultSettings.companionHistory,
-          navigationPreferences: cloudSettings.navigationPreferences || defaultSettings.navigationPreferences
-        };
-        
-        // Firebase wins - update both state and localStorage
-        setSettings(mergedSettings);
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(mergedSettings));
-        setLastSyncTime(new Date());
-        
-        console.log('✅ Force sync completed successfully');
-        return true;
-      }
+      // Parallel sync all data types
+      const syncPromises: Promise<void>[] = [];
       
-      // No settings in Firebase
-      console.log('ℹ️ No settings found in Firebase');
+      // 1. Sync settings
+      syncPromises.push(
+        getDoc(doc(db, 'users', user.uid)).then((userDoc) => {
+          if (userDoc.exists() && userDoc.data().settings) {
+            const cloudSettings = userDoc.data().settings as AppSettings;
+            const mergedSettings = {
+              ...defaultSettings,
+              ...cloudSettings,
+              companionHistory: cloudSettings.companionHistory || defaultSettings.companionHistory,
+              navigationPreferences: cloudSettings.navigationPreferences || defaultSettings.navigationPreferences
+            };
+            
+            // Firebase wins - update both state and localStorage
+            setSettings(mergedSettings);
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(mergedSettings));
+            console.log('✅ Settings synced from Firebase');
+          }
+        })
+      );
       
-      // If user has a paid plan, upload current settings
+      // 2. Sync achievements and stats for paid users
       if (hasPaidPlan(subscription)) {
-        try {
-          await setDoc(
-            doc(db, 'users', user.uid),
-            { settings },
-            { merge: true }
-          );
-          setLastSyncTime(new Date());
-          console.log('📤 Current settings uploaded to Firebase');
-          return true;
-        } catch (error) {
-          console.error('Failed to upload settings during force sync:', error);
-        }
+        // Sync user stats
+        syncPromises.push(
+          getDoc(doc(db, 'users', user.uid, 'achievementStats', 'current')).then((statsDoc) => {
+            if (statsDoc.exists()) {
+              const cloudStats = statsDoc.data();
+              localStorage.setItem('doshi_sensei_achievements', JSON.stringify(cloudStats));
+              console.log('✅ Achievement stats synced from Firebase');
+            }
+          }).catch(error => console.warn('Could not sync achievement stats:', error))
+        );
+        
+        // Sync unlocked achievements
+        syncPromises.push(
+          import('@/lib/achievements/manager').then(({ AchievementManager }) => {
+            return AchievementManager.initialize();
+          }).then(() => {
+            console.log('✅ Achievements manager reinitialized');
+          }).catch(error => console.warn('Could not reinitialize achievements:', error))
+        );
+        
+        // Sync user stats document
+        syncPromises.push(
+          getDoc(doc(db, 'userStats', user.uid)).then((statsDoc) => {
+            if (statsDoc.exists()) {
+              const cloudStats = statsDoc.data();
+              localStorage.setItem('doshi_sensei_stats', JSON.stringify(cloudStats));
+              console.log('✅ User stats synced from Firebase');
+            }
+          }).catch(error => console.warn('Could not sync user stats:', error))
+        );
       }
       
-      return false;
+      // Wait for all syncs to complete
+      await Promise.all(syncPromises);
+      
+      setLastSyncTime(new Date());
+      console.log('✅ Force sync completed successfully');
+      
+      // Force a window refresh event to update UI
+      window.dispatchEvent(new Event('storage'));
+      
+      return true;
+      
     } catch (error) {
       console.error('❌ Force sync failed:', error);
       return false;

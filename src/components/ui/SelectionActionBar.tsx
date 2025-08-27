@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { Switch } from '@/components/Switch';
 
 interface SelectionActionBarProps {
   // Selection controls
@@ -106,20 +107,14 @@ export function SelectionActionBar({
 
             {/* Optional Toggle */}
             {showToggle && onToggleChange && (
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-secondary">
-                <span className="text-xs text-secondary-foreground">{toggleLabel}</span>
-                <button
-                  onClick={() => onToggleChange(!toggleValue)}
-                  className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
-                    toggleValue ? 'bg-primary' : 'bg-muted'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-background transition-transform ${
-                      toggleValue ? 'translate-x-[18px]' : 'translate-x-0.5'
-                    }`}
-                  />
-                </button>
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={toggleValue}
+                  onChange={onToggleChange}
+                  size="md"
+                  label={toggleLabel}
+                  labelPosition="left"
+                />
               </div>
             )}
             

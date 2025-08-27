@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useStrings } from '@/contexts/LanguageContext';
@@ -12,8 +12,8 @@ import VirtualCompanion from '@/components/VirtualCompanion';
 import SmartReviewWidget from '@/components/unified-review/SmartReviewWidget';
 
 interface ClientHomeProps {
-  initialDate: string;
-  initialProgress: number;
+  initialDate: string | null;
+  initialProgress: number | null;
 }
 
 export default function ClientHome({ initialDate, initialProgress }: ClientHomeProps) {
@@ -24,6 +24,27 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
   const displayName = fullDisplayName; // Keep full name for backward compatibility
   const [showCompanion, setShowCompanion] = useState(false);
   const strings = useStrings();
+  
+  // Calculate date and progress on client side only
+  const [dateString, setDateString] = useState('');
+  const [dayProgress, setDayProgress] = useState(0);
+  
+  useEffect(() => {
+    const today = new Date();
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    setDateString(today.toLocaleDateString('en-US', options));
+    
+    // Calculate day progress
+    const hours = today.getHours();
+    const minutes = today.getMinutes();
+    const totalMinutes = hours * 60 + minutes;
+    setDayProgress((totalMinutes / (24 * 60)) * 100);
+  }, []);
 
   // SEO Structured Data using strings
   const structuredData = {
@@ -172,14 +193,14 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
         {/* Today's Date Section */}
         <section className="px-4 pb-6">
           <h2 className="text-lg font-medium text-foreground mb-2">
-            Today, {initialDate}
+            {dateString ? `Today, ${dateString}` : 'Loading...'}
           </h2>
           
           {/* Day Progress Bar - Thin like in old app */}
           <div className="relative h-0.5 w-full bg-muted overflow-hidden">
             <div 
               className="absolute left-0 top-0 h-full bg-primary transition-all duration-300 ease-out"
-              style={{ width: `${initialProgress}%` }}
+              style={{ width: `${dayProgress}%` }}
             />
           </div>
           <p className="text-xs text-muted-foreground mt-1">Day progress</p>

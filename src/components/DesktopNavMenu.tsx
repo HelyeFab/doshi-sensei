@@ -69,7 +69,7 @@ const DesktopNavMenu = React.memo(() => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <>
+        <React.Fragment>
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/20 backdrop-blur-sm"
@@ -114,7 +114,7 @@ const DesktopNavMenu = React.memo(() => {
               </div>
             </div>
           </div>
-        </>
+        </React.Fragment>
       )}
     </div>
   );

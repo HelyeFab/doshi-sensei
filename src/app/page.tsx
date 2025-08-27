@@ -3,21 +3,7 @@ import ClientHome from '@/components/ClientHome';
 export const dynamic = 'force-dynamic';
 
 export default function Home() {
-  // Calculate initial values on the server
-  const today = new Date();
-  const options: Intl.DateTimeFormatOptions = { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  };
-  const initialDate = today.toLocaleDateString('en-US', options);
-  
-  // Calculate day progress
-  const hours = today.getHours();
-  const minutes = today.getMinutes();
-  const totalMinutes = hours * 60 + minutes;
-  const initialProgress = (totalMinutes / (24 * 60)) * 100;
-
-  return <ClientHome initialDate={initialDate} initialProgress={initialProgress} />;
+  // Don't calculate date on server to avoid hydration mismatches
+  // Pass null values and let client handle it
+  return <ClientHome initialDate={null} initialProgress={null} />;
 }

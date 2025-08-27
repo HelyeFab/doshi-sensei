@@ -209,7 +209,6 @@ export async function getFeatureStats(): Promise<FeatureStats> {
       const usersRef = collection(db, 'users');
       const usersSnapshot = await getDocs(usersRef);
       
-      console.log(`Aggregating usage from ${usersSnapshot.size} users for date: ${today}`);
       
       for (const userDoc of usersSnapshot.docs) {
         try {
@@ -245,7 +244,6 @@ export async function getFeatureStats(): Promise<FeatureStats> {
         }
       }
       
-      console.log(`Aggregated stats - Drills: ${drillsCompleted}, Searches: ${vocabularySearches}, MoodBoards: ${moodBoardViews}`);
     } catch (aggregateError) {
       console.error('Error aggregating user usage:', aggregateError);
     }

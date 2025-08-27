@@ -41,7 +41,7 @@ const getPseudoRandom = (index: number, seed: number = 0) => {
 };
 
 export default function SplashScreen({ duration = 3000, forceShow = false }: SplashScreenProps) {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   
   // Use a deterministic message based on current date to avoid hydration mismatch
@@ -62,11 +62,13 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
   }, []);
 
   useEffect(() => {
+    // Only show splash screen on client after mount
     setIsMounted(true);
+    setIsVisible(true);
   }, []);
 
   useEffect(() => {
-    if (!forceShow && isMounted) {
+    if (!forceShow && isMounted && isVisible) {
       // Hide splash screen after specified duration
       const timer = setTimeout(() => {
         setIsVisible(false);
@@ -74,7 +76,12 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
 
       return () => clearTimeout(timer);
     }
-  }, [duration, forceShow, isMounted]);
+  }, [duration, forceShow, isMounted, isVisible]);
+
+  // Don't render anything on server to avoid hydration issues
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <AnimatePresence>

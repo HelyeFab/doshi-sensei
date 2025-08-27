@@ -115,16 +115,6 @@ export async function calculateSubscriptionMetrics(): Promise<SubscriptionMetric
     // Calculate average revenue per user
     const averageRevenue = totalSubscribers > 0 ? totalMRR / totalSubscribers : 0;
     
-    console.log('[SubscriptionAnalytics] Revenue calculation:', {
-      monthlyCount,
-      yearlyCount,
-      monthlyPrice: MONTHLY_PRICE,
-      yearlyPrice: YEARLY_PRICE,
-      monthlyMRR: monthlyMRR.toFixed(2),
-      yearlyMRR: yearlyMRR.toFixed(2),
-      totalMRR: totalMRR.toFixed(2),
-      totalARR: totalARR.toFixed(2)
-    });
     
     // TODO: Calculate actual churn rate based on cancellations
     const churnRate = 0; // Placeholder - would need historical data

@@ -80,8 +80,6 @@ export class SecurityMonitor {
     eventType: SecurityEventType,
     metadata: Record<string, any> = {}
   ): Promise<void> {
-    if (!db) return;
-    
     try {
       const event: SecurityEvent = {
         id: `${userId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -95,12 +93,32 @@ export class SecurityMonitor {
         resolved: false,
       };
       
-      // Store in Firestore
-      const eventRef = doc(db, 'security_events', event.id);
-      await setDoc(eventRef, {
-        ...event,
-        timestamp: serverTimestamp(),
-      });
+      // For critical client-side events, use the API endpoint
+      if (typeof window !== 'undefined') {
+        // Client-side: use API endpoint
+        try {
+          await fetch('/api/auth/security/suspicious', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              identifier: userId,
+              action: eventType,
+              timestamp: new Date().toISOString(),
+              type: eventType,
+              metadata,
+            }),
+          });
+        } catch (error) {
+          console.error('Failed to log security event via API:', error);
+        }
+      } else if (db) {
+        // Server-side: direct Firestore write (for server-side usage)
+        const eventRef = doc(db, 'security_events', event.id);
+        await setDoc(eventRef, {
+          ...event,
+          timestamp: serverTimestamp(),
+        });
+      }
       
       // Check for immediate threats
       if (event.riskLevel === 'critical') {

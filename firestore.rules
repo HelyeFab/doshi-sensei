@@ -1195,10 +1195,21 @@ service cloud.firestore {
     match /sessions/{sessionId} {
       // Users can read their own sessions
       allow read: if request.auth != null && 
-        resource.data.userId == request.auth.uid;
+        (resource == null || resource.data.userId == request.auth.uid);
       
-      // No direct client writes (managed by auth service)
-      allow write: if false;
+      // Users can create their own sessions
+      allow create: if request.auth != null && 
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['userId', 'sessionId', 'createdAt', 'expiresAt', 'ipAddress', 'userAgent', 'isActive']);
+      
+      // Users can update their own sessions (to mark as inactive)
+      allow update: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can delete their own sessions
+      allow delete: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
     }
     
     // Email Verifications collection - tracks email verification status

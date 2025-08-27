@@ -38,7 +38,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
           }
 
           // Call the server-side verification endpoint
-          console.log('[Admin Debug] Verifying admin status for:', user.email);
           const response = await fetch('/api/admin/verify-role', {
             method: 'POST',
             headers: {
@@ -49,7 +48,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
           if (response.ok) {
             const data = await response.json();
-            console.log('[Admin Debug] Verification response:', data);
             setIsAdmin(data.isAdmin === true);
             
             // Log admin login if verified as admin

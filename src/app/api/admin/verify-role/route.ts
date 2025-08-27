@@ -18,11 +18,6 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
   // Get admin email from environment variable (server-side)
   const adminEmail = process.env.ADMIN_EMAIL;
   
-  // Debug logging
-  console.log('[Admin Verify] Checking admin status for:', decodedToken.email);
-  console.log('[Admin Verify] Admin email from env:', adminEmail ? `${adminEmail.substring(0, 3)}...@...` : 'NOT SET');
-  console.log('[Admin Verify] Emails match:', adminEmail === decodedToken.email);
-  
   // Three-layer admin verification:
   // 1. Check Firebase custom claim (most secure)
   // 2. Check if email matches environment variable
@@ -34,20 +29,17 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
   if (decodedToken.admin === true) {
     isAdmin = true;
     verificationMethod = 'custom_claim';
-    console.log('[Admin Verify] Admin verified via custom claim');
   }
   // Layer 2: Email from environment variable
   else if (adminEmail && decodedToken.email === adminEmail) {
     isAdmin = true;
     verificationMethod = 'email_env';
-    console.log('[Admin Verify] Admin verified via environment variable');
     
     // Try to set custom claim for future verifications
     try {
       await admin.auth().setCustomUserClaims(decodedToken.uid, { admin: true });
-      console.log(`Set admin claim for ${decodedToken.email}`);
     } catch (error) {
-      console.error('Failed to set admin claim:', error);
+      // Silently fail - not critical
     }
   }
   // Layer 3: Check Firestore
@@ -65,17 +57,14 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
         // Set custom claim for future verifications
         try {
           await admin.auth().setCustomUserClaims(decodedToken.uid, { admin: true });
-          console.log(`Set admin claim for ${decodedToken.email} based on Firestore`);
         } catch (error) {
-          console.error('Failed to set admin claim:', error);
+          // Silently fail - not critical
         }
       }
     } catch (error) {
       console.error('Failed to check Firestore for admin status:', error);
     }
   }
-  
-  console.log(`Admin verification for ${decodedToken.email}: ${isAdmin} (method: ${verificationMethod})`);
 
   return NextResponse.json({
     isAdmin,

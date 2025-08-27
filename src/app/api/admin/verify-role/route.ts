@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withFirebaseAdmin } from '@/utils/api-wrapper';
+import { ADMIN_EMAILS, isAdminEmail } from '@/config/admin';
 
 // Server-side admin role verification using Firebase custom claims
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
@@ -15,13 +16,63 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
   // Verify the Firebase token
   const decodedToken = await admin.auth().verifyIdToken(token);
   
-  // Check if user has admin custom claim
-  const isAdmin = decodedToken.admin === true || decodedToken.email === 'emmanuelfabiani23@gmail.com';
+  // Three-layer admin verification:
+  // 1. Check Firebase custom claim (most secure)
+  // 2. Check if email is in admin list
+  // 3. Check Firestore document for isAdmin flag
+  let isAdmin = false;
+  let verificationMethod = 'none';
+  
+  // Layer 1: Custom claim
+  if (decodedToken.admin === true) {
+    isAdmin = true;
+    verificationMethod = 'custom_claim';
+  }
+  // Layer 2: Email list
+  else if (isAdminEmail(decodedToken.email)) {
+    isAdmin = true;
+    verificationMethod = 'email_list';
+    
+    // Try to set custom claim for future verifications
+    try {
+      await admin.auth().setCustomUserClaims(decodedToken.uid, { admin: true });
+      console.log(`Set admin claim for ${decodedToken.email}`);
+    } catch (error) {
+      console.error('Failed to set admin claim:', error);
+    }
+  }
+  // Layer 3: Check Firestore
+  else {
+    try {
+      const userDoc = await admin.firestore()
+        .collection('users')
+        .doc(decodedToken.uid)
+        .get();
+      
+      if (userDoc.exists && userDoc.data()?.isAdmin === true) {
+        isAdmin = true;
+        verificationMethod = 'firestore';
+        
+        // Set custom claim for future verifications
+        try {
+          await admin.auth().setCustomUserClaims(decodedToken.uid, { admin: true });
+          console.log(`Set admin claim for ${decodedToken.email} based on Firestore`);
+        } catch (error) {
+          console.error('Failed to set admin claim:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to check Firestore for admin status:', error);
+    }
+  }
+  
+  console.log(`Admin verification for ${decodedToken.email}: ${isAdmin} (method: ${verificationMethod})`);
 
   return NextResponse.json({
     isAdmin,
     uid: decodedToken.uid,
-    email: decodedToken.email
+    email: decodedToken.email,
+    verificationMethod
   });
 });
 

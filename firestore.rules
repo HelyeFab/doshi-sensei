@@ -1259,14 +1259,21 @@ service cloud.firestore {
     }
 
     // Learning Events collection - Universal Learning Analytics System
-    // Only for premium users (monthly/yearly plans)
+    // For authenticated users (free gets local only, premium gets cloud)
     match /learning_events/{userId} {
+      // Check if user is authenticated and owns the data
+      function isOwner() {
+        return request.auth != null && request.auth.uid == userId;
+      }
+      
       // Check if user has premium plan
       function isPremiumUser() {
-        return request.auth != null && 
-               request.auth.uid == userId &&
+        let userData = get(/databases/$(database)/documents/users/$(userId)).data;
+        return isOwner() &&
                exists(/databases/$(database)/documents/users/$(userId)) &&
-               get(/databases/$(database)/documents/users/$(userId)).data.subscription.plan in ['monthly', 'yearly'];
+               (userData.subscription.plan in ['monthly', 'yearly'] ||
+                userData.plan in ['monthly', 'yearly'] ||
+                userData.subscriptionPlan in ['monthly', 'yearly']);
       }
       
       // Premium users can read/write their own events

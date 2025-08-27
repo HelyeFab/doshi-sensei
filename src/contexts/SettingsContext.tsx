@@ -338,9 +338,8 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       setLastSyncTime(new Date());
       console.log('✅ Force sync completed successfully');
       
-      // Force refresh events to update UI
-      window.dispatchEvent(new Event('storage'));
-      // Also dispatch a custom event for achievements to reload
+      // Dispatch a custom event for achievements to reload
+      // Don't dispatch 'storage' event as it can cause infinite loops
       window.dispatchEvent(new CustomEvent('achievements-synced'));
       
       return true;

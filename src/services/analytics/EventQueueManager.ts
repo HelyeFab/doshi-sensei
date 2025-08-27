@@ -304,14 +304,31 @@ class EventQueueManager {
       const { db } = await import('@/lib/firebase');
       
       const userDoc = await getDoc(doc(db, 'users', userId));
-      if (!userDoc.exists()) return false;
+      if (!userDoc.exists()) {
+        console.log('[EventQueueManager] User document not found for premium check');
+        return false;
+      }
       
       const userData = userDoc.data();
-      const plan = userData?.subscription?.plan || 'free';
       
-      return plan === 'monthly' || plan === 'yearly';
+      // Check multiple possible locations for plan (handling different data structures)
+      const plan = userData?.subscription?.plan || 
+                   userData?.plan || 
+                   userData?.subscriptionPlan || 
+                   'free';
+      
+      const isPremium = plan === 'monthly' || plan === 'yearly';
+      
+      console.log('[EventQueueManager] Premium check:', { 
+        userId, 
+        plan, 
+        isPremium,
+        hasSubscriptionField: !!userData?.subscription 
+      });
+      
+      return isPremium;
     } catch (error) {
-      // Failed to check premium status
+      console.error('[EventQueueManager] Failed to check premium status:', error);
       return false;
     }
   }

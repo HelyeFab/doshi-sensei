@@ -123,9 +123,12 @@ class LearningEventsService {
     }
 
     // Determine user tier based on subscription
-    if (subscription?.plan === 'monthly') {
+    // Handle both nested and flat subscription structures
+    const plan = subscription?.plan || subscription?.subscription?.plan || 'free';
+    
+    if (plan === 'monthly') {
       this.userTier = 'monthly';
-    } else if (subscription?.plan === 'yearly') {
+    } else if (plan === 'yearly') {
       this.userTier = 'yearly';
     } else {
       this.userTier = 'free';
@@ -138,7 +141,12 @@ class LearningEventsService {
       this.stopSync();
     }
 
-    console.log(`[LearningEvents] User tier set to: ${this.userTier}`);
+    console.log(`[LearningEvents] User tier set to: ${this.userTier}`, {
+      userId: user.uid,
+      plan,
+      subscription,
+      syncEnabled: this.userTier === 'monthly' || this.userTier === 'yearly'
+    });
   }
 
   /**
@@ -170,7 +178,12 @@ class LearningEventsService {
     // Store locally if enabled (free, monthly, yearly)
     if (config.enableLocal && this.currentUser) {
       try {
-        await storageManager.saveEvent(enrichedEvent);
+        // Ensure synced field is properly set
+        const eventToSave = {
+          ...enrichedEvent,
+          synced: false // Will be converted to 0 by StorageManager
+        };
+        await storageManager.saveEvent(eventToSave);
         console.log(`[LearningEvents] Event saved locally for ${this.userTier} user`);
       } catch (error) {
         console.error('[LearningEvents] Failed to save locally:', error);

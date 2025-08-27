@@ -44,12 +44,12 @@ export function useAchievements() {
       loadData();
     };
 
+    // Only listen for our custom event, not the generic storage event
+    // The storage event fires too frequently and causes infinite loops
     window.addEventListener('achievements-synced', handleSync);
-    window.addEventListener('storage', handleSync);
 
     return () => {
       window.removeEventListener('achievements-synced', handleSync);
-      window.removeEventListener('storage', handleSync);
     };
   }, [loadData]);
 

@@ -221,10 +221,13 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       // Parallel sync all data types
       const syncPromises: Promise<void>[] = [];
       
-      // 1. Sync settings
+      // 1. Sync settings - two-way sync
       syncPromises.push(
-        getDoc(doc(db, 'users', user.uid)).then((userDoc) => {
-          if (userDoc.exists() && userDoc.data().settings) {
+        getDoc(doc(db, 'users', user.uid)).then(async (userDoc) => {
+          const hasCloudSettings = userDoc.exists() && userDoc.data().settings;
+          
+          if (hasCloudSettings) {
+            // Cloud has settings - use as source of truth
             const cloudSettings = userDoc.data().settings as AppSettings;
             const mergedSettings = {
               ...defaultSettings,
@@ -233,43 +236,97 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
               navigationPreferences: cloudSettings.navigationPreferences || defaultSettings.navigationPreferences
             };
             
-            // Firebase wins - update both state and localStorage
             setSettings(mergedSettings);
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(mergedSettings));
             console.log('✅ Settings synced from Firebase');
+          } else if (settings && Object.keys(settings).length > 0) {
+            // No cloud settings but have local - upload them
+            console.log('📤 Uploading local settings to cloud...');
+            await setDoc(
+              doc(db, 'users', user.uid),
+              { settings },
+              { merge: true }
+            );
+            console.log('✅ Settings uploaded to Firebase');
           }
-        })
+        }).catch(error => console.warn('Could not sync settings:', error))
       );
       
       // 2. Sync achievements and stats for paid users
       if (hasPaidPlan(subscription)) {
-        // Sync user stats
+        // Sync user stats - two-way sync
         syncPromises.push(
-          getDoc(doc(db, 'users', user.uid, 'achievementStats', 'current')).then((statsDoc) => {
+          getDoc(doc(db, 'users', user.uid, 'achievementStats', 'current')).then(async (statsDoc) => {
+            const localStatsStr = localStorage.getItem('doshi_sensei_achievements');
+            const localStats = localStatsStr ? JSON.parse(localStatsStr) : null;
+            
             if (statsDoc.exists()) {
+              // Cloud has stats - use as source of truth
               const cloudStats = statsDoc.data();
               localStorage.setItem('doshi_sensei_achievements', JSON.stringify(cloudStats));
               console.log('✅ Achievement stats synced from Firebase');
+            } else if (localStats) {
+              // No cloud stats but have local - upload them
+              console.log('📤 Uploading local achievement stats to cloud...');
+              const { AchievementPremiumSync } = await import('@/lib/achievements/premiumSync');
+              await AchievementPremiumSync.syncUserStats(user, localStats, subscription);
+              console.log('✅ Achievement stats uploaded to Firebase');
             }
           }).catch(error => console.warn('Could not sync achievement stats:', error))
         );
         
-        // Sync unlocked achievements
+        // Sync achievements - upload local to cloud if they don't exist there
         syncPromises.push(
-          import('@/lib/achievements/manager').then(({ AchievementManager }) => {
-            return AchievementManager.initialize();
-          }).then(() => {
-            console.log('✅ Achievements manager reinitialized');
-          }).catch(error => console.warn('Could not reinitialize achievements:', error))
+          (async () => {
+            try {
+              const { AchievementPremiumSync } = await import('@/lib/achievements/premiumSync');
+              const { default: EnhancedStorageManager } = await import('@/utils/storage');
+              
+              // Get local achievements
+              const localAchievements = await EnhancedStorageManager.getUnlockedAchievements();
+              
+              // Download cloud achievements to see what's there
+              const cloudAchievements = await AchievementPremiumSync.downloadUnlockedAchievements(user, subscription);
+              
+              // If we have local achievements but no cloud achievements, upload them
+              if (localAchievements.length > 0 && (!cloudAchievements || cloudAchievements.length === 0)) {
+                console.log('📤 Uploading local achievements to cloud...');
+                for (const achievement of localAchievements) {
+                  await AchievementPremiumSync.syncUnlockedAchievement(user, achievement, subscription);
+                }
+                console.log(`✅ Uploaded ${localAchievements.length} achievements to cloud`);
+              } else if (cloudAchievements && cloudAchievements.length > 0) {
+                // Cloud has achievements, use them (cloud wins)
+                console.log('📥 Using cloud achievements as source of truth');
+                await EnhancedStorageManager.clearUnlockedAchievements();
+                for (const achievement of cloudAchievements) {
+                  await EnhancedStorageManager.saveUnlockedAchievement(achievement);
+                }
+              } else {
+                console.log('ℹ️ No achievements to sync');
+              }
+            } catch (error) {
+              console.warn('Could not sync achievements:', error);
+            }
+          })()
         );
         
-        // Sync user stats document
+        // Sync user stats document - two-way sync
         syncPromises.push(
-          getDoc(doc(db, 'userStats', user.uid)).then((statsDoc) => {
+          getDoc(doc(db, 'userStats', user.uid)).then(async (statsDoc) => {
+            const localStatsStr = localStorage.getItem('doshi_sensei_stats');
+            const localStats = localStatsStr ? JSON.parse(localStatsStr) : null;
+            
             if (statsDoc.exists()) {
+              // Cloud has stats - use as source of truth
               const cloudStats = statsDoc.data();
               localStorage.setItem('doshi_sensei_stats', JSON.stringify(cloudStats));
               console.log('✅ User stats synced from Firebase');
+            } else if (localStats) {
+              // No cloud stats but have local - upload them
+              console.log('📤 Uploading local user stats to cloud...');
+              await setDoc(doc(db, 'userStats', user.uid), localStats);
+              console.log('✅ User stats uploaded to Firebase');
             }
           }).catch(error => console.warn('Could not sync user stats:', error))
         );

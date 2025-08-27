@@ -139,9 +139,14 @@ export class AchievementManager {
       if (response.ok) {
         const data = await response.json();
         return data.achievements || [];
+      } else if (response.status === 500) {
+        // Expected when no dynamic achievements file exists yet
+        // Silently return empty array
+        return [];
       }
     } catch (error) {
-      console.error('Failed to load dynamic achievements:', error);
+      // Network error or API not available - not critical
+      console.debug('Dynamic achievements not available:', error);
     }
     return [];
   }

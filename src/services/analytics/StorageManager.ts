@@ -79,7 +79,14 @@ export class StorageManager {
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([STORES.EVENTS], 'readwrite');
       const store = transaction.objectStore(STORES.EVENTS);
-      const request = store.add(event);
+      
+      // Convert boolean synced to number for IndexedDB (0 = false, 1 = true)
+      const eventToStore = {
+        ...event,
+        synced: event.synced ? 1 : 0
+      };
+      
+      const request = store.add(eventToStore);
       
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
@@ -102,7 +109,12 @@ export class StorageManager {
       let hasError = false;
       
       events.forEach(event => {
-        const request = store.add(event);
+        // Convert boolean synced to number for IndexedDB
+        const eventToStore = {
+          ...event,
+          synced: event.synced ? 1 : 0
+        };
+        const request = store.add(eventToStore);
         
         request.onsuccess = () => {
           completed++;
@@ -114,7 +126,7 @@ export class StorageManager {
         request.onerror = () => {
           hasError = true;
           // Try to update if add fails (event already exists)
-          const putRequest = store.put(event);
+          const putRequest = store.put(eventToStore);
           putRequest.onsuccess = () => {
             completed++;
             if (completed === events.length) {
@@ -158,7 +170,12 @@ export class StorageManager {
         const cursor = (event.target as IDBRequest).result;
         
         if (!cursor) {
-          resolve(events);
+          // Convert synced field back to boolean for all events
+          const processedEvents = events.map(e => ({
+            ...e,
+            synced: e.synced === 1 || e.synced === true
+          }));
+          resolve(processedEvents);
           return;
         }
         
@@ -211,13 +228,19 @@ export class StorageManager {
       const index = store.index('synced');
       
       const events: LearningEvent[] = [];
-      const request = index.openCursor(IDBKeyRange.only(false));
+      // Use 0 for false, 1 for true in the index (IndexedDB doesn't handle boolean keys well)
+      const request = index.openCursor(IDBKeyRange.only(0));
       
       request.onsuccess = (event) => {
         const cursor = (event.target as IDBRequest).result;
         
         if (!cursor) {
-          resolve(events.filter(e => e.userId === userId));
+          // Convert synced field back to boolean and filter by userId
+          const processedEvents = events.map(e => ({
+            ...e,
+            synced: e.synced === 1
+          })).filter(e => e.userId === userId);
+          resolve(processedEvents);
           return;
         }
         
@@ -245,7 +268,7 @@ export class StorageManager {
         request.onsuccess = () => {
           const event = request.result;
           if (event) {
-            event.synced = true;
+            event.synced = 1; // Use 1 for true in IndexedDB
             event.syncedAt = syncedAt;
             
             const updateRequest = store.put(event);

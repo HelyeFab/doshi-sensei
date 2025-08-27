@@ -13,8 +13,57 @@ function AuthActionContent() {
   const router = useRouter();
   const { user } = useAuth();
   
-  const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
+  const [status, setStatus] = useState<'verifying' | 'success' | 'error' | 'needs-email'>('verifying');
   const [errorMessage, setErrorMessage] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const processEmailLink = async (emailToUse: string) => {
+    try {
+      setIsSubmitting(true);
+      
+      // Sign in with the email link
+      const result = await signInWithEmailLink(auth, emailToUse, window.location.href);
+      
+      if (result.user) {
+        setStatus('success');
+        
+        // Clear stored email
+        window.localStorage.removeItem('magicLinkEmail');
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          router.push('/');
+        }, 2000);
+      } else {
+        setStatus('error');
+        setErrorMessage('Sign-in failed. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Email link sign-in error:', error);
+      setStatus('error');
+      
+      // Provide user-friendly error messages
+      if (error.code === 'auth/invalid-action-code') {
+        setErrorMessage('This link has expired or has already been used. Please request a new one.');
+      } else if (error.code === 'auth/invalid-email') {
+        setErrorMessage('The email address is invalid.');
+      } else if (error.code === 'auth/user-disabled') {
+        setErrorMessage('This account has been disabled.');
+      } else {
+        setErrorMessage(error.message || 'An error occurred during sign-in');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (emailInput && emailInput.includes('@')) {
+      await processEmailLink(emailInput);
+    }
+  };
   
   useEffect(() => {
     const handleEmailLinkSignIn = async () => {
@@ -42,48 +91,18 @@ function AuthActionContent() {
           }
         }
         
-        // If still no email, prompt user
+        // If still no email, show branded email form
         if (!email) {
-          email = window.prompt('Please provide your email for confirmation');
-        }
-        
-        if (!email) {
-          setStatus('error');
-          setErrorMessage('Email is required to complete sign-in');
+          setStatus('needs-email');
           return;
         }
 
-        // Sign in with the email link
-        const result = await signInWithEmailLink(auth, email, window.location.href);
-        
-        if (result.user) {
-          setStatus('success');
-          
-          // Clear stored email
-          window.localStorage.removeItem('magicLinkEmail');
-          
-          // Redirect after a short delay
-          setTimeout(() => {
-            router.push('/');
-          }, 2000);
-        } else {
-          setStatus('error');
-          setErrorMessage('Sign-in failed. Please try again.');
-        }
+        // Process the email link with the found email
+        await processEmailLink(email);
       } catch (error: any) {
-        console.error('Email link sign-in error:', error);
+        console.error('Initial email link processing error:', error);
         setStatus('error');
-        
-        // Provide user-friendly error messages
-        if (error.code === 'auth/invalid-action-code') {
-          setErrorMessage('This link has expired or has already been used. Please request a new one.');
-        } else if (error.code === 'auth/invalid-email') {
-          setErrorMessage('The email address is invalid.');
-        } else if (error.code === 'auth/user-disabled') {
-          setErrorMessage('This account has been disabled.');
-        } else {
-          setErrorMessage(error.message || 'An error occurred during sign-in');
-        }
+        setErrorMessage('An error occurred while processing the authentication link');
       }
     };
 
@@ -103,6 +122,15 @@ function AuthActionContent() {
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-md w-full"
       >
+        {/* Logo and App Name */}
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-primary flex items-center justify-center gap-2">
+            <span className="text-4xl">🥷</span>
+            Dōshi Sensei
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">Your Japanese Learning Companion</p>
+        </div>
+        
         <div className="bg-card rounded-2xl shadow-2xl border border-border p-8 text-center">
           {status === 'verifying' && (
             <>
@@ -137,6 +165,56 @@ function AuthActionContent() {
               </h2>
               <p className="text-muted-foreground">
                 You've been signed in successfully. Redirecting to your dashboard...
+              </p>
+            </>
+          )}
+          
+          {status === 'needs-email' && (
+            <>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring" }}
+                className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-6"
+              >
+                <Mail className="w-10 h-10 text-blue-600" />
+              </motion.div>
+              <h2 className="text-2xl font-bold text-foreground mb-3">
+                Confirm Your Email
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                To complete sign-in, please enter the email address you used to request the magic link.
+              </p>
+              <form onSubmit={handleEmailSubmit} className="space-y-4">
+                <input
+                  type="email"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
+                  required
+                  autoFocus
+                  disabled={isSubmitting}
+                />
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !emailInput.includes('@')}
+                  className="w-full px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    'Continue'
+                  )}
+                </button>
+              </form>
+              <p className="mt-4 text-sm text-muted-foreground">
+                <a href="/login" className="text-primary hover:underline">
+                  Request a new magic link
+                </a>
               </p>
             </>
           )}

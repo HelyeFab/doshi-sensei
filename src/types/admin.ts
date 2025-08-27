@@ -1,4 +1,6 @@
-export const ADMIN_EMAIL = "mate.fizir@gmail.com";
+// Admin email from environment variable (server-side only)
+// For client-side, this will be undefined - use server-side checks
+export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "no-admin@example.com";
 
 // User statistics interfaces
 export interface UserStats {

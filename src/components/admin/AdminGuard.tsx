@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { ADMIN_EMAIL } from '@/types/admin';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link'
@@ -20,12 +19,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
   useEffect(() => {
     const verifyAdminRole = async () => {
       if (!loading && user) {
-        // First check client-side email for quick rejection
-        if (user.email !== ADMIN_EMAIL) {
-          router.replace('/');
-          return;
-        }
-
+        // Skip client-side email check - let server decide based on env variable
         setIsVerifyingAdmin(true);
         
         try {

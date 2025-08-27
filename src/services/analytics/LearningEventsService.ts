@@ -359,7 +359,9 @@ class LearningEventsService {
 
     return {
       ...stats,
-      uniqueContentCount: stats.uniqueContent.size
+      uniqueContentCount: stats.uniqueContent.size,
+      // Don't include the Set itself in the returned object
+      uniqueContent: undefined
     };
   }
 
@@ -436,6 +438,12 @@ class LearningEventsService {
       if (typeof value === 'function') continue;
       if (key.startsWith('_')) continue;
       
+      // Skip Set objects
+      if (value instanceof Set) continue;
+      
+      // Skip Map objects  
+      if (value instanceof Map) continue;
+      
       if (value instanceof Date) {
         cleaned[key] = Timestamp.fromDate(value);
       } else if (typeof value === 'object' && !Array.isArray(value)) {
@@ -458,11 +466,19 @@ class LearningEventsService {
       const stats = await this.getStats();
       const statsRef = doc(db, 'learning_events', this.currentUser.uid, 'stats', 'current');
       
-      await setDoc(statsRef, {
+      // Convert Set to array before sending to Firebase
+      const statsForFirebase = {
         ...stats,
+        // Convert the Set to an array if it exists
+        uniqueContentCount: stats.uniqueContent instanceof Set ? stats.uniqueContent.size : 0,
         lastUpdated: serverTimestamp(),
         userTier: this.userTier
-      }, { merge: true });
+      };
+      
+      // Remove the Set object itself
+      delete (statsForFirebase as any).uniqueContent;
+      
+      await setDoc(statsRef, statsForFirebase, { merge: true });
     } catch (error) {
       console.error('[LearningEvents] Failed to update cloud stats:', error);
     }

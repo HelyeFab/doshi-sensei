@@ -21,7 +21,9 @@
       "Bash(git grep:*)",
       "Bash(npm run dev:*)",
       "Read(//home/mate/Dev/NextProjects/doshi-sensei-old/**)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(find:*)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

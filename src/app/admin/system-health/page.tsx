@@ -20,12 +20,21 @@ export default function SystemHealthPage() {
 
       try {
         const token = await user.getIdToken();
-        const idTokenResult = await user.getIdTokenResult();
-        const adminClaim = idTokenResult.claims.admin === true;
-        const isAdminEmail = user.email === 'emmanuelfabiani23@gmail.com';
         
-        if (adminClaim || isAdminEmail) {
-          setIsAdmin(true);
+        // Verify admin role through API
+        const response = await fetch('/api/admin/verify-role', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.isAdmin) {
+            setIsAdmin(true);
+          } else {
+            router.push('/');
+          }
         } else {
           router.push('/');
         }

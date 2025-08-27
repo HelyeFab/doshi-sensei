@@ -29,7 +29,8 @@ export async function GET(request: NextRequest) {
     }
     
     // Check admin status from custom claims or email
-    const isAdmin = decodedToken.admin === true || decodedToken.email === 'emmanuelfabiani23@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const isAdmin = decodedToken.admin === true || (adminEmail && decodedToken.email === adminEmail);
     
     console.log('[SubscriptionAnalytics] Admin check:', { 
       uid: decodedToken.uid,

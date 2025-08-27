@@ -3,11 +3,11 @@
  * Centralized admin settings for consistent access control
  */
 
-// List of admin emails - Add new admins here
-export const ADMIN_EMAILS = [
-  'mate.fizir@gmail.com',
-  'emmanuelfabiani23@gmail.com'
-] as const;
+// List of admin emails - Get from environment variable
+// Server-side only - client-side will not have access to non-NEXT_PUBLIC env vars
+export const ADMIN_EMAILS = process.env.ADMIN_EMAIL 
+  ? [process.env.ADMIN_EMAIL]
+  : [] as readonly string[];
 
 // Primary admin email (for notifications, etc)
 export const PRIMARY_ADMIN_EMAIL = ADMIN_EMAILS[0];

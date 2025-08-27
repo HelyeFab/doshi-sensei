@@ -46,7 +46,8 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     const decodedToken = await admin.auth().verifyIdToken(token);
     
     // Check if user is admin
-    const isAdmin = decodedToken.admin === true || decodedToken.email === 'emmanuelfabiani23@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const isAdmin = decodedToken.admin === true || (adminEmail && decodedToken.email === adminEmail);
     if (!isAdmin) {
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }

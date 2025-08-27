@@ -2,9 +2,7 @@
 
 import { addDoc, collection, query, orderBy, limit, getDocs, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { AdminLog, AdminLogAction } from '@/types/admin';
-
-const ADMIN_EMAIL = 'emmanuelfabiani23@gmail.com';
+import { AdminLog, AdminLogAction, ADMIN_EMAIL } from '@/types/admin';
 
 export interface LogAdminActionParams {
   action: AdminLogAction;

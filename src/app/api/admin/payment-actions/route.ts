@@ -18,7 +18,9 @@ async function verifyAdminToken(request: NextRequest) {
   try {
     const adminInstance = await getFirebaseAdmin();
     const decodedToken = await adminInstance.auth().verifyIdToken(token);
-    const isAdmin = decodedToken.email === 'emmanuelfabiani23@gmail.com' || 
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const isAdmin = decodedToken.admin === true || 
+                    (adminEmail && decodedToken.email === adminEmail) ||
                     decodedToken.email === 'hove.international+3@gmail.com' || 
                     decodedToken.email === 'admin@doshisensei.com';
     return isAdmin ? decodedToken : null;

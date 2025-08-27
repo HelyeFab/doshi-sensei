@@ -15,7 +15,8 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
 
     const token = authHeader.split('Bearer ')[1];
     const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
-    const isAdmin = decodedToken.admin === true || decodedToken.email === 'emmanuelfabiani23@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const isAdmin = decodedToken.admin === true || (adminEmail && decodedToken.email === adminEmail);
     if (!isAdmin) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }

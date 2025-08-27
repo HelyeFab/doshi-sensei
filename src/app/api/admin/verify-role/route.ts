@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withFirebaseAdmin } from '@/utils/api-wrapper';
-import { ADMIN_EMAILS, isAdminEmail } from '@/config/admin';
 
 // Server-side admin role verification using Firebase custom claims
 export const POST = withFirebaseAdmin(async (request: NextRequest) => {
@@ -16,9 +15,12 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
   // Verify the Firebase token
   const decodedToken = await admin.auth().verifyIdToken(token);
   
+  // Get admin email from environment variable (server-side)
+  const adminEmail = process.env.ADMIN_EMAIL;
+  
   // Three-layer admin verification:
   // 1. Check Firebase custom claim (most secure)
-  // 2. Check if email is in admin list
+  // 2. Check if email matches environment variable
   // 3. Check Firestore document for isAdmin flag
   let isAdmin = false;
   let verificationMethod = 'none';
@@ -28,10 +30,10 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
     isAdmin = true;
     verificationMethod = 'custom_claim';
   }
-  // Layer 2: Email list
-  else if (isAdminEmail(decodedToken.email)) {
+  // Layer 2: Email from environment variable
+  else if (adminEmail && decodedToken.email === adminEmail) {
     isAdmin = true;
-    verificationMethod = 'email_list';
+    verificationMethod = 'email_env';
     
     // Try to set custom claim for future verifications
     try {

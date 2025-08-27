@@ -11,11 +11,9 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-// Admin emails
-const ADMIN_EMAILS = [
-  'mate.fizir@gmail.com',
-  'emmanuelfabiani23@gmail.com'
-];
+// Get admin email from environment variable
+require('dotenv').config();
+const ADMIN_EMAILS = process.env.ADMIN_EMAIL ? [process.env.ADMIN_EMAIL] : [];
 
 async function setAdminClaims() {
   console.log('Setting admin claims for users...\n');

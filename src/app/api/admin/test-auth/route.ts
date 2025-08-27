@@ -18,10 +18,10 @@ export async function GET(request: NextRequest) {
     const decodedToken = await admin.auth().verifyIdToken(token);
     
     const adminEmails = [
-      'emmanuelfabiani23@gmail.com',
+      process.env.ADMIN_EMAIL,
       'hove.international+3@gmail.com',
       'admin@doshisensei.com'
-    ];
+    ].filter(Boolean);
     
     const isAdmin = adminEmails.includes(decodedToken.email || '');
     

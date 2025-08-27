@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
-import { ADMIN_EMAIL } from '@/types/admin';
+import { useAdmin } from '@/contexts/AdminContext';
 
 interface NavItem {
   id: string;
@@ -33,9 +33,9 @@ const StunningBottomNavbar = React.memo(() => {
   const [activeItem, setActiveItem] = useState<string>('');
   const [showIndicator, setShowIndicator] = useState(false);
   const { user } = useAuth();
+  const { isAdmin } = useAdmin();
   
-  // STRICT SECURITY CHECK - Only show admin icon if email matches exactly
-  const isAdmin = user?.email === ADMIN_EMAIL;
+  // STRICT SECURITY CHECK - Using server-verified admin status from AdminContext
 
   // Memoize base navigation items
   const baseNavItems = useMemo<NavItem[]>(() => [
@@ -115,7 +115,7 @@ const StunningBottomNavbar = React.memo(() => {
           const isActive = item.id === activeItem;
           
           // DOUBLE SECURITY CHECK: Never render admin link unless user is verified admin
-          if (item.id === 'admin' && user?.email !== ADMIN_EMAIL) {
+          if (item.id === 'admin' && !isAdmin) {
             return null;
           }
           

@@ -196,7 +196,6 @@ export class StatsTracker {
   async trackActivity(type: ActivityType, details: Partial<ActivityEvent['details']> = {}): Promise<void> {
     // Check if system is disabled for debugging
     if (!isSystemEnabled('stats')) {
-      console.log('📊 [StatsTracker] System DISABLED for debugging');
       return;
     }
     
@@ -287,20 +286,13 @@ export class StatsTracker {
     try {
       // For users with paid plans, ALWAYS load from cloud first
       if (this.currentUser && hasPaidPlan(this.subscription)) {
-        console.log('📊 [StatsTracker] Loading from cloud for paid user');
         const cloudStats = await this.loadFromCloud();
         
         if (cloudStats) {
           this.stats = cloudStats;
-          console.log('✅ [StatsTracker] Loaded stats from cloud:', {
-            currentStreak: cloudStats.currentStreak,
-            longestStreak: cloudStats.longestStreak,
-            totalActivities: cloudStats.totalActivities
-          });
           // Save cloud stats locally for offline access
           await this.saveToIndexedDB();
         } else {
-          console.log('⚠️ [StatsTracker] No cloud stats found, loading from local');
           // Fall back to local if cloud fails
           const localStats = await this.loadFromIndexedDB();
           if (localStats) {
@@ -530,7 +522,6 @@ export class StatsTracker {
   private async saveToCloud(): Promise<void> {
     // Check if system is disabled for debugging
     if (!isSystemEnabled('stats')) {
-      console.log('📊 [StatsTracker] Cloud save DISABLED for debugging');
       return;
     }
 
@@ -1155,7 +1146,6 @@ export class StatsTracker {
   private async syncToCloud(): Promise<void> {
     // Check if system is disabled for debugging
     if (!isSystemEnabled('stats')) {
-      console.log('📊 [StatsTracker] Sync DISABLED for debugging');
       return;
     }
     

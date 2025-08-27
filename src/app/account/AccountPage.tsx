@@ -10,7 +10,7 @@ import SubscriptionPlans from '@/components/SubscriptionPlans';
 import SubscriptionHistory from '@/components/SubscriptionHistory';
 import AuthErrorModal from '@/components/AuthErrorModal';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
-import { ADMIN_EMAIL } from '@/types/admin';
+import { useAdmin } from '@/contexts/AdminContext';
 import Link from 'next/link'
 import { SmartNavigationLink } from '@/components/navigation/SmartNavigationLink';
 import { db } from '@/lib/firebase';
@@ -77,6 +77,7 @@ const THUMBNAIL_OPTIONS = [
 export default function AccountPage() {
   const { user, loading: authLoading, signInWithEmail, signUpWithEmail, signInWithGoogle, logout, resetPassword, deleteAccount } = useAuth();
   const { subscription, isPremium, userType, isLoading: subLoading } = useSubscription2();
+  const { isAdmin } = useAdmin();
   const { showNotification } = useNotification();
   const strings = useStrings();
   const [isLogin, setIsLogin] = useState(true);
@@ -347,7 +348,7 @@ export default function AccountPage() {
               </div>
 
               {/* Admin Access Section - Only show for admin user */}
-              {user.email === ADMIN_EMAIL && (
+              {isAdmin && (
                 <div className="bg-gradient-to-r from-muted/50 to-primary/10 dark:from-muted/40 dark:to-primary/20 border border-border rounded-lg p-6">
                   <div className="flex items-center space-x-4 mb-4">
                     <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">

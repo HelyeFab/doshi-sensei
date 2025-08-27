@@ -319,7 +319,6 @@ class EventQueueManager {
       
       const userDoc = await getDoc(doc(db, 'users', userId));
       if (!userDoc.exists()) {
-        console.log('[EventQueueManager] User document not found for premium check');
         return false;
       }
       
@@ -333,12 +332,6 @@ class EventQueueManager {
       
       const isPremium = plan === 'monthly' || plan === 'yearly';
       
-      console.log('[EventQueueManager] Premium check:', { 
-        userId, 
-        plan, 
-        isPremium,
-        hasSubscriptionField: !!userData?.subscription 
-      });
       
       return isPremium;
     } catch (error) {

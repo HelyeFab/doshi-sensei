@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
-import { ADMIN_EMAIL } from '@/types/admin';
+import { useAdmin } from '@/contexts/AdminContext';
 
 interface NavItem {
   label: string;
@@ -17,7 +17,7 @@ const DesktopNavMenu = React.memo(() => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { user } = useAuth();
-  const isAdmin = user?.email === ADMIN_EMAIL;
+  const { isAdmin } = useAdmin();
 
   // Menu items
   const menuItems = useMemo(() => {

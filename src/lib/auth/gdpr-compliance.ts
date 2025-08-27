@@ -317,12 +317,15 @@ export class GDPRComplianceService {
           where('userId', '==', userId)
         );
         const sessionsSnapshot = await getDocs(sessionsQuery);
-      sessionsSnapshot.forEach(doc => {
-        activities.push({
-          type: 'study_session',
-          ...doc.data(),
+        sessionsSnapshot.forEach(doc => {
+          activities.push({
+            type: 'study_session',
+            ...doc.data(),
+          });
         });
-      });
+      } catch (error) {
+        console.debug('Study sessions not accessible:', error);
+      }
       
       return activities;
     } catch (error) {

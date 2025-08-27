@@ -30,7 +30,8 @@
       "Bash(firebase login:*)",
       "Bash(firebase use:*)",
       "Bash(npm run export:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

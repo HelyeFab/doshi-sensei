@@ -5,6 +5,7 @@ import { EnvProvider } from "@/components/EnvProvider";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AdminProvider } from "@/contexts/AdminContext";
 import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { ModalProvider } from "@/contexts/ModalContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
@@ -16,37 +17,27 @@ export function CriticalProviders({ children }: { children: React.ReactNode }) {
     <EnvProvider>
       <LanguageProvider>
         <AuthProvider>
-          <SettingsProvider>
-            <UserProfileProvider>
-              <ModalProvider>
-                <NotificationProvider>
-                  <KanjiSelectionProvider>
-                    {children}
-                  </KanjiSelectionProvider>
-                </NotificationProvider>
-              </ModalProvider>
-            </UserProfileProvider>
-          </SettingsProvider>
+          <AdminProvider>
+            <SettingsProvider>
+              <UserProfileProvider>
+                <ModalProvider>
+                  <NotificationProvider>
+                    <KanjiSelectionProvider>
+                      {children}
+                    </KanjiSelectionProvider>
+                  </NotificationProvider>
+                </ModalProvider>
+              </UserProfileProvider>
+            </SettingsProvider>
+          </AdminProvider>
         </AuthProvider>
       </LanguageProvider>
     </EnvProvider>
   );
 }
 
-// Lazy load the admin provider
-const AdminProvider = lazy(() => 
-  import('@/contexts/AdminContext').then(mod => ({ 
-    default: mod.AdminProvider 
-  }))
-);
-
 // Non-critical providers that can be loaded after initial render
 export function NonCriticalProviders({ children }: { children: React.ReactNode }) {
-  return (
-    <Suspense fallback={children}>
-      <AdminProvider>
-        {children}
-      </AdminProvider>
-    </Suspense>
-  );
+  // AdminProvider moved to CriticalProviders since components depend on it
+  return <>{children}</>;
 }

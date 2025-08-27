@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stripeWebhook = exports.manageEntitlements = exports.updatePricingConfig = exports.testStorage = exports.reloadEntitlementRules = exports.rebuildConfig = exports.debugYouTubeLimits = exports.adminTestNotification = exports.adminBroadcast = exports.trackNotificationDismiss = exports.trackNotificationClick = exports.testNotification = exports.createReferral = exports.getTextbookVocabulary = exports.syncBugs = exports.getArticleStats = exports.getSubscriptionHealth = exports.getSystemHealthConsistency = exports.updateMaintenanceStatus = exports.getUserEntitlements = exports.fixSubscriptions = exports.fixEntitlements = exports.cleanupSubscriptions = exports.getSubscriptionAnalytics = exports.createCheckoutSession = exports.createPortalSession = exports.updateUserLimit = exports.getSystemHealth = exports.adminDeleteUser = exports.getShareStats = exports.trackShare = exports.updateNotificationPreferences = exports.registerNotificationToken = exports.manageBookmarks = exports.trackArticleView = exports.deleteAccount = exports.cancelSubscription = exports.cleanupNotificationLogs = exports.sendStreakReminders = exports.sendReviewReminders = exports.sendStudyReminders = void 0;
+exports.fetchMnemonic = exports.stripeWebhook = exports.manageEntitlements = exports.updatePricingConfig = exports.testStorage = exports.reloadEntitlementRules = exports.rebuildConfig = exports.debugYouTubeLimits = exports.adminTestNotification = exports.adminBroadcast = exports.trackNotificationDismiss = exports.trackNotificationClick = exports.testNotification = exports.createReferral = exports.getTextbookVocabulary = exports.syncBugs = exports.getArticleStats = exports.getSubscriptionHealth = exports.getSystemHealthConsistency = exports.updateMaintenanceStatus = exports.getUserEntitlements = exports.fixSubscriptions = exports.fixEntitlements = exports.cleanupSubscriptions = exports.getSubscriptionAnalytics = exports.createCheckoutSession = exports.createPortalSession = exports.updateUserLimit = exports.getSystemHealth = exports.adminDeleteUser = exports.getShareStats = exports.trackShare = exports.updateNotificationPreferences = exports.registerNotificationToken = exports.manageBookmarks = exports.trackArticleView = exports.deleteAccount = exports.cancelSubscription = exports.cleanupNotificationLogs = exports.sendStreakReminders = exports.sendReviewReminders = exports.sendStudyReminders = void 0;
 const v2_1 = require("firebase-functions/v2");
 const params_1 = require("firebase-functions/params");
 const admin = __importStar(require("firebase-admin"));
@@ -570,6 +570,9 @@ async function saveSubscriptionHistory(firebaseUID, eventType, details) {
         throw error; // Re-throw to be caught by caller
     }
 }
+// Export fetchMnemonic function for kanji mnemonics
+var fetchMnemonic_1 = require("../fetchMnemonic");
+Object.defineProperty(exports, "fetchMnemonic", { enumerable: true, get: function () { return fetchMnemonic_1.fetchMnemonic; } });
 /**
  * Handle successful invoice payment
  */

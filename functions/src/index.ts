@@ -615,6 +615,9 @@ async function saveSubscriptionHistory(
   }
 }
 
+// Export fetchMnemonic function for kanji mnemonics
+export { fetchMnemonic } from '../fetchMnemonic';
+
 /**
  * Handle successful invoice payment
  */

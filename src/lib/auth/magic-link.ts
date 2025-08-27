@@ -57,10 +57,9 @@ export class MagicLinkService {
       await this.storeMagicLinkData(email, token, metadata);
       
       // Configure action code settings
+      // Firebase will redirect to /auth/action with its own parameters
       const actionCodeSettings: ActionCodeSettings = {
-        url: `${this.getBaseUrl()}/auth/verify?token=${token}&email=${encodeURIComponent(email)}${
-          metadata.returnUrl ? `&returnUrl=${encodeURIComponent(metadata.returnUrl)}` : ''
-        }`,
+        url: `${this.getBaseUrl()}`,
         handleCodeInApp: true,
       };
       

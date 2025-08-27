@@ -48,21 +48,26 @@ export async function GET(request: NextRequest) {
     // Log a snippet of the HTML to debug parsing
     console.log('HTML snippet (first 500 chars):', html.substring(0, 500));
     
-    // Parse the HTML to extract mnemonic
-    // This is a simplified parser - you might need to adjust based on actual HTML structure
-    const mnemonic = parseMnemonicFromHTML(html, kanji);
-    console.log('Parsed mnemonic:', mnemonic);
-    
-    if (mnemonic) {
-      // Cache the result
-      cache.set(cacheKey, { data: mnemonic, timestamp: Date.now() });
-      return NextResponse.json(mnemonic);
-    } else {
-      return NextResponse.json(
-        { error: 'No mnemonic found for this kanji' },
-        { status: 404 }
-      );
+    // Check if we got a valid HTML response
+    if (html.includes('<!DOCTYPE') || html.includes('<html')) {
+      // Parse the HTML to extract mnemonic
+      const mnemonic = parseMnemonicFromHTML(html, kanji);
+      console.log('Parsed mnemonic:', mnemonic);
+      
+      if (mnemonic) {
+        // Cache the result
+        cache.set(cacheKey, { data: mnemonic, timestamp: Date.now() });
+        return NextResponse.json(mnemonic);
+      }
     }
+    
+    // If no valid HTML or mnemonic, return a fallback
+    return NextResponse.json({
+      mnemonic: `Study the components of ${kanji} to understand its meaning.`,
+      meaning: '',
+      alike: [],
+      source: 'fallback'
+    });
   } catch (error) {
     console.error('Error fetching mnemonic:', error);
     return NextResponse.json(

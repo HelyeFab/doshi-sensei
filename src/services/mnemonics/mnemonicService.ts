@@ -23,7 +23,10 @@ export interface KanjiMnemonic {
 class MnemonicService {
   private cache: Map<string, KanjiMnemonic> = new Map();
   private readonly CACHE_COLLECTION = 'mnemonicsCache';
-  private readonly API_BASE = '/api/mnemonics';
+  // Use Google Cloud Function for better reliability
+  private readonly API_BASE = process.env.NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL 
+    ? `${process.env.NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL}/fetchMnemonic`
+    : 'https://us-central1-doshi-sensei.cloudfunctions.net/fetchMnemonic';
 
   /**
    * Get mnemonic for a specific kanji
@@ -76,7 +79,8 @@ class MnemonicService {
   private async fetchAndCacheMnemonic(kanji: string): Promise<KanjiMnemonic | null> {
     try {
       console.log('Fetching mnemonic for:', kanji);
-      const response = await fetch(`${this.API_BASE}/fetch?kanji=${encodeURIComponent(kanji)}`);
+      // Call Google Cloud Function
+      const response = await fetch(`${this.API_BASE}?kanji=${encodeURIComponent(kanji)}`);
       
       console.log('Response status:', response.status);
       

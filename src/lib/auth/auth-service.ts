@@ -166,44 +166,14 @@ export class AuthService {
       // Add scope for profile picture
       provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
       
-      // Try popup first, but fall back to redirect if it fails due to COOP
-      try {
-        const result = await signInWithPopup(auth, provider);
-        
-        if (result.user) {
-          const authUser = await this.createAuthUser(result.user, 'google');
-          
-          // Log security event
-          await this.securityMonitor.logEvent(result.user.uid, 'login_success', {
-            provider: 'google',
-            ...metadata,
-          });
-          
-          return {
-            success: true,
-            user: authUser,
-          };
-        }
-      } catch (popupError: any) {
-        // If popup fails due to COOP or other reasons, use redirect
-        if (popupError.code === 'auth/popup-blocked' || 
-            popupError.code === 'auth/cancelled-popup-request' ||
-            popupError.message?.includes('Cross-Origin-Opener-Policy')) {
-          // Use redirect flow instead
-          await signInWithRedirect(auth, provider);
-          // This will redirect the page, so we won't return here
-          return {
-            success: true,
-            message: 'Redirecting to Google sign-in...',
-          };
-        }
-        // Re-throw if it's a different error
-        throw popupError;
-      }
+      // Always use redirect flow to avoid COOP issues
+      // Modern browsers with strict security policies block popups from closing
+      await signInWithRedirect(auth, provider);
       
+      // This will redirect the page, result will be handled by checkRedirectResult()
       return {
-        success: false,
-        message: 'Failed to sign in with Google',
+        success: true,
+        message: 'Redirecting to Google sign-in...',
       };
     } catch (error: any) {
       console.error('Google sign in error:', error);

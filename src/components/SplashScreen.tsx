@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
@@ -34,14 +34,39 @@ interface SplashScreenProps {
   forceShow?: boolean; // For testing purposes
 }
 
+// Deterministic pseudo-random based on index
+const getPseudoRandom = (index: number, seed: number = 0) => {
+  const value = Math.sin(index * 12.9898 + seed * 78.233) * 43758.5453123;
+  return value - Math.floor(value);
+};
+
 export default function SplashScreen({ duration = 3000, forceShow = false }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
-  const [loadingMessage] = useState(() => 
-    LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)]
-  );
+  const [isMounted, setIsMounted] = useState(false);
+  
+  // Use a deterministic message based on current date to avoid hydration mismatch
+  const loadingMessage = useMemo(() => {
+    const index = new Date().getDate() % LOADING_MESSAGES.length;
+    return LOADING_MESSAGES[index];
+  }, []);
+
+  // Generate deterministic positions for kanji
+  const kanjiPositions = useMemo(() => {
+    return KANJI_CHARACTERS.map((_, index) => ({
+      fontSize: getPseudoRandom(index, 1) * 60 + 40,
+      left: getPseudoRandom(index, 2) * 100,
+      top: getPseudoRandom(index, 3) * 100,
+      animateX: getPseudoRandom(index, 4) * 200 - 100,
+      animateY: getPseudoRandom(index, 5) * 200 - 100,
+    }));
+  }, []);
 
   useEffect(() => {
-    if (!forceShow) {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!forceShow && isMounted) {
       // Hide splash screen after specified duration
       const timer = setTimeout(() => {
         setIsVisible(false);
@@ -49,7 +74,7 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
 
       return () => clearTimeout(timer);
     }
-  }, [duration, forceShow]);
+  }, [duration, forceShow, isMounted]);
 
   return (
     <AnimatePresence>
@@ -68,33 +93,36 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
         >
           {/* Floating Kanji Background */}
           <div className="absolute inset-0">
-            {KANJI_CHARACTERS.map((kanji, index) => (
-              <motion.div
-                key={kanji}
-                className="absolute text-white/10 select-none"
-                style={{
-                  fontSize: `${Math.random() * 60 + 40}px`,
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                }}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{
-                  opacity: [0, 0.3, 0],
-                  scale: [0, 1.2, 0.8],
-                  rotate: [0, 180, 360],
-                  x: [0, Math.random() * 200 - 100],
-                  y: [0, Math.random() * 200 - 100],
-                }}
+            {KANJI_CHARACTERS.map((kanji, index) => {
+              const pos = kanjiPositions[index];
+              return (
+                <motion.div
+                  key={kanji}
+                  className="absolute text-white/10 select-none"
+                  style={{
+                    fontSize: `${pos.fontSize}px`,
+                    left: `${pos.left}%`,
+                    top: `${pos.top}%`,
+                  }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    opacity: [0, 0.3, 0],
+                    scale: [0, 1.2, 0.8],
+                    rotate: [0, 180, 360],
+                    x: [0, pos.animateX],
+                    y: [0, pos.animateY],
+                  }}
                 transition={{
                   duration: 3,
                   delay: index * 0.2,
                   repeat: Infinity,
                   repeatDelay: 1,
                 }}
-              >
-                {kanji}
-              </motion.div>
-            ))}
+                >
+                  {kanji}
+                </motion.div>
+              );
+            })}
           </div>
 
           {/* Center Content */}
@@ -193,25 +221,31 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
 
           {/* Particle Effects */}
           <div className="absolute inset-0 pointer-events-none">
-            {Array.from({ length: 20 }).map((_, index) => (
-              <motion.div
-                key={index}
-                className="absolute w-1 h-1 bg-white rounded-full"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  scale: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: Math.random() * 2,
-                }}
-              />
-            ))}
+            {Array.from({ length: 20 }).map((_, index) => {
+              const particleLeft = getPseudoRandom(index + 100, 6) * 100;
+              const particleTop = getPseudoRandom(index + 100, 7) * 100;
+              const particleDelay = getPseudoRandom(index + 100, 8) * 2;
+              
+              return (
+                <motion.div
+                  key={index}
+                  className="absolute w-1 h-1 bg-white rounded-full"
+                  style={{
+                    left: `${particleLeft}%`,
+                    top: `${particleTop}%`,
+                  }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: particleDelay,
+                  }}
+                />
+              );
+            })}
           </div>
 
           {/* CSS for gradient animation */}

@@ -4,32 +4,45 @@
  */
 
 export default function ThemeInitScript() {
-  // This script will be injected and executed immediately
+  // This script will be injected and executed immediately, blocking render
   const themeScript = `
     (function() {
       try {
-        // Get theme from localStorage
+        // Get saved preferences from localStorage
         const storedTheme = localStorage.getItem('theme');
         const storedColorScheme = localStorage.getItem('colorScheme');
+        const settingsStr = localStorage.getItem('appSettings');
         
-        // Apply theme class immediately
-        if (storedTheme) {
-          document.documentElement.classList.remove('dark', 'light');
-          document.documentElement.classList.add(storedTheme);
-        } else {
-          // Default to system preference
-          const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-          document.documentElement.classList.add(systemTheme);
+        let theme = storedTheme;
+        let colorScheme = storedColorScheme || 'default';
+        
+        // Try to get theme from settings object if available
+        if (settingsStr) {
+          try {
+            const settings = JSON.parse(settingsStr);
+            theme = theme || settings.theme;
+            colorScheme = settings.colorScheme || colorScheme;
+          } catch (e) {}
         }
         
-        // Apply color scheme if available
-        if (storedColorScheme) {
-          // This is a simplified version - you might need to apply actual CSS variables here
-          document.documentElement.setAttribute('data-color-scheme', storedColorScheme);
+        // Determine effective theme
+        let effectiveTheme = theme;
+        if (!effectiveTheme || effectiveTheme === 'system') {
+          effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
+        
+        // Apply theme class immediately to prevent flash
+        document.documentElement.classList.remove('dark', 'light');
+        document.documentElement.classList.add(effectiveTheme);
+        
+        // Store the color scheme as data attribute for CSS to use
+        document.documentElement.setAttribute('data-color-scheme', colorScheme);
+        
+        // Add a class to indicate theme has been initialized
+        document.documentElement.classList.add('theme-initialized');
       } catch (e) {
-        // Fail silently if localStorage is not available
-        console.error('Theme init error:', e);
+        // If anything fails, default to light theme to prevent white flash
+        document.documentElement.classList.add('light');
       }
     })();
   `.trim();
@@ -37,7 +50,6 @@ export default function ThemeInitScript() {
   return (
     <script
       dangerouslySetInnerHTML={{ __html: themeScript }}
-      // This ensures the script runs immediately, blocking render
     />
   );
 }

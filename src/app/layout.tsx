@@ -94,6 +94,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={rubik.variable} suppressHydrationWarning>
       <head>
+        {/* Prevent white flash by setting initial dark styles if preferred */}
+        <style dangerouslySetInnerHTML={{ 
+          __html: `
+            @media (prefers-color-scheme: dark) {
+              html:not(.theme-initialized) {
+                background-color: #0a0a0a;
+                color: #fafafa;
+              }
+            }
+          `.trim() 
+        }} />
         <ThemeInitScript />
         <SplashScreenMeta />
         <script src="/register-sw.js" defer />

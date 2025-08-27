@@ -1,6 +1,6 @@
 /**
  * Universal Learning Analytics Hook
- * The core "bug" that tracks everything
+ * Now properly integrated with tiered storage system
  */
 
 import { useCallback, useRef, useEffect, useContext } from 'react';
@@ -17,6 +17,7 @@ import {
 } from '@/types/analytics';
 import { storageManager } from '@/services/analytics/StorageManager';
 import { eventQueueManager } from '@/services/analytics/EventQueueManager';
+import { learningEventsService } from '@/services/analytics/LearningEventsService';
 
 // Generate a unique session ID for this page load
 const generateSessionId = () => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -43,12 +44,18 @@ export function useLearnTracking(
   // Use context directly to avoid errors when AuthContext is not available
   const authContext = useContext(AuthContext);
   const user = authContext?.user || null;
+  const subscription = authContext?.subscription || null;
   
   const pathname = usePathname();
   const sessionId = useRef(generateSessionId());
   const pageLoadTime = useRef(Date.now());
   
-  // Auto-track page views
+  // Initialize learning events service with user on mount/change
+  useEffect(() => {
+    learningEventsService.setUser(user, subscription);
+  }, [user, subscription]);
+  
+  // Auto-track page views (for logged-in users only, not guests)
   useEffect(() => {
     if (!enabled || !autoTrack || !user) return;
     
@@ -80,8 +87,12 @@ export function useLearnTracking(
   const track = useCallback((eventData: Partial<LearningEvent>) => {
     if (!enabled) return;
     
-    // Skip if no user (unless it's a guest-allowed event)
+    // Determine user tier for proper storage
     const userId = user?.uid || 'guest';
+    const isGuest = !user;
+    
+    // For guests, only track in memory (no persistence)
+    // For free/premium users, track according to their tier
     
     // Create complete event
     const event: LearningEvent = {
@@ -104,55 +115,60 @@ export function useLearnTracking(
       synced: false
     };
     
-    // Event created successfully
+    if (debug) {
+      const userTier = isGuest ? 'guest' : 
+                       subscription?.plan === 'monthly' ? 'monthly' :
+                       subscription?.plan === 'yearly' ? 'yearly' : 'free';
+      console.log(`[Track] Event (${userTier}):`, event.type, event.category, event.content.value);
+    }
     
-    // Queue the event
+    // Queue the event (will be handled according to user tier)
     eventQueueManager.queueEvent(event).catch(() => {
-      // Failed to queue event
+      // Failed to queue event - this is fine for guests
     });
-  }, [enabled, user, pathname, debug]);
+  }, [enabled, user, pathname, debug, subscription]);
   
   const getStats = useCallback(async (): Promise<UserLearningStats | null> => {
-    if (!user) return null;
+    // Guests can get temporary stats from memory
+    // Free users get stats from local storage
+    // Premium users get stats from cloud+local
     
     try {
-      // Get from storage
-      let stats = await storageManager.getUserStats(user.uid);
+      // Use the new service to get stats
+      const rawStats = await learningEventsService.getStats();
       
-      // If no stats, calculate from events
-      if (!stats) {
-        const events = await storageManager.getEvents(user.uid);
-        stats = calculateUserStats(events, user.uid);
-        await storageManager.updateUserStats(stats);
-      }
+      if (!rawStats) return null;
       
-      return stats;
+      // Get recent events for more detailed stats
+      const events = await learningEventsService.getRecentEvents(1000);
+      
+      // Calculate detailed stats
+      return calculateUserStats(events, user?.uid || 'guest');
     } catch (error) {
-      // Failed to get user stats
+      console.error('[useLearnTracking] Failed to get stats:', error);
       return null;
     }
   }, [user]);
   
   const getRecentEvents = useCallback(async (limit: number = 100): Promise<LearningEvent[]> => {
-    if (!user) return [];
-    
+    // Use the new service which handles tiered storage properly
     try {
-      return await storageManager.getRecentEvents(user.uid, limit);
+      return await learningEventsService.getRecentEvents(limit);
     } catch (error) {
-      // Failed to get recent events
+      console.error('[useLearnTracking] Failed to get recent events:', error);
       return [];
     }
-  }, [user]);
+  }, []);
   
   const clearEvents = useCallback(async (): Promise<void> => {
-    if (!user) return;
-    
+    // Use the new service to clear data properly
     try {
-      await storageManager.clearUserData(user.uid);
+      await learningEventsService.deleteAllUserData();
+      console.log('[useLearnTracking] Events cleared');
     } catch (error) {
-      // Failed to clear events
+      console.error('[useLearnTracking] Failed to clear events:', error);
     }
-  }, [user]);
+  }, []);
   
   return {
     track,

@@ -1,9 +1,11 @@
 /**
  * Event Queue Manager - Handles batching and syncing of learning events
+ * Now uses LearningEventsService for proper tiered storage
  */
 
 import { LearningEvent } from '@/types/analytics';
 import { storageManager } from './StorageManager';
+import { learningEventsService } from './LearningEventsService';
 import { doc, setDoc, collection, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -40,17 +42,17 @@ class EventQueueManager {
   }
   
   async queueEvent(event: LearningEvent): Promise<void> {
-    // Add to memory queue
-    this.queue.push(event);
-    
-    // Save to IndexedDB immediately for persistence
+    // Use the new LearningEventsService for proper tiered storage
     try {
-      await storageManager.saveEvent(event);
+      await learningEventsService.trackEvent(event);
     } catch (error) {
-      // Silently handle storage save error
+      console.error('[EventQueueManager] Failed to track event:', error);
     }
     
-    // Schedule sync if needed
+    // Still maintain queue for backward compatibility
+    this.queue.push(event);
+    
+    // Schedule sync if needed (handled by LearningEventsService now)
     this.scheduleBatchSync();
   }
   

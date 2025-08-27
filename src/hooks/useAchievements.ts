@@ -37,6 +37,22 @@ export function useAchievements() {
     }
   }, []);
 
+  // Listen for sync events to reload data
+  useEffect(() => {
+    const handleSync = () => {
+      console.log('🔄 Achievements sync detected, reloading...');
+      loadData();
+    };
+
+    window.addEventListener('achievements-synced', handleSync);
+    window.addEventListener('storage', handleSync);
+
+    return () => {
+      window.removeEventListener('achievements-synced', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, [loadData]);
+
   // Update user stats and check for new achievements
   const updateProgress = useCallback(async (statType: keyof UserStats, increment: number = 1): Promise<UnlockedAchievement[]> => {
     try {

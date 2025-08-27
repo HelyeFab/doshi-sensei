@@ -511,13 +511,23 @@ export class AuthService {
     if (!db) return;
     
     try {
+      // First check if the session exists
       const sessionRef = doc(db, 'sessions', sessionId);
-      await updateDoc(sessionRef, {
-        isActive: false,
-        endedAt: serverTimestamp(),
-      });
+      const sessionSnap = await getDoc(sessionRef);
+      
+      // Only update if session exists and is active
+      if (sessionSnap.exists() && sessionSnap.data()?.isActive) {
+        await updateDoc(sessionRef, {
+          isActive: false,
+          endedAt: serverTimestamp(),
+        });
+      }
     } catch (error) {
-      console.error('Failed to end session:', error);
+      // Silently fail - session management is non-critical
+      // This can happen if the user never had a session created
+      if (typeof window !== 'undefined') {
+        console.debug('Session cleanup skipped:', error);
+      }
     }
   }
 

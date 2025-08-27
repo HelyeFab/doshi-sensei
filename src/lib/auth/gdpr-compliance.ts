@@ -289,25 +289,34 @@ export class GDPRComplianceService {
     try {
       const activities: any[] = [];
       
-      // Get security events
-      const eventsQuery = query(
-        collection(db, 'security_events'),
-        where('userId', '==', userId)
-      );
-      const eventsSnapshot = await getDocs(eventsQuery);
-      eventsSnapshot.forEach(doc => {
-        activities.push({
-          type: 'security_event',
-          ...doc.data(),
-        });
-      });
+      // Security events are only accessible server-side
+      // Skip on client-side to avoid permission errors
+      if (typeof window === 'undefined') {
+        try {
+          // Get security events (server-side only)
+          const eventsQuery = query(
+            collection(db, 'security_events'),
+            where('userId', '==', userId)
+          );
+          const eventsSnapshot = await getDocs(eventsQuery);
+          eventsSnapshot.forEach(doc => {
+            activities.push({
+              type: 'security_event',
+              ...doc.data(),
+            });
+          });
+        } catch (error) {
+          console.debug('Security events not accessible:', error);
+        }
+      }
       
-      // Get study sessions
-      const sessionsQuery = query(
-        collection(db, 'study_sessions'),
-        where('userId', '==', userId)
-      );
-      const sessionsSnapshot = await getDocs(sessionsQuery);
+      // Get study sessions (accessible to users)
+      try {
+        const sessionsQuery = query(
+          collection(db, 'study_sessions'),
+          where('userId', '==', userId)
+        );
+        const sessionsSnapshot = await getDocs(sessionsQuery);
       sessionsSnapshot.forEach(doc => {
         activities.push({
           type: 'study_session',

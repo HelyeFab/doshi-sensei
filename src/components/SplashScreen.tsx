@@ -61,7 +61,7 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
           transition={{ duration: 0.5 }}
           className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #ffc371 100%)',
+            backgroundImage: 'linear-gradient(to right bottom, #5c3cdc, #2263ee, #0080f5, #0099f4, #3bafef, #4fb5ee, #60baee, #70c0ed, #63b8f2, #5ab0f6, #59a7fa, #5f9dfb)',
             backgroundSize: '400% 400%',
             animation: 'gradientShift 8s ease infinite'
           }}

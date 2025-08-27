@@ -136,6 +136,13 @@ export class SecurityMonitor {
     userId: string,
     days: number
   ): Promise<SecurityEvent[]> {
+    // Security events are only accessible server-side for security reasons
+    // Client-side monitoring is handled through API endpoints
+    if (typeof window !== 'undefined') {
+      // On client, we don't query security events directly
+      return [];
+    }
+    
     if (!db) return [];
     
     try {
@@ -156,7 +163,10 @@ export class SecurityMonitor {
         timestamp: doc.data().timestamp?.toDate() || new Date(),
       } as SecurityEvent));
     } catch (error) {
-      console.error('Failed to get security events:', error);
+      // Silently fail on client - this is expected behavior
+      if (typeof window === 'undefined') {
+        console.error('Failed to get security events:', error);
+      }
       return [];
     }
   }

@@ -249,7 +249,6 @@ export class TTSManager {
       // Try Google TTS first if available and not forced to ElevenLabs
       else if (this.googleApiKey && forceProvider !== 'elevenlabs') {
         try {
-          console.log('🎤 Attempting Google TTS (primary)...');
           audioBlob = await this.generateGoogleAudio(text, voice);
           provider = 'google';
         } catch (googleError) {
@@ -260,7 +259,6 @@ export class TTSManager {
       // Fallback to ElevenLabs if Google failed or unavailable
       if (!audioBlob && this.elevenLabsApiKey) {
         try {
-          console.log('🎤 Attempting ElevenLabs TTS (fallback)...');
           audioBlob = await this.generateElevenLabsAudio(text, voice);
           provider = 'elevenlabs';
         } catch (elevenLabsError) {
@@ -355,7 +353,6 @@ export class TTSManager {
       // Cache the audio for future use
       await this.cache.cacheAudio(text, voiceId, 'elevenlabs', bytes.buffer);
       
-      console.log(`🎤 ElevenLabs audio generated in ${apiTime.toFixed(2)}ms for: ${text.substring(0, 30)}...`);
       return audioBlob;
     } else {
       throw new Error(data.error || 'ElevenLabs TTS failed');
@@ -405,7 +402,6 @@ export class TTSManager {
       // Cache the audio for future use
       await this.cache.cacheAudio(text, voiceName, 'google', bytes.buffer);
       
-      console.log(`🎤 Google TTS audio generated in ${apiTime.toFixed(2)}ms for: ${text.substring(0, 30)}...`);
       return audioBlob;
     } else {
       throw new Error(data.error || 'Google TTS failed');

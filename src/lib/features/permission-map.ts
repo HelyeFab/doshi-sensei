@@ -15,6 +15,7 @@ export const FEATURE_PERMISSION_MAP: Record<string, string> = {
   'story_reading': 'read_stories',
   'kanji_moods': 'kanji_moods',
   'textbook_vocabulary': 'textbook_vocabulary',
+  'vocabulary_search': 'search_vocabulary',
   'word_learning_session': 'do_learning_sessions',
   'kanji_stroke_order': 'view_stroke_order',
   'stroke_order_practice': 'view_stroke_order',

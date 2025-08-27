@@ -89,12 +89,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
       {/* Modal - Relative positioning with flex container */}
       <div
-        className={`relative bg-card rounded-2xl shadow-2xl w-full max-w-md flex flex-col transition-all duration-500 ${isAnimated ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+        className={`relative bg-card rounded-2xl shadow-2xl border-2 border-border w-full max-w-md flex flex-col transition-all duration-500 ${isAnimated ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
           }`}
-        style={{
-          border: '2px solid hsl(var(--border))',
-          boxShadow: 'inset 0 0 0 1px hsl(var(--primary)), 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-        }}
       >
         {/* Content wrapper */}
         <div className={`px-6 pt-6 ${showInstallBanner ? 'pb-0' : 'pb-4'} flex-shrink-0`}>
@@ -118,12 +114,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
         {character && (
           <div className="flex flex-col items-center gap-2">
             <div
-              className={`w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-3 flex items-center justify-center transform transition-all duration-700 ${isAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-12'
+              className={`w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-3 flex items-center justify-center transform transition-all duration-700 border-4 border-card shadow-lg ${isAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-12'
                 }`}
-              style={{
-                border: '3px solid white',
-                boxShadow: 'inset 0 0 0 2px var(--primary), 0 8px 16px rgba(0, 0, 0, 0.1)'
-              }}
             >
               <img
                 src={character.path}
@@ -145,12 +137,8 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
             {/* Quote */}
             <div
-              className={`bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-3 transform transition-all duration-700 delay-300 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+              className={`bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-3 transform transition-all duration-700 delay-300 border border-primary/20 ${isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                 }`}
-              style={{
-                border: '1px solid var(--primary)',
-                background: 'linear-gradient(135deg, rgba(var(--primary), 0.1), rgba(var(--accent), 0.1))'
-              }}
             >
               <p className="text-card-foreground text-center text-sm leading-relaxed">
                 {quote}

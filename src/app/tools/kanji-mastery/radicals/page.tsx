@@ -4,11 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { SEMANTIC_RADICALS, getRadicalsByCategory, RADICAL_CATEGORIES, type RadicalKanji } from '@/lib/kanji/radicals';
 import { useFeature } from '@/hooks/useFeature';
 import { useRouter } from 'next/navigation';
-import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import KanjiModal from '@/components/kanji/KanjiModal';
-import { Kanji } from '@/types';
+import KanjiDetailsModal from '@/components/kanji/KanjiDetailsModal';
+import { Kanji, JLPTLevel } from '@/types';
 
 interface RadicalData {
   radical: any;
@@ -87,12 +86,9 @@ export default function KanjiRadicalsPage() {
     const kanjiForModal: Kanji = {
       kanji: kanjiDetail.kanji,
       meaning: kanjiDetail.meanings?.join(', ') || '',
-      onyomi: kanjiDetail.on_readings || [],
-      kunyomi: kanjiDetail.kun_readings || [],
-      level: kanjiDetail.jlpt ? `N${kanjiDetail.jlpt}` as any : 'N5',
-      grade: kanjiDetail.grade || 0,
-      strokeCount: kanjiDetail.stroke_count || 0,
-      frequency: kanjiDetail.frequency || 0
+      onyomi: kanjiDetail.readings?.on || [],
+      kunyomi: kanjiDetail.readings?.kun || [],
+      jlpt: kanjiDetail.jlpt ? `N${kanjiDetail.jlpt}` as JLPTLevel : 'N5'
     };
     setModalKanji(kanjiForModal);
   };
@@ -116,11 +112,28 @@ export default function KanjiRadicalsPage() {
   
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <SmartPageHeader
-        title="Semantic Radicals"
-        actions={
+      {/* Custom Header with same spacing as SmartPageHeader */}
+      <header className="px-4 pt-24 pb-4 md:pt-24">
+        <div className="flex flex-col gap-3">
+          {/* First Row: Back button and title */}
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.back()}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              aria-label="Go back"
+            >
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <h1 className="text-xl font-bold text-foreground flex-1">
+              Semantic Radicals
+            </h1>
+          </div>
+          
+          {/* Second Row: All controls in one row */}
+          <div className="flex items-center justify-between gap-3 sm:ml-11">
             {/* Sub-theme Toggle */}
             <label className="flex items-center gap-2 text-sm">
               <input
@@ -129,7 +142,7 @@ export default function KanjiRadicalsPage() {
                 onChange={(e) => setShowSubThemes(e.target.checked)}
                 className="rounded"
               />
-              <span className="text-muted-foreground">Show sub-themes</span>
+              <span className="text-muted-foreground whitespace-nowrap">Show sub-themes</span>
             </label>
             
             {/* View Mode Toggle */}
@@ -156,8 +169,8 @@ export default function KanjiRadicalsPage() {
               </button>
             </div>
           </div>
-        }
-      />
+        </div>
+      </header>
       
       {/* Desktop margin wrapper */}
       <div className="md:mx-16 lg:mx-32 xl:mx-48 2xl:mx-64">
@@ -628,14 +641,14 @@ export default function KanjiRadicalsPage() {
       
       {/* Kanji Detail Modal */}
       {modalKanji && (
-        <KanjiModal
+        <KanjiDetailsModal
           kanji={modalKanji}
           isOpen={!!modalKanji}
           onClose={() => setModalKanji(null)}
           onSave={() => {
             // Handle save functionality if needed
           }}
-          isSaved={false}
+          showSaveButton={true}
         />
       )}
     </div>

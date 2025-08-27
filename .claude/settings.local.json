@@ -31,9 +31,25 @@
       "Bash(firebase use:*)",
       "Bash(npm run export:*)",
       "Bash(npx next:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(pkill:*)",
+      "Bash(npm cache clean:*)",
+      "mcp__ide__getDiagnostics",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "Read(/home/helye/Downloads/kanji-front-cordova/**)",
+      "Read(/home/helye/Downloads/kanji-front-cordova/src/app/core/services/**)",
+      "Read(/home/helye/Downloads/kanji-front-cordova/src/environments/**)",
+      "Read(/home/helye/Downloads/kanji-front-cordova/src/app/shared/models/**)",
+      "Read(/home/helye/Downloads/kanji-front-cordova/src/app/modules/details/**)",
+      "Read(/home/helye/Downloads/kanji-front-cordova/src/app/modules/details/**)",
+      "WebFetch(domain:www.rtega.be)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "/home/helye/Downloads/kanji-front-cordova/src/assets"
+    ]
   }
 }

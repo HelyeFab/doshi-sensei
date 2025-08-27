@@ -16,7 +16,7 @@ import { useFeature } from "@/hooks/useFeature";
 import KanjiManager from "@/utils/kanjiManager";
 import StudyListManager from "@/utils/studyListManager";
 import KanjiListManager from "@/utils/kanjiListManager";
-import KanjiModal from "@/components/kanji/KanjiModal";
+import KanjiDetailsModal from "@/components/kanji/KanjiDetailsModal";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useStrings } from "@/contexts/LanguageContext";
@@ -570,11 +570,12 @@ function KanjiBrowserContent() {
 
         {/* Kanji Detail Modal */}
         {modalKanji && (
-          <KanjiModal
+          <KanjiDetailsModal
             kanji={modalKanji}
             isOpen={!!modalKanji}
             onClose={() => setModalKanji(null)}
             onSave={() => handleKanjiSave(modalKanji)}
+            showSaveButton={true}
           />
         )}
 
@@ -723,13 +724,13 @@ function SaveKanjiModal({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
         <h3 className="text-lg font-semibold text-card-foreground mb-4">
-          {strings.kanjiBrowser.saveKanjiTitle} "{kanji.kanji}"
+          {strings.kanjiBrowser?.saveKanjiTitle || "Save Kanji"} "{kanji.kanji}"
         </h3>
 
         {/* Error messages */}
         {errors.length > 0 && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
-            <div className="text-sm text-red-400">
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 mb-4">
+            <div className="text-sm text-destructive">
               {errors.map((error, index) => (
                 <div key={index}>• {error}</div>
               ))}
@@ -740,7 +741,7 @@ function SaveKanjiModal({
         {studyLists.length > 0 && (
           <div className="space-y-3 mb-4">
             <h4 className="text-sm font-medium text-muted-foreground">
-              {strings.kanjiBrowser.selectExistingLists}
+              {strings.kanjiBrowser?.selectExistingLists || "Select existing lists"}
             </h4>
             {studyLists.map((list) => {
               const canAdd = canAddToList(list.type);
@@ -756,7 +757,7 @@ function SaveKanjiModal({
                     checked={selectedLists.includes(list.id)}
                     onChange={() => canAdd && handleToggleList(list.id)}
                     disabled={!canAdd}
-                    className="rounded border-border mt-0.5"
+                    className="rounded border-border mt-0.5 text-primary focus:ring-primary"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
@@ -773,8 +774,8 @@ function SaveKanjiModal({
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
                           list.type === "drillable"
-                            ? "bg-blue-500/20 text-blue-400"
-                            : "bg-purple-500/20 text-purple-400"
+                            ? "bg-primary/20 text-primary"
+                            : "bg-secondary/20 text-secondary-foreground"
                         }`}
                       >
                         {list.type}
@@ -782,7 +783,7 @@ function SaveKanjiModal({
                     </div>
                     <div
                       className={`text-xs ${
-                        canAdd ? "text-green-400" : "text-red-400"
+                        canAdd ? "text-green-600 dark:text-green-400" : "text-destructive"
                       }`}
                     >
                       {getValidationMessage(list.type, canAdd)}
@@ -800,10 +801,10 @@ function SaveKanjiModal({
               type="checkbox"
               checked={showCreateNew}
               onChange={(e) => setShowCreateNew(e.target.checked)}
-              className="rounded border-border"
+              className="rounded border-border text-primary focus:ring-primary"
             />
             <label className="text-sm font-medium text-muted-foreground cursor-pointer">
-              {strings.kanjiBrowser.createNewList}
+              {strings.kanjiBrowser?.createNewList || "Create new list"}
             </label>
           </div>
 
@@ -813,17 +814,17 @@ function SaveKanjiModal({
                 type="text"
                 value={newListName}
                 onChange={(e) => setNewListName(e.target.value)}
-                placeholder={strings.kanjiBrowser.newListNamePlaceholder}
+                placeholder={strings.kanjiBrowser?.newListNamePlaceholder || "Enter list name"}
                 className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 maxLength={50}
               />
 
               <div>
                 <label className="block text-xs text-muted-foreground mb-2">
-                  {strings.kanjiBrowser.listType}
+                  {strings.kanjiBrowser?.listType || "List type"}
                 </label>
                 <div className="space-y-2">
-                  <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input">
+                  <label className="flex items-start gap-3 cursor-pointer p-2 rounded-lg border border-input hover:bg-muted/50 transition-colors">
                     <input
                       type="radio"
                       name="listType"
@@ -832,17 +833,17 @@ function SaveKanjiModal({
                       onChange={(e) =>
                         setNewListType(e.target.value as StudyListType)
                       }
-                      className="mt-0.5"
+                      className="mt-0.5 w-4 h-4 text-primary focus:ring-primary focus:ring-2 cursor-pointer"
                     />
                     <div>
                       <div className="text-sm font-medium text-foreground">
-                        {strings.kanjiBrowser.flashcardList}
+                        {strings.kanjiBrowser?.flashcardList || "Flashcard List"}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {strings.kanjiBrowser.flashcardReviewDescription}
+                        {strings.kanjiBrowser?.flashcardReviewDescription || "For review and memorization"}
                       </div>
-                      <div className="text-xs text-green-400 mt-1">
-                        {strings.kanjiBrowser.flashcardPerfectForKanjiStudy}
+                      <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                        {strings.kanjiBrowser?.flashcardPerfectForKanjiStudy || "Perfect for kanji study"}
                       </div>
                     </div>
                   </label>
@@ -857,17 +858,17 @@ function SaveKanjiModal({
                         setNewListType(e.target.value as StudyListType)
                       }
                       disabled={true}
-                      className="mt-0.5"
+                      className="mt-0.5 w-4 h-4 text-primary focus:ring-primary focus:ring-2 cursor-not-allowed"
                     />
                     <div>
                       <div className="text-sm font-medium text-foreground">
-                        {strings.kanjiBrowser.drillableList}
+                        {strings.kanjiBrowser?.drillableList || "Drillable List"}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {strings.kanjiBrowser.conjugationPracticeDescription}
+                        {strings.kanjiBrowser?.conjugationPracticeDescription || "For conjugation practice"}
                       </div>
-                      <div className="text-xs text-red-400 mt-1">
-                        {strings.kanjiBrowser.kanjiCannotBeConjugated}
+                      <div className="text-xs text-destructive mt-1">
+                        {strings.kanjiBrowser?.kanjiCannotBeConjugated || "Kanji cannot be conjugated"}
                       </div>
                     </div>
                   </label>
@@ -880,18 +881,18 @@ function SaveKanjiModal({
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors"
+            className="flex-1 px-4 py-2 bg-muted text-foreground border border-border rounded-lg hover:bg-muted/80 transition-colors font-medium"
           >
-            {strings.kanjiBrowser.cancel}
+            {strings.kanjiBrowser?.cancel || "Cancel"}
           </button>
           <button
             onClick={handleSave}
             disabled={
               (selectedLists.length === 0 && !newListName.trim()) || saving
             }
-            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
           >
-            {saving ? "Saving..." : strings.kanjiBrowser.saveKanji}
+            {saving ? "Saving..." : (strings.kanjiBrowser?.saveKanji || "Save")}
           </button>
         </div>
       </div>

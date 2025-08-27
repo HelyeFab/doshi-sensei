@@ -65,7 +65,7 @@ export class SearchHistoryManager2 {
 
   /**
    * Get all search history entries
-   * Loads from Firebase for premium users, IndexedDB for others
+   * Merges Firebase and IndexedDB data for premium users to prevent data loss
    */
   static async getSearchHistory(
     user: User | null,
@@ -74,17 +74,30 @@ export class SearchHistoryManager2 {
     try {
       const userId = user?.uid || null;
 
-      // Try to load from Firebase for premium users
+      // For premium users, merge both sources
       if ((userType === 'monthly' || userType === 'yearly') && user) {
-        const firebaseHistory = await this.loadFromFirebase(user);
-        if (firebaseHistory.length > 0) {
-          // Also update IndexedDB with Firebase data
-          await this.saveToIndexedDB(firebaseHistory, userId);
-          return firebaseHistory;
+        // Load from both sources
+        const [firebaseHistory, localHistory] = await Promise.all([
+          this.loadFromFirebase(user),
+          this.loadFromIndexedDB(userId)
+        ]);
+
+        // Merge histories (local takes precedence for same search terms)
+        const mergedHistory = this.mergeHistories(localHistory, firebaseHistory);
+        
+        // Save merged history back to IndexedDB
+        await this.saveToIndexedDB(mergedHistory, userId);
+        
+        // If we have more entries locally than in Firebase, sync the merged data
+        if (localHistory.length > firebaseHistory.length || 
+            this.hasNewEntries(localHistory, firebaseHistory)) {
+          await this.syncToFirebase(mergedHistory, user);
         }
+        
+        return mergedHistory;
       }
 
-      // Load from IndexedDB
+      // For non-premium users, just load from IndexedDB
       return await this.loadFromIndexedDB(userId);
     } catch (error) {
       console.error('Error loading search history:', error);
@@ -238,6 +251,55 @@ export class SearchHistoryManager2 {
       console.error('Error loading from Firebase:', error);
       return [];
     }
+  }
+
+  /**
+   * Merge two history arrays, removing duplicates
+   * Prioritizes entries from the first array (usually local) when duplicates exist
+   */
+  private static mergeHistories(
+    primary: SearchHistoryEntry[], 
+    secondary: SearchHistoryEntry[]
+  ): SearchHistoryEntry[] {
+    // Create a map to track unique entries by search term and timestamp
+    const historyMap = new Map<string, SearchHistoryEntry>();
+    
+    // Add secondary (Firebase) entries first
+    secondary.forEach(entry => {
+      // Use a composite key of search term and rough timestamp (to handle minor differences)
+      const key = `${entry.searchTerm.toLowerCase()}_${Math.floor(entry.timestamp / 60000)}`; // Group by minute
+      historyMap.set(key, entry);
+    });
+    
+    // Add primary (local) entries, which will override Firebase entries with same key
+    primary.forEach(entry => {
+      const key = `${entry.searchTerm.toLowerCase()}_${Math.floor(entry.timestamp / 60000)}`;
+      historyMap.set(key, entry);
+    });
+    
+    // Convert back to array and sort by timestamp (newest first)
+    const merged = Array.from(historyMap.values())
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, MAX_SEARCH_HISTORY);
+    
+    return merged;
+  }
+  
+  /**
+   * Check if local history has entries not in Firebase
+   */
+  private static hasNewEntries(
+    localHistory: SearchHistoryEntry[], 
+    firebaseHistory: SearchHistoryEntry[]
+  ): boolean {
+    if (localHistory.length === 0) return false;
+    if (firebaseHistory.length === 0) return localHistory.length > 0;
+    
+    // Check if the most recent local entry is newer than the most recent Firebase entry
+    const mostRecentLocal = Math.max(...localHistory.map(e => e.timestamp));
+    const mostRecentFirebase = Math.max(...firebaseHistory.map(e => e.timestamp));
+    
+    return mostRecentLocal > mostRecentFirebase;
   }
 
   /**

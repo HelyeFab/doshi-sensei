@@ -6,8 +6,8 @@ import { useFeature } from '@/hooks/useFeature';
 import { useRouter } from 'next/navigation';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { motion, AnimatePresence } from 'framer-motion';
-import KanjiModal from '@/components/kanji/KanjiModal';
-import { Kanji } from '@/types';
+import KanjiDetailsModal from '@/components/kanji/KanjiDetailsModal';
+import { Kanji, JLPTLevel } from '@/types';
 
 interface KanjiDetails {
   kanji: string;
@@ -100,10 +100,7 @@ export default function KanjiFamiliesPage() {
       meaning: kanjiDetail.meanings?.join(', ') || '',
       onyomi: kanjiDetail.on_readings || [],
       kunyomi: kanjiDetail.kun_readings || [],
-      level: kanjiDetail.jlpt ? `N${kanjiDetail.jlpt}` as any : 'N5',
-      grade: kanjiDetail.grade || 0,
-      strokeCount: kanjiDetail.stroke_count || 0,
-      frequency: kanjiDetail.frequency || 0
+      jlpt: kanjiDetail.jlpt ? `N${kanjiDetail.jlpt}` as JLPTLevel : 'N5'
     };
     setModalKanji(kanjiForModal);
   };
@@ -501,14 +498,14 @@ export default function KanjiFamiliesPage() {
       
       {/* Kanji Detail Modal */}
       {modalKanji && (
-        <KanjiModal
+        <KanjiDetailsModal
           kanji={modalKanji}
           isOpen={!!modalKanji}
           onClose={() => setModalKanji(null)}
           onSave={() => {
             // Handle save functionality if needed
           }}
-          isSaved={false}
+          showSaveButton={true}
         />
       )}
     </div>

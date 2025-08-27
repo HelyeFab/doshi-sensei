@@ -20,11 +20,44 @@ export class AchievementManager {
   
   // Weekend warrior tracking
   private static weekendDaysStudied: Set<string> = new Set();
+  
+  // Real-time sync for premium users
+  private static syncInterval: NodeJS.Timeout | null = null;
+  private static lastCloudSync: number = 0;
+  private static CLOUD_SYNC_INTERVAL = 30000; // 30 seconds for periodic sync
+  private static isInitialized: boolean = false;
 
   /**
    * Initialize the manager and set up auth listener
    */
   static async initialize(): Promise<void> {
+    // Prevent multiple initializations
+    if (this.isInitialized) {
+      return;
+    }
+    this.isInitialized = true;
+    
+    // Set up visibility change listener for tab switches
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && this.currentUser && hasPaidPlan(this.subscription)) {
+          // Sync when tab becomes visible for premium users
+          this.syncWithCloud();
+        }
+      });
+      
+      // Set up storage event listener for cross-tab sync
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'achievement_sync_trigger' && e.newValue) {
+          // Another tab updated achievements, refresh our data
+          const timestamp = parseInt(e.newValue);
+          if (timestamp > this.lastCloudSync) {
+            this.handleCrossTabSync();
+          }
+        }
+      });
+    }
+    
     // Set up auth listener
     onAuthStateChanged(auth, async (user) => {
       this.currentUser = user;
@@ -37,13 +70,18 @@ export class AchievementManager {
           // Sync with cloud if user has paid plan
           if (hasPaidPlan(this.subscription)) {
             await this.syncWithCloud();
+            this.startPeriodicSync(); // Start periodic sync for premium users
+          } else {
+            this.stopPeriodicSync(); // Stop sync for non-premium users
           }
         } catch (error) {
           console.error('Failed to get subscription:', error);
           this.subscription = null;
+          this.stopPeriodicSync();
         }
       } else {
         // User logged out - clear cached data
+        this.stopPeriodicSync();
         this.subscription = null;
         this.cache = null;
         this.lastLoaded = 0;
@@ -63,37 +101,121 @@ export class AchievementManager {
       return;
     }
 
+    // Prevent too frequent syncs
+    const now = Date.now();
+    if (now - this.lastCloudSync < 5000) { // 5 second minimum between syncs
+      return;
+    }
+    this.lastCloudSync = now;
+
     try {
       console.log('🏆 [AchievementManager] Syncing with cloud for paid user');
       
-      // Download cloud data FIRST (cloud is source of truth for paid users)
-      const [cloudStats, cloudAchievements] = await Promise.all([
+      // Get both local and cloud data
+      const [localStats, localAchievements, cloudStats, cloudAchievements] = await Promise.all([
+        EnhancedStorageManager.getUserStats(),
+        EnhancedStorageManager.getUnlockedAchievements(),
         AchievementPremiumSync.downloadUserStats(this.currentUser, this.subscription),
         AchievementPremiumSync.downloadUnlockedAchievements(this.currentUser, this.subscription)
       ]);
 
-      // For paid users, cloud data takes priority
-      if (cloudStats) {
-        console.log('✅ [AchievementManager] Using cloud stats as source of truth');
-        await EnhancedStorageManager.saveUserStats(cloudStats);
-      } else {
-        console.log('⚠️ [AchievementManager] No cloud stats found, keeping local');
+      // Merge data - take the maximum/latest values
+      let finalStats = cloudStats;
+      if (localStats && cloudStats) {
+        // Merge by taking maximum values (achievements can only go up)
+        finalStats = AchievementPremiumSync.mergeAchievementData(localStats, cloudStats);
+      } else if (localStats && !cloudStats) {
+        // No cloud data yet, use local
+        finalStats = localStats;
+      }
+      
+      if (finalStats) {
+        await EnhancedStorageManager.saveUserStats(finalStats);
+        // Upload merged stats back to cloud
+        await AchievementPremiumSync.syncUserStats(this.currentUser, finalStats, this.subscription);
       }
 
-      // Replace local achievements with cloud achievements for paid users
-      if (cloudAchievements && cloudAchievements.length > 0) {
-        console.log('✅ [AchievementManager] Replacing local achievements with cloud data');
-        // Clear local and save cloud achievements
+      // Merge achievements - union of both sets
+      const mergedAchievements = AchievementPremiumSync.mergeUnlockedAchievements(
+        localAchievements || [],
+        cloudAchievements || []
+      );
+      
+      if (mergedAchievements.length > 0) {
+        // Clear and save merged achievements
         await EnhancedStorageManager.clearUnlockedAchievements();
-        for (const achievement of cloudAchievements) {
+        for (const achievement of mergedAchievements) {
           await EnhancedStorageManager.saveUnlockedAchievement(achievement);
+          // Also sync each to cloud if not already there
+          if (!cloudAchievements?.find(a => a.achievementId === achievement.achievementId)) {
+            await AchievementPremiumSync.syncUnlockedAchievement(this.currentUser, achievement, this.subscription);
+          }
         }
-      } else {
-        console.log('⚠️ [AchievementManager] No cloud achievements found');
       }
+      
+      // Broadcast sync to other tabs
+      this.broadcastSync();
 
     } catch (error) {
       console.error('Failed to sync with cloud:', error);
+    }
+  }
+  
+  /**
+   * Start periodic sync for premium users
+   */
+  private static startPeriodicSync(): void {
+    // Clear any existing interval
+    this.stopPeriodicSync();
+    
+    if (!hasPaidPlan(this.subscription)) {
+      return;
+    }
+    
+    console.log('🔄 [AchievementManager] Starting periodic sync for premium user');
+    
+    // Set up periodic sync
+    this.syncInterval = setInterval(() => {
+      if (this.currentUser && hasPaidPlan(this.subscription)) {
+        this.syncWithCloud();
+      } else {
+        // Stop sync if user is no longer premium
+        this.stopPeriodicSync();
+      }
+    }, this.CLOUD_SYNC_INTERVAL);
+  }
+  
+  /**
+   * Stop periodic sync
+   */
+  private static stopPeriodicSync(): void {
+    if (this.syncInterval) {
+      console.log('⏹️ [AchievementManager] Stopping periodic sync');
+      clearInterval(this.syncInterval);
+      this.syncInterval = null;
+    }
+  }
+  
+  /**
+   * Handle cross-tab sync
+   */
+  private static async handleCrossTabSync(): Promise<void> {
+    console.log('🔄 [AchievementManager] Handling cross-tab sync');
+    
+    // Reload data from storage (which was updated by another tab)
+    const event = new CustomEvent('achievements-synced');
+    window.dispatchEvent(event);
+  }
+  
+  /**
+   * Broadcast sync to other tabs
+   */
+  private static broadcastSync(): void {
+    try {
+      // Use localStorage to trigger storage event in other tabs
+      localStorage.setItem('achievement_sync_trigger', Date.now().toString());
+    } catch (error) {
+      console.error('Failed to broadcast sync:', error);
     }
   }
 
@@ -370,6 +492,9 @@ export class AchievementManager {
           stats,
           this.subscription
         );
+        
+        // Broadcast to other tabs
+        this.broadcastSync();
       }
     } catch (error) {
       console.error('Error saving user stats:', error);
@@ -425,6 +550,9 @@ export class AchievementManager {
           unlockedAchievement,
           this.subscription
         );
+        
+        // Broadcast to other tabs
+        this.broadcastSync();
       }
     } catch (error) {
       console.error('Error saving unlocked achievement:', error);

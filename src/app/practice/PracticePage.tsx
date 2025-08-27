@@ -386,21 +386,21 @@ export default function PracticePage() {
                   <div className="p-4 bg-muted/50 rounded-lg">
                     <p className="text-sm text-muted-foreground mb-2">Choose a drill type:</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <SmartLink href="/drill" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
+                      <SmartLink href="/drill" className="p-3 bg-card border border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
                         <span className="text-2xl mb-1 block">🔤</span>
-                        <p className="text-sm">Conjugation</p>
+                        <p className="text-sm text-foreground">Conjugation</p>
                       </SmartLink>
-                      <SmartLink href="/drill" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
+                      <SmartLink href="/drill" className="p-3 bg-card border border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
                         <span className="text-2xl mb-1 block">📝</span>
-                        <p className="text-sm">Vocabulary</p>
+                        <p className="text-sm text-foreground">Vocabulary</p>
                       </SmartLink>
-                      <SmartLink href="/drill" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
+                      <SmartLink href="/drill" className="p-3 bg-card border border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
                         <span className="text-2xl mb-1 block">🈯</span>
-                        <p className="text-sm">Kanji</p>
+                        <p className="text-sm text-foreground">Kanji</p>
                       </SmartLink>
-                      <SmartLink href="/drill" className="p-3 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
+                      <SmartLink href="/drill" className="p-3 bg-card border border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-colors text-center">
                         <span className="text-2xl mb-1 block">📃</span>
-                        <p className="text-sm">Sentences</p>
+                        <p className="text-sm text-foreground">Sentences</p>
                       </SmartLink>
                     </div>
                   </div>
@@ -571,21 +571,21 @@ export default function PracticePage() {
                 </h3>
                 
                 <div className="space-y-3">
-                  <button className="w-full p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg hover:from-pink-100 hover:to-purple-100 transition-colors text-left">
+                  <button className="w-full p-4 bg-muted/50 border border-border rounded-lg hover:bg-muted hover:border-primary transition-colors text-left">
                     <div className="flex items-center gap-3">
                       <span className="text-3xl">🎌</span>
                       <div>
-                        <p className="font-medium">Kanji Quest</p>
+                        <p className="font-medium text-foreground">Kanji Quest</p>
                         <p className="text-sm text-muted-foreground">Catch 'em all with kanji!</p>
                       </div>
                     </div>
                   </button>
 
-                  <button className="w-full p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg hover:from-blue-100 hover:to-cyan-100 transition-colors text-left">
+                  <button className="w-full p-4 bg-muted/50 border border-border rounded-lg hover:bg-muted hover:border-primary transition-colors text-left">
                     <div className="flex items-center gap-3">
                       <span className="text-3xl">🎧</span>
                       <div>
-                        <p className="font-medium">Listening Challenge</p>
+                        <p className="font-medium text-foreground">Listening Challenge</p>
                         <p className="text-sm text-muted-foreground">Train your ears!</p>
                       </div>
                     </div>
@@ -856,15 +856,15 @@ export default function PracticePage() {
                 </h3>
                 
                 <div className="space-y-4">
-                  <div className="p-4 bg-teal-50 rounded-lg">
+                  <div className="p-4 bg-muted/50 border border-border rounded-lg">
                     <div className="flex items-center justify-between mb-3">
-                      <p className="font-medium">Current Article</p>
-                      <button className="text-teal-600 hover:text-teal-700">
+                      <p className="font-medium text-foreground">Current Article</p>
+                      <button className="text-primary hover:text-primary/80">
                         <span className="text-2xl">🎧</span>
                       </button>
                     </div>
-                    <p className="text-sm text-gray-700 mb-2">自己紹介 - Self Introduction</p>
-                    <p className="text-xs text-gray-600">はじめまして。私の名前は...</p>
+                    <p className="text-sm text-foreground mb-2">自己紹介 - Self Introduction</p>
+                    <p className="text-xs text-muted-foreground">はじめまして。私の名前は...</p>
                   </div>
 
                   <div className="flex justify-center">

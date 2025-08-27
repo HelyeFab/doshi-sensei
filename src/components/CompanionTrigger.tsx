@@ -19,10 +19,8 @@ export default function CompanionTrigger() {
       {/* Trigger Button */}
       <button
         onClick={openCompanion}
-        className="fixed top-4 left-4 z-40 w-16 h-16 rounded-full bg-white hover:bg-gray-50 flex items-center justify-center transition-all duration-300 hover:scale-110 group shadow-lg"
+        className="fixed top-4 left-4 z-40 w-16 h-16 rounded-full bg-card hover:bg-muted flex items-center justify-center transition-all duration-300 hover:scale-110 group shadow-lg border-2 border-primary"
         style={{
-          border: '2px solid white',
-          boxShadow: 'inset 0 0 0 1px rgb(59, 130, 246), 0 6px 20px rgba(0, 0, 0, 0.2)',
           animation: 'float 3s ease-in-out infinite'
         }}
         aria-label={strings.tooltips.openVirtualCompanion}
@@ -40,21 +38,20 @@ export default function CompanionTrigger() {
 
         {/* Pulsing ring animation */}
         <div
-          className="absolute inset-0 rounded-full border-2 border-blue-500/50 animate-ping"
+          className="absolute inset-0 rounded-full border-2 border-primary/50 animate-ping"
           style={{ animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite' }}
         />
 
         {/* Glowing effect on hover */}
         <div
-          className="absolute inset-0 rounded-full bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          className="absolute inset-0 rounded-full bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           style={{
-            boxShadow: '0 0 20px rgb(59, 130, 246)',
             animation: 'glow 2s ease-in-out infinite alternate'
           }}
         />
 
         {/* Sparkle effect */}
-        <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-75 animate-pulse"
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full opacity-75 animate-pulse"
              style={{ animation: 'sparkle 1.5s ease-in-out infinite' }} />
       </button>
 
@@ -66,8 +63,8 @@ export default function CompanionTrigger() {
         }
         
         @keyframes glow {
-          0% { box-shadow: 0 0 20px rgb(59, 130, 246); }
-          100% { box-shadow: 0 0 30px rgb(59, 130, 246), 0 0 40px rgb(59, 130, 246); }
+          0% { box-shadow: 0 0 20px hsl(var(--primary)); }
+          100% { box-shadow: 0 0 30px hsl(var(--primary)), 0 0 40px hsl(var(--primary)); }
         }
         
         @keyframes sparkle {

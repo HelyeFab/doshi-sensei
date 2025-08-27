@@ -78,6 +78,24 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        // Ensure service worker is served with correct headers
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Service-Worker-Allowed',
+            value: '/'
+          },
+          {
+            key: 'Content-Type',
+            value: 'application/javascript'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate'
+          },
+        ],
+      },
     ];
   },
   

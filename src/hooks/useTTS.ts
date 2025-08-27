@@ -70,8 +70,6 @@ export function useTTS(): TTSHookReturn {
         provider
       } = options;
 
-      // Log TTS usage for analytics
-      console.log(`🔊 TTS: ${context} - "${text.substring(0, 30)}${text.length > 30 ? '...' : ''}"${provider ? ` (forced: ${provider})` : ''}`);
 
       // Set playing state just before speaking
       setState(prev => ({

@@ -50,19 +50,16 @@ class TTSCacheManager {
     const entry = this.cache.get(key);
 
     if (!entry) {
-      console.log(`[TTS Cache] Miss for: "${text.substring(0, 50)}..."`);
       return null;
     }
 
     // Check if entry has expired
     if (Date.now() > entry.expiresAt) {
-      console.log(`[TTS Cache] Expired entry for: "${text.substring(0, 50)}..."`);
       this.cache.delete(key);
       this.updateCacheSize();
       return null;
     }
 
-    console.log(`[TTS Cache] Hit for: "${text.substring(0, 50)}..." (${this.formatBytes(entry.audioData.byteLength)})`);
     return entry.audioData;
   }
 
@@ -93,8 +90,6 @@ class TTSCacheManager {
 
     this.cache.set(key, entry);
     this.updateCacheSize();
-    
-    console.log(`[TTS Cache] Cached: "${text.substring(0, 50)}..." (${this.formatBytes(audioSize)})`);
     
     // Save to localStorage (for persistence)
     this.saveToLocalStorage();
@@ -134,7 +129,6 @@ class TTSCacheManager {
       removedCount++;
     }
 
-    console.log(`[TTS Cache] Removed ${removedCount} old entries to free ${this.formatBytes(freedSpace)}`);
     this.updateCacheSize();
   }
 

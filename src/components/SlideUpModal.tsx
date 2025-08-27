@@ -94,7 +94,7 @@ export default function SlideUpModal({
         {showCloseButton && !title && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-muted/80 hover:bg-muted transition-colors"
+            className="absolute top-4 right-4 z-10 p-2 text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Close modal"
           >
             <svg

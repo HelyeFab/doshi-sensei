@@ -8,6 +8,7 @@ import { useComponentName } from '@/components/DevHelper';
 import SlideUpModal from '@/components/SlideUpModal';
 import PokedexContent from '@/components/games/PokedexContent';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 
 interface StatItem {
   id: string;
@@ -23,18 +24,18 @@ interface StatDisplayProps {
 }
 
 function StatDisplay({ stat, index, onClick }: StatDisplayProps & { onClick?: () => void }) {
-  const isPokemon = stat.id === 'pokemon';
+  const isClickable = stat.id === 'pokemon' || stat.id === 'streak';
   
   return (
     <div 
       className={`relative flex flex-col items-center text-center gap-0.5 sm:gap-1 p-0.5 sm:p-1 rounded-lg group ${
-        isPokemon ? 'cursor-pointer' : ''
+        isClickable ? 'cursor-pointer' : ''
       }`}
-      onClick={isPokemon ? onClick : undefined}
+      onClick={isClickable ? onClick : undefined}
     >
       {/* Icon */}
       <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-full bg-white/20 backdrop-blur-sm shadow-lg flex items-center justify-center transition-all duration-500 ease-in-out ${
-        isPokemon ? 'group-hover:scale-110 group-hover:bg-white/25' : 'group-hover:scale-105'
+        isClickable ? 'group-hover:scale-110 group-hover:bg-white/25' : 'group-hover:scale-105'
       }`}>
         {typeof stat.icon === 'string' ? (
           <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl">{stat.icon}</span>
@@ -60,10 +61,12 @@ function StatDisplay({ stat, index, onClick }: StatDisplayProps & { onClick?: ()
 
 export function StatsBar({ className = '' }: { className?: string }) {
   const { stats, loading, activities } = useStats();
-  const { settings } = useSettings();
+  const { settings, forceSyncFromFirebase, lastSyncTime } = useSettings();
   const componentProps = useComponentName('StatsBar');
   const { user } = useAuth();
+  const { toast } = useToast();
   const [showPokedexModal, setShowPokedexModal] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   // Calculate gradient colors
   const colorScheme = settings.colorScheme || 'default';
@@ -127,10 +130,10 @@ export function StatsBar({ className = '' }: { className?: string }) {
     const items: StatItem[] = [
       {
         id: 'streak',
-        icon: streakAtRisk ? '⚠️' : '🔥',
-        label: streakAtRisk ? 'At Risk!' : 'Streak',
+        icon: syncing ? '🔄' : streakAtRisk ? '⚠️' : '🔥',
+        label: syncing ? 'Syncing...' : streakAtRisk ? 'At Risk!' : 'Streak',
         value: stats.currentStreak,
-        loading
+        loading  // Don't hide the number when syncing, only when initially loading
       },
       {
         id: 'pokemon',
@@ -157,6 +160,35 @@ export function StatsBar({ className = '' }: { className?: string }) {
     return items;
   }, [stats, activities, loading]);
 
+  // Handle streak click - trigger sync
+  const handleStreakClick = async () => {
+    if (!user) {
+      toast.info('Please sign in to sync your data');
+      return;
+    }
+
+    if (syncing) return;
+
+    setSyncing(true);
+    toast.info('🔄 Syncing with cloud...');
+    
+    try {
+      const success = await forceSyncFromFirebase();
+      if (success) {
+        toast.success('✨ Data synced from cloud', 'Your settings and progress have been updated');
+      } else {
+        const message = lastSyncTime 
+          ? `Last synced: ${lastSyncTime.toLocaleTimeString()}` 
+          : 'No changes found';
+        toast.info('Already up to date', message);
+      }
+    } catch (error) {
+      toast.error('Sync failed', 'Could not sync with cloud. Please try again later.');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   return (
     <>
       <div
@@ -175,7 +207,11 @@ export function StatsBar({ className = '' }: { className?: string }) {
               key={stat.id} 
               stat={stat} 
               index={index} 
-              onClick={stat.id === 'pokemon' ? () => setShowPokedexModal(true) : undefined}
+              onClick={
+                stat.id === 'pokemon' ? () => setShowPokedexModal(true) : 
+                stat.id === 'streak' ? handleStreakClick : 
+                undefined
+              }
             />
           ))}
         </div>

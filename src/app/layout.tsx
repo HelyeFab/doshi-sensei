@@ -15,6 +15,7 @@ import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import SplashScreenMeta from "@/components/SplashScreenMeta";
 import SplashScreen from "@/components/SplashScreen";
 import QuickContextProvider from "@/components/QuickContext/QuickContextProvider";
+import SyncInitializer from "@/components/SyncInitializer";
 
 const rubik = localFont({
   src: [
@@ -103,6 +104,7 @@ export default function RootLayout({
                 <ToastProvider>
                   <QuickContextProvider>
                     <SplashScreen />
+                    <SyncInitializer />
                     <div className="min-h-screen pb-16 md:pb-0">
                       {children}
                     </div>

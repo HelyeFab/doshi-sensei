@@ -20,7 +20,8 @@
       "Bash(git log:*)",
       "Bash(git grep:*)",
       "Bash(npm run dev:*)",
-      "Read(//home/mate/Dev/NextProjects/doshi-sensei-old/**)"
+      "Read(//home/mate/Dev/NextProjects/doshi-sensei-old/**)",
+      "Bash(lsof:*)"
     ],
     "deny": [],
     "ask": []

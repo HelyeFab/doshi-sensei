@@ -17,7 +17,8 @@ import {
   Lock,
   Globe,
   Users,
-  Star
+  Star,
+  Home
 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -142,15 +143,25 @@ export default function LoginPage() {
               </div>
             </div>
             
-            <button
-              onClick={() => {
-                setMagicLinkSent(false);
-                setEmail('');
-              }}
-              className="text-primary hover:underline text-sm"
-            >
-              Use a different email
-            </button>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  setMagicLinkSent(false);
+                  setEmail('');
+                }}
+                className="text-primary hover:underline text-sm"
+              >
+                Use a different email
+              </button>
+              
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm font-medium"
+              >
+                <Home className="w-4 h-4" />
+                Back to Homepage
+              </Link>
+            </div>
           </div>
         </motion.div>
       </div>

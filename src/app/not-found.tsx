@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import DoshiMascot from '@/components/DoshiMascot';
 
 export const dynamic = 'force-static';
 
@@ -20,12 +23,11 @@ export default function NotFound() {
         {/* Dōshi mascot with animation */}
         <div className="mb-8 relative">
           <div className="animate-bounce">
-            <img
-              src="/doshi.png"
-              alt="Dōshi Sensei looking confused"
-              width={200}
-              height={200}
+            <DoshiMascot
+              variant="animated"
+              size="large"
               className="mx-auto filter drop-shadow-xl"
+              alt="Dōshi Sensei looking confused"
             />
           </div>
           {/* Question marks floating around Dōshi */}

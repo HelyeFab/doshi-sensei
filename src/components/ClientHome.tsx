@@ -90,6 +90,7 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
     { title: 'Kanji Connections', icon: '🔮', href: '/tools/kanji-connections', description: 'Premium: Families, Radicals & Patterns' },
     { title: 'Mood Boards', icon: '🗺️', href: '/kanji-moods', description: 'Learn kanji by themes' },
     { title: 'Textbook Vocab', icon: '📚', href: '/tools/textbook-vocabulary', description: 'Study textbook vocabulary' },
+    { title: 'Word Learning', icon: '🧠', href: '/tools/word-learning-session', description: 'Interactive multimodal vocabulary' },
     { title: 'Vocabulary', icon: '📖', href: '/vocabulary', description: 'Explore Japanese vocabulary' },
     { title: 'Conjugation', icon: '🔤', href: '/practice/conjugation', description: 'Practice verb conjugations' }
   ];

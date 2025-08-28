@@ -68,9 +68,21 @@ export class NotificationService {
         try {
           await this.registerToken();
           return true;
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to register FCM token:', error);
-          // Fall back to in-app only
+          
+          // If it's a VAPID key error, still enable notifications (just in-app)
+          if (error.message?.includes('applicationServerKey') || 
+              error.message?.includes('vapid') ||
+              error.message?.includes('VAPID key not configured') ||
+              error.code === 'messaging/invalid-vapid-key') {
+            console.warn('Push notifications require VAPID key configuration. Enabling in-app notifications only.');
+            console.info('To enable push notifications, see: /docs/FIREBASE_NOTIFICATIONS_SETUP.md');
+            await this.enableInAppOnly();
+            return true;
+          }
+          
+          // Fall back to in-app only for other errors too
           await this.enableInAppOnly();
           return true;
         }
@@ -116,9 +128,28 @@ export class NotificationService {
     }
 
     try {
-      // Get FCM token
+      // First, register the service worker if not already registered
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          console.log('Service Worker registered:', registration);
+        } catch (swError) {
+          console.warn('Service Worker registration failed:', swError);
+          // Continue anyway - might already be registered
+        }
+      }
+
+      // Get FCM token with proper VAPID key from environment
+      const vapidKey = process.env.NEXT_PUBLIC_FCM_VAPID_KEY;
+      
+      if (!vapidKey) {
+        console.warn('FCM VAPID key not configured. Push notifications will not work.');
+        throw new Error('VAPID key not configured');
+      }
+      
       const token = await getToken(this.messaging, {
-        vapidKey: process.env.NEXT_PUBLIC_FCM_VAPID_KEY || 'BDhl_OaRcbZ2pxcXeWxX_JrA7OVz4YduiOQWuw8uSJAfUaSU_ZR8UX7soK5wreNZZHJ9A2Sbo90DetC8-2ysIA'
+        vapidKey: vapidKey,
+        serviceWorkerRegistration: await navigator.serviceWorker.ready
       });
 
       if (token) {
@@ -129,9 +160,19 @@ export class NotificationService {
 
         // Register with backend
         await this.registerTokenWithBackend(token);
+      } else {
+        throw new Error('Failed to get FCM token');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Token registration failed:', error);
+      
+      // More detailed error logging
+      if (error.code === 'messaging/invalid-vapid-key') {
+        console.error('Invalid VAPID key. Please check your Firebase configuration.');
+      } else if (error.code === 'messaging/permission-blocked') {
+        console.error('Notifications are blocked by the browser.');
+      }
+      
       throw error;
     }
   }
@@ -260,7 +301,7 @@ export class NotificationService {
         title: notification.title,
         body: notification.body,
         type: data?.type || 'info',
-        action: data?.url,
+        action: data?.url || data?.path,
       });
     }
   }
@@ -271,13 +312,15 @@ export class NotificationService {
     type: string;
     action?: string;
   }): void {
-    // This will be handled by the NotificationContext
-    // Dispatch a custom event that the notification UI can listen to
+    // Dispatch a custom event that our NotificationToast will listen to
     const event = new CustomEvent('app-notification', {
       detail: options,
     });
     
     window.dispatchEvent(event);
+    
+    // Also log for debugging
+    console.log('In-app notification dispatched:', options);
   }
 
   async testNotification(type: string = 'study_reminder'): Promise<void> {

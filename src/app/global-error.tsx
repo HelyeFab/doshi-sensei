@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
+import DoshiMascot from '@/components/DoshiMascot';
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react';
 
 const KANJI_CHARACTERS = ['愛', '学', '美', '心', '道', '師', '和', '知', '光', '夢'];
@@ -100,11 +100,9 @@ export default function GlobalError({
                 }}
               >
                 <div className="relative">
-                  <Image
-                    src="/doshi.png"
-                    alt="Doshi Sensei"
-                    width={100}
-                    height={100}
+                  <DoshiMascot
+                    variant="animated"
+                    size="medium"
                     className="drop-shadow-xl"
                     priority
                   />

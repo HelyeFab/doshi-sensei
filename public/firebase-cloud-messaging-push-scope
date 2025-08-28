@@ -1,0 +1,2 @@
+// This file is intentionally empty
+// It's required for Firebase Cloud Messaging to properly register the service worker scope

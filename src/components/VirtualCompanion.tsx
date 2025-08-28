@@ -2,15 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
-import {
-  getRandomCharacter,
-  getRandomQuote,
-  updateCompanionHistory,
-  CompanionCharacter
-} from '@/utils/virtualCompanion';
+import { getRandomQuote } from '@/utils/virtualCompanion';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import DoshiMascot from '@/components/DoshiMascot';
 import SlideUpModal from '@/components/SlideUpModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { auth } from '@/lib/firebase';
@@ -28,7 +24,6 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
   const router = useRouter();
   const { user } = useAuth();
   const { canInstall, install, isInstalling, isInstalled } = usePWAInstall();
-  const [character, setCharacter] = useState<CompanionCharacter | null>(null);
   const [quote, setQuote] = useState<string>('');
   const [isAnimated, setIsAnimated] = useState(false);
   const [showDoshiModal, setShowDoshiModal] = useState(false);
@@ -47,31 +42,20 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
     }
   };
 
-  // Generate character and quote when modal opens
+  // Generate quote when modal opens
   useEffect(() => {
-    if (isOpen && !character && settings) {
-      // Ensure companionHistory exists with default values
-      const companionHistory = settings.companionHistory || { recentCharacters: [], lastShownDate: undefined };
-
-      const newCharacter = getRandomCharacter(companionHistory);
+    if (isOpen && !quote) {
       const newQuote = getRandomQuote();
-
-      setCharacter(newCharacter);
       setQuote(newQuote);
-
-      // Update companion history
-      const updatedHistory = updateCompanionHistory(companionHistory, newCharacter.path);
-      updateSetting('companionHistory', updatedHistory);
 
       // Trigger animation after a small delay
       setTimeout(() => setIsAnimated(true), 100);
     }
-  }, [isOpen, character, settings, updateSetting]);
+  }, [isOpen, quote]);
 
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
-      setCharacter(null);
       setQuote('');
       setIsAnimated(false);
     }
@@ -110,30 +94,28 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
           </svg>
         </button>
 
-        {/* Character Icon */}
-        {character && (
-          <div className="flex flex-col items-center gap-2">
-            <div
-              className={`w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-3 flex items-center justify-center transform transition-all duration-700 border-4 border-card shadow-lg ${isAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-12'
-                }`}
-            >
-              <img
-                src={character.path}
-                alt={character.name}
-                className="w-full h-full object-contain"
-                style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))' }}
-              />
-            </div>
+        {/* Red Panda Mascot */}
+        <div className="flex flex-col items-center gap-2">
+          <div
+            className={`rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-3 flex items-center justify-center transform transition-all duration-700 border-4 border-card shadow-lg ${isAnimated ? 'scale-100 rotate-0' : 'scale-50 rotate-12'
+              }`}
+          >
+            <DoshiMascot
+              variant="animated"
+              size="medium"
+              className="drop-shadow-xl"
+            />
+          </div>
 
-            {/* Character Name */}
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-card-foreground">
-                Hello from {character.name}! 👋
-              </h3>
-              <p className="text-xs text-muted-foreground capitalize">
-                Your {character.category.replace('-', ' ')} Companion
-              </p>
-            </div>
+          {/* Character Name */}
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-card-foreground">
+              Hello from Doshi! 👋
+            </h3>
+            <p className="text-xs text-muted-foreground capitalize">
+              Your Red Panda Companion
+            </p>
+          </div>
 
             {/* Quote */}
             <div
@@ -168,7 +150,6 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
               Thank you! ✨
             </button>
           </div>
-        )}
 
         {/* Footer Section */}
         <div className="mt-2 pt-2 border-t border-border/50">
@@ -292,13 +273,25 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
       >
         <div className="px-6 py-6">
           <div className="flex flex-col items-center space-y-4">
+            {/* Red Panda Mascot Animation */}
+            <div className="flex flex-col items-center gap-4">
+              <DoshiMascot
+                variant="animated"
+                size="large"
+                className="drop-shadow-xl"
+              />
+              <p className="text-sm text-muted-foreground italic">
+                Meet our adorable red panda mascot!
+              </p>
+            </div>
+            
             {/* Profile Picture */}
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
               <Image
                 src="/doshi-emma.JPG"
-                alt="Dōshi Sensei"
-                width={128}
-                height={128}
+                alt="Emmanuel - Creator of Dōshi Sensei"
+                width={96}
+                height={96}
                 className="w-full h-full object-cover"
               />
             </div>

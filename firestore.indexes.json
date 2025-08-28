@@ -1,33 +1,4 @@
 {
-  "indexes": [
-    {
-      "collectionGroup": "security_events",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "userId",
-          "mode": "ASCENDING"
-        },
-        {
-          "fieldPath": "timestamp",
-          "mode": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "security_events",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "timestamp",
-          "mode": "DESCENDING"
-        },
-        {
-          "fieldPath": "__name__",
-          "mode": "DESCENDING"
-        }
-      ]
-    }
-  ],
+  "indexes": [],
   "fieldOverrides": []
 }

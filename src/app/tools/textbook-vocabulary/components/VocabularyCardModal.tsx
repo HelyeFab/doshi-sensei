@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSettings } from '@/contexts/SettingsContext';
 import { TTSManager } from '@/utils/tts';
 import { useErrorNotification, ERROR_MESSAGES } from '@/hooks/useErrorNotification';
+import { RecentStudyTracker } from '@/utils/recentStudyTracker';
 import type { VocabularyItem } from '../types';
 
 interface VocabularyCardModalProps {
@@ -18,6 +19,28 @@ export function VocabularyCardModal({ word, isOpen, onClose, onStartStudy }: Voc
   const [isPlaying, setIsPlaying] = useState(false);
   const { settings } = useSettings();
   const { showError, ErrorNotificationDialog } = useErrorNotification();
+
+  // Track when a word is viewed
+  useEffect(() => {
+    if (word && isOpen) {
+      const trackView = async () => {
+        try {
+          const content = word.japanese || word.text || '';
+          const isKanji = content.length === 1 && /[\u4e00-\u9faf]/.test(content);
+          
+          await RecentStudyTracker.addItem({
+            type: isKanji ? 'kanji' : 'word',
+            content: content,
+            contextPath: window.location.pathname
+          });
+          console.log(`Tracked view of ${isKanji ? 'kanji' : 'word'}: ${content}`);
+        } catch (error) {
+          console.error('Failed to track vocabulary view:', error);
+        }
+      };
+      trackView();
+    }
+  }, [word, isOpen]);
 
   if (!word) return null;
 

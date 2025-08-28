@@ -120,6 +120,9 @@ export default function TextbookVocabularyPage() {
     }
   ];
 
+  // Calculate total words dynamically
+  const totalWords = textbooks.reduce((sum, textbook) => sum + textbook.words, 0);
+
   const handleTextbookSelect = (textbook: Textbook) => {
     setIsLoading(true);
     setSelectedTextbook(textbook);
@@ -264,9 +267,9 @@ export default function TextbookVocabularyPage() {
             >
               <h3 className="font-semibold text-foreground mb-2">📊 Total Collection</h3>
               <div className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400">
-                9,635 words
+                {totalWords.toLocaleString()} words
               </div>
-              <p className="text-sm text-muted-foreground mt-1">From 4 popular textbooks</p>
+              <p className="text-sm text-muted-foreground mt-1">From {textbooks.length} popular textbooks</p>
             </motion.div>
 
             {/* Features Section */}

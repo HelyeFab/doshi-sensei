@@ -29,6 +29,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'conjugation_practice': 0,    // Must sign up
       'flashcard_review': 0,        // Must sign up
       'textbook_vocabulary': 30, // More cards to explore
+      'do_learning_sessions': 5, // Limited sessions for guests
       
       // Games
       'kanji_quest': 3,         // Enough to get hooked
@@ -118,6 +119,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'conjugation_practice': 3,    // Limited practice sessions
       'flashcard_review': 10,       // Limited flashcard reviews
       'textbook_vocabulary': 50, // Limited cards per day
+      'do_learning_sessions': 10, // More sessions for free users
       
       // Games
       'kanji_quest': 3,         // Few games per day
@@ -204,6 +206,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'conjugation_practice': -1,   // Unlimited practice
       'flashcard_review': -1,       // Unlimited flashcard reviews
       'textbook_vocabulary': -1,
+      'do_learning_sessions': -1, // Unlimited sessions for premium
       
       // Games - all unlimited
       'kanji_quest': -1,
@@ -293,6 +296,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       'conjugation_practice': -1,   // Unlimited practice
       'flashcard_review': -1,       // Unlimited flashcard reviews
       'textbook_vocabulary': -1,
+      'do_learning_sessions': -1, // Unlimited sessions for premium
       
       // Games - all unlimited
       'kanji_quest': -1,

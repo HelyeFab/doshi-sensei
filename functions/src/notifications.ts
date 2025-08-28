@@ -223,7 +223,97 @@ export const sendStudyReminders = onSchedule('0 * * * *', async (event) => {
 });
 
 /**
+ * Recent Study Reminder - Option 2: Simple reminder based on what user studied
+ * Runs daily at 9 AM UTC (adjust based on user timezone)
+ */
+export const sendRecentStudyReminders = onSchedule('0 9 * * *', async (event) => {
+  logger.info('Running recent study reminders job');
+  
+  try {
+    // Get users who studied in the last 7 days
+    const sevenDaysAgo = admin.firestore.Timestamp.fromDate(
+      new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    );
+    
+    const activeUsersSnapshot = await db.collection('userStats')
+      .where('lastActiveDate', '>=', sevenDaysAgo)
+      .get();
+    
+    logger.info(`Found ${activeUsersSnapshot.size} active users`);
+    const promises: Promise<void>[] = [];
+    
+    for (const userDoc of activeUsersSnapshot.docs) {
+      const stats = userDoc.data() as UserStats;
+      const userId = userDoc.id;
+      
+      // Get user's notification preferences
+      const prefsDoc = await db.collection('notificationPreferences')
+        .doc(userId)
+        .get();
+      
+      if (!prefsDoc.exists) {
+        logger.info(`No notification preferences for user ${userId}`);
+        continue;
+      }
+      
+      const prefs = prefsDoc.data() as NotificationPreferences;
+      
+      // Skip if notifications disabled or no FCM token
+      if (!prefs.enabled || !prefs.fcmToken) {
+        logger.info(`Notifications disabled or no token for user ${userId}`);
+        continue;
+      }
+      
+      // Check user's local time
+      const userTime = getUserTime(prefs.timezone || 'UTC');
+      const currentHour = userTime.getHours();
+      
+      // Only send around 9 AM in user's timezone
+      if (currentHour < 8 || currentHour > 10) {
+        continue;
+      }
+      
+      // Check quiet hours
+      if (isInQuietHours(prefs, userTime)) {
+        continue;
+      }
+      
+      // Get recently studied items
+      const recentKanji = stats.learnedKanjiSet?.slice(-5) || [];
+      const recentWords = stats.learnedWordsSet?.slice(-5) || [];
+      
+      if (recentKanji.length > 0 || recentWords.length > 0) {
+        const itemsList = [...recentKanji.slice(0, 3), ...recentWords.slice(0, 2)]
+          .filter(Boolean)
+          .join(', ');
+        
+        promises.push(
+          sendNotification(prefs.fcmToken, {
+            title: '🐼 Time to review your recent studies!',
+            body: itemsList.length > 0 
+              ? `Quick review: ${itemsList}` 
+              : 'Continue your Japanese learning journey',
+            data: {
+              type: 'recent_study_reminder',
+              url: '/test-panda',
+              userId: userId,
+              recentItems: JSON.stringify({ kanji: recentKanji, words: recentWords })
+            }
+          })
+        );
+      }
+    }
+    
+    await Promise.all(promises);
+    logger.info(`Sent ${promises.length} recent study reminders`);
+  } catch (error) {
+    logger.error('Error in recent study reminders job:', error);
+  }
+});
+
+/**
  * Review reminder function - runs every 30 minutes
+ * Fixed to check multiple possible collection paths
  */
 export const sendReviewReminders = onSchedule('*/30 * * * *', async (event) => {
   logger.info('Running review reminders job');
@@ -250,25 +340,67 @@ export const sendReviewReminders = onSchedule('*/30 * * * *', async (event) => {
         continue;
       }
       
-      // Check for due reviews
+      // Check for due reviews in multiple possible locations
+      let reviewsFound = false;
+      let dueCount = 0;
+      
+      // Try main reviews collection
       const reviewsSnapshot = await db.collection('reviews')
         .where('userId', '==', prefs.userId)
         .where('nextReviewDate', '<=', admin.firestore.Timestamp.now())
         .limit(1)
         .get();
       
-      if (reviewsSnapshot.empty) {
+      if (!reviewsSnapshot.empty) {
+        reviewsFound = true;
+        const countSnapshot = await db.collection('reviews')
+          .where('userId', '==', prefs.userId)
+          .where('nextReviewDate', '<=', admin.firestore.Timestamp.now())
+          .count()
+          .get();
+        dueCount = countSnapshot.data().count;
+      }
+      
+      // Try user subcollection if main collection is empty
+      if (!reviewsFound) {
+        const userReviewsSnapshot = await db.collection('users')
+          .doc(prefs.userId)
+          .collection('reviews')
+          .where('nextReviewDate', '<=', admin.firestore.Timestamp.now())
+          .limit(1)
+          .get();
+        
+        if (!userReviewsSnapshot.empty) {
+          reviewsFound = true;
+          const countSnapshot = await db.collection('users')
+            .doc(prefs.userId)
+            .collection('reviews')
+            .where('nextReviewDate', '<=', admin.firestore.Timestamp.now())
+            .count()
+            .get();
+          dueCount = countSnapshot.data().count;
+        }
+      }
+      
+      // Try unified reviews collection
+      if (!reviewsFound) {
+        const unifiedReviewsSnapshot = await db.collection('unifiedReviews')
+          .where('userId', '==', prefs.userId)
+          .where('isDue', '==', true)
+          .limit(1)
+          .get();
+        
+        if (!unifiedReviewsSnapshot.empty) {
+          reviewsFound = true;
+          dueCount = unifiedReviewsSnapshot.size;
+        }
+      }
+      
+      if (!reviewsFound) {
         continue;
       }
       
-      // Count total due reviews
-      const totalDueSnapshot = await db.collection('reviews')
-        .where('userId', '==', prefs.userId)
-        .where('nextReviewDate', '<=', admin.firestore.Timestamp.now())
-        .count()
-        .get();
-      
-      const dueCount = totalDueSnapshot.data().count;
+      // dueCount is already set from the checks above
       
       // Check if we've already sent a reminder recently (within 4 hours)
       const recentLogsSnapshot = await db.collection('notificationLogs')
@@ -286,13 +418,13 @@ export const sendReviewReminders = onSchedule('*/30 * * * *', async (event) => {
       // Send reminder
       promises.push(
         sendNotification(prefs.fcmToken, {
-          title: `${dueCount} items ready for review 📝`,
+          title: `🐼 ${dueCount} items ready for review!`,
           body: dueCount > 10 
             ? `Quick 5-minute session to maintain your progress`
             : `Review now to strengthen your memory`,
           data: {
             type: 'review_reminder',
-            url: '/drill/flashcards',
+            url: '/test-panda',
             userId: prefs.userId,
             dueCount: dueCount.toString(),
           },

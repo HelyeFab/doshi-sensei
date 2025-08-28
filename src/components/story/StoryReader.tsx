@@ -201,6 +201,17 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
   // Track story view and cache on mount
   useEffect(() => {
     if (story.id) {
+      // Reset state when story changes
+      setCurrentPageIndex(0);
+      setHasTrackedCompletion(false);
+      setReadingProgress(0);
+      setShowQuiz(false);
+      setQuizAnswers([]);
+      setQuizScore(null);
+      setSavedWords(new Set());
+      
+      console.log('🔄 Story changed, reset tracking:', story.title);
+      
       storyManager.trackStoryView(story.id);
       
       // Track in analytics system
@@ -269,8 +280,16 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
       if (isCompleted && !hasTrackedCompletion) {
         const trackCompletion = async () => {
           try {
+            console.log('📚 Tracking story completion:', {
+              storyId: story.id,
+              title: story.title,
+              currentPage: currentPageIndex + 1,
+              totalPages: story.pages.length
+            });
+            
             const { trackStoryRead } = await import('@/lib/stats/trackingEvents');
             await trackStoryRead(story.id, story.title);
+            console.log('✅ Story tracked successfully');
             
             // Track in new analytics system
             const readingTime = Math.ceil((Date.now() - startTime.getTime()) / 1000); // in seconds
@@ -312,7 +331,7 @@ export default function StoryReader({ story, onComplete, onExit }: StoryReaderPr
               onComplete();
             }
           } catch (error) {
-            console.error('Error tracking story completion:', error);
+            console.error('❌ Failed to track story completion:', error);
           }
         };
         trackCompletion();

@@ -10,11 +10,13 @@ import {
 } from '@/components/unified-review';
 import { useLearnTracking } from '@/hooks/useLearnTracking';
 import { LearningEvent, UserLearningStats } from '@/types/analytics';
+import { useStats } from '@/hooks/useStats';
+import SmartHeader from '@/components/SmartHeader';
 
-type TabType = 'activity' | 'session' | 'dashboard' | 'settings';
+type TabType = 'stats' | 'activity' | 'session' | 'dashboard' | 'settings';
 
 export default function ReviewClient() {
-  const [activeTab, setActiveTab] = useState<TabType>('activity');
+  const [activeTab, setActiveTab] = useState<TabType>('stats');
   const [showSession, setShowSession] = useState(false);
   const { engine, isLoading, isReady } = useUnifiedReview();
   const [reviewStats, setReviewStats] = useState<any>(null);
@@ -24,6 +26,9 @@ export default function ReviewClient() {
   const [learningStats, setLearningStats] = useState<UserLearningStats | null>(null);
   const [recentEvents, setRecentEvents] = useState<LearningEvent[]>([]);
   const [loadingAnalytics, setLoadingAnalytics] = useState(true);
+  
+  // Comprehensive Stats Tracking
+  const { stats, activities, loading: statsLoading } = useStats();
 
   const handleStartReview = () => {
     setShowSession(true);
@@ -90,11 +95,45 @@ export default function ReviewClient() {
   }, [isReady, engine]);
 
   const tabs = [
-    { id: 'activity' as TabType, label: 'Learning Activity', icon: '📊' },
+    { id: 'stats' as TabType, label: 'Stats Overview', icon: '📊' },
+    { id: 'activity' as TabType, label: 'Learning Activity', icon: '📋' },
     { id: 'session' as TabType, label: 'Review Session', icon: '📝' },
     { id: 'dashboard' as TabType, label: 'Progress', icon: '📈' },
     { id: 'settings' as TabType, label: 'Settings', icon: '⚙️' }
   ];
+  
+  // Calculate achievement badges
+  const getAchievementLevel = (total: number, type: string) => {
+    const thresholds = {
+      reading: [
+        { min: 100, badge: '🎓', label: 'Scholar' },
+        { min: 50, badge: '🚀', label: 'Speed Reader' },
+        { min: 25, badge: '📚', label: 'Bookworm' },
+        { min: 10, badge: '⭐', label: 'Rising Star' },
+        { min: 5, badge: '🎯', label: 'Getting Started' },
+        { min: 1, badge: '📰', label: 'First Steps' }
+      ],
+      kanji: [
+        { min: 500, badge: '🏆', label: 'Kanji Master' },
+        { min: 200, badge: '💎', label: 'Kanji Expert' },
+        { min: 100, badge: '🌟', label: 'Kanji Scholar' },
+        { min: 50, badge: '📖', label: 'Kanji Student' },
+        { min: 20, badge: '✨', label: 'Kanji Learner' },
+        { min: 1, badge: '🔤', label: 'Beginner' }
+      ],
+      practice: [
+        { min: 100, badge: '🥇', label: 'Practice Champion' },
+        { min: 50, badge: '🥈', label: 'Practice Expert' },
+        { min: 25, badge: '🥉', label: 'Practice Pro' },
+        { min: 10, badge: '💪', label: 'Dedicated' },
+        { min: 5, badge: '🎯', label: 'Consistent' },
+        { min: 1, badge: '🌱', label: 'Started' }
+      ]
+    };
+    
+    const levels = thresholds[type] || thresholds.practice;
+    return levels.find(l => total >= l.min) || { badge: '🌱', label: 'Beginner' };
+  };
 
   // Format time ago
   const formatTimeAgo = (timestamp: number) => {
@@ -267,12 +306,271 @@ export default function ReviewClient() {
         {/* Tab Content */}
         <div className="px-4 pb-4">
           <div className="bg-card rounded-lg shadow-sm border border-border min-h-[400px]">
-            {(isLoading || loadingAnalytics) && activeTab === 'activity' ? (
+            {(isLoading || loadingAnalytics || statsLoading) && (activeTab === 'activity' || activeTab === 'stats') ? (
               <div className="flex items-center justify-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
               </div>
             ) : (
               <>
+                {/* Comprehensive Stats Dashboard */}
+                {activeTab === 'stats' && (
+                  <div className="p-6">
+                    <h2 className="text-xl font-bold text-foreground mb-6">Comprehensive Learning Stats</h2>
+                    
+                    {/* Overall Progress Cards */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                      {/* Streak Card */}
+                      <div className="bg-gradient-to-br from-orange-100 to-orange-50 dark:from-orange-900/20 dark:to-orange-800/10 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                        <div className="text-3xl mb-1">{stats?.currentStreak > 0 ? '🔥' : '📅'}</div>
+                        <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">
+                          {stats?.currentStreak || 0}
+                        </div>
+                        <div className="text-sm text-orange-600 dark:text-orange-500">Day Streak</div>
+                        {stats?.longestStreak > 0 && (
+                          <div className="text-xs text-orange-500 dark:text-orange-600 mt-1">
+                            Best: {stats.longestStreak} days
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Total Activities */}
+                      <div className="bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/20 dark:to-blue-800/10 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                        <div className="text-3xl mb-1">✨</div>
+                        <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">
+                          {stats?.totalActivities || 0}
+                        </div>
+                        <div className="text-sm text-blue-600 dark:text-blue-500">Total Activities</div>
+                        <div className="text-xs text-blue-500 dark:text-blue-600 mt-1">
+                          {stats?.totalDaysActive || 0} active days
+                        </div>
+                      </div>
+                      
+                      {/* Accuracy */}
+                      <div className="bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900/20 dark:to-green-800/10 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                        <div className="text-3xl mb-1">🎯</div>
+                        <div className="text-2xl font-bold text-green-700 dark:text-green-400">
+                          {stats?.overallAccuracy || 0}%
+                        </div>
+                        <div className="text-sm text-green-600 dark:text-green-500">Accuracy</div>
+                        <div className="text-xs text-green-500 dark:text-green-600 mt-1">
+                          {stats?.totalCorrectAnswers || 0}/{stats?.totalQuestionsAnswered || 0}
+                        </div>
+                      </div>
+                      
+                      {/* Learning Total */}
+                      <div className="bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-900/20 dark:to-purple-800/10 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                        <div className="text-3xl mb-1">🎓</div>
+                        <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">
+                          {(stats?.totalKanjiLearned || 0) + (stats?.totalWordsLearned || 0)}
+                        </div>
+                        <div className="text-sm text-purple-600 dark:text-purple-500">Items Learned</div>
+                        <div className="text-xs text-purple-500 dark:text-purple-600 mt-1">
+                          {stats?.totalKanjiLearned || 0} kanji, {stats?.totalWordsLearned || 0} words
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Activity Breakdown */}
+                    <div className="grid md:grid-cols-2 gap-6 mb-6">
+                      {/* Reading Stats */}
+                      <div className="bg-card rounded-lg p-4 border border-border">
+                        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                          <span className="text-xl">📖</span> Reading Progress
+                        </h3>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Articles Read</span>
+                            <span className="font-semibold text-foreground">{stats?.articlesRead || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Stories Read</span>
+                            <span className="font-semibold text-foreground">{stats?.storiesRead || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Total Reading</span>
+                            <span className="font-bold text-primary">
+                              {(stats?.articlesRead || 0) + (stats?.storiesRead || 0)}
+                            </span>
+                          </div>
+                          
+                          {/* Reading Achievement Badge */}
+                          {(() => {
+                            const total = (stats?.articlesRead || 0) + (stats?.storiesRead || 0);
+                            const achievement = getAchievementLevel(total, 'reading');
+                            return (
+                              <div className="mt-3 pt-3 border-t border-border flex items-center justify-between">
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Achievement</p>
+                                  <p className="text-sm font-medium text-foreground">{achievement.label}</p>
+                                </div>
+                                <span className="text-2xl">{achievement.badge}</span>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                      
+                      {/* Practice Stats */}
+                      <div className="bg-card rounded-lg p-4 border border-border">
+                        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                          <span className="text-xl">⚡</span> Practice Activities
+                        </h3>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Drills Completed</span>
+                            <span className="font-semibold text-foreground">{stats?.drillsCompleted || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Games Played</span>
+                            <span className="font-semibold text-foreground">{stats?.gamesPlayed || 0}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Practice Sessions</span>
+                            <span className="font-semibold text-foreground">{stats?.practiceSessionsCompleted || 0}</span>
+                          </div>
+                          
+                          {/* Practice Achievement Badge */}
+                          {(() => {
+                            const total = (stats?.drillsCompleted || 0) + (stats?.gamesPlayed || 0) + (stats?.practiceSessionsCompleted || 0);
+                            const achievement = getAchievementLevel(total, 'practice');
+                            return (
+                              <div className="mt-3 pt-3 border-t border-border flex items-center justify-between">
+                                <div>
+                                  <p className="text-xs text-muted-foreground">Achievement</p>
+                                  <p className="text-sm font-medium text-foreground">{achievement.label}</p>
+                                </div>
+                                <span className="text-2xl">{achievement.badge}</span>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Weekly Activity Chart */}
+                    {activities?.week && activities.week.length > 0 && (
+                      <div className="bg-card rounded-lg p-4 border border-border mb-6">
+                        <h3 className="font-semibold text-foreground mb-4">This Week's Activity</h3>
+                        <div className="flex items-end justify-between gap-1 h-32">
+                          {Array.from({ length: 7 }, (_, i) => {
+                            const date = new Date();
+                            date.setDate(date.getDate() - (6 - i));
+                            const dateStr = date.toISOString().split('T')[0];
+                            const dayData = activities.week.find(d => d.date === dateStr);
+                            const dayTotal = dayData?.summary.totalActivities || 0;
+                            const maxTotal = Math.max(...activities.week.map(d => d.summary.totalActivities), 1);
+                            const height = dayTotal > 0 ? (dayTotal / maxTotal) * 100 : 5;
+                            const dayName = date.toLocaleDateString('en', { weekday: 'short' });
+                            const isToday = dateStr === new Date().toISOString().split('T')[0];
+                            
+                            return (
+                              <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                                <div className="relative w-full flex items-end justify-center" style={{ height: '100px' }}>
+                                  <div 
+                                    className={`w-full max-w-[30px] rounded-t transition-all duration-300 ${
+                                      dayTotal > 0 ? 'bg-primary' : 'bg-muted'
+                                    } ${isToday ? 'ring-2 ring-primary ring-offset-2' : ''}`}
+                                    style={{ height: `${height}%`, minHeight: '4px' }}
+                                  />
+                                  {dayTotal > 0 && (
+                                    <span className="absolute -top-5 text-xs font-medium text-foreground">
+                                      {dayTotal}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className={`text-xs ${isToday ? 'font-bold text-primary' : 'text-muted-foreground'}`}>
+                                  {dayName}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Study Stats */}
+                    <div className="grid md:grid-cols-3 gap-4">
+                      {/* Kanji Stats */}
+                      <div className="bg-card rounded-lg p-4 border border-border">
+                        <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                          <span>🅰️</span> Kanji Progress
+                        </h3>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Study Sessions</span>
+                            <span className="font-medium">{stats?.kanjiStudySessions || 0}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Kanji Learned</span>
+                            <span className="font-medium">{stats?.totalKanjiLearned || 0}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Accuracy</span>
+                            <span className="font-medium">{stats?.kanjiAccuracy || 0}%</span>
+                          </div>
+                          {(() => {
+                            const achievement = getAchievementLevel(stats?.totalKanjiLearned || 0, 'kanji');
+                            return (
+                              <div className="mt-2 pt-2 border-t border-border flex items-center justify-between">
+                                <span className="text-xs font-medium">{achievement.label}</span>
+                                <span className="text-xl">{achievement.badge}</span>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                      
+                      {/* Vocabulary Stats */}
+                      <div className="bg-card rounded-lg p-4 border border-border">
+                        <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                          <span>📖</span> Vocabulary
+                        </h3>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Words Studied</span>
+                            <span className="font-medium">{stats?.vocabStudied || 0}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Words Learned</span>
+                            <span className="font-medium">{stats?.totalWordsLearned || 0}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Flashcards</span>
+                            <span className="font-medium">{stats?.flashcardsReviewed || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Game Stats */}
+                      <div className="bg-card rounded-lg p-4 border border-border">
+                        <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                          <span>🎮</span> Games
+                        </h3>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Games Played</span>
+                            <span className="font-medium">{stats?.gamesPlayed || 0}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Total Score</span>
+                            <span className="font-medium">{stats?.totalGameScore || 0}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Accuracy</span>
+                            <span className="font-medium">{stats?.gameAccuracy || 0}%</span>
+                          </div>
+                          {stats?.pokemonCaught !== undefined && stats.pokemonCaught > 0 && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Pokemon Caught</span>
+                              <span className="font-medium">🎯 {stats.pokemonCaught}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 {activeTab === 'activity' && (
                   <div className="p-6">
                     <h2 className="text-xl font-bold text-foreground mb-4">Your Learning Activity</h2>

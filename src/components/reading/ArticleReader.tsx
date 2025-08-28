@@ -391,6 +391,7 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
   const [vocabularyEncountered, setVocabularyEncountered] = useState<Set<string>>(new Set());
   const [statsVisible, setStatsVisible] = useState(false);
   const [showShadowingMode, setShowShadowingMode] = useState(false);
+  const [hasTrackedCompletion, setHasTrackedCompletion] = useState(false);
 
   // Track article view on mount
   useEffect(() => {
@@ -636,13 +637,23 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     setReadingProgress(progress);
 
     // Track article completion when progress reaches 95% (accounting for footer)
-    if (progress >= 95 && readingProgress < 95) {
+    if (progress >= 95 && !hasTrackedCompletion) {
+      setHasTrackedCompletion(true);
 
       const readingTime = Math.ceil((Date.now() - readingStartTime.getTime()) / 60000); // in minutes
       
+      console.log('📖 Tracking article completion:', {
+        articleId: article.id,
+        title: article.title,
+        readingTime,
+        progress
+      });
+      
       // Track in both systems during migration
-      trackArticleRead(article.id, article.title, readingTime).catch(error => {
-        console.error('Failed to track article read:', error);
+      trackArticleRead(article.id, article.title, readingTime).then(() => {
+        console.log('✅ Article tracked successfully');
+      }).catch(error => {
+        console.error('❌ Failed to track article read:', error);
       });
       
       // Track in new analytics system
@@ -830,8 +841,12 @@ export function ArticleReader({ article, onBack }: ArticleReaderProps) {
     };
   }, [article.id, article.content, userRequestedStats]);
 
-  // Load bookmark status
+  // Load bookmark status and reset tracking
   useEffect(() => {
+    // Reset tracking state when article changes
+    setHasTrackedCompletion(false);
+    setReadingProgress(0);
+    
     const checkBookmarkStatus = async () => {
       if (!user) {
         setIsBookmarked(false);

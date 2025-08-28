@@ -1,10 +1,10 @@
 /**
  * Mnemonic Service for Kanji Learning
- * Fetches mnemonics from rtega.be and caches them locally
+ * Uses OpenAI API for generating mnemonics with Firebase caching
  */
 
-import { doc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { doc, getDoc, setDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 export interface KanjiMnemonic {
   kanji: string;
@@ -13,121 +13,99 @@ export interface KanjiMnemonic {
   simplified?: string;
   alike?: string[];
   reference?: string[];
-  source: 'rtega' | 'rtk' | 'wanikani' | 'custom' | 'community';
+  source: 'openai' | 'huggingface' | 'huggingface-fallback' | 'rtega' | 'rtk' | 'wanikani' | 'custom' | 'community' | 'user';
   contributor?: string;
   createdAt?: Date;
   updatedAt?: Date;
   fetchedAt?: Date;
+  accessCount?: number;
+  lastAccessed?: Date;
 }
 
 class MnemonicService {
   private cache: Map<string, KanjiMnemonic> = new Map();
-  private readonly CACHE_COLLECTION = 'mnemonicsCache';
-  // Use Google Cloud Function for better reliability
-  private readonly API_BASE = process.env.NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL 
-    ? `${process.env.NEXT_PUBLIC_FIREBASE_FUNCTIONS_URL}/fetchMnemonic`
-    : 'https://us-central1-doshi-sensei.cloudfunctions.net/fetchMnemonic';
+  private readonly COLLECTION_NAME = 'mnemonics';
 
   /**
-   * Get mnemonic for a specific kanji
-   * First checks cache, then Firestore, then fetches from rtega.be
+   * Get mnemonic for a specific kanji using OpenAI API with Firebase caching
    */
-  async getMnemonic(kanji: string): Promise<KanjiMnemonic | null> {
-    console.log('getMnemonic called for:', kanji);
-    
-    // 1. Check memory cache
+  async getMnemonic(kanji: string, meaning?: string, readings?: any): Promise<KanjiMnemonic | null> {
+    // Check memory cache first
     if (this.cache.has(kanji)) {
-      console.log('Found in memory cache');
+      console.log(`[Mnemonic] Using memory cache for ${kanji}`);
       return this.cache.get(kanji) || null;
     }
 
-    // 2. Skip Firestore for now to test the API directly
-    // TODO: Re-enable Firestore caching after testing
-    /*
     try {
-      const docRef = doc(db, this.CACHE_COLLECTION, kanji);
+      // Check Firebase cache
+      const docRef = doc(db, this.COLLECTION_NAME, kanji);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
+        console.log(`[Mnemonic] Found in Firebase cache for ${kanji}`);
         const data = docSnap.data() as KanjiMnemonic;
+        
+        // Update access count and last accessed time
+        await setDoc(docRef, {
+          accessCount: (data.accessCount || 0) + 1,
+          lastAccessed: serverTimestamp()
+        }, { merge: true });
+
+        // Cache in memory
         this.cache.set(kanji, data);
-        
-        // If data is older than 30 days, fetch fresh in background
-        const fetchedAt = data.fetchedAt ? new Date(data.fetchedAt) : new Date(0);
-        const daysSinceFetch = (Date.now() - fetchedAt.getTime()) / (1000 * 60 * 60 * 24);
-        
-        if (daysSinceFetch > 30) {
-          // Fetch fresh data in background (don't await)
-          this.fetchAndCacheMnemonic(kanji);
-        }
-        
         return data;
       }
-    } catch (error) {
-      console.error('Error fetching from Firestore:', error);
-    }
-    */
 
-    // 3. Fetch from rtega.be via our API
-    console.log('Fetching from API...');
-    return await this.fetchAndCacheMnemonic(kanji);
-  }
+      console.log(`[Mnemonic] Not in cache, calling OpenAI API for ${kanji}`);
 
-  /**
-   * Fetch mnemonic from rtega.be and cache it
-   */
-  private async fetchAndCacheMnemonic(kanji: string): Promise<KanjiMnemonic | null> {
-    try {
-      console.log('Fetching mnemonic for:', kanji);
-      // Call Google Cloud Function
-      const response = await fetch(`${this.API_BASE}?kanji=${encodeURIComponent(kanji)}`);
-      
-      console.log('Response status:', response.status);
-      
+      // Not in cache, call our API route
+      const response = await fetch('/api/mnemonics/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          kanji,
+          meaning,
+          readings
+        }),
+      });
+
       if (!response.ok) {
-        console.error('Failed to fetch mnemonic, status:', response.status);
+        console.error('Failed to generate mnemonic:', response.status);
         return null;
       }
-      
-      const data = await response.json();
-      console.log('Received data:', data);
-      
-      if (data && data.mnemonic) {
-        const mnemonic: KanjiMnemonic = {
-          ...data,
-          kanji,
-          source: 'rtega',
-          fetchedAt: new Date()
-        };
-        
-        // Cache in memory
-        this.cache.set(kanji, mnemonic);
-        
-        // Cache in Firestore (don't await)
-        // TODO: Re-enable after fixing Firestore permissions
-        // this.saveMnemonicToFirestore(mnemonic);
-        
-        return mnemonic;
-      }
-    } catch (error) {
-      console.error('Error fetching mnemonic:', error);
-    }
-    
-    return null;
-  }
 
-  /**
-   * Save mnemonic to Firestore
-   */
-  private async saveMnemonicToFirestore(mnemonic: KanjiMnemonic): Promise<void> {
-    try {
-      const docRef = doc(db, this.CACHE_COLLECTION, mnemonic.kanji);
+      const data = await response.json();
+
+      const mnemonic: KanjiMnemonic = {
+        kanji: data.kanji,
+        mnemonic: data.mnemonic,
+        meaning: data.meaning,
+        source: data.source || 'openai',
+        fetchedAt: new Date(),
+        createdAt: new Date(),
+        accessCount: 1,
+        lastAccessed: new Date()
+      };
+
+      // Save to Firebase (accessible to all users including guests)
       await setDoc(docRef, {
         ...mnemonic,
-        updatedAt: new Date()
+        createdAt: serverTimestamp(),
+        fetchedAt: serverTimestamp(),
+        lastAccessed: serverTimestamp()
       });
+
+      console.log(`[Mnemonic] Saved to Firebase cache for ${kanji}`);
+
+      // Cache in memory
+      this.cache.set(kanji, mnemonic);
+
+      return mnemonic;
     } catch (error) {
-      console.error('Error saving to Firestore:', error);
+      console.error('Error fetching mnemonic:', error);
+      return null;
     }
   }
 
@@ -135,19 +113,16 @@ class MnemonicService {
    * Get multiple mnemonics
    */
   async getMnemonics(kanjiList: string[]): Promise<Map<string, KanjiMnemonic>> {
-    const result = new Map<string, KanjiMnemonic>();
+    const results = new Map<string, KanjiMnemonic>();
     
-    // Fetch in parallel for better performance
-    const promises = kanjiList.map(kanji => this.getMnemonic(kanji));
-    const mnemonics = await Promise.all(promises);
-    
-    kanjiList.forEach((kanji, index) => {
-      if (mnemonics[index]) {
-        result.set(kanji, mnemonics[index]!);
+    for (const kanji of kanjiList) {
+      const mnemonic = await this.getMnemonic(kanji);
+      if (mnemonic) {
+        results.set(kanji, mnemonic);
       }
-    });
+    }
     
-    return result;
+    return results;
   }
 
   /**
@@ -156,7 +131,7 @@ class MnemonicService {
   async saveCustomMnemonic(mnemonic: Omit<KanjiMnemonic, 'source' | 'fetchedAt'>): Promise<void> {
     const fullMnemonic: KanjiMnemonic = {
       ...mnemonic,
-      source: 'custom',
+      source: 'user',
       updatedAt: new Date()
     };
     
@@ -165,45 +140,39 @@ class MnemonicService {
     }
     
     this.cache.set(fullMnemonic.kanji, fullMnemonic);
-    await this.saveMnemonicToFirestore(fullMnemonic);
+    // Future: Save to Firestore or other persistent storage
   }
 
   /**
    * Search mnemonics by keyword
    */
   async searchMnemonics(keyword: string): Promise<KanjiMnemonic[]> {
-    try {
-      // Search in Firestore
-      const q = query(
-        collection(db, this.CACHE_COLLECTION),
-        where('mnemonic', '>=', keyword),
-        where('mnemonic', '<=', keyword + '\uf8ff')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const results: KanjiMnemonic[] = [];
-      
-      querySnapshot.forEach(doc => {
-        results.push(doc.data() as KanjiMnemonic);
-      });
-      
-      return results;
-    } catch (error) {
-      console.error('Error searching mnemonics:', error);
-      return [];
+    const results: KanjiMnemonic[] = [];
+    
+    for (const [_, mnemonic] of this.cache) {
+      if (mnemonic.mnemonic.toLowerCase().includes(keyword.toLowerCase()) ||
+          mnemonic.meaning?.toLowerCase().includes(keyword.toLowerCase())) {
+        results.push(mnemonic);
+      }
     }
+    
+    return results;
   }
 
   /**
    * Check if a mnemonic exists for a kanji
    */
   async hasMnemonic(kanji: string): Promise<boolean> {
+    if (this.cache.has(kanji)) {
+      return true;
+    }
+    
     const mnemonic = await this.getMnemonic(kanji);
     return mnemonic !== null;
   }
 
   /**
-   * Clear cache (useful for testing or manual refresh)
+   * Clear cache
    */
   clearCache(): void {
     this.cache.clear();

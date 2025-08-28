@@ -44,7 +44,9 @@
       "Read(/home/helye/Downloads/kanji-front-cordova/src/app/shared/models/**)",
       "Read(/home/helye/Downloads/kanji-front-cordova/src/app/modules/details/**)",
       "Read(/home/helye/Downloads/kanji-front-cordova/src/app/modules/details/**)",
-      "WebFetch(domain:www.rtega.be)"
+      "WebFetch(domain:www.rtega.be)",
+      "Bash(firebase functions:list:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": [],

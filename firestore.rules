@@ -1264,6 +1264,24 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Mnemonics collection - Kanji memory aids (cached OpenAI responses)
+    match /mnemonics/{kanjiId} {
+      // Anyone can read mnemonics (including guests)
+      allow read: if true;
+      
+      // Anyone can create mnemonics (including guests) - community feature to save API costs
+      allow create: if true;
+      
+      // Anyone can update access count and last accessed time
+      allow update: if 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accessCount', 'lastAccessed']) &&
+        request.resource.data.accessCount == (resource.data.accessCount + 1) &&
+        request.resource.data.lastAccessed is timestamp;
+      
+      // Only admin can delete mnemonics
+      allow delete: if isAdmin();
+    }
+
     // Learning Events collection - Universal Learning Analytics System
     // For authenticated users (free gets local only, premium gets cloud)
     match /learning_events/{userId} {

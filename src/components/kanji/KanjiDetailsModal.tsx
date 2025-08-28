@@ -60,17 +60,24 @@ export default function KanjiDetailsModal({
   useEffect(() => {
     if (isOpen && kanji?.kanji) {
       fetchStrokeCount(kanji.kanji);
-      fetchMnemonic(kanji.kanji);
+      fetchMnemonic(kanji);
     }
   }, [isOpen, kanji?.kanji]);
 
   // Fetch mnemonic for the kanji
-  const fetchMnemonic = async (kanjiChar: string) => {
+  const fetchMnemonic = async (kanjiData: Kanji) => {
     setMnemonicLoading(true);
     setMnemonic(null);
     
     try {
-      const result = await mnemonicService.getMnemonic(kanjiChar);
+      const result = await mnemonicService.getMnemonic(
+        kanjiData.kanji,
+        kanjiData.meaning,
+        {
+          kun: kanjiData.kunyomi || [],
+          on: kanjiData.onyomi || []
+        }
+      );
       if (result) {
         setMnemonic(result);
       }
@@ -272,9 +279,9 @@ export default function KanjiDetailsModal({
                     </div>
                   ) : mnemonic ? (
                     <div className="space-y-3">
-                      <p className="text-sm leading-relaxed text-foreground">
+                      <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
                         {mnemonic.mnemonic}
-                      </p>
+                      </div>
                       
                       {mnemonic.alike && mnemonic.alike.length > 0 && (
                         <div className="pt-2 border-t border-accent/20">
@@ -286,7 +293,10 @@ export default function KanjiDetailsModal({
                       )}
                       
                       <div className="text-xs text-muted-foreground italic">
-                        Source: {mnemonic.source === 'rtega' ? 'rtega.be' : mnemonic.source}
+                        Source: {mnemonic.source === 'openai' ? 'AI Generated' : 
+                                 mnemonic.source === 'huggingface' ? 'AI Generated' : 
+                                 mnemonic.source === 'huggingface-fallback' ? 'AI Generated (Simple)' :
+                                 mnemonic.source}
                       </div>
                     </div>
                   ) : (

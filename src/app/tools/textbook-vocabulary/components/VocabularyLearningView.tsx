@@ -308,7 +308,8 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="px-4 py-8"
+            className="px-4 py-8 pb-40 overflow-y-auto"
+            style={{ maxHeight: 'calc(100vh - 200px)' }}
             onAnimationStart={() => console.log('Study view rendering with queue:', studyQueue)}
           >
             {/* Study Progress */}

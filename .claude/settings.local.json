@@ -59,6 +59,7 @@
       "Read(/home/helye/Development/Projects/Work/Nextjs/doshi-sensei-old/src/app/tools/word-learning-session/**)",
       "Bash(git checkout:*)",
       "Bash(test:*)",
+      "Read(/home/helye/Development/Projects/Work/Nextjs/doshi-sensei-old/src/app/tools/word-learning-session/**)",
       "Read(/home/helye/Development/Projects/Work/Nextjs/doshi-sensei-old/src/app/tools/word-learning-session/**)"
     ],
     "deny": [],

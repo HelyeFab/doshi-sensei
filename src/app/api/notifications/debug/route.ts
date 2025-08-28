@@ -1,17 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth, db } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { headers } from 'next/headers';
+import { verifyIdToken } from '@/lib/firebase-admin-safe';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get current user from auth
-    const authInstance = getAuth();
-    const currentUser = authInstance.currentUser;
+    // Try to get user from Authorization header first
+    const headersList = headers();
+    const authorization = headersList.get('authorization');
     
-    if (!currentUser) {
+    let userId: string | null = null;
+    let userEmail: string | null = null;
+    
+    if (authorization?.startsWith('Bearer ')) {
+      try {
+        const idToken = authorization.split('Bearer ')[1];
+        const decodedToken = await verifyIdToken(idToken);
+        userId = decodedToken.uid;
+        userEmail = decodedToken.email || null;
+      } catch (error) {
+        console.error('Failed to verify token:', error);
+      }
+    }
+    
+    // If no auth header, try to get from cookies or session
+    if (!userId) {
+      // For now, we'll return a message to authenticate
       return NextResponse.json({
-        error: 'Not authenticated',
+        error: 'Please provide authentication',
+        message: 'Add Authorization header with Bearer token or ensure you are logged in',
         status: {
           hasUser: false,
           hasPreferences: false,
@@ -20,16 +38,14 @@ export async function GET(request: NextRequest) {
           lastNotificationSent: null,
           reviewsAvailable: 0,
           recentStudyItems: 0,
-          errors: ['User not authenticated']
+          errors: ['Authentication required - please log in first']
         }
-      }, { status: 401 });
+      });
     }
-
-    const userId = currentUser.uid;
     const status = {
       hasUser: true,
       userId: userId,
-      userEmail: currentUser.email,
+      userEmail: userEmail,
       hasPreferences: false,
       hasFCMToken: false,
       notificationsEnabled: false,
@@ -202,10 +218,11 @@ export async function GET(request: NextRequest) {
 // Test endpoint to trigger a test notification
 export async function POST(request: NextRequest) {
   try {
-    const authInstance = getAuth();
-    const currentUser = authInstance.currentUser;
+    // Get auth from header
+    const headersList = headers();
+    const authorization = headersList.get('authorization');
     
-    if (!currentUser) {
+    if (!authorization?.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 

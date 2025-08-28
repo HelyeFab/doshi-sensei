@@ -2,19 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNotifications } from '@/contexts/NotificationServiceContext';
 import { RecentStudyTracker } from '@/utils/recentStudyTracker';
 import { notificationService } from '@/services/notifications/NotificationService';
 
 export default function TestNotificationsPage() {
   const { user } = useAuth();
-  const { 
-    isInitialized, 
-    permissionStatus, 
-    preferences, 
-    requestPermission, 
-    testNotification 
-  } = useNotifications();
+  
+  // We'll use the notification service directly instead of the context
+  const [notificationStatus, setNotificationStatus] = useState({
+    isInitialized: false,
+    permissionStatus: 'default' as NotificationPermission,
+    preferences: null as any,
+  });
   
   const [debugInfo, setDebugInfo] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,15 +23,43 @@ export default function TestNotificationsPage() {
   // Load debug info on mount
   useEffect(() => {
     if (user) {
+      initializeNotificationService();
       checkNotificationStatus();
       loadRecentItems();
       loadStats();
     }
   }, [user]);
 
+  const initializeNotificationService = async () => {
+    try {
+      await notificationService.initialize(user!.uid);
+      const prefs = await notificationService.getPreferences();
+      const permission = notificationService.getPermissionStatus();
+      
+      setNotificationStatus({
+        isInitialized: true,
+        permissionStatus: permission,
+        preferences: prefs
+      });
+    } catch (error) {
+      console.error('Failed to initialize notification service:', error);
+    }
+  };
+
   const checkNotificationStatus = async () => {
     try {
-      const response = await fetch('/api/notifications/debug');
+      // Get auth token if available
+      let headers: any = {};
+      if (user) {
+        try {
+          const token = await user.getIdToken();
+          headers['Authorization'] = `Bearer ${token}`;
+        } catch (error) {
+          console.error('Failed to get auth token:', error);
+        }
+      }
+      
+      const response = await fetch('/api/notifications/debug', { headers });
       const data = await response.json();
       setDebugInfo(data);
     } catch (error) {
@@ -53,11 +80,21 @@ export default function TestNotificationsPage() {
   const handleRequestPermission = async () => {
     setIsLoading(true);
     try {
-      const granted = await requestPermission();
+      const granted = await notificationService.requestPermission();
       if (granted) {
+        // Update status
+        const prefs = await notificationService.getPreferences();
+        const permission = notificationService.getPermissionStatus();
+        setNotificationStatus({
+          isInitialized: true,
+          permissionStatus: permission,
+          preferences: prefs
+        });
         // Reload debug info
         await checkNotificationStatus();
       }
+    } catch (error) {
+      console.error('Failed to request permission:', error);
     } finally {
       setIsLoading(false);
     }
@@ -66,9 +103,10 @@ export default function TestNotificationsPage() {
   const handleTestNotification = async (type: string) => {
     setIsLoading(true);
     try {
-      await testNotification(type);
+      await notificationService.testNotification(type);
     } catch (error) {
       console.error('Test notification failed:', error);
+      alert(`Test notification failed: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -128,35 +166,35 @@ export default function TestNotificationsPage() {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="font-medium">Service Initialized:</span>{' '}
-              <span className={isInitialized ? 'text-green-600' : 'text-red-600'}>
-                {isInitialized ? '✅ Yes' : '❌ No'}
+              <span className={notificationStatus.isInitialized ? 'text-green-600' : 'text-red-600'}>
+                {notificationStatus.isInitialized ? '✅ Yes' : '❌ No'}
               </span>
             </div>
             <div>
               <span className="font-medium">Permission Status:</span>{' '}
               <span className={
-                permissionStatus === 'granted' ? 'text-green-600' : 
-                permissionStatus === 'denied' ? 'text-red-600' : 'text-yellow-600'
+                notificationStatus.permissionStatus === 'granted' ? 'text-green-600' : 
+                notificationStatus.permissionStatus === 'denied' ? 'text-red-600' : 'text-yellow-600'
               }>
-                {permissionStatus}
+                {notificationStatus.permissionStatus}
               </span>
             </div>
             <div>
               <span className="font-medium">Notifications Enabled:</span>{' '}
-              <span className={preferences?.enabled ? 'text-green-600' : 'text-red-600'}>
-                {preferences?.enabled ? '✅ Yes' : '❌ No'}
+              <span className={notificationStatus.preferences?.enabled ? 'text-green-600' : 'text-red-600'}>
+                {notificationStatus.preferences?.enabled ? '✅ Yes' : '❌ No'}
               </span>
             </div>
             <div>
               <span className="font-medium">FCM Token:</span>{' '}
-              <span className={preferences?.fcmToken ? 'text-green-600' : 'text-red-600'}>
-                {preferences?.fcmToken ? '✅ Available' : '❌ Missing'}
+              <span className={notificationStatus.preferences?.fcmToken ? 'text-green-600' : 'text-red-600'}>
+                {notificationStatus.preferences?.fcmToken ? '✅ Available' : '❌ Missing'}
               </span>
             </div>
           </div>
 
           {/* Permission Request Button */}
-          {permissionStatus !== 'granted' && (
+          {notificationStatus.permissionStatus !== 'granted' && (
             <button
               onClick={handleRequestPermission}
               disabled={isLoading}
@@ -227,21 +265,21 @@ export default function TestNotificationsPage() {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => handleTestNotification('study_reminder')}
-              disabled={isLoading || permissionStatus !== 'granted'}
+              disabled={isLoading || notificationStatus.permissionStatus !== 'granted'}
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
             >
               Test Study Reminder
             </button>
             <button
               onClick={() => handleTestNotification('review_reminder')}
-              disabled={isLoading || permissionStatus !== 'granted'}
+              disabled={isLoading || notificationStatus.permissionStatus !== 'granted'}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
               Test Review Reminder
             </button>
             <button
               onClick={() => handleTestNotification('streak_reminder')}
-              disabled={isLoading || permissionStatus !== 'granted'}
+              disabled={isLoading || notificationStatus.permissionStatus !== 'granted'}
               className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
             >
               Test Streak Reminder

@@ -26,10 +26,10 @@ export default function CompanionTrigger() {
         aria-label={strings.tooltips.openVirtualCompanion}
         title={strings.tooltips.sayHelloToCompanion}
       >
-        {/* Giraffe Icon */}
+        {/* Red Panda Mascot */}
         <div className="w-10 h-10 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
           <img
-            src="/flat-icons/8376275-wild-animals-flat-1-of-1/svg/007-giraffe.svg"
+            src="/doshi.png"
             alt="Virtual Companion"
             className="w-full h-full object-contain"
             style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))' }}

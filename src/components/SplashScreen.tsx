@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import DoshiMascot from '@/components/DoshiMascot';
 
 const KANJI_CHARACTERS = ['愛', '学', '美', '心', '道', '師', '和', '知', '光', '夢'];
 
@@ -102,7 +102,7 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
           transition={{ duration: 0.5 }}
           className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
           style={{
-            backgroundImage: 'linear-gradient(to right bottom, #5c3cdc, #2263ee, #0080f5, #0099f4, #3bafef, #4fb5ee, #60baee, #70c0ed, #63b8f2, #5ab0f6, #59a7fa, #5f9dfb)',
+            backgroundImage: 'linear-gradient(to right bottom, #b84386, #c9447e, #d84775, #e44d6b, #ee565f, #ed5473, #e75685, #df5a97, #aa6aba, #6477c0, #1b7bac, #11778a)',
             backgroundSize: '400% 400%',
             animation: 'gradientShift 8s ease infinite'
           }}
@@ -159,14 +159,11 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
-              className="mb-8"
+              className="mb-8 drop-shadow-2xl"
             >
-              <Image
-                src="/doshi.png"
-                alt="Doshi Sensei"
-                width={120}
-                height={120}
-                className="drop-shadow-2xl"
+              <DoshiMascot
+                variant="animated"
+                size="large"
                 priority
               />
             </motion.div>

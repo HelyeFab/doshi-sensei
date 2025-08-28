@@ -13,7 +13,6 @@ interface NotificationPreferences {
     'in-app': boolean;
     'push': boolean;
     'email': boolean;
-    'sms': boolean;
   };
   reminderTimes: string[]; // Hours in 24-hour format: ['09:00', '18:00']
   quietHours: {
@@ -47,8 +46,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
   channels: {
     'in-app': true,
     'push': false,
-    'email': false,
-    'sms': false
+    'email': false
   },
   reminderTimes: ['09:00', '18:00'],
   quietHours: {
@@ -77,12 +75,6 @@ const CHANNEL_CONFIG = {
     label: 'Email Reminders',
     description: 'Send review reminders to your email',
     icon: '📧',
-    requiresPermission: false
-  },
-  'sms': {
-    label: 'SMS Notifications',
-    description: 'Text message reminders (Premium only)',
-    icon: '💬',
     requiresPermission: false
   }
 };
@@ -247,17 +239,23 @@ export default function NotificationSettings({
         )}
 
         {/* Master Toggle */}
-        <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-          <div>
-            <div className="font-medium text-foreground">Enable Notifications</div>
-            <div className="text-sm text-muted-foreground">
-              Turn on/off all review reminders
-            </div>
+        <div className="p-4 bg-muted rounded-lg">
+          <div className="flex items-start gap-3 mb-3">
+            <span className="text-2xl">☕</span>
           </div>
-          <Switch
-            checked={preferences.enabled}
-            onChange={(enabled) => updatePreference('enabled', enabled)}
-          />
+          <div className="flex items-center justify-between">
+            <div className="flex-1 pr-4">
+              <div className="font-medium text-foreground">Enable Notifications</div>
+              <div className="text-sm text-muted-foreground mt-1">
+                Turn on/off all review reminders
+              </div>
+            </div>
+            <Switch
+              checked={preferences.enabled}
+              onChange={(enabled) => updatePreference('enabled', enabled)}
+              size="md"
+            />
+          </div>
         </div>
 
         {preferences.enabled && (
@@ -274,11 +272,13 @@ export default function NotificationSettings({
                 return (
                   <div
                     key={channel}
-                    className="flex items-center justify-between p-3 border border-border rounded-lg"
+                    className="p-3 border border-border rounded-lg"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-start gap-3 mb-3">
                       <span className="text-xl">{config.icon}</span>
-                      <div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 pr-4">
                         <div className="font-medium text-foreground">
                           {config.label}
                           {needsPermission && (
@@ -287,16 +287,16 @@ export default function NotificationSettings({
                             </span>
                           )}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-muted-foreground mt-1">
                           {config.description}
                         </div>
                       </div>
+                      <Switch
+                        checked={isEnabled}
+                        onChange={(enabled) => toggleChannel(channelType, enabled)}
+                        size="md"
+                      />
                     </div>
-                    <Switch
-                      checked={isEnabled}
-                      onChange={(enabled) => toggleChannel(channelType, enabled)}
-                      disabled={channel === 'sms'} // SMS disabled for now
-                    />
                   </div>
                 );
               })}
@@ -345,9 +345,11 @@ export default function NotificationSettings({
                 {/* Quiet Hours */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-foreground">
-                      Quiet Hours
-                    </label>
+                    <div className="flex-1 pr-4">
+                      <label className="text-sm font-medium text-foreground">
+                        Quiet Hours
+                      </label>
+                    </div>
                     <Switch
                       checked={preferences.quietHours.enabled}
                       onChange={(enabled) =>
@@ -356,6 +358,7 @@ export default function NotificationSettings({
                           enabled
                         })
                       }
+                      size="md"
                     />
                   </div>
                   {preferences.quietHours.enabled && (

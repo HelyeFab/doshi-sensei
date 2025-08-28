@@ -11,7 +11,6 @@ interface NotificationPreferences {
     'in-app': boolean;
     'push': boolean;
     'email': boolean;
-    'sms': boolean;
   };
   reminderTimes: string[];
   quietHours: {
@@ -75,8 +74,7 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
   channels: {
     'in-app': true,
     'push': false,
-    'email': false,
-    'sms': false
+    'email': false
   },
   reminderTimes: ['09:00', '18:00'],
   quietHours: {
@@ -176,9 +174,6 @@ export function useReviewNotifications(): UseReviewNotificationsReturn {
           // Email notifications would be handled server-side
           return user ? true : false;
           
-        case 'sms':
-          // SMS would require phone number and server-side handling
-          return false; // Not implemented yet
           
         default:
           return false;
@@ -204,9 +199,6 @@ export function useReviewNotifications(): UseReviewNotificationsReturn {
           
         case 'email':
           return user ? true : false;
-          
-        case 'sms':
-          return false; // Not implemented
           
         default:
           return false;

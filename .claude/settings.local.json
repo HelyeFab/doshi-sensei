@@ -46,7 +46,13 @@
       "Read(/home/helye/Downloads/kanji-front-cordova/src/app/modules/details/**)",
       "WebFetch(domain:www.rtega.be)",
       "Bash(firebase functions:list:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(fd:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)"
     ],
     "deny": [],
     "ask": [],

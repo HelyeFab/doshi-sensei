@@ -585,7 +585,7 @@ export interface PerformanceMetrics {
 /**
  * Notification channel types
  */
-export type NotificationChannelType = 'in-app' | 'push' | 'email' | 'sms';
+export type NotificationChannelType = 'in-app' | 'push' | 'email';
 
 /**
  * Notification options

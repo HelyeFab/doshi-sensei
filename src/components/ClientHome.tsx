@@ -233,7 +233,9 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
             <div className="border-t border-border"></div>
 
             {/* Practice & Review Section */}
-            {renderCardSection('Practice & Review', practiceCards)}
+            <div id="review-section">
+              {renderCardSection('Practice & Review', practiceCards)}
+            </div>
 
             {/* Divider */}
             <div className="border-t border-border"></div>

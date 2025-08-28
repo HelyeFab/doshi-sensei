@@ -63,21 +63,19 @@ export default function LearnContent() {
       await kanjiMasteryStorage.init();
       
       const hasAccess = await checkAndTrack('kanji_mastery');
-      console.log('[initializeSession] User has access:', hasAccess);
       
       let sessionId = '';
       if (hasAccess) {
         try {
           sessionId = await kanjiMasteryStorage.startStudySession(level);
-          console.log('[initializeSession] Started session with ID:', sessionId);
         } catch (sessionError) {
-          console.error('[initializeSession] Failed to start session:', sessionError);
+          // Failed to start session
         }
       }
       
       await loadKanjiData(sessionId);
     } catch (error) {
-      console.error('Failed to initialize session:', error);
+      // Failed to initialize session
       setError('Failed to initialize session. Please try again.');
       setLoading(false);
     }
@@ -120,7 +118,7 @@ export default function LearnContent() {
       }
       
       if (selected.length === 0) {
-        console.warn('No kanji selected');
+        // No kanji selected
         setError('No kanji available for this session');
         return;
       }

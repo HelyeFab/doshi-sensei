@@ -42,7 +42,7 @@ export default function Round1Learn({
         
         const response = await fetch(svgUrl);
         if (!response.ok) {
-          console.error('Failed to fetch SVG for stroke count');
+          // Failed to fetch SVG for stroke count
           return;
         }
         
@@ -54,7 +54,7 @@ export default function Round1Learn({
         const strokePaths = svgDoc.querySelectorAll('path[id*="kvg:"]');
         setStrokeCount(strokePaths.length);
       } catch (error) {
-        console.error('Error fetching stroke count:', error);
+        // Error fetching stroke count
         setStrokeCount(null);
       }
     };

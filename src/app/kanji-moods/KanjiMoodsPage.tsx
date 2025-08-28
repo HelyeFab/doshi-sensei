@@ -444,7 +444,8 @@ function KanjiMoodsContent() {
 
       {/* Mood Boards Grid */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
+        {/* Desktop layout - heading and sort on same line */}
+        <div className="hidden sm:flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold text-foreground">
             {searchQuery || selectedJLPT !== 'all' || !showCompleted
               ? `Found ${filteredBoards.length} board${filteredBoards.length !== 1 ? 's' : ''}`
@@ -453,7 +454,33 @@ function KanjiMoodsContent() {
           </h3>
           {filteredBoards.length > 0 && (
             <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground hidden sm:inline">
+              <span className="text-sm text-muted-foreground">
+                {filteredBoards.length} of {moodBoards.filter(b => b.isActive !== false).length} boards
+              </span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="px-3 py-1.5 text-sm rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value="title">Sort: A-Z</option>
+                <option value="progress">Sort: Progress</option>
+                <option value="kanji">Sort: Kanji Count</option>
+              </select>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile layout - heading and sort stacked */}
+        <div className="sm:hidden mb-6">
+          <h3 className="text-xl font-semibold text-foreground mb-3">
+            {searchQuery || selectedJLPT !== 'all' || !showCompleted
+              ? `Found ${filteredBoards.length} board${filteredBoards.length !== 1 ? 's' : ''}`
+              : 'Available Mood Boards'
+            }
+          </h3>
+          {filteredBoards.length > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">
                 {filteredBoards.length} of {moodBoards.filter(b => b.isActive !== false).length} boards
               </span>
               <select

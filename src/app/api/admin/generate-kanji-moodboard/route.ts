@@ -50,11 +50,17 @@ export const POST = withFirebaseAdmin(async (request: NextRequest) => {
 Rules:
 1. Include both common and less common kanji for the theme
 2. For family members, include both formal and informal terms (e.g., 兄/お兄さん, 姉/お姉さん)
-3. Include kanji appropriate for ${jlptLevel} level and below
+3. CRITICAL: You MUST include kanji from ${jlptLevel} level specifically, not just N5!
+   - For N5: Use only basic kanji (日, 本, 人, 大, 小, etc.)
+   - For N4: Include N5 AND N4 kanji (時, 間, 家, 会, 社, etc.)
+   - For N3: Include N5, N4 AND N3 kanji (政, 治, 経, 済, etc.)
+   - For N2: Include all lower levels AND N2 kanji (複, 雑, 況, 況, etc.)
+   - For N1: Include all levels including advanced N1 kanji (璧, 瑞, 凛, etc.)
 4. Each kanji should have accurate readings and meanings
 5. Provide stroke count and relevant tags
 6. Generate exactly ${kanjiCount} kanji entries
 7. IMPORTANT: Each kanji character must be unique - no duplicates allowed
+8. IMPORTANT: The majority of kanji should be from the ${jlptLevel} level, with some from lower levels for context
 
 Return ONLY valid JSON in this exact format:
 {
@@ -124,7 +130,12 @@ For all kanji, include proper on'yomi (katakana) and kun'yomi (hiragana) reading
     
     const userPrompt = `Generate a kanji mood board for the theme: "${theme}"
 ${tags.length > 0 ? `Include these tags where relevant: ${tags.join(', ')}` : ''}
-Focus on ${jlptLevel} level and below.
+IMPORTANT: You MUST include kanji from ${jlptLevel} level, not just N5! 
+- If ${jlptLevel} is N4, include N4 level kanji (not just N5)
+- If ${jlptLevel} is N3, include N3 level kanji (not just N5/N4)
+- If ${jlptLevel} is N2, include N2 level kanji 
+- If ${jlptLevel} is N1, include N1 level kanji
+Mix kanji from ${jlptLevel} and lower levels appropriately.
 ${themeGuidance}`;
 
     const startTime = Date.now();
@@ -157,22 +168,35 @@ ${themeGuidance}`;
     // Ensure all kanji have required fields and remove duplicates
     const seenKanji = new Set<string>();
     const uniqueKanjiList: any[] = [];
+    let hasRequestedLevel = false;
     
     for (const kanji of moodboardData.kanjiList) {
       const char = kanji.kanji || '';
       if (char && !seenKanji.has(char)) {
         seenKanji.add(char);
+        const kanjiLevel = kanji.jlptLevel || jlptLevel;
+        
+        // Check if we have at least some kanji from the requested level
+        if (kanjiLevel === jlptLevel) {
+          hasRequestedLevel = true;
+        }
+        
         uniqueKanjiList.push({
           kanji: char,
           meaning: kanji.meaning || '',
           onyomi: kanji.onyomi || [],
           kunyomi: kanji.kunyomi || [],
-          jlptLevel: kanji.jlptLevel || jlptLevel,
+          jlptLevel: kanjiLevel,
           examples: kanji.examples || [],
           strokeCount: kanji.strokeCount || 1,
           tags: kanji.tags || []
         });
       }
+    }
+    
+    // Log warning if no kanji from requested level were generated
+    if (!hasRequestedLevel && jlptLevel !== 'N5') {
+      console.warn(`Warning: No ${jlptLevel} kanji were generated for theme "${theme}". All kanji appear to be from lower levels.`);
     }
     
     moodboardData.kanjiList = uniqueKanjiList;

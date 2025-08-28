@@ -49,3 +49,4 @@ firebase-debug.log
 # Firebase credentials - NEVER commit
 netlify/functions/firebase-config.json
 netlify/functions/service-account-base64.txt
+.claude/settings.local.json

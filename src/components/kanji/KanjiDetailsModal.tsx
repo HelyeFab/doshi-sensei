@@ -17,6 +17,10 @@ interface KanjiDetailsModalProps {
   onSave?: () => void;
   showSaveButton?: boolean;
   className?: string;
+  // For mood board integration
+  isLearned?: boolean;
+  onToggleLearned?: (char: string) => void;
+  showLearnedButton?: boolean;
 }
 
 /**
@@ -46,7 +50,10 @@ export default function KanjiDetailsModal({
   onClose,
   onSave,
   showSaveButton = true,
-  className = ''
+  className = '',
+  isLearned = false,
+  onToggleLearned,
+  showLearnedButton = false
 }: KanjiDetailsModalProps) {
   const { user } = useAuth();
   const [showStrokeOrder, setShowStrokeOrder] = useState(false);
@@ -145,11 +152,11 @@ export default function KanjiDetailsModal({
           <div className="flex-1 overflow-y-auto pb-6">
             {/* Large Kanji Display - takes half the viewport */}
             <div className="h-[50vh] flex items-center justify-center relative px-6">
-              {/* Save to Lists Button - top right */}
+              {/* Save to Lists Button - top left corner */}
               {showSaveButton && (
                 <button
                   onClick={handleSaveClick}
-                  className="absolute right-6 top-4 p-2 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors group shadow-sm z-10"
+                  className="absolute left-6 top-4 p-2 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors group shadow-sm z-10"
                   title="Save to lists"
                   aria-label="Save kanji to lists"
                 >
@@ -217,6 +224,7 @@ export default function KanjiDetailsModal({
                           readingType="on"
                           size="sm"
                           variant="minimal"
+                          voice="female"
                         />
                       </div>
                     ))
@@ -245,6 +253,7 @@ export default function KanjiDetailsModal({
                           readingType="kun"
                           size="sm"
                           variant="minimal"
+                          voice="female"
                         />
                       </div>
                     ))
@@ -321,6 +330,22 @@ export default function KanjiDetailsModal({
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Mark as Learned Button - for mood board integration */}
+            {showLearnedButton && onToggleLearned && (
+              <div className="mb-6 px-6">
+                <button
+                  onClick={() => onToggleLearned(kanji.kanji)}
+                  className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                    isLearned
+                      ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50'
+                      : 'bg-violet-100 text-violet-700 hover:bg-violet-200 dark:bg-violet-900/30 dark:text-violet-400 dark:hover:bg-violet-900/50'
+                  }`}
+                >
+                  {isLearned ? '✓ Marked as Learned' : 'Mark as Learned'}
+                </button>
               </div>
             )}
           </div>

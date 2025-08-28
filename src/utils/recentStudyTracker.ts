@@ -175,14 +175,47 @@ export class RecentStudyTracker {
 
     try {
       const userId = auth.currentUser.uid;
-      const docRef = doc(db, 'users', userId, 'recentStudyItems', 'current');
       
-      await setDoc(docRef, {
-        ...data,
+      // Track unique items to prevent duplicates
+      const uniqueItems = new Map<string, StudyItem>();
+      
+      // Add items by content+type as key to prevent duplicates
+      for (const item of data.items) {
+        const key = `${item.type}_${item.content}`;
+        if (!uniqueItems.has(key) || new Date(item.studiedAt) > new Date(uniqueItems.get(key)!.studiedAt)) {
+          uniqueItems.set(key, item);
+        }
+      }
+      
+      // Save unique items as separate documents
+      const itemsToSync = Array.from(uniqueItems.values()).slice(0, 20); // Sync up to 20 unique items
+      
+      for (const item of itemsToSync) {
+        // Use content and type for consistent document ID
+        const docId = `${item.type}_${item.content}`.replace(/[\/\s]/g, '_');
+        const itemRef = doc(db, 'users', userId, 'recentStudyItems', docId);
+        
+        await setDoc(itemRef, {
+          type: item.type,
+          content: item.content,
+          userId,
+          lastStudied: item.studiedAt instanceof Date ? item.studiedAt : new Date(item.studiedAt),
+          studiedAt: item.studiedAt instanceof Date ? item.studiedAt : new Date(item.studiedAt),
+          nextReview: item.nextReview ? (item.nextReview instanceof Date ? item.nextReview : new Date(item.nextReview)) : null,
+          reviewCount: item.reviewCount || 0,
+          contextPath: item.contextPath || '',
+          syncedAt: serverTimestamp()
+        });
+      }
+      
+      // Also save the summary document
+      const summaryRef = doc(db, 'users', userId, 'recentStudyItems', '_summary');
+      await setDoc(summaryRef, {
         userId,
+        totalItems: uniqueItems.size,
         lastUpdated: serverTimestamp(),
         syncedToCloud: true
-      }, { merge: true });
+      });
 
     } catch (error) {
       console.error('Failed to sync to cloud:', error);
@@ -203,8 +236,12 @@ export class RecentStudyTracker {
       const statsSnap = await getDoc(statsRef);
       const currentStats = statsSnap.exists() ? statsSnap.data() : {};
 
-      // Prepare update based on item type
+      // Prepare update that matches Firestore rules requirements
       const updates: any = {
+        version: '2.1', // Required by rules (line 390)
+        userId: userId, // Required by rules (line 391)
+        lastUpdated: serverTimestamp(), // Required by rules (line 392)
+        // Additional fields for tracking
         lastActiveDate: serverTimestamp(),
         hasStudiedToday: true
       };
@@ -223,13 +260,14 @@ export class RecentStudyTracker {
         }
       }
 
-      // Update or create stats
+      // Update or create stats with required fields
       if (statsSnap.exists()) {
+        // For updates, merge with existing data
         await updateDoc(statsRef, updates);
       } else {
+        // For new documents, include all required fields
         await setDoc(statsRef, {
           ...updates,
-          userId,
           currentStreak: 1,
           totalDaysActive: 1,
           createdAt: serverTimestamp()
@@ -249,23 +287,58 @@ export class RecentStudyTracker {
 
     try {
       const userId = auth.currentUser.uid;
-      const docRef = doc(db, 'users', userId, 'recentStudyItems', 'current');
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const cloudData = docSnap.data() as RecentStudyData;
+      
+      // Load individual items from the collection
+      const { collection, getDocs, query, orderBy, limit } = await import('firebase/firestore');
+      const itemsQuery = query(
+        collection(db, 'users', userId, 'recentStudyItems'),
+        orderBy('lastStudied', 'desc'),
+        limit(50)
+      );
+      
+      const snapshot = await getDocs(itemsQuery);
+      
+      if (!snapshot.empty) {
+        const items: StudyItem[] = [];
         
-        // Check if cloud data is newer than local
-        const localStored = localStorage.getItem(this.STORAGE_KEY);
-        if (localStored) {
-          const localData: RecentStudyData = JSON.parse(localStored);
-          const localTime = new Date(localData.lastUpdated).getTime();
-          const cloudTime = new Date(cloudData.lastUpdated).getTime();
-          
-          if (cloudTime > localTime) {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(cloudData));
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          // Skip the summary document
+          if (doc.id !== '_summary') {
+            items.push({
+              id: doc.id,
+              type: data.type,
+              content: data.content,
+              studiedAt: data.studiedAt?.toDate ? data.studiedAt.toDate() : new Date(data.studiedAt),
+              nextReview: data.nextReview ? (data.nextReview?.toDate ? data.nextReview.toDate() : new Date(data.nextReview)) : undefined,
+              reviewCount: data.reviewCount || 0,
+              contextPath: data.contextPath
+            });
           }
-        } else {
+        });
+        
+        if (items.length > 0) {
+          const cloudData: RecentStudyData = {
+            userId: userId,
+            items: items,
+            lastUpdated: new Date(),
+            syncedToCloud: true
+          };
+          
+          // Check if cloud data is newer than local
+          const localStored = localStorage.getItem(this.STORAGE_KEY);
+          if (localStored) {
+            const localData: RecentStudyData = JSON.parse(localStored);
+            // Merge cloud items with local items, preferring newer ones
+            const mergedItems = [...items];
+            localData.items.forEach(localItem => {
+              if (!mergedItems.find(item => item.id === localItem.id)) {
+                mergedItems.push(localItem);
+              }
+            });
+            cloudData.items = mergedItems.slice(0, this.MAX_ITEMS);
+          }
+          
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(cloudData));
         }
       }
@@ -283,10 +356,20 @@ export class RecentStudyTracker {
     if (auth.currentUser) {
       try {
         const userId = auth.currentUser.uid;
-        const docRef = doc(db, 'users', userId, 'recentStudyItems', 'current');
-        await setDoc(docRef, {
+        
+        // Delete all individual item documents
+        const { collection, getDocs, deleteDoc } = await import('firebase/firestore');
+        const itemsCollection = collection(db, 'users', userId, 'recentStudyItems');
+        const snapshot = await getDocs(itemsCollection);
+        
+        const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+        await Promise.all(deletePromises);
+        
+        // Create a cleared marker in summary
+        const summaryRef = doc(db, 'users', userId, 'recentStudyItems', '_summary');
+        await setDoc(summaryRef, {
           userId,
-          items: [],
+          totalItems: 0,
           lastUpdated: serverTimestamp(),
           cleared: true
         });

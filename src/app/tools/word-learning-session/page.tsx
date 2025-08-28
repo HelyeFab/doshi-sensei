@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import WordLearningSessionClient from './WordLearningSessionClient';
 import WordLearningSessionStructuredData from './StructuredData';
 import { generatePageMetadata } from '@/utils/seo';
+import { Spinner } from '@/components/Spinner';
 
 export const metadata: Metadata = generatePageMetadata({
   title: 'Word Learning Session - Multimodal Japanese Vocabulary Learning',
@@ -23,7 +25,9 @@ export default function WordLearningSessionPage() {
   return (
     <>
       <WordLearningSessionStructuredData />
-      <WordLearningSessionClient />
+      <Suspense fallback={<Spinner />}>
+        <WordLearningSessionClient />
+      </Suspense>
     </>
   );
 }

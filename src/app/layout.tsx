@@ -17,6 +17,7 @@ import SplashScreen from "@/components/SplashScreen";
 import ThemeInitScript from "@/components/ThemeInitScript";
 import QuickContextProvider from "@/components/QuickContext/QuickContextProvider";
 import SyncInitializer from "@/components/SyncInitializer";
+import { InAppNotifications } from "@/components/InAppNotifications";
 
 const rubik = localFont({
   src: [
@@ -128,6 +129,7 @@ export default function RootLayout({
                     <UnifiedNotificationProvider />
                     <PWAUpdateNotification />
                     <PWAInstallPrompt />
+                    <InAppNotifications />
                   </QuickContextProvider>
                 </ToastProvider>
               </VirtualCompanionProvider>

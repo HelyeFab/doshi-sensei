@@ -108,6 +108,39 @@ This document lists all reusable UI components in the Doshi Sensei application, 
   });
   ```
 
+### NotificationPermissionDialog
+- **Location**: `src/components/NotificationPermissionDialog.tsx`
+- **Purpose**: Custom notification permission dialog with Red Panda animation, replacing browser's default permission dialog
+- **Features**:
+  - Red Panda Lottie animation from `/public/red-panda/red-panda.json`
+  - Beautiful gradient design (orange to red)
+  - Clear benefits list with checkmarks
+  - Smooth animations with Framer Motion
+  - Custom hook `useNotificationPermissionDialog()` for easy integration
+  - Mobile-responsive design
+  - Theme-aware styling
+- **Usage**:
+  ```tsx
+  const { showDialog, DialogComponent } = useNotificationPermissionDialog();
+  
+  // Show dialog when needed
+  showDialog(async () => {
+    // This runs when user clicks "Allow"
+    const granted = await notificationService.requestPermission();
+    if (granted) {
+      console.log('Notifications enabled!');
+    }
+  });
+  
+  // Render component in your JSX
+  return (
+    <>
+      <DialogComponent />
+      {/* Your other content */}
+    </>
+  );
+  ```
+
 ## Navigation Components
 
 ### StunningBottomNavbar

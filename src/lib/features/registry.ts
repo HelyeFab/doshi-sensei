@@ -121,6 +121,17 @@ const _internalRegistry: Record<string, Feature> = {
     requiresSubscription: false,
     status: 'active',
   },
+  'word_learning_session': {
+    id: 'word_learning_session',
+    name: 'Word Learning Session',
+    description: 'Interactive multimodal vocabulary learning sessions',
+    category: 'learning',
+    icon: '🧠',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+  },
   'kanji_families': {
     id: 'kanji_families',
     name: 'Kanji Families',

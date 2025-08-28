@@ -96,6 +96,38 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        // Firebase messaging service worker
+        source: '/firebase-messaging-sw.js',
+        headers: [
+          {
+            key: 'Service-Worker-Allowed',
+            value: '/'
+          },
+          {
+            key: 'Content-Type',
+            value: 'application/javascript'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate'
+          },
+        ],
+      },
+      {
+        // Firebase cloud messaging scope file
+        source: '/firebase-cloud-messaging-push-scope',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'text/plain'
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate'
+          },
+        ],
+      },
     ];
   },
   

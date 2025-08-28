@@ -7,6 +7,7 @@ import { learnedWordsStorage } from '@/app/tools/word-learning-session/services/
 import { useAuth } from '@/contexts/AuthContext';
 import { TEXTBOOK_CONFIG } from '@/config/textbooks';
 import { searchTatoebaExamples } from '@/utils/tatoebaSearch';
+import { RecentStudyTracker } from '@/utils/recentStudyTracker';
 
 interface WordLearningLessonSelectorProps {
   textbook: string;
@@ -267,6 +268,24 @@ export function WordLearningLessonSelector({
         example: example
       };
     }));
+
+    // Track the words being studied for notifications
+    try {
+      for (const word of transformedWords) {
+        const content = word.kanji || word.kana || '';
+        if (content) {
+          const isKanji = content.length === 1 && /[\u4e00-\u9faf]/.test(content);
+          await RecentStudyTracker.addItem({
+            type: isKanji ? 'kanji' : 'word',
+            content: content,
+            contextPath: `/tools/textbook-vocabulary/${textbook}/lesson/${lessonNumber}`
+          });
+        }
+      }
+      console.log(`Tracked ${transformedWords.length} words from lesson ${lessonNumber} for notifications`);
+    } catch (error) {
+      console.error('Failed to track studied words:', error);
+    }
 
     // Store the words in session storage for the word learning session to pick up
     const sessionData = {

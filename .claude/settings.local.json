@@ -60,7 +60,13 @@
       "Bash(git checkout:*)",
       "Bash(test:*)",
       "Read(/home/helye/Development/Projects/Work/Nextjs/doshi-sensei-old/src/app/tools/word-learning-session/**)",
-      "Read(/home/helye/Development/Projects/Work/Nextjs/doshi-sensei-old/src/app/tools/word-learning-session/**)"
+      "Read(/home/helye/Development/Projects/Work/Nextjs/doshi-sensei-old/src/app/tools/word-learning-session/**)",
+      "Read(/home/helye/Development/Projects/Work/Nextjs/doshi-sensei-old/src/lib/**)",
+      "Bash(/home/helye/Development/Projects/Work/Nextjs/doshi-sensei/scripts/generate-red-panda-icons.sh:*)",
+      "Bash(rm:*)",
+      "Bash(/dev/null)",
+      "Bash(NEXT_TELEMETRY_DISABLED=1 npm run build)",
+      "Bash(mv:*)"
     ],
     "deny": [],
     "ask": [],

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSettings } from '@/contexts/SettingsContext';
 import { TTSManager } from '@/utils/tts';
 import { useErrorNotification, ERROR_MESSAGES } from '@/hooks/useErrorNotification';
+import { RecentStudyTracker } from '@/utils/recentStudyTracker';
 // Import generalized types
 import type { LearningItem, VocabularyItem, KanjiItem, CharacterItem } from '@/types/learning';
 
@@ -42,7 +43,45 @@ export function InteractiveCard({ item, onComplete, mode }: InteractiveCardProps
     setRevealed(true);
   };
 
-  const handleQualitySelect = (quality: number) => {
+  const handleQualitySelect = async (quality: number) => {
+    // Track the studied item for notifications
+    try {
+      // Determine the content and type to track
+      let contentToTrack = '';
+      let typeToTrack: 'word' | 'kanji' = 'word';
+      
+      if ('itemType' in item) {
+        // It's a LearningItem with itemType
+        if (item.itemType === 'kanji') {
+          contentToTrack = item.text;
+          typeToTrack = 'kanji';
+        } else if (item.itemType === 'vocabulary') {
+          contentToTrack = item.text;
+          typeToTrack = 'word';
+        } else {
+          contentToTrack = item.text;
+          typeToTrack = 'word';
+        }
+      } else {
+        // It's a VocabularyItem from textbook-vocabulary
+        const vocabItem = item as any;
+        contentToTrack = vocabItem.japanese || vocabItem.text || '';
+        // Check if it's a single kanji character
+        typeToTrack = (contentToTrack.length === 1 && /[\u4e00-\u9faf]/.test(contentToTrack)) ? 'kanji' : 'word';
+      }
+      
+      if (contentToTrack) {
+        await RecentStudyTracker.addItem({
+          type: typeToTrack,
+          content: contentToTrack,
+          contextPath: window.location.pathname
+        });
+        console.log(`Tracked ${typeToTrack}: ${contentToTrack} for notifications`);
+      }
+    } catch (error) {
+      console.error('Failed to track study item:', error);
+    }
+    
     onComplete(quality);
     // State will reset when the item prop changes
   };

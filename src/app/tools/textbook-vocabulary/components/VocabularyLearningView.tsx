@@ -20,6 +20,7 @@ import { useSubscription2 } from '@/hooks/useSubscription2';
 import { UpgradeSlideUpModal } from '@/components/UpgradeSlideUpModal';
 import { TEXTBOOK_CONFIG } from '@/config/textbooks';
 import { useErrorNotification, ERROR_MESSAGES } from '@/hooks/useErrorNotification';
+import { RecentStudyTracker } from '@/utils/recentStudyTracker';
 
 interface VocabularyLearningViewProps {
   textbook: string;
@@ -99,6 +100,21 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
       // Close modal if open first
       setIsModalOpen(false);
       setSelectedCard(null);
+      
+      // Track the first few cards for immediate notification
+      const cardsToTrack = cards.slice(0, 5); // Track first 5 cards
+      for (const card of cardsToTrack) {
+        const content = card.japanese || card.text || '';
+        if (content) {
+          const isKanji = content.length === 1 && /[\u4e00-\u9faf]/.test(content);
+          await RecentStudyTracker.addItem({
+            type: isKanji ? 'kanji' : 'word',
+            content: content,
+            contextPath: `/tools/textbook-vocabulary/${textbook}`
+          });
+        }
+      }
+      console.log(`Tracked ${cardsToTrack.length} vocabulary items for study session`);
       
       // Start the study session
       await startStudySession(cards, textbook);
@@ -281,7 +297,8 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="px-4 py-4"
+            className="px-4 py-4 pb-40 overflow-y-auto"
+            style={{ maxHeight: 'calc(100vh - 200px)' }}
           >
             <FilterPanel
               filters={filters}
@@ -347,7 +364,8 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="px-4 py-4"
+            className="px-4 py-4 pb-40 overflow-y-auto"
+            style={{ maxHeight: 'calc(100vh - 200px)' }}
           >
             <GoldenTimeScheduler
               vocabulary={vocabulary}
@@ -363,7 +381,8 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="px-4 py-4"
+            className="px-4 py-4 pb-40 overflow-y-auto"
+            style={{ maxHeight: 'calc(100vh - 200px)' }}
           >
             <WordLearningLessonSelector
               textbook={textbook}

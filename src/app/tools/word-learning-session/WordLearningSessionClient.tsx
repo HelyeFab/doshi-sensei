@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useStrings } from '@/contexts/LanguageContext';
-import { useAccess } from '@/hooks/useAccess';
+import { useFeature } from '@/hooks/useFeature';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSearchParams } from 'next/navigation';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -22,7 +22,7 @@ import { shuffleArray } from '@/utils/shuffle';
 
 export default function WordLearningSessionClient() {
   const strings = useStrings();
-  const { checkAndTrack } = useAccess();
+  const { checkAndTrack } = useFeature('word_learning_session');
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const { profile } = useUserProfile();
@@ -90,7 +90,7 @@ export default function WordLearningSessionClient() {
 
   const handleLessonSelect = async (lessonId: string, wordCount: number, mode: 'new' | 'review' | 'all') => {
     // Check access and track usage
-    const hasAccess = await checkAndTrack('word_learning_session');
+    const hasAccess = await checkAndTrack();
     if (!hasAccess) {
       return; // Access control will show appropriate modal
     }

@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import DoshiMascot from '@/components/DoshiMascot';
 import { useToast } from '@/hooks/useToast';
 import { 
   Mail, 
@@ -250,11 +250,9 @@ export default function LoginPage() {
               transition={{ delay: 0.2, type: "spring" }}
               className="inline-block mb-4"
             >
-              <Image
-                src="/doshi.png"
-                alt="Dōshi Sensei"
-                width={80}
-                height={80}
+              <DoshiMascot
+                variant="animated"
+                size="medium"
                 className="drop-shadow-xl"
               />
             </motion.div>

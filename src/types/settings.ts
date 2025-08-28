@@ -1,6 +1,6 @@
 // Theme and Color types
 export type ThemeMode = 'dark' | 'light' | 'system';
-export type ColorScheme = 'default' | 'ocean' | 'forest' | 'sunset' | 'purple' | 'rose' | 'emerald' | 'amber' | 'vercel' | 'acnh' | 'zelda' | 'mario';
+export type ColorScheme = 'default' | 'ocean' | 'forest' | 'sunset' | 'purple' | 'rose' | 'emerald' | 'amber' | 'doshi' | 'vercel' | 'acnh' | 'zelda' | 'mario';
 
 export interface ColorPalette {
   name: string;

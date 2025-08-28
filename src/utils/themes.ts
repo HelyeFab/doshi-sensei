@@ -114,6 +114,20 @@ export const colorPalettes: Record<ColorScheme, ColorPalette> = {
       mutedForeground: 'hsl(45, 7%, 45%)',
     }
   },
+  doshi: {
+    name: 'Doshi',
+    description: 'Red panda gradient vibes',
+    colors: {
+      primary: 'hsl(328, 47%, 51%)', // Pink-magenta (#b84386)
+      primaryForeground: 'hsl(0, 0%, 98%)',
+      secondary: 'hsl(229, 35%, 56%)', // Purple-blue (#6477c0)
+      secondaryForeground: 'hsl(0, 0%, 98%)',
+      accent: 'hsl(190, 78%, 31%)', // Teal (#11778a)
+      accentForeground: 'hsl(0, 0%, 98%)',
+      muted: 'hsl(328, 47%, 95%)', // Very light pink
+      mutedForeground: 'hsl(328, 25%, 35%)', // Muted pink-gray
+    }
+  },
   vercel: {
     name: 'Vercel',
     description: 'Pitch black minimalism',

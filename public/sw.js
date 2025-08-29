@@ -168,16 +168,12 @@ if (workbox) {
     })
   );
 
-  // Offline fallback for navigation
-  workbox.navigationPreload.enable();
+  // Offline fallback for navigation - DISABLE preload to prevent errors
+  // workbox.navigationPreload.enable(); // DISABLED - causes cancelled request errors
   
   const navigationHandler = async (params) => {
     try {
-      // Check if preloadResponse exists and handle it properly
-      if (params.preloadResponse) {
-        const preloadResponse = await params.preloadResponse;
-        if (preloadResponse) return preloadResponse;
-      }
+      // Don't use preloadResponse to avoid cancelled request errors
       
       // Fallback to NetworkFirst strategy
       return await new workbox.strategies.NetworkFirst({

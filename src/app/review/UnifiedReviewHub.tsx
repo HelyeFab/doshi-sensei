@@ -556,15 +556,13 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <AnimatePresence>
               {prioritizedSources.map((source) => {
-                // Use source properties directly if available, fallback to config
-                const config = source.type && REVIEW_SOURCE_CONFIGS[source.type] 
-                  ? REVIEW_SOURCE_CONFIGS[source.type]
-                  : {
-                      name: source.name,
-                      icon: source.icon || '📚',
-                      description: source.description || '',
-                      paths: source.paths || { main: '/' }
-                    };
+                // Always use source properties directly since multiple sources can share the same type
+                const config = {
+                  name: source.name || 'Unknown Source',
+                  icon: source.icon || '📚',
+                  description: source.description || '',
+                  paths: source.paths || { main: '/' }
+                };
                 const userPrefs = registry?.getUserPreferences();
                 const isEnabled = userPrefs?.enabled[source.id] !== false;
                 const priority = userPrefs?.priorities[source.id] || SourcePriority.MEDIUM;

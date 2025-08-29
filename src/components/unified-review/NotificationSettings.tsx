@@ -224,7 +224,7 @@ export default function NotificationSettings({
         <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
           🔔 Notification Settings
           {hasUnsavedChanges && (
-            <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">
+            <span className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-2 py-1 rounded">
               Unsaved changes
             </span>
           )}
@@ -233,7 +233,7 @@ export default function NotificationSettings({
 
       <CardContent className="space-y-6">
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+          <div className="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-md text-red-700 dark:text-red-300 text-sm">
             {error}
           </div>
         )}
@@ -282,7 +282,7 @@ export default function NotificationSettings({
                         <div className="font-medium text-foreground">
                           {config.label}
                           {needsPermission && (
-                            <span className="text-xs text-orange-600 ml-2">
+                            <span className="text-xs text-orange-600 dark:text-orange-400 ml-2">
                               Permission required
                             </span>
                           )}
@@ -313,7 +313,7 @@ export default function NotificationSettings({
                       onClick={() => removeReminderTime(time)}
                       size="sm"
                       variant="ghost"
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                     >
                       Remove
                     </Button>

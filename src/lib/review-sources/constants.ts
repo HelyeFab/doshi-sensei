@@ -214,6 +214,8 @@ export const PRIORITY_CONFIGS = {
   [SourcePriority.LOW]: {
     label: 'Low Priority',
     color: '#6b7280', // gray-500
+    bgClass: 'bg-gray-100 dark:bg-gray-900/30',
+    textClass: 'text-gray-600 dark:text-gray-400',
     weight: 0.5,
     icon: '⬇️',
     description: 'Review when time permits'
@@ -221,6 +223,8 @@ export const PRIORITY_CONFIGS = {
   [SourcePriority.MEDIUM]: {
     label: 'Medium Priority',
     color: '#3b82f6', // blue-500
+    bgClass: 'bg-blue-100 dark:bg-blue-900/30',
+    textClass: 'text-blue-600 dark:text-blue-400',
     weight: 1.0,
     icon: '➡️',
     description: 'Standard review frequency'
@@ -228,6 +232,8 @@ export const PRIORITY_CONFIGS = {
   [SourcePriority.HIGH]: {
     label: 'High Priority',
     color: '#f59e0b', // amber-500
+    bgClass: 'bg-amber-100 dark:bg-amber-900/30',
+    textClass: 'text-amber-600 dark:text-amber-400',
     weight: 1.5,
     icon: '⬆️',
     description: 'Prioritize in review sessions'
@@ -235,6 +241,8 @@ export const PRIORITY_CONFIGS = {
   [SourcePriority.URGENT]: {
     label: 'Urgent',
     color: '#ef4444', // red-500
+    bgClass: 'bg-red-100 dark:bg-red-900/30',
+    textClass: 'text-red-600 dark:text-red-400',
     weight: 2.0,
     icon: '🔥',
     description: 'Critical - review immediately'

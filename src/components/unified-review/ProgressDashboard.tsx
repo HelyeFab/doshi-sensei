@@ -67,20 +67,20 @@ interface ProgressDashboardProps {
 }
 
 const CONTENT_TYPE_CONFIG = {
-  [ContentType.KANJI]: { label: 'Kanji', icon: '漢', color: 'bg-red-500' },
-  [ContentType.VOCABULARY]: { label: 'Vocabulary', icon: '語', color: 'bg-blue-500' },
-  [ContentType.FLASHCARD]: { label: 'Flashcards', icon: '📚', color: 'bg-green-500' },
-  [ContentType.GRAMMAR]: { label: 'Grammar', icon: '文', color: 'bg-purple-500' },
-  [ContentType.SENTENCE]: { label: 'Sentences', icon: '例', color: 'bg-orange-500' },
-  [ContentType.RADICAL]: { label: 'Radicals', icon: '部', color: 'bg-pink-500' },
-  [ContentType.CUSTOM]: { label: 'Custom', icon: '⭐', color: 'bg-yellow-500' }
+  [ContentType.KANJI]: { label: 'Kanji', icon: '漢', color: 'bg-red-500 dark:bg-red-600' },
+  [ContentType.VOCABULARY]: { label: 'Vocabulary', icon: '語', color: 'bg-blue-500 dark:bg-blue-600' },
+  [ContentType.FLASHCARD]: { label: 'Flashcards', icon: '📚', color: 'bg-green-500 dark:bg-green-600' },
+  [ContentType.GRAMMAR]: { label: 'Grammar', icon: '文', color: 'bg-purple-500 dark:bg-purple-600' },
+  [ContentType.SENTENCE]: { label: 'Sentences', icon: '例', color: 'bg-orange-500 dark:bg-orange-600' },
+  [ContentType.RADICAL]: { label: 'Radicals', icon: '部', color: 'bg-pink-500 dark:bg-pink-600' },
+  [ContentType.CUSTOM]: { label: 'Custom', icon: '⭐', color: 'bg-yellow-500 dark:bg-yellow-600' }
 };
 
 const RATING_CONFIG = {
-  [ReviewRating.AGAIN]: { label: 'Again', color: 'bg-red-500' },
-  [ReviewRating.HARD]: { label: 'Hard', color: 'bg-orange-500' },
-  [ReviewRating.GOOD]: { label: 'Good', color: 'bg-blue-500' },
-  [ReviewRating.EASY]: { label: 'Easy', color: 'bg-green-500' }
+  [ReviewRating.AGAIN]: { label: 'Again', color: 'bg-red-500 dark:bg-red-600' },
+  [ReviewRating.HARD]: { label: 'Hard', color: 'bg-orange-500 dark:bg-orange-600' },
+  [ReviewRating.GOOD]: { label: 'Good', color: 'bg-blue-500 dark:bg-blue-600' },
+  [ReviewRating.EASY]: { label: 'Easy', color: 'bg-green-500 dark:bg-green-600' }
 };
 
 export default function ProgressDashboard({
@@ -201,7 +201,7 @@ export default function ProgressDashboard({
     return (
       <Card className={`bg-card border-border ${className}`}>
         <CardContent className="p-6 text-center">
-          <div className="text-red-600 mb-4">
+          <div className="text-red-600 dark:text-red-400 mb-4">
             Error loading dashboard: {error}
           </div>
           <Button onClick={fetchStats}>
@@ -255,7 +255,7 @@ export default function ProgressDashboard({
                 <p className="text-2xl font-bold text-foreground">
                   {stats.overview.retentionRate}%
                 </p>
-                <p className="text-xs text-green-600">
+                <p className="text-xs text-green-600 dark:text-green-400">
                   Excellent retention
                 </p>
               </div>
@@ -381,7 +381,7 @@ export default function ProgressDashboard({
                     .map((day, i) => (
                     <div key={i} className="flex flex-col items-center gap-1">
                       <div 
-                        className="bg-blue-500 rounded-t w-4"
+                        className="bg-blue-500 dark:bg-blue-600 rounded-t w-4"
                         style={{ height: `${(day.reviews / 60) * 100}%` }}
                       ></div>
                       <div className="text-xs text-muted-foreground transform -rotate-45">
@@ -458,23 +458,23 @@ export default function ProgressDashboard({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
-                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="font-medium text-green-800">Strong Performance</div>
-                  <div className="text-sm text-green-700">
+                <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                  <div className="font-medium text-green-800 dark:text-green-200">Strong Performance</div>
+                  <div className="text-sm text-green-700 dark:text-green-300">
                     Your retention rate of {stats.overview.retentionRate}% is excellent! Keep up the consistent practice.
                   </div>
                 </div>
                 
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="font-medium text-blue-800">Study Recommendation</div>
-                  <div className="text-sm text-blue-700">
+                <div className="p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="font-medium text-blue-800 dark:text-blue-200">Study Recommendation</div>
+                  <div className="text-sm text-blue-700 dark:text-blue-300">
                     Focus on grammar items - you have {stats.contentTypes[ContentType.GRAMMAR].dueToday} items due today.
                   </div>
                 </div>
                 
-                <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                  <div className="font-medium text-orange-800">Streak Goal</div>
-                  <div className="text-sm text-orange-700">
+                <div className="p-3 bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 rounded-lg">
+                  <div className="font-medium text-orange-800 dark:text-orange-200">Streak Goal</div>
+                  <div className="text-sm text-orange-700 dark:text-orange-300">
                     You're {stats.overview.longestStreak - stats.overview.currentStreak} days away from beating your longest streak!
                   </div>
                 </div>

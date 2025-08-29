@@ -290,12 +290,12 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
   // Show loading while checking auth or redirecting
   if (!user?.uid && !loading) {
     return (
-      <div className={`min-h-screen bg-gray-50 ${className}`}>
+      <div className={`min-h-screen bg-background ${className}`}>
         <div className="mobile-nav-padding">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Redirecting to login...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Redirecting to login...</p>
             </div>
           </div>
         </div>
@@ -305,10 +305,10 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
 
   if (loading) {
     return (
-      <div className={`min-h-screen bg-gray-50 ${className}`}>
+      <div className={`min-h-screen bg-background ${className}`}>
         <div className="mobile-nav-padding">
           <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         </div>
       </div>
@@ -317,12 +317,12 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
 
   if (error) {
     return (
-      <div className={`min-h-screen bg-gray-50 ${className}`}>
+      <div className={`min-h-screen bg-background ${className}`}>
         <div className="mobile-nav-padding">
           <div className="px-4 py-8">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-red-800 mb-2">Error Loading Review Hub</h2>
-              <p className="text-red-600">{error}</p>
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-destructive-foreground mb-2">Error Loading Review Hub</h2>
+              <p className="text-destructive">{error}</p>
               <button
                 onClick={() => window.location.reload()}
                 className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -337,14 +337,14 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
   }
 
   return (
-    <div className={`min-h-screen bg-gray-50 ${className}`}>
+    <div className={`min-h-screen bg-background ${className}`}>
       <div className="mobile-nav-padding">
         {/* Header */}
         <header className="px-4 pt-6 pb-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Review Hub</h1>
-              <p className="text-gray-600">Unified spaced repetition system</p>
+              <h1 className="text-2xl font-bold text-foreground">Review Hub</h1>
+              <p className="text-muted-foreground">Unified spaced repetition system</p>
             </div>
             
             <div className="flex items-center gap-2">
@@ -355,10 +355,10 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200 rounded-lg"
+                    className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-100 dark:from-amber-900/20 to-orange-100 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg"
                   >
-                    <span className="text-amber-600 text-sm font-medium">🌅 Golden Time</span>
-                    <span className="text-amber-700 text-xs">
+                    <span className="text-amber-600 dark:text-amber-400 text-sm font-medium">🌅 Golden Time</span>
+                    <span className="text-amber-700 dark:text-amber-300 text-xs">
                       {goldenTimeStatus.currentBonus}× bonus
                     </span>
                   </motion.div>
@@ -368,7 +368,7 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
               {/* Settings Toggle */}
               <button
                 onClick={() => setShowNotificationSettings(!showNotificationSettings)}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                 aria-label="Settings"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -383,20 +383,20 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
         {/* Aggregated Statistics - Subscription Only */}
         {hasSubscription && aggregatedStats ? (
           <div className="px-4 pb-6">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <div className="bg-card rounded-lg shadow-sm border border-border p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Today's Overview</h2>
+                <h2 className="text-lg font-semibold text-foreground">Today's Overview</h2>
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {/* Due Today */}
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-red-600 mb-1">
+                  <div className="text-3xl font-bold text-destructive mb-1">
                     {aggregatedStats.totals.dueToday}
                   </div>
-                  <div className="text-sm text-gray-600">Due Today</div>
+                  <div className="text-sm text-muted-foreground">Due Today</div>
                   {aggregatedStats.totals.overdue > 0 && (
-                    <div className="text-xs text-red-500 mt-1">
+                    <div className="text-xs text-destructive mt-1">
                       +{aggregatedStats.totals.overdue} overdue
                     </div>
                   )}
@@ -404,22 +404,22 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
 
                 {/* Study Streak */}
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-orange-600 mb-1">
+                  <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1">
                     {aggregatedStats.performance.studyStreak}
                   </div>
-                  <div className="text-sm text-gray-600">Day Streak</div>
-                  <div className="text-xs text-orange-500 mt-1">
+                  <div className="text-sm text-muted-foreground">Day Streak</div>
+                  <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
                     🔥 Keep it up!
                   </div>
                 </div>
 
                 {/* Retention Rate */}
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-1">
+                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
                     {(aggregatedStats.performance.overallRetention * 100).toFixed(0)}%
                   </div>
-                  <div className="text-sm text-gray-600">Retention</div>
-                  <div className="text-xs text-green-500 mt-1">
+                  <div className="text-sm text-muted-foreground">Retention</div>
+                  <div className="text-xs text-green-600 dark:text-green-400 mt-1">
                     {aggregatedStats.performance.overallRetention >= 0.8 ? '✨ Excellent' : 
                      aggregatedStats.performance.overallRetention >= 0.6 ? '👍 Good' : '💪 Improving'}
                   </div>
@@ -427,11 +427,11 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
 
                 {/* Total Items */}
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600 mb-1">
+                  <div className="text-3xl font-bold text-primary mb-1">
                     {aggregatedStats.totals.items.toLocaleString()}
                   </div>
-                  <div className="text-sm text-gray-600">Total Items</div>
-                  <div className="text-xs text-blue-500 mt-1">
+                  <div className="text-sm text-muted-foreground">Total Items</div>
+                  <div className="text-xs text-primary mt-1">
                     {aggregatedStats.totals.activeSources} sources
                   </div>
                 </div>
@@ -441,27 +441,27 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
         ) : !hasSubscription ? (
           /* Daily Limit Display for Free Users */
           <div className="px-4 pb-6">
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-6">
+            <div className="bg-gradient-to-r from-amber-50 dark:from-amber-900/10 to-orange-50 dark:to-orange-900/10 border border-amber-200 dark:border-amber-700 rounded-lg p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-amber-900 mb-2">
+                  <h2 className="text-lg font-semibold text-amber-900 dark:text-amber-100 mb-2">
                     Daily Review Limit: {accessControl?.remainingCount ?? 0}/10
                   </h2>
-                  <p className="text-amber-700 text-sm">
+                  <p className="text-amber-700 dark:text-amber-300 text-sm">
                     {accessControl?.canReview 
                       ? `You have ${accessControl.remainingCount} reviews remaining today.`
                       : "Daily limit reached. Upgrade for unlimited reviews."
                     }
                   </p>
                   {!accessControl?.canReview && (
-                    <p className="text-amber-600 text-xs mt-1">
+                    <p className="text-amber-600 dark:text-amber-400 text-xs mt-1">
                       Your limit resets at midnight.
                     </p>
                   )}
                 </div>
                 <Link
                   href="/subscription"
-                  className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium whitespace-nowrap"
+                  className="px-4 py-2 bg-amber-600 dark:bg-amber-700 text-white rounded-lg hover:bg-amber-700 dark:hover:bg-amber-600 transition-colors font-medium whitespace-nowrap"
                 >
                   Upgrade Now →
                 </Link>
@@ -469,13 +469,13 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
               
               {/* Visual progress bar */}
               <div className="mt-4">
-                <div className="flex items-center justify-between text-sm text-amber-700 mb-2">
+                <div className="flex items-center justify-between text-sm text-amber-700 dark:text-amber-300 mb-2">
                   <span>Reviews Used Today</span>
                   <span>{(accessControl?.remainingCount !== undefined) ? (10 - accessControl.remainingCount) : 0}/10</span>
                 </div>
-                <div className="w-full bg-amber-100 rounded-full h-2">
+                <div className="w-full bg-amber-100 dark:bg-amber-900/30 rounded-full h-2">
                   <div 
-                    className="bg-amber-500 h-2 rounded-full transition-all duration-300" 
+                    className="bg-amber-500 dark:bg-amber-600 h-2 rounded-full transition-all duration-300" 
                     style={{ 
                       width: `${((accessControl?.remainingCount !== undefined) ? ((10 - accessControl.remainingCount) / 10) * 100 : 0)}%` 
                     }}
@@ -484,8 +484,8 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
               </div>
               
               {/* Additional upgrade prompt */}
-              <div className="mt-4 pt-4 border-t border-amber-200">
-                <p className="text-amber-600 text-sm">
+              <div className="mt-4 pt-4 border-t border-amber-200 dark:border-amber-700">
+                <p className="text-amber-600 dark:text-amber-400 text-sm">
                   🚀 <strong>Upgrade for:</strong> Unlimited reviews, detailed statistics, streaks, and retention metrics.
                 </p>
               </div>
@@ -505,8 +505,8 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
               }
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                 aggregatedStats && aggregatedStats.totals.dueToday > 0 && accessControl?.canReview
-                  ? 'bg-red-600 text-white hover:bg-red-700 shadow-sm'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm'
+                  : 'bg-muted text-muted-foreground cursor-not-allowed'
               }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -520,7 +520,7 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
             
             <button
               onClick={() => setPriorityEditMode(!priorityEditMode)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg font-medium transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground hover:bg-muted/80 rounded-lg font-medium transition-all"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
@@ -529,7 +529,7 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
             </button>
 
             {goldenTimeStatus.nextWindow && !goldenTimeStatus.isActive && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-700 rounded-lg text-sm text-amber-700 dark:text-amber-300">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -542,9 +542,9 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
         {/* Review Source Cards */}
         <div className="px-4 pb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Review Sources</h2>
+            <h2 className="text-lg font-semibold text-foreground">Review Sources</h2>
             {priorityEditMode && (
-              <span className="text-sm text-gray-500">Drag to reorder priority</span>
+              <span className="text-sm text-muted-foreground">Drag to reorder priority</span>
             )}
           </div>
           
@@ -572,8 +572,8 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className={`bg-white rounded-lg shadow-sm border transition-all ${
-                      isEnabled ? 'border-gray-100 hover:shadow-md' : 'border-gray-200 opacity-60'
+                    className={`bg-card rounded-lg shadow-sm border transition-all ${
+                      isEnabled ? 'border-border hover:shadow-md' : 'border-border opacity-60'
                     } ${priorityEditMode ? 'cursor-move' : 'cursor-pointer'}`}
                     onClick={!priorityEditMode ? () => navigateToSource(config.paths.main) : undefined}
                     draggable={priorityEditMode}
@@ -586,8 +586,8 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                         <div className="flex items-center gap-3">
                           <div className="text-2xl">{config.icon}</div>
                           <div>
-                            <h3 className="font-medium text-gray-900">{config.name}</h3>
-                            <p className="text-sm text-gray-500 line-clamp-2">{config.description}</p>
+                            <h3 className="font-medium text-foreground">{config.name}</h3>
+                            <p className="text-sm text-muted-foreground line-clamp-2">{config.description}</p>
                           </div>
                         </div>
                         
@@ -599,10 +599,10 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                                 handleSourceToggle(source.id, !isEnabled);
                               }}
                               className={`w-8 h-4 rounded-full transition-colors ${
-                                isEnabled ? 'bg-green-500' : 'bg-gray-300'
+                                isEnabled ? 'bg-green-500 dark:bg-green-600' : 'bg-muted'
                               }`}
                             >
-                              <div className={`w-3 h-3 bg-white rounded-full transition-transform ${
+                              <div className={`w-3 h-3 bg-card rounded-full transition-transform ${
                                 isEnabled ? 'translate-x-4' : 'translate-x-0.5'
                               }`} />
                             </button>
@@ -613,7 +613,7 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                                 e.stopPropagation();
                                 handlePriorityChange(source.id, parseInt(e.target.value) as SourcePriority);
                               }}
-                              className="text-xs border border-gray-200 rounded px-1 py-0.5"
+                              className="text-xs border border-border rounded px-1 py-0.5"
                             >
                               {Object.entries(PRIORITY_CONFIGS).map(([value, config]) => (
                                 <option key={value} value={value}>
@@ -629,22 +629,22 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                       {sourceStats && isEnabled && (
                         <div className="grid grid-cols-3 gap-3 mb-3">
                           <div className="text-center">
-                            <div className="text-lg font-semibold text-red-600">
+                            <div className="text-lg font-semibold text-destructive">
                               {sourceStats.dueToday}
                             </div>
-                            <div className="text-xs text-gray-500">Due</div>
+                            <div className="text-xs text-muted-foreground">Due</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-semibold text-blue-600">
+                            <div className="text-lg font-semibold text-primary">
                               {sourceStats.totalItems}
                             </div>
-                            <div className="text-xs text-gray-500">Total</div>
+                            <div className="text-xs text-muted-foreground">Total</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-semibold text-green-600">
+                            <div className="text-lg font-semibold text-green-600 dark:text-green-400">
                               {(sourceStats.retentionRate * 100).toFixed(0)}%
                             </div>
-                            <div className="text-xs text-gray-500">Rate</div>
+                            <div className="text-xs text-muted-foreground">Rate</div>
                           </div>
                         </div>
                       )}
@@ -652,18 +652,14 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                       {/* Priority Badge */}
                       <div className="flex items-center justify-between">
                         <div
-                          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium"
-                          style={{
-                            backgroundColor: `${priorityConfig.color}20`,
-                            color: priorityConfig.color
-                          }}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${priorityConfig.bgClass} ${priorityConfig.textClass}`}
                         >
                           <span>{priorityConfig.icon}</span>
                           <span>{priorityConfig.label}</span>
                         </div>
 
                         {!priorityEditMode && isEnabled && (
-                          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                           </svg>
                         )}
@@ -671,19 +667,19 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
 
                       {/* Preview Items */}
                       {sourceItems && sourceItems.items.length > 0 && isEnabled && !priorityEditMode && (
-                        <div className="mt-3 pt-3 border-t border-gray-100">
-                          <div className="text-xs text-gray-500 mb-2">Next items:</div>
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <div className="text-xs text-muted-foreground mb-2">Next items:</div>
                           <div className="flex flex-wrap gap-1">
                             {sourceItems.items.slice(0, 3).map((item, idx) => (
                               <span
                                 key={idx}
-                                className="px-2 py-1 bg-gray-50 text-xs rounded"
+                                className="px-2 py-1 bg-background text-xs rounded"
                               >
                                 {item.content.primary}
                               </span>
                             ))}
                             {sourceItems.items.length > 3 && (
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-muted-foreground">
                                 +{sourceItems.items.length - 3} more
                               </span>
                             )}
@@ -693,8 +689,8 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
 
                       {/* Disabled State */}
                       {!isEnabled && (
-                        <div className="mt-3 pt-3 border-t border-gray-100">
-                          <p className="text-xs text-gray-400 text-center">Source disabled</p>
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <p className="text-xs text-muted-foreground text-center">Source disabled</p>
                         </div>
                       )}
                     </div>
@@ -723,10 +719,10 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Notification Settings</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Notification Settings</h3>
                   <button
                     onClick={() => setShowNotificationSettings(false)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-muted-foreground hover:text-muted-foreground"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -736,15 +732,15 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">Daily review reminders</span>
+                    <span className="text-sm text-foreground">Daily review reminders</span>
                     <input type="checkbox" className="rounded" defaultChecked />
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">Golden time notifications</span>
+                    <span className="text-sm text-foreground">Golden time notifications</span>
                     <input type="checkbox" className="rounded" defaultChecked />
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">Achievement alerts</span>
+                    <span className="text-sm text-foreground">Achievement alerts</span>
                     <input type="checkbox" className="rounded" />
                   </div>
                   
@@ -764,25 +760,25 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
         {/* Insights Section */}
         {aggregatedStats?.insights && (
           <div className="px-4 pb-8">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Learning Insights</h3>
+            <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Learning Insights</h3>
               
               <div className="space-y-3">
                 {aggregatedStats.insights.recommendations.map((recommendation, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                    <div className="text-blue-600 mt-0.5">
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-background rounded-lg">
+                    <div className="text-primary mt-0.5">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <p className="text-sm text-gray-700 flex-1">{recommendation}</p>
+                    <p className="text-sm text-foreground flex-1">{recommendation}</p>
                   </div>
                 ))}
               </div>
 
               {aggregatedStats.insights.nextReviewEstimate && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <p className="text-sm text-gray-600">
+                <div className="mt-4 pt-4 border-t border-border">
+                  <p className="text-sm text-muted-foreground">
                     <span className="font-medium">Next review estimate:</span>{' '}
                     {aggregatedStats.insights.nextReviewEstimate.toLocaleString()}
                   </p>

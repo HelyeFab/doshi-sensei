@@ -49,37 +49,37 @@ const CONTENT_TYPE_CONFIG = {
   [ContentType.KANJI]: {
     label: 'Kanji',
     icon: '漢',
-    color: 'text-red-600'
+    color: 'text-red-600 dark:text-red-400'
   },
   [ContentType.VOCABULARY]: {
     label: 'Vocabulary',
     icon: '語',
-    color: 'text-blue-600'
+    color: 'text-blue-600 dark:text-blue-400'
   },
   [ContentType.FLASHCARD]: {
     label: 'Flashcards',
     icon: '📚',
-    color: 'text-green-600'
+    color: 'text-green-600 dark:text-green-400'
   },
   [ContentType.GRAMMAR]: {
     label: 'Grammar',
     icon: '文',
-    color: 'text-purple-600'
+    color: 'text-purple-600 dark:text-purple-400'
   },
   [ContentType.SENTENCE]: {
     label: 'Sentences',
     icon: '例',
-    color: 'text-orange-600'
+    color: 'text-orange-600 dark:text-orange-400'
   },
   [ContentType.RADICAL]: {
     label: 'Radicals',
     icon: '部',
-    color: 'text-pink-600'
+    color: 'text-pink-600 dark:text-pink-400'
   },
   [ContentType.CUSTOM]: {
     label: 'Custom',
     icon: '⭐',
-    color: 'text-yellow-600'
+    color: 'text-yellow-600 dark:text-yellow-400'
   }
 };
 

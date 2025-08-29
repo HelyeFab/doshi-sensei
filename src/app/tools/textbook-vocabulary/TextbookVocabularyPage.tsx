@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useFeature } from '@/hooks/useFeature';
@@ -22,7 +22,7 @@ const pageStructuredData = {
 
 type Textbook = 'genki-1' | 'genki-2-complete' | 'minna-1' | 'minna-2' | 'kaishi-15k' | 'kanji-in-context' | null;
 
-export default function TextbookVocabularyPage() {
+function TextbookVocabularyPageContent() {
   const strings = useStrings();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -331,5 +331,21 @@ export default function TextbookVocabularyPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function TextbookVocabularyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading Textbook Vocabulary...</p>
+        </div>
+      </div>
+    }>
+      <TextbookVocabularyPageContent />
+    </Suspense>
   );
 }

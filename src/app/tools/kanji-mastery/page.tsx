@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useFeature } from '@/hooks/useFeature';
@@ -27,7 +27,7 @@ interface StudySettings {
   learningApproach: 'smart' | 'linear';
 }
 
-export default function KanjiMasteryDashboard() {
+function KanjiMasteryDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -464,5 +464,21 @@ export default function KanjiMasteryDashboard() {
       </div>
       </DesktopContainer>
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function KanjiMasteryDashboard() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading Kanji Mastery...</p>
+        </div>
+      </div>
+    }>
+      <KanjiMasteryDashboardContent />
+    </Suspense>
   );
 }

@@ -63,6 +63,31 @@ const nextConfig: NextConfig = {
       };
     }
     
+    // Remove console logs in production
+    if (!dev && !isServer) {
+      // Use Terser plugin to remove console statements
+      config.optimization.minimizer = config.optimization.minimizer || [];
+      const TerserPlugin = config.optimization.minimizer.find(
+        (plugin: any) => plugin.constructor.name === 'TerserPlugin'
+      );
+      
+      if (TerserPlugin) {
+        TerserPlugin.options.terserOptions = {
+          ...TerserPlugin.options.terserOptions,
+          compress: {
+            ...TerserPlugin.options.terserOptions?.compress,
+            drop_console: true, // Remove all console.* statements
+            drop_debugger: true, // Remove debugger statements
+            pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'], // Remove specific console methods
+          },
+          mangle: {
+            ...TerserPlugin.options.terserOptions?.mangle,
+            safari10: true, // Fix Safari 10 issues
+          },
+        };
+      }
+    }
+    
     return config;
   },
   

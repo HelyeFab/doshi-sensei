@@ -100,7 +100,7 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
   ];
 
   const practiceCards = [
-    { title: 'Review System', icon: '📝', href: '/review', description: 'Unified spaced repetition review' },
+    { title: 'Review Hub', icon: '📝', href: '/review', description: 'Unified spaced repetition review' },
     { title: 'Practice', icon: '📚', href: '/practice', description: 'General practice mode' },
     { title: 'Drill', icon: '⚡', href: '/drill', description: 'Quick drill exercises' },
     { title: 'Games', icon: '/game-console.png', href: '/games', description: 'Learn through fun games' }

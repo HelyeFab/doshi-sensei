@@ -47,11 +47,11 @@ const StunningBottomNavbar = React.memo(() => {
       activeIcon: '/flat-icons/ui/navbar/home.svg'
     },
     {
-      id: 'practice',
-      label: 'Practice',
-      href: '/practice',
-      icon: '/flat-icons/ui/navbar/practice.svg',
-      activeIcon: '/flat-icons/ui/navbar/practice.svg'
+      id: 'review',
+      label: 'Review',
+      href: '/review',
+      icon: '/flat-icons/ui/book.svg',
+      activeIcon: '/flat-icons/ui/book.svg'
     },
     {
       id: 'games',
@@ -73,7 +73,7 @@ const StunningBottomNavbar = React.memo(() => {
   const navItems = useMemo(() => {
     if (isAdmin) {
       return [
-        ...baseNavItems.slice(0, 3), // home, practice, games
+        ...baseNavItems.slice(0, 3), // home, review, games
         {
           id: 'admin',
           label: 'Admin',

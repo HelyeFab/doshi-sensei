@@ -6,11 +6,12 @@ import { useRouter } from 'next/navigation';
 
 interface SmartHeaderProps {
   title: string;
+  subtitle?: string; // Optional subtitle
   backHref?: string; // Optional, defaults to '/'
   showBack?: boolean; // Optional, defaults to true
 }
 
-export default function SmartHeader({ title, backHref, showBack = true }: SmartHeaderProps) {
+export default function SmartHeader({ title, subtitle, backHref, showBack = true }: SmartHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   
@@ -40,9 +41,16 @@ export default function SmartHeader({ title, backHref, showBack = true }: SmartH
         )}
         
         {/* Page Title */}
-        <h1 className="text-xl font-bold text-foreground flex-1">
-          {title}
-        </h1>
+        <div className="flex-1">
+          <h1 className="text-xl font-bold text-foreground">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
     </header>
   );

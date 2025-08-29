@@ -5,8 +5,8 @@ import { StructuredData } from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   ...generatePageMetadata({
-    title: 'Review System',
-    description: 'Unified Review System - Practice and review kanji, vocabulary, and grammar with spaced repetition. Track your progress and optimize your Japanese learning with intelligent algorithms.',
+    title: 'Review Hub',
+    description: 'Unified Review Hub - Practice and review kanji, vocabulary, and grammar with spaced repetition. Track your progress and optimize your Japanese learning with intelligent algorithms.',
     path: '/review',
     keywords: 'Japanese review, spaced repetition, kanji review, vocabulary review, SRS, Japanese learning system, study schedule, memory optimization'
   }),
@@ -25,7 +25,7 @@ export default function Page() {
       "url": "/"
     },
     {
-      "name": "Review System",
+      "name": "Review Hub",
       "url": "/review"
     }
   ]);
@@ -33,8 +33,8 @@ export default function Page() {
   const pageStructuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "Doshi Sensei Review System",
-    "description": "Intelligent Japanese language review system using spaced repetition for optimal learning retention",
+    "name": "Doshi Sensei Review Hub",
+    "description": "Intelligent Japanese language review hub using spaced repetition for optimal learning retention",
     "applicationCategory": "EducationalApplication",
     "operatingSystem": "Web",
     "url": "https://doshisensei.com/review",

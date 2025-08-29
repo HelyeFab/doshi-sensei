@@ -37,16 +37,16 @@ import { ContentType } from '@/lib/unified-review/types';
 export interface RegistryConfig {
   /** Maximum number of items to fetch from each source */
   maxItemsPerSource: number;
-  
+
   /** Default priority for new sources */
   defaultPriority: SourcePriority;
-  
+
   /** Whether to auto-initialize sources on registration */
   autoInitialize: boolean;
-  
+
   /** Storage key for persisting user preferences */
   storageKey: string;
-  
+
   /** Enable debug logging */
   debug: boolean;
 }
@@ -57,16 +57,16 @@ export interface RegistryConfig {
 export interface SourceUserPreferences {
   /** User-defined priority for each source */
   priorities: Record<string, SourcePriority>;
-  
+
   /** Whether each source is enabled */
   enabled: Record<string, boolean>;
-  
+
   /** User's preferred study modes per source */
   studyModePreferences: Record<string, string[]>;
-  
+
   /** Maximum items per source in review sessions */
   itemLimits: Record<string, number>;
-  
+
   /** Last updated timestamp */
   updatedAt: Date;
 }
@@ -102,25 +102,25 @@ const DEFAULT_USER_PREFERENCES: SourceUserPreferences = {
  */
 export class ReviewSourceRegistry {
   private static instance: ReviewSourceRegistry | null = null;
-  
+
   /** Registered review sources */
   private sources: Map<string, ReviewSource> = new Map();
-  
+
   /** Source initialization status */
   private initializationStatus: Map<string, 'pending' | 'initializing' | 'ready' | 'error'> = new Map();
-  
+
   /** Event listeners */
   private eventListeners: Map<ReviewSourceEvent, SourceEventListener[]> = new Map();
-  
+
   /** User preferences */
   private userPreferences: SourceUserPreferences = DEFAULT_USER_PREFERENCES;
-  
+
   /** Registry configuration */
   private config: RegistryConfig = DEFAULT_CONFIG;
-  
+
   /** Whether the registry has been initialized */
   private initialized = false;
-  
+
   /** Cached aggregated stats */
   private cachedStats: AggregatedStats | null = null;
   private statsCacheExpiry: number = 0;
@@ -142,6 +142,15 @@ export class ReviewSourceRegistry {
       ReviewSourceRegistry.instance = new ReviewSourceRegistry(config);
     }
     return ReviewSourceRegistry.instance;
+  }
+
+  /**
+   * Reset the singleton instance (useful for testing or re-initialization)
+   */
+  public static async reset(): Promise<void> {
+    if (ReviewSourceRegistry.instance) {
+      await ReviewSourceRegistry.instance.destroy();
+    }
   }
 
   /**
@@ -204,7 +213,7 @@ export class ReviewSourceRegistry {
 
     // Emit registration event
     this.emitEvent(ReviewSourceEvent.ITEMS_UPDATED, source.id, { registered: true });
-    
+
     // Clear cached stats
     this.invalidateStatsCache();
   }
@@ -237,7 +246,7 @@ export class ReviewSourceRegistry {
 
     // Save updated preferences
     this.saveUserPreferences();
-    
+
     // Clear cached stats
     this.invalidateStatsCache();
   }
@@ -277,6 +286,20 @@ export class ReviewSourceRegistry {
   }
 
   /**
+   * Check if registry has any sources registered
+   */
+  public hasAnySources(): boolean {
+    return this.sources.size > 0;
+  }
+
+  /**
+   * Get count of registered sources
+   */
+  public getSourceCount(): number {
+    return this.sources.size;
+  }
+
+  /**
    * Get source initialization status
    */
   public getInitializationStatus(sourceId: string): string {
@@ -301,11 +324,11 @@ export class ReviewSourceRegistry {
     const itemsBySource: Record<string, { source: ReviewSource; items: ReviewItem[]; stats: SourceStats }> = {};
     const itemsByContentType: Record<ContentType, ReviewItem[]> = {} as Record<ContentType, ReviewItem[]>;
     const itemsByPriority: Record<SourcePriority, ReviewItem[]> = {} as Record<SourcePriority, ReviewItem[]>;
-    
+
     let totalItems = 0;
     let dueToday = 0;
     let overdue = 0;
-    
+
     const byDueDate = {
       overdue: [] as ReviewItem[],
       today: [] as ReviewItem[],
@@ -345,7 +368,7 @@ export class ReviewSourceRegistry {
         // Categorize items
         for (const item of items) {
           totalItems++;
-          
+
           // By content type
           if (!itemsByContentType[item.contentType]) {
             itemsByContentType[item.contentType] = [];
@@ -416,7 +439,7 @@ export class ReviewSourceRegistry {
     const enabledSources = this.getPrioritizedSources();
     const bySource: Record<string, SourceStats> = {};
     const byContentType: Record<ContentType, any> = {} as Record<ContentType, any>;
-    
+
     let totalItems = 0;
     let totalDueToday = 0;
     let totalOverdue = 0;
@@ -515,7 +538,7 @@ export class ReviewSourceRegistry {
     this.statsCacheExpiry = Date.now() + this.STATS_CACHE_DURATION;
 
     this.log(`Generated aggregated stats: ${totalItems} total items from ${activeSources} active sources`);
-    
+
     return this.cachedStats;
   }
 
@@ -531,7 +554,7 @@ export class ReviewSourceRegistry {
     this.userPreferences.updatedAt = new Date();
     this.saveUserPreferences();
     this.invalidateStatsCache();
-    
+
     this.emitEvent(ReviewSourceEvent.CONFIG_CHANGED, sourceId, { priority });
   }
 
@@ -543,7 +566,7 @@ export class ReviewSourceRegistry {
     this.userPreferences.updatedAt = new Date();
     this.saveUserPreferences();
     this.invalidateStatsCache();
-    
+
     this.emitEvent(ReviewSourceEvent.CONFIG_CHANGED, sourceId, { enabled });
   }
 
@@ -555,7 +578,7 @@ export class ReviewSourceRegistry {
     this.userPreferences.updatedAt = new Date();
     this.saveUserPreferences();
     this.invalidateStatsCache();
-    
+
     this.emitEvent(ReviewSourceEvent.CONFIG_CHANGED, sourceId, { itemLimit: limit });
   }
 
@@ -573,7 +596,7 @@ export class ReviewSourceRegistry {
     this.userPreferences = { ...this.userPreferences, ...preferences, updatedAt: new Date() };
     this.saveUserPreferences();
     this.invalidateStatsCache();
-    
+
     this.emitEvent(ReviewSourceEvent.CONFIG_CHANGED, 'registry', preferences);
   }
 
@@ -616,7 +639,7 @@ export class ReviewSourceRegistry {
         data,
         timestamp: new Date()
       };
-      
+
       listeners.forEach(listener => {
         try {
           listener(eventData);
@@ -635,10 +658,10 @@ export class ReviewSourceRegistry {
    * Initialize all registered sources
    */
   private async initializeAllSources(): Promise<void> {
-    const initPromises = Array.from(this.sources.keys()).map(sourceId => 
+    const initPromises = Array.from(this.sources.keys()).map(sourceId =>
       this.initializeSource(sourceId)
     );
-    
+
     await Promise.allSettled(initPromises);
   }
 
@@ -655,13 +678,13 @@ export class ReviewSourceRegistry {
       await source.init();
       this.initializationStatus.set(sourceId, 'ready');
       this.log(`Source ${sourceId} initialized successfully`);
-      
+
       this.emitEvent(ReviewSourceEvent.STATUS_CHANGED, sourceId, { status: 'ready' });
-      
+
     } catch (error) {
       this.initializationStatus.set(sourceId, 'error');
       this.log(`Failed to initialize source ${sourceId}: ${error}`);
-      
+
       this.emitEvent(ReviewSourceEvent.ERROR_OCCURRED, sourceId, { error: error.toString() });
     }
   }
@@ -762,7 +785,7 @@ export class ReviewSourceRegistry {
     const destroyPromises = Array.from(this.sources.values())
       .filter(source => source.destroy)
       .map(source => source.destroy!());
-    
+
     await Promise.allSettled(destroyPromises);
 
     // Clear all data

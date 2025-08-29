@@ -107,16 +107,28 @@ export async function initializeAllReviewSources(
   options: {
     enabledSources?: string[];
     debug?: boolean;
+    forceReset?: boolean;
   } = {}
 ): Promise<ReviewSourceRegistry> {
-  const { enabledSources, debug = false } = options;
-  
+  const { enabledSources, debug = false, forceReset = false } = options;
+
   // Get or create registry instance
-  const registry = ReviewSourceRegistry.getInstance({ 
+  const registry = ReviewSourceRegistry.getInstance({
     debug,
     autoInitialize: false // We'll initialize sources manually
   });
-  
+
+  // If force reset is requested, clear existing sources
+  if (forceReset && registry.hasAnySources()) {
+    if (debug) {
+      console.log(`[ReviewSources] Force reset requested, clearing existing sources`);
+    }
+    await ReviewSourceRegistry.reset();
+    // Get new instance after reset
+    const newRegistry = ReviewSourceRegistry.getInstance({ debug, autoInitialize: false });
+    return initializeAllReviewSources(userId, { ...options, forceReset: false });
+  }
+
   // Filter sources based on enabled list
   const sourcesToRegister = SOURCE_CONFIGS.filter(config => {
     if (!config.enabled) return false;
@@ -125,28 +137,36 @@ export async function initializeAllReviewSources(
   });
 
   if (debug) {
-    console.log(`[ReviewSources] Initializing ${sourcesToRegister.length} sources for user: ${userId || 'guest'}`);
+    console.log(`[ReviewSources] Initializing ${sourcesToRegister.length} sources for user: ${userId || 'guest'} (${registry.getSourceCount()} already registered)`);
   }
 
   // Register and initialize each source
   const registrationPromises = sourcesToRegister.map(async (config) => {
     try {
+      // Check if source is already registered
+      if (registry.hasSource(config.sourceId)) {
+        if (debug) {
+          console.log(`[ReviewSources] Source already registered: ${config.sourceId}`);
+        }
+        return { sourceId: config.sourceId, success: true, alreadyRegistered: true };
+      }
+
       if (debug) {
         console.log(`[ReviewSources] Registering source: ${config.sourceId}`);
       }
-      
+
       // Create source instance
       const source = await config.factory(userId);
-      
+
       // Register with registry
       await registry.register(source, config.defaultPriority);
-      
+
       if (debug) {
         console.log(`[ReviewSources] Successfully registered: ${config.sourceId}`);
       }
-      
-      return { sourceId: config.sourceId, success: true };
-      
+
+      return { sourceId: config.sourceId, success: true, alreadyRegistered: false };
+
     } catch (error) {
       console.error(`[ReviewSources] Failed to register source ${config.sourceId}:`, error);
       return { sourceId: config.sourceId, success: false, error };
@@ -155,21 +175,26 @@ export async function initializeAllReviewSources(
 
   // Wait for all registrations to complete
   const results = await Promise.allSettled(registrationPromises);
-  
+
   // Log results
-  const successful = results.filter(result => 
+  const successful = results.filter(result =>
     result.status === 'fulfilled' && result.value.success
   ).length;
-  
+
+  const alreadyRegistered = results.filter(result =>
+    result.status === 'fulfilled' && result.value.success && result.value.alreadyRegistered
+  ).length;
+
+  const newlyRegistered = successful - alreadyRegistered;
   const failed = results.length - successful;
-  
-  console.log(`[ReviewSources] Registration complete: ${successful} successful, ${failed} failed`);
-  
+
+  console.log(`[ReviewSources] Registration complete: ${newlyRegistered} newly registered, ${alreadyRegistered} already registered, ${failed} failed`);
+
   if (failed > 0 && debug) {
     results.forEach((result, index) => {
       if (result.status === 'rejected' || !result.value.success) {
         const config = sourcesToRegister[index];
-        console.error(`[ReviewSources] Failed: ${config.sourceId}`, 
+        console.error(`[ReviewSources] Failed: ${config.sourceId}`,
           result.status === 'rejected' ? result.reason : result.value.error
         );
       }
@@ -178,7 +203,7 @@ export async function initializeAllReviewSources(
 
   // Initialize the registry
   await registry.init();
-  
+
   if (debug) {
     console.log(`[ReviewSources] Registry initialized with ${successful} active sources`);
   }
@@ -236,7 +261,7 @@ export async function createSource(sourceId: string, userId: string | null) {
   if (!config) {
     throw new Error(`Unknown source ID: ${sourceId}`);
   }
-  
+
   return config.factory(userId);
 }
 
@@ -258,7 +283,7 @@ export async function registerSingleSource(
   }
 
   const targetRegistry = registry || ReviewSourceRegistry.getInstance();
-  
+
   // Create and register source
   const source = await config.factory(userId);
   await targetRegistry.register(source, config.defaultPriority);

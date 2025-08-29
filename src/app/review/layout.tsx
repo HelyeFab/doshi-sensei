@@ -7,7 +7,11 @@ export default function ReviewLayout({
 }) {
   return (
     <>
-      <SmartHeader title="Review System" backHref="/" />
+      <SmartHeader 
+        title="Review Hub" 
+        subtitle="Unified spaced repetition system"
+        backHref="/" 
+      />
       {children}
     </>
   );

@@ -7,12 +7,12 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ReviewSourceRegistry } from '@/lib/review-sources/registry';
 import { ReviewAccessControlService, AccessControlResult } from '@/lib/review-sources/services/reviewAccessControl';
-import { 
-  ReviewSource, 
-  AggregatedStats, 
+import {
+  ReviewSource,
+  AggregatedStats,
   SourcePriority,
   GroupedReviewItems,
-  ReviewSourceEvent 
+  ReviewSourceEvent
 } from '@/lib/review-sources/review-source.interface';
 import {
   REVIEW_SOURCE_CONFIGS,
@@ -42,19 +42,19 @@ interface GoldenTimeStatus {
 const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) => {
   const router = useRouter();
   const { user, userType, subscriptionTier } = useAuth();
-  
+
   // Registry and data state
   const [registry, setRegistry] = useState<ReviewSourceRegistry | null>(null);
   const [aggregatedStats, setAggregatedStats] = useState<AggregatedStats | null>(null);
   const [groupedItems, setGroupedItems] = useState<GroupedReviewItems | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // UI state
   const [priorityEditMode, setPriorityEditMode] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
   const [draggedSourceId, setDraggedSourceId] = useState<string | null>(null);
-  
+
   // Access control state
   const [accessControl, setAccessControl] = useState<AccessControlResult | null>(null);
 
@@ -63,11 +63,11 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
     const initializeRegistry = async () => {
       try {
         setLoading(true);
-        
+
         // Check access control first
         const accessResult = ReviewAccessControlService.checkAccess(user?.uid, subscriptionTier);
         setAccessControl(accessResult);
-        
+
         // Initialize ALL review sources with real data connections
         // This now includes:
         // - Kanji Mastery (FSRS algorithm)
@@ -108,7 +108,7 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
             'drills': SourcePriority.HIGH
           }
         });
-        
+
         setRegistry(registryInstance);
       } catch (err) {
         console.error('Failed to initialize registry:', err);
@@ -131,7 +131,7 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
           registry.getAggregatedStats(),
           registry.getAllDueItems({ limit: 200 })
         ]);
-        
+
         setAggregatedStats(stats);
         setGroupedItems(items);
       } catch (err) {
@@ -164,23 +164,23 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
-    
+
     // Create a time value in minutes since midnight for precise comparison
     const currentTimeInMinutes = currentHour * 60 + currentMinute;
     const morningStartMinutes = TIME_CONSTANTS.GOLDEN_TIME.MORNING_START * 60;
     const morningEndMinutes = TIME_CONSTANTS.GOLDEN_TIME.MORNING_END * 60;
     const eveningStartMinutes = TIME_CONSTANTS.GOLDEN_TIME.EVENING_START * 60;
     const eveningEndMinutes = TIME_CONSTANTS.GOLDEN_TIME.EVENING_END * 60;
-    
-    
+
+
     // Check if we're in golden time
     // Morning: 7:00 AM (420 min) to 9:59 AM (599 min)
     // Evening: 6:00 PM (1080 min) to 8:59 PM (1259 min)  
-    const inMorningWindow = currentTimeInMinutes >= morningStartMinutes && 
-                           currentTimeInMinutes < morningEndMinutes;
-    const inEveningWindow = currentTimeInMinutes >= eveningStartMinutes && 
-                           currentTimeInMinutes < eveningEndMinutes;
-    
+    const inMorningWindow = currentTimeInMinutes >= morningStartMinutes &&
+      currentTimeInMinutes < morningEndMinutes;
+    const inEveningWindow = currentTimeInMinutes >= eveningStartMinutes &&
+      currentTimeInMinutes < eveningEndMinutes;
+
     if (inMorningWindow || inEveningWindow) {
       return {
         isActive: true,
@@ -232,7 +232,7 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
   // Priority management handlers
   const handlePriorityChange = useCallback(async (sourceId: string, newPriority: SourcePriority) => {
     if (!registry) return;
-    
+
     try {
       registry.updateSourcePriority(sourceId, newPriority);
       // Data will refresh via event listener
@@ -243,7 +243,7 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
 
   const handleSourceToggle = useCallback(async (sourceId: string, enabled: boolean) => {
     if (!registry) return;
-    
+
     try {
       registry.setSourceEnabled(sourceId, enabled);
       // Data will refresh via event listener
@@ -338,458 +338,462 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
 
   return (
     <div className={`min-h-screen bg-background ${className}`}>
-      <div className="mobile-nav-padding">
-        {/* Header */}
-        <header className="px-4 pt-6 pb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Review Hub</h1>
-              <p className="text-muted-foreground">Unified spaced repetition system</p>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {/* Golden Time Indicator */}
-              <AnimatePresence>
-                {goldenTimeStatus.isActive && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-100 dark:from-amber-900/20 to-orange-100 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg"
-                  >
-                    <span className="text-amber-600 dark:text-amber-400 text-sm font-medium">🌅 Golden Time</span>
-                    <span className="text-amber-700 dark:text-amber-300 text-xs">
-                      {goldenTimeStatus.currentBonus}× bonus
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Settings Toggle */}
-              <button
-                onClick={() => setShowNotificationSettings(!showNotificationSettings)}
-                className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-                aria-label="Settings"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </header>
-
-        {/* Aggregated Statistics - Subscription Only */}
-        {hasSubscription && aggregatedStats ? (
-          <div className="px-4 pb-6">
-            <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-foreground">Today's Overview</h2>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {/* Due Today */}
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-destructive mb-1">
-                    {aggregatedStats.totals.dueToday}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Due Today</div>
-                  {aggregatedStats.totals.overdue > 0 && (
-                    <div className="text-xs text-destructive mt-1">
-                      +{aggregatedStats.totals.overdue} overdue
-                    </div>
+      {/* Desktop margin wrapper - same as homepage */}
+      <div className="md:mx-16 lg:mx-32 xl:mx-48 2xl:mx-64">
+        <div className="mobile-nav-padding">
+          {/* Header */}
+          <header className="px-4 pt-6 pb-4">
+            <div className="flex items-center justify-end">
+              <div className="flex items-center gap-2">
+                {/* Golden Time Indicator */}
+                <AnimatePresence>
+                  {goldenTimeStatus.isActive && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-100 dark:from-amber-900/20 to-orange-100 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-lg"
+                    >
+                      <span className="text-amber-600 dark:text-amber-400 text-sm font-medium">🌅 Golden Time</span>
+                      <span className="text-amber-700 dark:text-amber-300 text-xs">
+                        {goldenTimeStatus.currentBonus}× bonus
+                      </span>
+                    </motion.div>
                   )}
-                </div>
-
-                {/* Study Streak */}
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1">
-                    {aggregatedStats.performance.studyStreak}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Day Streak</div>
-                  <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                    🔥 Keep it up!
-                  </div>
-                </div>
-
-                {/* Retention Rate */}
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
-                    {(aggregatedStats.performance.overallRetention * 100).toFixed(0)}%
-                  </div>
-                  <div className="text-sm text-muted-foreground">Retention</div>
-                  <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-                    {aggregatedStats.performance.overallRetention >= 0.8 ? '✨ Excellent' : 
-                     aggregatedStats.performance.overallRetention >= 0.6 ? '👍 Good' : '💪 Improving'}
-                  </div>
-                </div>
-
-                {/* Total Items */}
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-1">
-                    {aggregatedStats.totals.items.toLocaleString()}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Total Items</div>
-                  <div className="text-xs text-primary mt-1">
-                    {aggregatedStats.totals.activeSources} sources
-                  </div>
-                </div>
+                </AnimatePresence>
               </div>
             </div>
-          </div>
-        ) : !hasSubscription ? (
-          /* Daily Limit Display for Free Users */
-          <div className="px-4 pb-6">
-            <div className="bg-gradient-to-r from-amber-50 dark:from-amber-900/10 to-orange-50 dark:to-orange-900/10 border border-amber-200 dark:border-amber-700 rounded-lg p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold text-amber-900 dark:text-amber-100 mb-2">
-                    Daily Review Limit: {accessControl?.remainingCount ?? 0}/10
-                  </h2>
-                  <p className="text-amber-700 dark:text-amber-300 text-sm">
-                    {accessControl?.canReview 
-                      ? `You have ${accessControl.remainingCount} reviews remaining today.`
-                      : "Daily limit reached. Upgrade for unlimited reviews."
-                    }
-                  </p>
-                  {!accessControl?.canReview && (
-                    <p className="text-amber-600 dark:text-amber-400 text-xs mt-1">
-                      Your limit resets at midnight.
-                    </p>
-                  )}
-                </div>
-                <Link
-                  href="/subscription"
-                  className="px-4 py-2 bg-amber-600 dark:bg-amber-700 text-white rounded-lg hover:bg-amber-700 dark:hover:bg-amber-600 transition-colors font-medium whitespace-nowrap"
-                >
-                  Upgrade Now →
-                </Link>
-              </div>
-              
-              {/* Visual progress bar */}
-              <div className="mt-4">
-                <div className="flex items-center justify-between text-sm text-amber-700 dark:text-amber-300 mb-2">
-                  <span>Reviews Used Today</span>
-                  <span>{(accessControl?.remainingCount !== undefined) ? (10 - accessControl.remainingCount) : 0}/10</span>
-                </div>
-                <div className="w-full bg-amber-100 dark:bg-amber-900/30 rounded-full h-2">
-                  <div 
-                    className="bg-amber-500 dark:bg-amber-600 h-2 rounded-full transition-all duration-300" 
-                    style={{ 
-                      width: `${((accessControl?.remainingCount !== undefined) ? ((10 - accessControl.remainingCount) / 10) * 100 : 0)}%` 
-                    }}
-                  ></div>
-                </div>
-              </div>
-              
-              {/* Additional upgrade prompt */}
-              <div className="mt-4 pt-4 border-t border-amber-200 dark:border-amber-700">
-                <p className="text-amber-600 dark:text-amber-400 text-sm">
-                  🚀 <strong>Upgrade for:</strong> Unlimited reviews, detailed statistics, streaks, and retention metrics.
-                </p>
-              </div>
-            </div>
-          </div>
-        ) : null}
+          </header>
 
-        {/* Quick Actions - Available to All Users */}
-        <div className="px-4 pb-6">
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={startUnifiedReview}
-              disabled={
-                !aggregatedStats || 
-                aggregatedStats.totals.dueToday === 0 || 
-                !accessControl?.canReview
-              }
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                aggregatedStats && aggregatedStats.totals.dueToday > 0 && accessControl?.canReview
-                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm'
-                  : 'bg-muted text-muted-foreground cursor-not-allowed'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {!accessControl?.canReview && !hasSubscription 
-                ? 'Daily Limit Reached'
-                : `Start Review ${aggregatedStats ? `(${aggregatedStats.totals.dueToday})` : ''}`
-              }
-            </button>
-            
-            <button
-              onClick={() => setPriorityEditMode(!priorityEditMode)}
-              className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground hover:bg-muted/80 rounded-lg font-medium transition-all"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-              </svg>
-              {priorityEditMode ? 'Done' : 'Manage Priorities'}
-            </button>
-
-            {goldenTimeStatus.nextWindow && !goldenTimeStatus.isActive && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-700 rounded-lg text-sm text-amber-700 dark:text-amber-300">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Next golden time: {goldenTimeStatus.nextWindow.type} ({new Date(goldenTimeStatus.nextWindow.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Review Source Cards */}
-        <div className="px-4 pb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">Review Sources</h2>
-            {priorityEditMode && (
-              <span className="text-sm text-muted-foreground">Drag to reorder priority</span>
-            )}
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <AnimatePresence>
-              {prioritizedSources.map((source) => {
-                // Always use source properties directly since multiple sources can share the same type
-                const config = {
-                  name: source.name || 'Unknown Source',
-                  icon: source.icon || '📚',
-                  description: source.description || '',
-                  paths: source.paths || { main: '/' }
-                };
-                const userPrefs = registry?.getUserPreferences();
-                const isEnabled = userPrefs?.enabled[source.id] !== false;
-                const priority = userPrefs?.priorities[source.id] || SourcePriority.MEDIUM;
-                const priorityConfig = PRIORITY_CONFIGS[priority];
-                const sourceStats = aggregatedStats?.bySource[source.id];
-                const sourceItems = groupedItems?.bySource[source.id];
-
-                return (
-                  <motion.div
-                    key={source.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className={`bg-card rounded-lg shadow-sm border transition-all ${
-                      isEnabled ? 'border-border hover:shadow-md' : 'border-border opacity-60'
-                    } ${priorityEditMode ? 'cursor-move' : 'cursor-pointer'}`}
-                    onClick={!priorityEditMode ? () => navigateToSource(config.paths.main) : undefined}
-                    draggable={priorityEditMode}
-                    onDragStart={() => setDraggedSourceId(source.id)}
-                    onDragEnd={() => setDraggedSourceId(null)}
-                  >
-                    <div className="p-4">
-                      {/* Header */}
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="text-2xl">{config.icon}</div>
-                          <div>
-                            <h3 className="font-medium text-foreground">{config.name}</h3>
-                            <p className="text-sm text-muted-foreground line-clamp-2">{config.description}</p>
-                          </div>
-                        </div>
-                        
-                        {priorityEditMode && (
-                          <div className="flex flex-col items-end gap-1">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSourceToggle(source.id, !isEnabled);
-                              }}
-                              className={`w-8 h-4 rounded-full transition-colors ${
-                                isEnabled ? 'bg-green-500 dark:bg-green-600' : 'bg-muted'
-                              }`}
-                            >
-                              <div className={`w-3 h-3 bg-card rounded-full transition-transform ${
-                                isEnabled ? 'translate-x-4' : 'translate-x-0.5'
-                              }`} />
-                            </button>
-                            
-                            <select
-                              value={priority}
-                              onChange={(e) => {
-                                e.stopPropagation();
-                                handlePriorityChange(source.id, parseInt(e.target.value) as SourcePriority);
-                              }}
-                              className="text-xs border border-border rounded px-1 py-0.5"
-                            >
-                              {Object.entries(PRIORITY_CONFIGS).map(([value, config]) => (
-                                <option key={value} value={value}>
-                                  {config.icon} {config.label}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Stats */}
-                      {sourceStats && isEnabled && (
-                        <div className="grid grid-cols-3 gap-3 mb-3">
-                          <div className="text-center">
-                            <div className="text-lg font-semibold text-destructive">
-                              {sourceStats.dueToday}
-                            </div>
-                            <div className="text-xs text-muted-foreground">Due</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-lg font-semibold text-primary">
-                              {sourceStats.totalItems}
-                            </div>
-                            <div className="text-xs text-muted-foreground">Total</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-lg font-semibold text-green-600 dark:text-green-400">
-                              {(sourceStats.retentionRate * 100).toFixed(0)}%
-                            </div>
-                            <div className="text-xs text-muted-foreground">Rate</div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Priority Badge */}
-                      <div className="flex items-center justify-between">
-                        <div
-                          className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${priorityConfig.bgClass} ${priorityConfig.textClass}`}
-                        >
-                          <span>{priorityConfig.icon}</span>
-                          <span>{priorityConfig.label}</span>
-                        </div>
-
-                        {!priorityEditMode && isEnabled && (
-                          <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        )}
-                      </div>
-
-                      {/* Preview Items */}
-                      {sourceItems && sourceItems.items.length > 0 && isEnabled && !priorityEditMode && (
-                        <div className="mt-3 pt-3 border-t border-border">
-                          <div className="text-xs text-muted-foreground mb-2">Next items:</div>
-                          <div className="flex flex-wrap gap-1">
-                            {sourceItems.items.slice(0, 3).map((item, idx) => (
-                              <span
-                                key={idx}
-                                className="px-2 py-1 bg-background text-xs rounded"
-                              >
-                                {item.content.primary}
-                              </span>
-                            ))}
-                            {sourceItems.items.length > 3 && (
-                              <span className="text-xs text-muted-foreground">
-                                +{sourceItems.items.length - 3} more
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Disabled State */}
-                      {!isEnabled && (
-                        <div className="mt-3 pt-3 border-t border-border">
-                          <p className="text-xs text-muted-foreground text-center">Source disabled</p>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Notification Settings Modal */}
-        <AnimatePresence>
-          {showNotificationSettings && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-              onClick={() => setShowNotificationSettings(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white rounded-lg p-6 max-w-md w-full"
-                onClick={(e) => e.stopPropagation()}
-              >
+          {/* Aggregated Statistics - Subscription Only */}
+          {hasSubscription && aggregatedStats ? (
+            <div className="px-4 pb-6">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-foreground">Notification Settings</h3>
+                  <h2 className="text-lg font-semibold text-foreground">Today's Overview</h2>
+                  {/* Settings Toggle */}
                   <button
-                    onClick={() => setShowNotificationSettings(false)}
-                    className="text-muted-foreground hover:text-muted-foreground"
+                    onClick={() => setShowNotificationSettings(!showNotificationSettings)}
+                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+                    aria-label="Settings"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </button>
                 </div>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground">Daily review reminders</span>
-                    <input type="checkbox" className="rounded" defaultChecked />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground">Golden time notifications</span>
-                    <input type="checkbox" className="rounded" defaultChecked />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-foreground">Achievement alerts</span>
-                    <input type="checkbox" className="rounded" />
-                  </div>
-                  
-                  {!hasSubscription && (
-                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <p className="text-sm text-blue-800">
-                        🔄 Upgrade for cross-device sync and advanced notification scheduling.
-                      </p>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {/* Due Today */}
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-destructive mb-1">
+                      {aggregatedStats.totals.dueToday}
                     </div>
-                  )}
+                    <div className="text-sm text-muted-foreground">Due Today</div>
+                    {aggregatedStats.totals.overdue > 0 && (
+                      <div className="text-xs text-destructive mt-1">
+                        +{aggregatedStats.totals.overdue} overdue
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Study Streak */}
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1">
+                      {aggregatedStats.performance.studyStreak}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Day Streak</div>
+                    <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                      🔥 Keep it up!
+                    </div>
+                  </div>
+
+                  {/* Retention Rate */}
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
+                      {(aggregatedStats.performance.overallRetention * 100).toFixed(0)}%
+                    </div>
+                    <div className="text-sm text-muted-foreground">Retention</div>
+                    <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                      {aggregatedStats.performance.overallRetention >= 0.8 ? '✨ Excellent' :
+                        aggregatedStats.performance.overallRetention >= 0.6 ? '👍 Good' : '💪 Improving'}
+                    </div>
+                  </div>
+
+                  {/* Total Items */}
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary mb-1">
+                      {aggregatedStats.totals.items.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-muted-foreground">Total Items</div>
+                    <div className="text-xs text-primary mt-1">
+                      {aggregatedStats.totals.activeSources} sources
+                    </div>
+                  </div>
                 </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Insights Section */}
-        {aggregatedStats?.insights && (
-          <div className="px-4 pb-8">
-            <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Learning Insights</h3>
-              
-              <div className="space-y-3">
-                {aggregatedStats.insights.recommendations.map((recommendation, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 bg-background rounded-lg">
-                    <div className="text-primary mt-0.5">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <p className="text-sm text-foreground flex-1">{recommendation}</p>
-                  </div>
-                ))}
               </div>
+            </div>
+          ) : !hasSubscription ? (
+            /* Daily Limit Display for Free Users */
+            <div className="px-4 pb-6">
+              <div className="bg-gradient-to-r from-amber-50 dark:from-amber-900/10 to-orange-50 dark:to-orange-900/10 border border-amber-200 dark:border-amber-700 rounded-lg p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold text-amber-900 dark:text-amber-100 mb-2">
+                      Daily Review Limit: {accessControl?.remainingCount ?? 0}/10
+                    </h2>
+                    <p className="text-amber-700 dark:text-amber-300 text-sm">
+                      {accessControl?.canReview
+                        ? `You have ${accessControl.remainingCount} reviews remaining today.`
+                        : "Daily limit reached. Upgrade for unlimited reviews."
+                      }
+                    </p>
+                    {!accessControl?.canReview && (
+                      <p className="text-amber-600 dark:text-amber-400 text-xs mt-1">
+                        Your limit resets at midnight.
+                      </p>
+                    )}
+                  </div>
+                  <Link
+                    href="/subscription"
+                    className="px-4 py-2 bg-amber-600 dark:bg-amber-700 text-white rounded-lg hover:bg-amber-700 dark:hover:bg-amber-600 transition-colors font-medium whitespace-nowrap"
+                  >
+                    Upgrade Now →
+                  </Link>
+                </div>
 
-              {aggregatedStats.insights.nextReviewEstimate && (
-                <div className="mt-4 pt-4 border-t border-border">
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-medium">Next review estimate:</span>{' '}
-                    {aggregatedStats.insights.nextReviewEstimate.toLocaleString()}
+                {/* Visual progress bar */}
+                <div className="mt-4">
+                  <div className="flex items-center justify-between text-sm text-amber-700 dark:text-amber-300 mb-2">
+                    <span>Reviews Used Today</span>
+                    <span>{(accessControl?.remainingCount !== undefined) ? (10 - accessControl.remainingCount) : 0}/10</span>
+                  </div>
+                  <div className="w-full bg-amber-100 dark:bg-amber-900/30 rounded-full h-2">
+                    <div
+                      className="bg-amber-500 dark:bg-amber-600 h-2 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${((accessControl?.remainingCount !== undefined) ? ((10 - accessControl.remainingCount) / 10) * 100 : 0)}%`
+                      }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Additional upgrade prompt */}
+                <div className="mt-4 pt-4 border-t border-amber-200 dark:border-amber-700">
+                  <p className="text-amber-600 dark:text-amber-400 text-sm">
+                    🚀 <strong>Upgrade for:</strong> Unlimited reviews, detailed statistics, streaks, and retention metrics.
                   </p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Quick Actions - Available to All Users */}
+          <div className="px-4 pb-6">
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={startUnifiedReview}
+                disabled={
+                  !aggregatedStats ||
+                  aggregatedStats.totals.dueToday === 0 ||
+                  !accessControl?.canReview
+                }
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${aggregatedStats && aggregatedStats.totals.dueToday > 0 && accessControl?.canReview
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm'
+                  : 'bg-muted text-muted-foreground cursor-not-allowed'
+                  }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {!accessControl?.canReview && !hasSubscription
+                  ? 'Daily Limit Reached'
+                  : `Start Review ${aggregatedStats ? `(${aggregatedStats.totals.dueToday})` : ''}`
+                }
+              </button>
+
+              <button
+                onClick={() => setPriorityEditMode(!priorityEditMode)}
+                className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground hover:bg-muted/80 rounded-lg font-medium transition-all"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+                {priorityEditMode ? 'Done' : 'Manage Priorities'}
+              </button>
+
+              {goldenTimeStatus.nextWindow && !goldenTimeStatus.isActive && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-700 rounded-lg text-sm text-amber-700 dark:text-amber-300">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Next golden time: {goldenTimeStatus.nextWindow.type} ({new Date(goldenTimeStatus.nextWindow.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
                 </div>
               )}
             </div>
           </div>
-        )}
 
-        {/* Bottom Spacing for Mobile Navigation */}
-        <div className="h-20"></div>
+          {/* Review Source Cards */}
+          <div className="px-4 pb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-foreground">Review Sources</h2>
+              {priorityEditMode && (
+                <span className="text-sm text-muted-foreground">Drag to reorder priority</span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <AnimatePresence>
+                {prioritizedSources.map((source) => {
+                  // Always use source properties directly since multiple sources can share the same type
+                  const config = {
+                    name: source.name || 'Unknown Source',
+                    icon: source.icon || '📚',
+                    description: source.description || '',
+                    paths: source.paths || { main: '/' }
+                  };
+                  const userPrefs = registry?.getUserPreferences();
+                  const isEnabled = userPrefs?.enabled[source.id] !== false;
+                  const priority = userPrefs?.priorities[source.id] || SourcePriority.MEDIUM;
+                  const priorityConfig = PRIORITY_CONFIGS[priority];
+                  const sourceStats = aggregatedStats?.bySource[source.id];
+                  const sourceItems = groupedItems?.bySource[source.id];
+
+                  return (
+                    <motion.div
+                      key={source.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className={`bg-card rounded-lg shadow-sm border transition-all ${isEnabled ? 'border-border hover:shadow-md' : 'border-border opacity-60'
+                        } ${priorityEditMode ? 'cursor-move' : 'cursor-pointer'}`}
+                      onClick={!priorityEditMode ? () => navigateToSource(config.paths.main) : undefined}
+                      draggable={priorityEditMode}
+                      onDragStart={() => setDraggedSourceId(source.id)}
+                      onDragEnd={() => setDraggedSourceId(null)}
+                    >
+                      <div className="p-4">
+                        {/* Header */}
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="text-2xl">{config.icon}</div>
+                            <div>
+                              <h3 className="font-medium text-foreground">{config.name}</h3>
+                              <p className="text-sm text-muted-foreground line-clamp-2">{config.description}</p>
+                            </div>
+                          </div>
+
+                          {priorityEditMode && (
+                            <div className="flex flex-col items-end gap-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSourceToggle(source.id, !isEnabled);
+                                }}
+                                className={`w-8 h-4 rounded-full transition-colors ${isEnabled ? 'bg-green-500 dark:bg-green-600' : 'bg-muted'
+                                  }`}
+                              >
+                                <div className={`w-3 h-3 bg-card rounded-full transition-transform ${isEnabled ? 'translate-x-4' : 'translate-x-0.5'
+                                  }`} />
+                              </button>
+
+                              <select
+                                value={priority}
+                                onChange={(e) => {
+                                  e.stopPropagation();
+                                  handlePriorityChange(source.id, parseInt(e.target.value) as SourcePriority);
+                                }}
+                                className="text-xs border border-border rounded px-1 py-0.5"
+                              >
+                                {Object.entries(PRIORITY_CONFIGS).map(([value, config]) => (
+                                  <option key={value} value={value}>
+                                    {config.icon} {config.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Stats */}
+                        {sourceStats && isEnabled && (
+                          <div className="grid grid-cols-3 gap-3 mb-3">
+                            <div className="text-center">
+                              <div className="text-lg font-semibold text-destructive">
+                                {sourceStats.dueToday}
+                              </div>
+                              <div className="text-xs text-muted-foreground">Due</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-lg font-semibold text-primary">
+                                {sourceStats.totalItems}
+                              </div>
+                              <div className="text-xs text-muted-foreground">Total</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-lg font-semibold text-green-600 dark:text-green-400">
+                                {(sourceStats.retentionRate * 100).toFixed(0)}%
+                              </div>
+                              <div className="text-xs text-muted-foreground">Rate</div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Priority Badge */}
+                        <div className="flex items-center justify-between">
+                          <div
+                            className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${priorityConfig.bgClass} ${priorityConfig.textClass}`}
+                          >
+                            <span>{priorityConfig.icon}</span>
+                            <span>{priorityConfig.label}</span>
+                          </div>
+
+                          {!priorityEditMode && isEnabled && (
+                            <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          )}
+                        </div>
+
+                        {/* Preview Items */}
+                        {sourceItems && sourceItems.items.length > 0 && isEnabled && !priorityEditMode && (
+                          <div className="mt-3 pt-3 border-t border-border">
+                            <div className="text-xs text-muted-foreground mb-2">Next items:</div>
+                            <div className="flex flex-wrap gap-1">
+                              {sourceItems.items.slice(0, 3).map((item, idx) => (
+                                <span
+                                  key={idx}
+                                  className="px-2 py-1 bg-background text-xs rounded"
+                                >
+                                  {item.content.primary}
+                                </span>
+                              ))}
+                              {sourceItems.items.length > 3 && (
+                                <span className="text-xs text-muted-foreground">
+                                  +{sourceItems.items.length - 3} more
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Disabled State */}
+                        {!isEnabled && (
+                          <div className="mt-3 pt-3 border-t border-border">
+                            <p className="text-xs text-muted-foreground text-center">Source disabled</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Notification Settings Modal */}
+          <AnimatePresence>
+            {showNotificationSettings && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+                onClick={() => setShowNotificationSettings(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-card border border-border rounded-lg shadow-lg p-6 max-w-md w-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-foreground">Notification Settings</h3>
+                    <button
+                      onClick={() => setShowNotificationSettings(false)}
+                      className="text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg p-1 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-foreground">Daily review reminders</span>
+                      <input
+                        type="checkbox"
+                        className="rounded border-border bg-background text-primary focus:ring-primary focus:ring-offset-0"
+                        defaultChecked
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-foreground">Golden time notifications</span>
+                      <input
+                        type="checkbox"
+                        className="rounded border-border bg-background text-primary focus:ring-primary focus:ring-offset-0"
+                        defaultChecked
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-foreground">Achievement alerts</span>
+                      <input
+                        type="checkbox"
+                        className="rounded border-border bg-background text-primary focus:ring-primary focus:ring-offset-0"
+                      />
+                    </div>
+
+                    {!hasSubscription && (
+                      <div className="mt-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                        <p className="text-sm text-primary">
+                          🔄 Upgrade for cross-device sync and advanced notification scheduling.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Insights Section */}
+          {aggregatedStats?.insights && (
+            <div className="px-4 pb-8">
+              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Learning Insights</h3>
+
+                <div className="space-y-3">
+                  {aggregatedStats.insights.recommendations.map((recommendation, idx) => (
+                    <div key={idx} className="flex items-start gap-3 p-3 bg-background rounded-lg">
+                      <div className="text-primary mt-0.5">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-foreground flex-1">{recommendation}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {aggregatedStats.insights.nextReviewEstimate && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-medium">Next review estimate:</span>{' '}
+                      {aggregatedStats.insights.nextReviewEstimate.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Bottom Spacing for Mobile Navigation */}
+          <div className="h-20"></div>
+        </div>
       </div>
     </div>
   );

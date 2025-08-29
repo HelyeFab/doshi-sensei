@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useFeature } from '@/hooks/useFeature';
 import { useSubscription2 } from '@/hooks/useSubscription2';
@@ -9,6 +9,7 @@ import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import KanjiProgressSummary from './components/KanjiProgressSummary';
 import ReviewDueAlert from './components/ReviewDueAlert';
 import { DesktopContainer } from '@/components/layout/DesktopContainer';
+import { useReviewNavigation } from '@/hooks/useReviewNavigation';
 
 const pageStructuredData = {
   "@context": "https://schema.org",
@@ -28,8 +29,17 @@ interface StudySettings {
 
 export default function KanjiMasteryDashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Check if we're in review mode from Review Hub
+  const isReviewMode = searchParams.get('mode') === 'review';
+  const returnTo = searchParams.get('returnTo') || '/review';
+  
   const { checkAndTrack, remaining } = useFeature('kanji_mastery');
   const { isPremium, userType } = useSubscription2();
+  
+  // Review navigation hook
+  const { getCurrentState, returnFromReview } = useReviewNavigation();
   
   // Define getMaxSessionSize first
   const getMaxSessionSize = () => {
@@ -59,6 +69,12 @@ export default function KanjiMasteryDashboard() {
   
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Handle completion callback (placeholder for when learn component calls back)
+  const handleReviewCompletion = (summary: any) => {
+    console.log('Kanji mastery review completed with summary:', summary);
+    // The learning component should call returnFromReview directly
+  };
 
   // Save settings to localStorage when they change
   useEffect(() => {
@@ -97,6 +113,12 @@ export default function KanjiMasteryDashboard() {
         approach: settings.learningApproach
       });
       
+      // Add review mode parameters if coming from review hub
+      if (isReviewMode) {
+        params.set('reviewMode', 'true');
+        params.set('returnTo', returnTo);
+      }
+      
       router.replace(`/tools/kanji-mastery/learn?${params}`);
     } catch (err) {
       console.error('Failed to start session:', err);
@@ -116,9 +138,9 @@ export default function KanjiMasteryDashboard() {
 
       {/* Smart Page Header - Outside DesktopContainer */}
       <SmartPageHeader 
-        title="Kanji Mastery"
+        title={isReviewMode ? "Kanji Mastery Review" : "Kanji Mastery"}
         showBack={true}
-        customBackUrl="/"
+        customBackUrl={isReviewMode ? returnTo : "/"}
       />
 
       <DesktopContainer>
@@ -139,7 +161,7 @@ export default function KanjiMasteryDashboard() {
         {/* Main Content */}
         <div className="px-4 space-y-6">
           {/* Reviews Due Alert */}
-          <ReviewDueAlert />
+          {!isReviewMode && <ReviewDueAlert />}
           {/* Quick Stats */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-card rounded-lg shadow-sm border border-border p-4">

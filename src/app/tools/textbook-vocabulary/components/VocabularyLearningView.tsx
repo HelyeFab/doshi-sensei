@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FilterPanel } from './FilterPanel';
 import { VocabularyGrid } from './VocabularyGrid';
@@ -21,16 +22,21 @@ import { UpgradeSlideUpModal } from '@/components/UpgradeSlideUpModal';
 import { TEXTBOOK_CONFIG } from '@/config/textbooks';
 import { useErrorNotification, ERROR_MESSAGES } from '@/hooks/useErrorNotification';
 import { RecentStudyTracker } from '@/utils/recentStudyTracker';
+import { useReviewCompletion } from '@/hooks/useReviewNavigation';
 
 interface VocabularyLearningViewProps {
   textbook: string;
   onBack: () => void;
   checkAndTrack: (feature: string) => Promise<boolean>;
+  isReviewMode?: boolean;
+  returnTo?: string;
+  onReviewCompletion?: (summary: any) => void;
 }
 
-export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: VocabularyLearningViewProps) {
+export function VocabularyLearningView({ textbook, onBack, checkAndTrack, isReviewMode = false, returnTo = '/', onReviewCompletion }: VocabularyLearningViewProps) {
+  const router = useRouter();
   const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'study' | 'golden-time' | 'learn'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'study' | 'golden-time' | 'learn'>(isReviewMode ? 'golden-time' : 'grid');
   const [progressRefreshKey, setProgressRefreshKey] = useState(0);
   const [selectedCard, setSelectedCard] = useState<VocabularyItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,6 +47,14 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
   
   // Error notification
   const { showError, ErrorNotificationDialog } = useErrorNotification();
+  
+  // Review completion handling
+  const [sessionStartTime] = useState(Date.now());
+  const { handleCompletion, isReviewMode: isInReviewMode } = useReviewCompletion(
+    (summary) => {
+      onReviewCompletion?.(summary);
+    }
+  );
   
   // Study session management
   const {
@@ -151,11 +165,31 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
   // Watch for study session ending
   useEffect(() => {
     if (!isStudying && viewMode === 'study') {
+      // Check if we completed a review session
+      if (isInReviewMode && sessionStats.studied > 0) {
+        // Calculate completion data
+        const itemsCompleted = sessionStats.studied;
+        const correctAnswers = sessionStats.correct;
+        
+        // Call completion handler which will auto-redirect
+        handleCompletion(
+          itemsCompleted,
+          correctAnswers,
+          sessionStartTime,
+          {
+            textbook,
+            viewMode: 'study',
+            source: 'textbook-vocabulary'
+          }
+        );
+        return;
+      }
+      
       setViewMode('grid');
       // Refresh progress tracker
       setProgressRefreshKey(prev => prev + 1);
     }
-  }, [isStudying, viewMode]);
+  }, [isStudying, viewMode, isInReviewMode, sessionStats, handleCompletion, sessionStartTime, textbook]);
 
   // Watch for study queue changes and switch to study view
   useEffect(() => {
@@ -224,9 +258,9 @@ export function VocabularyLearningView({ textbook, onBack, checkAndTrack }: Voca
         <div className="px-4 py-3">
           <div className="flex items-center gap-3">
             <button 
-              onClick={onBack}
+              onClick={isReviewMode ? () => router.push(returnTo) : onBack}
               className="p-2 rounded-lg hover:bg-muted transition-colors"
-              aria-label="Go back to textbook selection"
+              aria-label={isReviewMode ? "Return to Review Hub" : "Go back to textbook selection"}
             >
               <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

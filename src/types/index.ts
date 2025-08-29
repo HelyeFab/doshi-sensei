@@ -533,3 +533,6 @@ export interface DatabaseConfig {
     };
   };
 }
+
+// Re-export unified reviews types for easier access
+export * from './unified-reviews';

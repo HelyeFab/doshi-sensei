@@ -86,10 +86,12 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
 
   const coreLearningCards = [
     { title: 'Kanji', icon: '漢', href: '/kanji-browser', description: 'Browse and learn kanji' },
-    { title: 'Kanji Mastery', icon: '🎯', href: '/tools/kanji-mastery', description: 'Master kanji with SRS' },
+    // Review features now route through Review Hub
+    { title: 'Kanji Mastery', icon: '🎯', href: '/tools/kanji-mastery', description: 'Master kanji with SRS (Reviews via Review Hub)' },
     { title: 'Kanji Connections', icon: '🔮', href: '/tools/kanji-connections', description: 'Premium: Families, Radicals & Patterns' },
     { title: 'Mood Boards', icon: '🗺️', href: '/kanji-moods', description: 'Learn kanji by themes' },
-    { title: 'Textbook Vocab', icon: '📚', href: '/tools/textbook-vocabulary', description: 'Study textbook vocabulary' },
+    // Review features now route through Review Hub
+    { title: 'Textbook Vocab', icon: '📚', href: '/tools/textbook-vocabulary', description: 'Study textbook vocabulary (Reviews via Review Hub)' },
     { title: 'Word Learning', icon: '🧠', href: '/tools/word-learning-session', description: 'Interactive multimodal vocabulary' },
     { title: 'Vocabulary', icon: '📖', href: '/vocabulary', description: 'Explore Japanese vocabulary' },
     { title: 'Conjugation', icon: '🔤', href: '/practice/conjugation', description: 'Practice verb conjugations' }

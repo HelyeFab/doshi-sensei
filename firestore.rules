@@ -1409,6 +1409,41 @@ service cloud.firestore {
       }
     }
 
+    // Unified Reviews collection - Premium-only review consolidation system
+    match /unifiedReviews/{userId} {
+      // Only premium users (monthly/yearly) can read their own unified reviews
+      allow read: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+      
+      // Only premium users can create their unified reviews with validation
+      allow create: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.keys().hasAll(['userId', 'reviewPriorities', 'sessionStates', 
+          'completionStats', 'lastSyncTimestamp', 'customSchedules', 'createdAt', 'updatedAt']) &&
+        request.resource.data.userId == userId &&
+        request.resource.data.reviewPriorities is map &&
+        request.resource.data.sessionStates is map &&
+        request.resource.data.completionStats is map &&
+        request.resource.data.lastSyncTimestamp is timestamp &&
+        request.resource.data.customSchedules is map &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Only premium users can update their own unified reviews
+      allow update: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId) &&
+        request.resource.data.userId == userId &&
+        request.resource.data.updatedAt is timestamp;
+      
+      // Only premium users can delete their own unified reviews
+      allow delete: if request.auth != null && 
+        request.auth.uid == userId && 
+        isPremiumUser(userId);
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

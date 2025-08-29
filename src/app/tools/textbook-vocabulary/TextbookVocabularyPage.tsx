@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useStrings } from '@/contexts/LanguageContext';
 import { useFeature } from '@/hooks/useFeature';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,6 +10,7 @@ import { VocabularyLearningView } from './components/VocabularyLearningView';
 import { StructuredData } from '@/components/StructuredData';
 import { structuredData } from '@/utils/seo';
 import { useLearnTracking } from '@/hooks/useLearnTracking';
+import { useReviewNavigation } from '@/hooks/useReviewNavigation';
 
 const pageStructuredData = {
   "@context": "https://schema.org",
@@ -22,6 +24,16 @@ type Textbook = 'genki-1' | 'genki-2-complete' | 'minna-1' | 'minna-2' | 'kaishi
 
 export default function TextbookVocabularyPage() {
   const strings = useStrings();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Check if we're in review mode from Review Hub
+  const isReviewMode = searchParams.get('mode') === 'review';
+  const returnTo = searchParams.get('returnTo') || '/review';
+  
+  // Review navigation hook
+  const { getCurrentState, returnFromReview } = useReviewNavigation();
+  
   const { checkAndTrack } = useFeature('textbook_vocabulary', {
     showModal: true,
     showToast: true,
@@ -150,6 +162,12 @@ export default function TextbookVocabularyPage() {
     setTimeout(() => setIsLoading(false), 500);
   };
 
+  // Handle completion callback from VocabularyLearningView
+  const handleReviewCompletion = (summary: any) => {
+    console.log('Review completed with summary:', summary);
+    // The returnFromReview will be called by VocabularyLearningView
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <script
@@ -161,8 +179,8 @@ export default function TextbookVocabularyPage() {
 
       {!selectedTextbook && (
         <SmartPageHeader 
-          title="Textbook Vocabulary"
-          backHref="/"
+          title={isReviewMode ? "Textbook Vocabulary Review" : "Textbook Vocabulary"}
+          backHref={isReviewMode ? returnTo : "/"}
         />
       )}
 
@@ -306,6 +324,9 @@ export default function TextbookVocabularyPage() {
             textbook={selectedTextbook!} 
             onBack={() => setSelectedTextbook(null)}
             checkAndTrack={checkAndTrack}
+            isReviewMode={isReviewMode}
+            returnTo={returnTo}
+            onReviewCompletion={handleReviewCompletion}
           />
         )}
       </AnimatePresence>

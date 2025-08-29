@@ -80,11 +80,11 @@ export class TextbookVocabularySource implements ReviewSource {
         sourceId: this.id,
         contentType: ContentType.VOCABULARY,
         content: {
-          primary: item.word, // Japanese word
-          secondary: item.meanings.join(', '), // English meanings
+          primary: item.japanese, // Japanese word
+          secondary: item.meaning, // English meaning
           context: item.examples?.[0]?.japanese, // Example sentence
           formatted: {
-            primary: item.word,
+            primary: item.japanese,
             secondary: item.reading, // Furigana/reading
             context: item.examples?.[0]?.english // Example translation
           },
@@ -95,11 +95,10 @@ export class TextbookVocabularySource implements ReviewSource {
         availableStudyModes: [StudyMode.RECOGNITION, StudyMode.PRODUCTION, StudyMode.READING],
         metadata: {
           source: 'textbook-vocabulary',
-          tags: [item.textbook, item.chapter, ...(item.partOfSpeech || [])],
+          tags: [item.textbook, `lesson-${item.lesson}`, ...(item.partOfSpeech || [])],
           difficulty: item.difficulty || 5,
           properties: {
             textbook: item.textbook,
-            chapter: item.chapter,
             lesson: item.lesson,
             jlptLevel: item.jlptLevel,
             frequency: item.frequency,
@@ -214,11 +213,11 @@ export class TextbookVocabularySource implements ReviewSource {
         sourceId: this.id,
         contentType: ContentType.VOCABULARY,
         content: {
-          primary: item.word,
-          secondary: item.meanings.join(', '),
+          primary: item.japanese,
+          secondary: item.meaning,
           context: item.examples?.[0]?.japanese,
           formatted: {
-            primary: item.word,
+            primary: item.japanese,
             secondary: item.reading,
             context: item.examples?.[0]?.english
           }
@@ -228,11 +227,10 @@ export class TextbookVocabularySource implements ReviewSource {
         availableStudyModes: [StudyMode.RECOGNITION, StudyMode.PRODUCTION, StudyMode.READING],
         metadata: {
           source: 'textbook-vocabulary',
-          tags: [item.textbook, item.chapter],
+          tags: [item.textbook, `lesson-${item.lesson}`],
           difficulty: item.difficulty || 5,
           properties: {
             textbook: item.textbook,
-            chapter: item.chapter,
             lesson: item.lesson
           }
         },
@@ -259,11 +257,11 @@ export class TextbookVocabularySource implements ReviewSource {
         sourceId: this.id,
         contentType: ContentType.VOCABULARY,
         content: {
-          primary: item.word,
-          secondary: item.meanings.join(', '),
+          primary: item.japanese,
+          secondary: item.meaning,
           context: item.examples?.[0]?.japanese,
           formatted: {
-            primary: item.word,
+            primary: item.japanese,
             secondary: item.reading,
             context: item.examples?.[0]?.english
           }
@@ -273,11 +271,10 @@ export class TextbookVocabularySource implements ReviewSource {
         availableStudyModes: [StudyMode.RECOGNITION, StudyMode.PRODUCTION, StudyMode.READING],
         metadata: {
           source: 'textbook-vocabulary',
-          tags: [item.textbook, item.chapter],
+          tags: [item.textbook, `lesson-${item.lesson}`],
           difficulty: item.difficulty || 5,
           properties: {
             textbook: item.textbook,
-            chapter: item.chapter,
             lesson: item.lesson
           }
         },
@@ -315,11 +312,6 @@ export class TextbookVocabularySource implements ReviewSource {
     // Adjust based on difficulty
     if (item.difficulty) {
       priority += Math.floor(item.difficulty / 2);
-    }
-
-    // Adjust based on retention rate
-    if (item.retentionRate < 60) {
-      priority += 2;
     }
 
     // Adjust based on JLPT level (higher level = higher priority)

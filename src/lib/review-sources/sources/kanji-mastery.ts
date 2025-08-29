@@ -17,6 +17,10 @@ import {
 } from '../review-source.interface';
 import { ContentType, StudyMode } from '@/lib/unified-review/types';
 import { REVIEW_SOURCE_CONFIGS } from '../constants';
+import { DataSyncService, getDataSyncService } from '@/services/kanji-mastery/dataSyncService';
+import { ReviewQueueService, QueueOptions } from '@/services/kanji-mastery/reviewQueueService';
+import { Rating } from '@/services/kanji-mastery/fsrsAlgorithm';
+import { State } from '@/services/kanji-mastery/types';
 
 export class KanjiMasterySource implements ReviewSource {
   readonly id = 'kanji-mastery';
@@ -32,11 +36,23 @@ export class KanjiMasterySource implements ReviewSource {
   };
 
   private initialized = false;
+  private dataSyncService: DataSyncService;
+  private reviewQueueService: ReviewQueueService;
 
   constructor(
     private userId: string | null,
     public config: SourceConfig = REVIEW_SOURCE_CONFIGS[ReviewSourceType.KANJI_MASTERY].defaultConfig
-  ) {}
+  ) {
+    // Initialize services only on client side
+    if (typeof window !== 'undefined') {
+      this.dataSyncService = getDataSyncService();
+      this.reviewQueueService = new ReviewQueueService(this.dataSyncService);
+    } else {
+      // Server-side fallback
+      this.dataSyncService = {} as DataSyncService;
+      this.reviewQueueService = {} as ReviewQueueService;
+    }
+  }
 
   get status(): SourceStatus {
     if (!this.initialized) return SourceStatus.DISABLED;
@@ -45,10 +61,20 @@ export class KanjiMasterySource implements ReviewSource {
 
   async init(): Promise<void> {
     try {
-      // Initialize kanji mastery system
-      // In a real implementation, this would connect to the actual kanji mastery service
+      // Only initialize on client side
+      if (typeof window === 'undefined') {
+        console.warn('[KanjiMasterySource] Server-side environment detected, marking as initialized');
+        this.initialized = true;
+        return;
+      }
+
+      // Initialize data sync service (it's already initialized in constructor)
+      // The DataSyncService handles its own initialization
       this.initialized = true;
+      
+      console.log('[KanjiMasterySource] Successfully initialized kanji mastery source');
     } catch (error) {
+      console.error('[KanjiMasterySource] Failed to initialize:', error);
       throw new Error(`Failed to initialize kanji mastery source: ${error}`);
     }
   }
@@ -63,59 +89,74 @@ export class KanjiMasterySource implements ReviewSource {
       throw new Error('Source not initialized');
     }
 
+    if (!this.userId) {
+      console.warn('[KanjiMasterySource] No user ID provided, returning empty due items');
+      return [];
+    }
+
     try {
       const limit = Math.min(options?.limit || 50, this.config.maxItems || 50);
       
-      // Mock data - in real implementation, this would fetch from IndexedDB/Firebase
-      const mockKanjiItems = this.getMockKanjiItems();
-      const dueItems = mockKanjiItems
-        .filter(item => new Date(item.dueDate) <= new Date())
-        .slice(0, limit);
-
-      return dueItems.map((item): ReviewItem => ({
-        id: item.id,
-        sourceId: this.id,
-        contentType: ContentType.KANJI,
-        content: {
-          primary: item.character, // The kanji character
-          secondary: item.meanings.join(', '), // English meanings
-          context: item.examples?.[0]?.word, // Example word
-          formatted: {
-            primary: item.character,
-            secondary: item.readings.join(', '), // Readings
-            context: item.examples?.[0]?.meaning // Example meaning
-          }
-        },
-        dueDate: new Date(item.dueDate),
-        priority: this.calculateItemPriority(item),
-        availableStudyModes: [
-          StudyMode.RECOGNITION, 
-          StudyMode.PRODUCTION, 
-          StudyMode.READING
-        ],
-        metadata: {
-          source: 'kanji-mastery',
-          tags: [
-            `grade-${item.grade}`,
-            item.jlptLevel || 'no-jlpt',
-            `strokes-${item.strokes}`
+      // Get due items from review queue service
+      const queueOptions: QueueOptions = {
+        maxCards: limit,
+        prioritizeOverdue: true
+      };
+      
+      const dueQueueItems = await this.reviewQueueService.generateQueue(this.userId, queueOptions);
+      
+      // Convert queue items to ReviewItems
+      return dueQueueItems.map((queueItem): ReviewItem => {
+        // Calculate priority based on overdue status and JLPT level
+        const priority = this.calculateQueueItemPriority(queueItem);
+        
+        return {
+          id: `${this.id}-${queueItem.kanjiChar}`,
+          sourceId: this.id,
+          contentType: ContentType.KANJI,
+          content: {
+            primary: queueItem.kanjiChar,
+            secondary: `Difficulty: ${queueItem.difficulty.toFixed(1)}`,
+            context: `JLPT N${queueItem.metadata.jlptLevel}`,
+            formatted: {
+              primary: queueItem.kanjiChar,
+              secondary: `${queueItem.reps} reviews, ${queueItem.lapses} lapses`,
+              context: `${queueItem.metadata.strokeCount} strokes`
+            }
+          },
+          dueDate: new Date(queueItem.dueDate),
+          priority,
+          availableStudyModes: [
+            StudyMode.RECOGNITION,
+            StudyMode.PRODUCTION,
+            StudyMode.READING
           ],
-          difficulty: item.difficulty || 5,
-          properties: {
-            character: item.character,
-            grade: item.grade,
-            jlptLevel: item.jlptLevel,
-            strokes: item.strokes,
-            onyomi: item.readings.filter(r => r.type === 'onyomi').map(r => r.reading),
-            kunyomi: item.readings.filter(r => r.type === 'kunyomi').map(r => r.reading),
-            radicals: item.radicals
-          }
-        },
-        createdAt: new Date(item.createdAt),
-        updatedAt: new Date(item.updatedAt)
-      }));
+          metadata: {
+            source: { type: 'kanji-mastery' },
+            tags: [
+              `jlpt-n${queueItem.metadata.jlptLevel}`,
+              `strokes-${queueItem.metadata.strokeCount}`,
+              `state-${queueItem.state}`,
+              queueItem.lapses > 0 ? 'has-lapses' : 'no-lapses'
+            ],
+            difficulty: queueItem.difficulty,
+            properties: {
+              character: queueItem.kanjiChar,
+              state: queueItem.state,
+              reps: queueItem.reps,
+              lapses: queueItem.lapses,
+              stability: queueItem.stability,
+              jlptLevel: queueItem.metadata.jlptLevel,
+              strokeCount: queueItem.metadata.strokeCount,
+              frequency: queueItem.metadata.frequency
+            }
+          },
+          createdAt: new Date(), // Approximate creation date
+          updatedAt: queueItem.lastReview ? new Date(queueItem.lastReview) : new Date()
+        };
+      });
     } catch (error) {
-      console.error('Failed to get due items from kanji mastery:', error);
+      console.error('[KanjiMasterySource] Failed to get due items:', error);
       return [];
     }
   }
@@ -125,52 +166,108 @@ export class KanjiMasterySource implements ReviewSource {
       return this.getEmptyStats();
     }
 
-    try {
-      // Mock stats - in real implementation, this would calculate from actual data
-      const mockStats = {
-        totalItems: 247,
-        dueToday: 15,
-        overdue: 3,
-        scheduled: 180,
-        newItems: 49,
-        averageRetention: 78,
-        studyStreak: 5,
-        lastSession: Date.now() - 86400000 // Yesterday
-      };
+    if (!this.userId) {
+      console.warn('[KanjiMasterySource] No user ID provided, returning empty stats');
+      return this.getEmptyStats();
+    }
 
+    try {
+      // Get real stats from data sync service
+      const [userStats, dueCount, allProgress] = await Promise.all([
+        this.dataSyncService.getUserStats(this.userId),
+        this.reviewQueueService.getDueCount(this.userId),
+        this.dataSyncService.getAllProgressLocal(this.userId)
+      ]);
+
+      const totalItems = allProgress.length;
+      const dueToday = dueCount.new + dueCount.learning + dueCount.review;
+      
+      // Calculate overdue items (due before today)
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const overdue = allProgress.filter(item => {
+        const dueDate = new Date(item.fsrs?.dueDate || item.dueDate);
+        return dueDate < startOfToday;
+      }).length;
+      
+      // Calculate scheduled items (future due dates)
+      const scheduled = allProgress.filter(item => {
+        const dueDate = new Date(item.fsrs?.dueDate || item.dueDate);
+        return dueDate > now;
+      }).length;
+      
+      // Count items by state
+      const newItems = allProgress.filter(item => 
+        (item.fsrs?.state === undefined && !item.fsrs?.repetition) ||
+        item.state === State.New
+      ).length;
+      
+      // Calculate retention rate from user stats
+      const retentionRate = userStats.totalReviews > 0 ? userStats.accuracy : 0;
+      
+      // Count items by priority (based on difficulty and overdue status)
+      const itemsByPriority = {
+        [SourcePriority.LOW]: 0,
+        [SourcePriority.MEDIUM]: 0,
+        [SourcePriority.HIGH]: 0,
+        [SourcePriority.URGENT]: 0
+      };
+      
+      allProgress.forEach(item => {
+        const difficulty = item.fsrs?.difficulty || item.difficulty || 5;
+        const dueDate = new Date(item.fsrs?.dueDate || item.dueDate || now);
+        const isOverdue = dueDate < now;
+        const hoursOverdue = isOverdue ? (now.getTime() - dueDate.getTime()) / (1000 * 60 * 60) : 0;
+        
+        if (hoursOverdue > 24 || difficulty > 8) {
+          itemsByPriority[SourcePriority.URGENT]++;
+        } else if (isOverdue || difficulty > 6) {
+          itemsByPriority[SourcePriority.HIGH]++;
+        } else if (difficulty > 4) {
+          itemsByPriority[SourcePriority.MEDIUM]++;
+        } else {
+          itemsByPriority[SourcePriority.LOW]++;
+        }
+      });
+      
+      // Calculate study streak (simplified - would need session history for accurate count)
+      const studyStreak = userStats.totalReviews > 0 ? Math.min(userStats.totalReviews, 30) : 0;
+      
+      // Estimate last review session from most recent update
+      const lastReviewSession = allProgress.length > 0 
+        ? new Date(Math.max(...allProgress.map(item => 
+            item.localModified || item.serverModified || Date.now() - 86400000
+          )))
+        : new Date(Date.now() - 86400000);
+      
       return {
-        totalItems: mockStats.totalItems,
-        dueToday: mockStats.dueToday,
-        overdue: mockStats.overdue,
-        scheduled: mockStats.scheduled,
-        newItems: mockStats.newItems,
+        totalItems,
+        dueToday,
+        overdue,
+        scheduled,
+        newItems,
         itemsByType: {
-          [ContentType.KANJI]: mockStats.totalItems - 20,
-          [ContentType.RADICAL]: 20,
+          [ContentType.KANJI]: totalItems,
+          [ContentType.RADICAL]: 0, // Could be enhanced to track radicals separately
           [ContentType.VOCABULARY]: 0,
           [ContentType.FLASHCARD]: 0,
           [ContentType.GRAMMAR]: 0,
           [ContentType.SENTENCE]: 0,
           [ContentType.CUSTOM]: 0
         },
-        itemsByPriority: {
-          [SourcePriority.LOW]: Math.floor(mockStats.totalItems * 0.2),
-          [SourcePriority.MEDIUM]: Math.floor(mockStats.totalItems * 0.5),
-          [SourcePriority.HIGH]: Math.floor(mockStats.totalItems * 0.25),
-          [SourcePriority.URGENT]: Math.floor(mockStats.totalItems * 0.05)
-        },
-        averageMastery: mockStats.averageRetention,
-        retentionRate: mockStats.averageRetention / 100,
-        lastReviewSession: new Date(mockStats.lastSession),
-        studyStreak: mockStats.studyStreak,
+        itemsByPriority,
+        averageMastery: Math.round(retentionRate * 100),
+        retentionRate,
+        lastReviewSession,
+        studyStreak,
         trends: {
-          accuracy: 'improving',
-          speed: 'stable',
-          retention: 'improving'
+          accuracy: retentionRate > 0.8 ? 'improving' : retentionRate > 0.6 ? 'stable' : 'declining',
+          speed: userStats.averageResponseTime < 3000 ? 'improving' : 'declining',
+          retention: retentionRate > 0.75 ? 'improving' : 'stable'
         }
       };
     } catch (error) {
-      console.error('Failed to get kanji mastery stats:', error);
+      console.error('[KanjiMasterySource] Failed to get stats:', error);
       return this.getEmptyStats();
     }
   }
@@ -184,11 +281,37 @@ export class KanjiMasterySource implements ReviewSource {
       throw new Error('Source not initialized');
     }
 
+    if (!this.userId) {
+      throw new Error('User ID required for processing reviews');
+    }
+
     try {
-      // In real implementation, this would update the FSRS algorithm state
-      console.log(`Processing kanji review for ${itemId}:`, result);
+      // Extract kanji character from itemId (format: "kanji-mastery-漢")
+      const kanjiChar = itemId.replace(`${this.id}-`, '');
+      
+      if (!kanjiChar) {
+        throw new Error(`Invalid item ID format: ${itemId}`);
+      }
+      
+      // Convert ReviewResult to FSRS Rating
+      const rating = this.convertResultToRating(result);
+      
+      // Process the review using the review queue service
+      const updatedItem = await this.reviewQueueService.processReview(
+        this.userId,
+        kanjiChar,
+        rating,
+        result.responseTime || 3000 // Default 3 seconds if not provided
+      );
+      
+      console.log(`[KanjiMasterySource] Successfully processed review for ${kanjiChar}:`, {
+        rating,
+        newDueDate: updatedItem.dueDate,
+        newState: updatedItem.state,
+        difficulty: updatedItem.difficulty
+      });
     } catch (error) {
-      console.error('Failed to process kanji mastery review:', error);
+      console.error('[KanjiMasterySource] Failed to process review:', error);
       throw error;
     }
   }
@@ -201,38 +324,78 @@ export class KanjiMasterySource implements ReviewSource {
       return [];
     }
 
+    if (!this.userId) {
+      console.warn('[KanjiMasterySource] No user ID provided, returning empty search results');
+      return [];
+    }
+
     try {
-      const mockItems = this.getMockKanjiItems();
-      const results = mockItems
-        .filter(item => 
-          item.character.includes(query) ||
-          item.meanings.some(m => m.toLowerCase().includes(query.toLowerCase())) ||
-          item.readings.some(r => r.reading.includes(query))
-        )
+      // Get all progress items for the user
+      const allProgress = await this.dataSyncService.getAllProgressLocal(this.userId);
+      
+      // Filter items based on query
+      const results = allProgress
+        .filter(item => {
+          const kanjiChar = item.kanjiChar || item.char || '';
+          return kanjiChar.includes(query) || 
+                 kanjiChar === query; // Exact match for kanji
+        })
         .slice(0, options?.limit || 20);
 
-      return results.map((item): ReviewItem => ({
-        id: item.id,
-        sourceId: this.id,
-        contentType: ContentType.KANJI,
-        content: {
-          primary: item.character,
-          secondary: item.meanings.join(', '),
-          context: item.examples?.[0]?.word
-        },
-        dueDate: new Date(item.dueDate),
-        priority: this.calculateItemPriority(item),
-        availableStudyModes: [StudyMode.RECOGNITION, StudyMode.PRODUCTION, StudyMode.READING],
-        metadata: {
-          source: 'kanji-mastery',
-          tags: [`grade-${item.grade}`, item.jlptLevel || 'no-jlpt'],
-          difficulty: item.difficulty || 5
-        },
-        createdAt: new Date(item.createdAt),
-        updatedAt: new Date(item.updatedAt)
-      }));
+      // Convert to ReviewItem format
+      return results.map((item): ReviewItem => {
+        const kanjiChar = item.kanjiChar || item.char || '';
+        const queueItem = {
+          kanjiChar,
+          state: item.state || State.New,
+          dueDate: item.fsrs?.dueDate || item.dueDate || new Date().toISOString(),
+          scheduledDays: item.fsrs?.scheduledDays || 0,
+          elapsedDays: item.fsrs?.elapsedDays || 0,
+          reps: item.fsrs?.repetition || 0,
+          lapses: item.fsrs?.lapses || 0,
+          difficulty: item.fsrs?.difficulty || 5,
+          stability: item.fsrs?.stability || 0,
+          lastReview: item.fsrs?.lastReview || null,
+          metadata: item.metadata || {
+            jlptLevel: 5,
+            strokeCount: 4,
+            frequency: 5
+          }
+        };
+        
+        return {
+          id: `${this.id}-${kanjiChar}`,
+          sourceId: this.id,
+          contentType: ContentType.KANJI,
+          content: {
+            primary: kanjiChar,
+            secondary: `Difficulty: ${queueItem.difficulty.toFixed(1)}`,
+            context: `JLPT N${queueItem.metadata.jlptLevel}`
+          },
+          dueDate: new Date(queueItem.dueDate),
+          priority: this.calculateQueueItemPriority(queueItem),
+          availableStudyModes: [StudyMode.RECOGNITION, StudyMode.PRODUCTION, StudyMode.READING],
+          metadata: {
+            source: { type: 'kanji-mastery' },
+            tags: [
+              `jlpt-n${queueItem.metadata.jlptLevel}`,
+              `strokes-${queueItem.metadata.strokeCount}`,
+              `state-${queueItem.state}`
+            ],
+            difficulty: queueItem.difficulty,
+            properties: {
+              character: kanjiChar,
+              state: queueItem.state,
+              reps: queueItem.reps,
+              lapses: queueItem.lapses
+            }
+          },
+          createdAt: new Date(),
+          updatedAt: queueItem.lastReview ? new Date(queueItem.lastReview) : new Date()
+        };
+      });
     } catch (error) {
-      console.error('Failed to search kanji mastery:', error);
+      console.error('[KanjiMasterySource] Failed to search items:', error);
       return [];
     }
   }
@@ -242,40 +405,89 @@ export class KanjiMasterySource implements ReviewSource {
       return null;
     }
 
+    if (!this.userId) {
+      console.warn('[KanjiMasterySource] No user ID provided for getItem');
+      return null;
+    }
+
     try {
-      const mockItems = this.getMockKanjiItems();
-      const item = mockItems.find(i => i.id === itemId);
+      // Extract kanji character from itemId (format: "kanji-mastery-漢")
+      const kanjiChar = itemId.replace(`${this.id}-`, '');
       
-      if (!item) return null;
+      if (!kanjiChar) {
+        console.error(`[KanjiMasterySource] Invalid item ID format: ${itemId}`);
+        return null;
+      }
+      
+      // Get card data from data sync service
+      const cardData = await this.dataSyncService.getCard(this.userId, kanjiChar);
+      
+      if (!cardData) {
+        console.warn(`[KanjiMasterySource] Card not found: ${kanjiChar}`);
+        return null;
+      }
+
+      // Convert to queue item format for consistency
+      const queueItem = {
+        kanjiChar: cardData.kanjiChar || kanjiChar,
+        state: cardData.state || State.New,
+        dueDate: cardData.fsrs?.dueDate || cardData.dueDate || new Date().toISOString(),
+        scheduledDays: cardData.fsrs?.scheduledDays || 0,
+        elapsedDays: cardData.fsrs?.elapsedDays || 0,
+        reps: cardData.fsrs?.repetition || 0,
+        lapses: cardData.fsrs?.lapses || 0,
+        difficulty: cardData.fsrs?.difficulty || 5,
+        stability: cardData.fsrs?.stability || 0,
+        lastReview: cardData.fsrs?.lastReview || null,
+        metadata: cardData.metadata || {
+          jlptLevel: 5,
+          strokeCount: 4,
+          frequency: 5
+        }
+      };
 
       return {
-        id: item.id,
+        id: itemId,
         sourceId: this.id,
         contentType: ContentType.KANJI,
         content: {
-          primary: item.character,
-          secondary: item.meanings.join(', '),
-          context: item.examples?.[0]?.word
-        },
-        dueDate: new Date(item.dueDate),
-        priority: this.calculateItemPriority(item),
-        availableStudyModes: [StudyMode.RECOGNITION, StudyMode.PRODUCTION, StudyMode.READING],
-        metadata: {
-          source: 'kanji-mastery',
-          tags: [`grade-${item.grade}`, item.jlptLevel || 'no-jlpt'],
-          difficulty: item.difficulty || 5,
-          properties: {
-            character: item.character,
-            grade: item.grade,
-            jlptLevel: item.jlptLevel,
-            strokes: item.strokes
+          primary: kanjiChar,
+          secondary: `Difficulty: ${queueItem.difficulty.toFixed(1)}`,
+          context: `JLPT N${queueItem.metadata.jlptLevel}`,
+          formatted: {
+            primary: kanjiChar,
+            secondary: `${queueItem.reps} reviews, ${queueItem.lapses} lapses`,
+            context: `${queueItem.metadata.strokeCount} strokes`
           }
         },
-        createdAt: new Date(item.createdAt),
-        updatedAt: new Date(item.updatedAt)
+        dueDate: new Date(queueItem.dueDate),
+        priority: this.calculateQueueItemPriority(queueItem),
+        availableStudyModes: [StudyMode.RECOGNITION, StudyMode.PRODUCTION, StudyMode.READING],
+        metadata: {
+          source: { type: 'kanji-mastery' },
+          tags: [
+            `jlpt-n${queueItem.metadata.jlptLevel}`,
+            `strokes-${queueItem.metadata.strokeCount}`,
+            `state-${queueItem.state}`,
+            queueItem.lapses > 0 ? 'has-lapses' : 'no-lapses'
+          ],
+          difficulty: queueItem.difficulty,
+          properties: {
+            character: kanjiChar,
+            state: queueItem.state,
+            reps: queueItem.reps,
+            lapses: queueItem.lapses,
+            stability: queueItem.stability,
+            jlptLevel: queueItem.metadata.jlptLevel,
+            strokeCount: queueItem.metadata.strokeCount,
+            frequency: queueItem.metadata.frequency
+          }
+        },
+        createdAt: new Date(), // Approximate creation date
+        updatedAt: queueItem.lastReview ? new Date(queueItem.lastReview) : new Date()
       };
     } catch (error) {
-      console.error('Failed to get kanji mastery item:', error);
+      console.error('[KanjiMasterySource] Failed to get item:', error);
       return null;
     }
   }
@@ -288,100 +500,58 @@ export class KanjiMasterySource implements ReviewSource {
     this.initialized = false;
   }
 
-  private getMockKanjiItems() {
-    // Mock data representing kanji items
-    return [
-      {
-        id: 'kanji-1',
-        character: '人',
-        meanings: ['person', 'people'],
-        readings: [
-          { type: 'onyomi', reading: 'ジン' },
-          { type: 'onyomi', reading: 'ニン' },
-          { type: 'kunyomi', reading: 'ひと' }
-        ],
-        grade: 1,
-        jlptLevel: 'N5',
-        strokes: 2,
-        radicals: ['人'],
-        examples: [
-          { word: '人間', reading: 'にんげん', meaning: 'human being' }
-        ],
-        dueDate: Date.now() - 3600000, // 1 hour ago
-        difficulty: 3,
-        createdAt: Date.now() - 86400000 * 30,
-        updatedAt: Date.now() - 86400000
-      },
-      {
-        id: 'kanji-2',
-        character: '水',
-        meanings: ['water'],
-        readings: [
-          { type: 'onyomi', reading: 'スイ' },
-          { type: 'kunyomi', reading: 'みず' }
-        ],
-        grade: 1,
-        jlptLevel: 'N5',
-        strokes: 4,
-        radicals: ['水'],
-        examples: [
-          { word: '水曜日', reading: 'すいようび', meaning: 'Wednesday' }
-        ],
-        dueDate: Date.now() + 3600000, // In 1 hour
-        difficulty: 4,
-        createdAt: Date.now() - 86400000 * 25,
-        updatedAt: Date.now() - 86400000 * 2
-      },
-      {
-        id: 'kanji-3',
-        character: '学',
-        meanings: ['learning', 'study', 'school'],
-        readings: [
-          { type: 'onyomi', reading: 'ガク' },
-          { type: 'kunyomi', reading: 'まな' }
-        ],
-        grade: 1,
-        jlptLevel: 'N5',
-        strokes: 8,
-        radicals: ['学'],
-        examples: [
-          { word: '学校', reading: 'がっこう', meaning: 'school' }
-        ],
-        dueDate: Date.now() - 7200000, // 2 hours ago
-        difficulty: 5,
-        createdAt: Date.now() - 86400000 * 20,
-        updatedAt: Date.now() - 86400000 * 3
-      }
-    ];
+  /**
+   * Convert ReviewResult to FSRS Rating
+   */
+  private convertResultToRating(result: ReviewResult): Rating {
+    // Map rating (1-4) to FSRS ratings
+    // ReviewResult.rating: 1=Again, 2=Hard, 3=Good, 4=Easy
+    switch (result.rating) {
+      case 4:
+        return Rating.EASY;
+      case 3:
+        return Rating.GOOD;
+      case 2:
+        return Rating.HARD;
+      case 1:
+      default:
+        return Rating.AGAIN;
+    }
   }
 
-  private calculateItemPriority(item: any): number {
+  /**
+   * Calculate priority for queue items
+   */
+  private calculateQueueItemPriority(queueItem: any): number {
     let priority = 5; // Base priority
 
     // Increase priority for overdue items
-    if (new Date(item.dueDate) < new Date()) {
-      const hoursOverdue = (Date.now() - new Date(item.dueDate).getTime()) / (1000 * 60 * 60);
+    const now = new Date();
+    const dueDate = new Date(queueItem.dueDate);
+    if (dueDate < now) {
+      const hoursOverdue = (now.getTime() - dueDate.getTime()) / (1000 * 60 * 60);
       priority += Math.min(3, Math.floor(hoursOverdue / 24));
     }
 
     // Adjust based on difficulty
-    if (item.difficulty) {
-      priority += Math.floor(item.difficulty / 3);
+    if (queueItem.difficulty) {
+      priority += Math.floor(queueItem.difficulty / 3);
     }
 
-    // Adjust based on grade (elementary kanji get higher priority)
-    if (item.grade && item.grade <= 6) {
-      priority += Math.max(0, 7 - item.grade);
+    // Adjust based on JLPT level (lower levels get higher priority)
+    const jlptPriority = { 5: 3, 4: 2, 3: 1, 2: 0, 1: 0 };
+    if (queueItem.metadata?.jlptLevel) {
+      priority += jlptPriority[queueItem.metadata.jlptLevel as keyof typeof jlptPriority] || 0;
     }
 
-    // Adjust based on JLPT level
-    const jlptPriority = { 'N5': 3, 'N4': 2, 'N3': 1, 'N2': 0, 'N1': 0 };
-    if (item.jlptLevel) {
-      priority += jlptPriority[item.jlptLevel as keyof typeof jlptPriority] || 0;
+    // Increase priority for items with lapses (struggling kanji)
+    if (queueItem.lapses > 0) {
+      priority += Math.min(2, queueItem.lapses);
     }
 
     return Math.min(10, Math.max(1, priority));
   }
+
 
   private getEmptyStats(): SourceStats {
     return {

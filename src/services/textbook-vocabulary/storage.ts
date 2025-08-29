@@ -266,11 +266,7 @@ class TextbookVocabularyStorage {
     });
   }
 
-  // Helper Methods
-  private async isPremiumUser(): Promise<boolean> {
-    // TODO: Implement premium check logic
-    return false;
-  }
+  // Helper Methods (isPremiumUser method already exists above)
 
   // Firebase Sync Methods
   private async syncProgressToFirebase(progress: VocabularyProgress): Promise<void> {

@@ -289,6 +289,32 @@ export function createMockReviewSource(
 }
 
 // ============================================================================
+// Source Initialization
+// ============================================================================
+
+export {
+  initializeAllReviewSources,
+  initializeSpecificReviewSources,
+  registerSingleSource,
+  createSource,
+  getSourceConfig,
+  getAllAvailableSourceIds,
+  isSourceAvailable,
+  
+  // Source factory functions
+  createTextbookVocabularySource,
+  createKanjiMasterySource,
+  createFlashcardsSource,
+  createHiraganaKatakanaSource,
+  createArticlesSource,
+  createStoriesSource,
+  createMoodboardSource,
+  createDictionarySource,
+  createConjugationsSource,
+  createDrillsSource
+} from './sources';
+
+// ============================================================================
 // Default Export
 // ============================================================================
 

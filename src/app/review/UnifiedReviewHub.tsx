@@ -21,10 +21,8 @@ import {
 } from '@/lib/review-sources/constants';
 import { ContentType, StudyMode } from '@/lib/unified-review/types';
 
-// Mock implementations for review sources (would be actual implementations)
-import { createTextbookVocabularySource } from '@/lib/review-sources/sources/textbook-vocabulary';
-import { createKanjiMasterySource } from '@/lib/review-sources/sources/kanji-mastery';
-import { createFlashcardsSource } from '@/lib/review-sources/sources/flashcards';
+// Import all review sources - now connected to REAL data
+import { initializeAllReviewSources } from '@/lib/review-sources/sources';
 
 interface UnifiedReviewHubProps {
   className?: string;
@@ -62,29 +60,46 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
       try {
         setLoading(true);
         
-        // Create registry instance
-        const registryInstance = ReviewSourceRegistry.getInstance({
-          debug: process.env.NODE_ENV === 'development'
+        // Initialize ALL review sources with real data connections
+        // This now includes:
+        // - Kanji Mastery (FSRS algorithm)
+        // - Textbook Vocabulary (Genki/Minna)
+        // - Flashcards (Firebase)
+        // - Hiragana/Katakana practice
+        // - Articles reading history
+        // - Stories progress
+        // - Moodboard studies
+        // - Dictionary lookups
+        // - Conjugation practice
+        // - Drill completions
+        const registryInstance = await initializeAllReviewSources(user?.uid, {
+          debug: process.env.NODE_ENV === 'development',
+          enabledSources: [
+            'kanji-mastery',
+            'textbook-vocabulary',
+            'flashcards',
+            'hiragana-katakana',
+            'articles',
+            'stories',
+            'moodboard',
+            'dictionary',
+            'conjugations',
+            'drills'
+          ],
+          // Set default priorities for each source
+          priorities: {
+            'kanji-mastery': SourcePriority.HIGH,
+            'textbook-vocabulary': SourcePriority.HIGH,
+            'flashcards': SourcePriority.MEDIUM,
+            'hiragana-katakana': SourcePriority.HIGH,
+            'articles': SourcePriority.MEDIUM,
+            'stories': SourcePriority.MEDIUM,
+            'moodboard': SourcePriority.LOW,
+            'dictionary': SourcePriority.MEDIUM,
+            'conjugations': SourcePriority.MEDIUM,
+            'drills': SourcePriority.HIGH
+          }
         });
-
-        // Register available sources
-        await registryInstance.register(
-          await createTextbookVocabularySource(user?.uid),
-          SourcePriority.HIGH
-        );
-        
-        await registryInstance.register(
-          await createKanjiMasterySource(user?.uid),
-          SourcePriority.HIGH
-        );
-        
-        await registryInstance.register(
-          await createFlashcardsSource(user?.uid),
-          SourcePriority.MEDIUM
-        );
-
-        // Initialize the registry
-        await registryInstance.init();
         
         setRegistry(registryInstance);
       } catch (err) {

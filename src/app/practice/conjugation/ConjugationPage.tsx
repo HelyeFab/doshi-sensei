@@ -298,30 +298,31 @@ function WordSelector({
     <div>
       {/* Search */}
       <form onSubmit={handleSubmit} className="mb-4">
-        <div className="flex gap-2">
+        <div className="relative md:flex md:gap-2">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchTermChange(e.target.value)}
             placeholder={strings.vocab.searchPlaceholder}
-            className="flex-1 px-4 py-3 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full md:flex-1 px-4 py-3 pr-12 md:pr-4 rounded-lg border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
           
+          {/* Mobile: Icon button inside input */}
           <button
             type="submit"
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium flex items-center justify-center"
+            className="md:hidden absolute top-1/2 right-3 -translate-y-1/2 p-2 rounded-full hover:bg-muted transition-colors"
+            style={{ lineHeight: 0 }}
+            aria-label="Search"
           >
-            <svg
-              className="w-5 h-5 md:hidden"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-            <span className="hidden md:inline">Search</span>
+            <img src="/flat-icons/root-icons/magnifying-glass.svg" alt="Search" className="w-6 h-6" />
+          </button>
+          
+          {/* Desktop: Separate button */}
+          <button
+            type="submit"
+            className="hidden md:flex px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium items-center justify-center"
+          >
+            <span>Search</span>
           </button>
         </div>
       </form>
@@ -666,7 +667,7 @@ function WordCard({ word, onSelect }: WordCardProps) {
           )}
 
           {isConjugable && (
-            <div className="flex items-center gap-2 p-2 bg-success/10 border border-success/20 rounded text-xs text-success">
+            <div className="flex items-center gap-2 p-2 bg-primary/10 border border-primary/20 rounded text-xs text-primary">
               <svg
                 className="w-3 h-3"
                 viewBox="0 0 24 24"

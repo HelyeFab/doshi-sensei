@@ -27,8 +27,8 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || 'Doshi Sensei';
   const notificationOptions = {
     body: payload.notification?.body || 'You have a new notification',
-    icon: '/icon-192x192.png',
-    badge: '/icon-72x72.png',
+    icon: '/icons/icon-192x192.png',
+    badge: '/badge-72x72.png',
     tag: payload.data?.tag || 'notification',
     data: payload.data,
     actions: [

@@ -33,7 +33,7 @@ if (typeof TextDecoder === 'undefined') {
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
 
 // Configuration - INCREMENT THIS ON EACH DEPLOYMENT
-const SW_VERSION = '5.0.2-' + new Date().getTime(); // Fix navigation preload handling
+const SW_VERSION = '5.1.0-red-panda-' + new Date().getTime(); // Force red panda icon update
 const APP_NAME = 'doshi-sensei';
 const DEBUG = false;
 

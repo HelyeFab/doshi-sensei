@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAdmin } from '@/contexts/AdminContext';
-import DoshiMascot from '@/components/DoshiMascot';
+import Image from 'next/image';
 
 interface NavItem {
   label: string;
@@ -48,20 +48,19 @@ const DesktopNavMenu = React.memo(() => {
       {/* Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-16 h-16 bg-card/80 backdrop-blur-md rounded-full hover:bg-card/90 shadow-lg border-2 border-primary"
+        className="flex items-center justify-center w-12 h-12 bg-card/80 backdrop-blur-md rounded-full hover:bg-card/90 transition-all duration-300 shadow-lg border-2 border-border"
         style={{
-          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)'
+          boxShadow: 'inset 0 0 0 1px hsl(var(--primary)), 0 6px 20px rgba(0, 0, 0, 0.2)'
         }}
         aria-label="Navigation Menu"
       >
-        <div>
-          <DoshiMascot
-            variant="animated"
-            size="small"
+        <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
+          <Image
+            src="/menu.svg"
             alt="Menu"
-            loop={true}
-            animationSpeed={0.5}
-            className="w-10 h-10"
+            width={24}
+            height={24}
+            className="w-6 h-6"
           />
         </div>
       </button>

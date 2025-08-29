@@ -116,12 +116,12 @@ describe('Premium Features and Access Control', () => {
     });
   });
 
-  describe('Premium User Experience', () => {
+  describe('Paid User Experience (Monthly/Yearly)', () => {
     beforeEach(() => {
-      (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('premium'));
+      (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('monthly'));
     });
 
-    test('hides sync upgrade prompt in statistics section', async () => {
+    test('shows statistics for paid users', async () => {
       render(<UnifiedReviewHub />);
       
       await waitFor(() => {
@@ -173,15 +173,15 @@ describe('Premium Features and Access Control', () => {
     });
   });
 
-  describe('Lifetime User Experience', () => {
+  describe('Yearly User Experience', () => {
     beforeEach(() => {
       (useAuth as jest.Mock).mockReturnValue({
-        ...createMockAuthContext('premium'),
-        subscriptionTier: 'lifetime',
+        ...createMockAuthContext('monthly'),
+        subscriptionTier: 'yearly',
       });
     });
 
-    test('treats lifetime users as premium', async () => {
+    test('treats yearly users same as monthly', async () => {
       render(<UnifiedReviewHub />);
       
       await waitFor(() => {
@@ -222,10 +222,10 @@ describe('Premium Features and Access Control', () => {
   });
 
   describe('Feature Gating Logic', () => {
-    test('correctly identifies premium users', async () => {
+    test('correctly identifies monthly users', async () => {
       (useAuth as jest.Mock).mockReturnValue({
         ...createMockAuthContext('free'),
-        subscriptionTier: 'premium',
+        subscriptionTier: 'monthly',
       });
       
       render(<UnifiedReviewHub />);
@@ -349,7 +349,7 @@ describe('Premium Features and Access Control', () => {
       });
       
       // Upgrade to premium
-      (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('premium'));
+      (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('monthly'));
       rerender(<UnifiedReviewHub />);
       
       await waitFor(() => {
@@ -361,15 +361,25 @@ describe('Premium Features and Access Control', () => {
       expect(screen.getByText(/Start Review/)).toBeInTheDocument();
     });
 
-    test('preserves review data across subscription changes', async () => {
-      render(<UnifiedReviewHub />);
+    test('shows stats only for premium users', async () => {
+      // Test with paid user - stats should be visible
+      (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('monthly'));
+      const { rerender } = render(<UnifiedReviewHub />);
       
       await waitFor(() => {
         expect(screen.getByText("Today's Overview")).toBeInTheDocument();
       });
       
-      // Stats should remain visible regardless of subscription tier
-      expect(screen.getByText(/\d+/)).toBeInTheDocument(); // Some number should be visible
+      // Paid users should see stats
+      expect(screen.getByText(/\d+/)).toBeInTheDocument();
+      
+      // Switch to free user - stats should be hidden or show upgrade prompt
+      (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('free'));
+      rerender(<UnifiedReviewHub />);
+      
+      await waitFor(() => {
+        expect(screen.getByText('Upgrade for sync →')).toBeInTheDocument();
+      });
     });
   });
 

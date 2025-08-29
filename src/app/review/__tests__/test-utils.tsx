@@ -402,7 +402,7 @@ export const setupErrorState = (registry: any, errorMessage: string) => {
 // Auth Context Mocks
 // ============================================================================
 
-export const createMockAuthContext = (userType: 'guest' | 'free' | 'premium' = 'free') => {
+export const createMockAuthContext = (userType: 'guest' | 'free' | 'monthly' | 'yearly' = 'free') => {
   const contexts = {
     guest: {
       user: null,
@@ -416,15 +416,21 @@ export const createMockAuthContext = (userType: 'guest' | 'free' | 'premium' = '
       subscriptionTier: 'free' as const,
       loading: false,
     },
-    premium: {
-      user: { uid: 'premium-user-id', email: 'premium@example.com' },
-      userType: 'premium' as const,
-      subscriptionTier: 'premium' as const,
+    monthly: {
+      user: { uid: 'monthly-user-id', email: 'monthly@example.com' },
+      userType: 'monthly' as const,
+      subscriptionTier: 'monthly' as const,
+      loading: false,
+    },
+    yearly: {
+      user: { uid: 'yearly-user-id', email: 'yearly@example.com' },
+      userType: 'yearly' as const,
+      subscriptionTier: 'yearly' as const,
       loading: false,
     },
   };
 
-  return contexts[userType];
+  return contexts[userType === 'monthly' || userType === 'yearly' ? userType : userType];
 };
 
 // ============================================================================

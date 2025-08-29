@@ -434,11 +434,11 @@ export const TIME_CONSTANTS = {
   /** Golden time calculations */
   GOLDEN_TIME: {
     /** Optimal study window (morning) */
-    MORNING_START: 8, // 8 AM
+    MORNING_START: 7, // 7 AM
     MORNING_END: 10, // 10 AM
     
     /** Secondary study window (evening) */
-    EVENING_START: 19, // 7 PM
+    EVENING_START: 18, // 6 PM
     EVENING_END: 21, // 9 PM
     
     /** Multiplier for golden time sessions */

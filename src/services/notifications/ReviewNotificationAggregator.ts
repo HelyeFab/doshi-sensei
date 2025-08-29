@@ -88,22 +88,31 @@ export class ReviewNotificationAggregator {
   async initialize(
     registry: ReviewSourceRegistry,
     notificationService: NotificationService
-  ): Promise<void> {
-    this.registry = registry;
-    this.notificationService = notificationService;
+  ): Promise<boolean> {
+    try {
+      this.registry = registry;
+      this.notificationService = notificationService;
 
-    // Set up event listeners for registry changes
-    registry.addEventListener('ITEMS_UPDATED', () => {
-      this.handleRegistryUpdate();
-    });
+      // Set up event listeners for registry changes
+      registry.addEventListener('ITEMS_UPDATED', () => {
+        this.handleRegistryUpdate();
+      });
 
-    registry.addEventListener('STATS_UPDATED', () => {
-      this.handleRegistryUpdate();
-    });
+      registry.addEventListener('STATS_UPDATED', () => {
+        this.handleRegistryUpdate();
+      });
 
-    registry.addEventListener('CONFIG_CHANGED', () => {
-      this.handleRegistryUpdate();
-    });
+      registry.addEventListener('CONFIG_CHANGED', () => {
+        this.handleRegistryUpdate();
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Failed to initialize ReviewNotificationAggregator:', error);
+      this.registry = null;
+      this.notificationService = null;
+      return false;
+    }
   }
 
   /**
@@ -168,6 +177,9 @@ export class ReviewNotificationAggregator {
 
       // Update last notification tracking
       this.lastAggregation.set(targetUserId, dueItemsSummary);
+      
+      // Store notification timestamp
+      this.setLastNotificationTime(targetUserId, Date.now());
 
     } catch (error) {
       console.error('Failed to check and send notifications:', error);
@@ -220,13 +232,15 @@ export class ReviewNotificationAggregator {
     summary: DueItemsSummary, 
     goldenTimeInfo: GoldenTimeInfo
   ): { title: string; body: string } {
-    // Build title
-    let title = `📚 ${summary.totalDue} Item${summary.totalDue !== 1 ? 's' : ''} Ready for Review!`;
+    // Build title with proper priority order
+    let title: string;
     
     if (goldenTimeInfo.isActive) {
-      title = `🌅 Golden Time! ${summary.totalDue} Items Ready!`;
+      title = `🌅 Golden Time! ${summary.totalDue} Item${summary.totalDue !== 1 ? 's' : ''} Ready!`;
     } else if (summary.overdue > 0) {
-      title = `⏰ ${summary.totalDue} Items Due (${summary.overdue} overdue)`;
+      title = `⏰ ${summary.totalDue} Item${summary.totalDue !== 1 ? 's' : ''} Due (${summary.overdue} overdue)`;
+    } else {
+      title = `📚 ${summary.totalDue} Item${summary.totalDue !== 1 ? 's' : ''} Ready for Review!`;
     }
 
     // Build body with source breakdown
@@ -408,14 +422,21 @@ export class ReviewNotificationAggregator {
    * Calculate detailed golden time information
    */
   private calculateGoldenTimeInfo(): GoldenTimeInfo {
-    const now = new Date();
-    const currentHour = now.getHours();
-    
-    // Check if we're in golden time
-    const inMorningWindow = currentHour >= TIME_CONSTANTS.GOLDEN_TIME.MORNING_START && 
-                           currentHour < TIME_CONSTANTS.GOLDEN_TIME.MORNING_END;
-    const inEveningWindow = currentHour >= TIME_CONSTANTS.GOLDEN_TIME.EVENING_START && 
-                           currentHour < TIME_CONSTANTS.GOLDEN_TIME.EVENING_END;
+    try {
+      const now = new Date();
+      const currentHour = now.getHours();
+      
+      // Validate time constants exist
+      if (!TIME_CONSTANTS?.GOLDEN_TIME) {
+        console.warn('Golden time constants not available');
+        return { isActive: false };
+      }
+      
+      // Check if we're in golden time
+      const inMorningWindow = currentHour >= TIME_CONSTANTS.GOLDEN_TIME.MORNING_START && 
+                             currentHour < TIME_CONSTANTS.GOLDEN_TIME.MORNING_END;
+      const inEveningWindow = currentHour >= TIME_CONSTANTS.GOLDEN_TIME.EVENING_START && 
+                             currentHour < TIME_CONSTANTS.GOLDEN_TIME.EVENING_END;
     
     if (inMorningWindow) {
       const endsAt = new Date(now);
@@ -477,6 +498,10 @@ export class ReviewNotificationAggregator {
       isActive: false,
       nextWindow
     };
+    } catch (error) {
+      console.error('Failed to calculate golden time info:', error);
+      return { isActive: false };
+    }
   }
 
   /**
@@ -562,11 +587,15 @@ export class ReviewNotificationAggregator {
   }
 
   /**
-   * Get current user ID (placeholder - would integrate with auth)
+   * Get current user ID from notification service
    */
   private getCurrentUserId(): string | null {
-    // This would integrate with your auth system
-    // For now, return null to indicate no user
+    // Get user ID from the notification service if available
+    if (this.notificationService) {
+      // Access private userId field through a type assertion for now
+      const service = this.notificationService as any;
+      return service.userId || null;
+    }
     return null;
   }
 
@@ -574,9 +603,23 @@ export class ReviewNotificationAggregator {
    * Get timestamp of last notification sent to user
    */
   private getLastNotificationTime(userId: string): number | null {
-    // This would be stored persistently
-    // For now, return null
+    // Try to get from localStorage as a fallback
+    if (typeof window !== 'undefined') {
+      const key = `last-notification-${userId}`;
+      const stored = localStorage.getItem(key);
+      return stored ? parseInt(stored, 10) : null;
+    }
     return null;
+  }
+
+  /**
+   * Store timestamp of last notification sent to user
+   */
+  private setLastNotificationTime(userId: string, timestamp: number): void {
+    if (typeof window !== 'undefined') {
+      const key = `last-notification-${userId}`;
+      localStorage.setItem(key, timestamp.toString());
+    }
   }
 
   // ============================================================================
@@ -655,6 +698,17 @@ export class ReviewNotificationAggregator {
     this.registry = null;
     this.notificationService = null;
   }
+
+  /**
+   * Reset singleton instance for testing
+   * @internal
+   */
+  static resetForTesting(): void {
+    if (ReviewNotificationAggregator.instance) {
+      ReviewNotificationAggregator.instance.destroy();
+      ReviewNotificationAggregator.instance = null;
+    }
+  }
 }
 
 // ============================================================================
@@ -673,8 +727,8 @@ export const reviewNotificationAggregator = ReviewNotificationAggregator.getInst
 export async function initializeReviewNotifications(
   registry: ReviewSourceRegistry,
   notificationService: NotificationService
-): Promise<void> {
-  await reviewNotificationAggregator.initialize(registry, notificationService);
+): Promise<boolean> {
+  return await reviewNotificationAggregator.initialize(registry, notificationService);
 }
 
 /**

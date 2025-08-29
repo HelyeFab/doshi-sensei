@@ -14,8 +14,12 @@ describe('Kanji Mastery System Integration', () => {
   beforeEach(async () => {
     // Initialize services
     fsrs = new FSRSAlgorithm();
-    reviewQueue = new ReviewQueueService();
     dataSync = new DataSyncService();
+    
+    // Force initialization for testing
+    await dataSync.forceInitializeForTest();
+    
+    reviewQueue = new ReviewQueueService(dataSync);
 
     // Clear test data
     await dataSync.clearUserData(testUserId);

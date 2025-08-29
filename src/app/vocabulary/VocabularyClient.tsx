@@ -132,8 +132,9 @@ export default function VocabularyClient() {
         setSearching(true);
         const results = await searchWords(term, 30);
         searchResults = results as SearchResult[];
+        setSearching(false);
       } else {
-        // JMdict is local, no loading needed
+        // JMdict is local, no loading needed - search is essentially instant
         searchResults = await searchJMdictWords(term, 30);
         // Check for "did you mean" suggestion if using JMdict
         const suggestion = getDidYouMeanSuggestion(term);
@@ -189,8 +190,7 @@ export default function VocabularyClient() {
     } catch (err) {
       setError('Search failed. Please try again.');
       console.error('Error searching words:', err);
-    } finally {
-      setSearching(false);
+      setSearching(false); // Only set false on error for WaniKani searches
     }
   };
 

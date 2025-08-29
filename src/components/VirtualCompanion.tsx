@@ -220,7 +220,17 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
 
         {/* PWA Install Banner - Only show if app is not installed */}
         {showInstallBanner && (
-          <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-accent/10 border-t border-border/50 rounded-b-2xl flex-shrink-0">
+          <button
+            onClick={() => {
+              if (canInstall) {
+                install();
+              } else {
+                setShowInstallGuide(true);
+              }
+            }}
+            disabled={isInstalling}
+            className="w-full px-4 py-3 bg-gradient-to-r from-primary/10 to-accent/10 border-t border-border/50 rounded-b-2xl flex-shrink-0 transition-all hover:from-primary/15 hover:to-accent/15 disabled:cursor-not-allowed"
+          >
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-9 h-9 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -229,37 +239,29 @@ export default function VirtualCompanion({ isOpen, onClose }: VirtualCompanionPr
                       d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">Install App</p>
-                  <p className="text-xs text-muted-foreground">Quick access from home</p>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {isInstalling ? 'Installing App...' : 'Install App'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {canInstall ? 'Click to install now' : 'Click for instructions'}
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  if (canInstall) {
-                    install();
-                  } else {
-                    // Show install guide modal instead of alert
-                    setShowInstallGuide(true);
-                  }
-                }}
-                disabled={isInstalling}
-                className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 whitespace-nowrap"
-              >
+              <div className="flex items-center gap-1.5">
                 {isInstalling ? (
-                  <>
-                    <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Installing</span>
-                  </>
+                  <svg className="animate-spin h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
                 ) : (
-                  canInstall ? 'Install' : 'How to Install'
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 )}
-              </button>
+              </div>
             </div>
-          </div>
+          </button>
         )}
       </div>
 

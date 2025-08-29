@@ -10,6 +10,7 @@ import UserAchievements from '@/components/achievements/UserAchievements';
 import UserAvatar from '@/components/UserAvatar';
 import VirtualCompanion from '@/components/VirtualCompanion';
 import SmartReviewWidget from '@/components/unified-review/SmartReviewWidget';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
 
 interface ClientHomeProps {
   initialDate: string | null;
@@ -24,6 +25,7 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
   const displayName = fullDisplayName; // Keep full name for backward compatibility
   const [showCompanion, setShowCompanion] = useState(false);
   const strings = useStrings();
+  const { isInstalled } = usePWAInstall();
   
   // Calculate date and progress on client side only
   const [dateString, setDateString] = useState('');
@@ -168,13 +170,22 @@ export default function ClientHome({ initialDate, initialProgress }: ClientHomeP
         {/* Welcome Section */}
         <header className="px-4 pt-8 pb-6" role="banner">
           <div className="flex items-center gap-3">
-            {/* User Avatar */}
+            {/* User Avatar with Install Indicator */}
             <button 
               onClick={() => setShowCompanion(true)}
-              className="cursor-pointer transition-transform hover:scale-105"
+              className="cursor-pointer transition-transform hover:scale-105 relative"
               aria-label="Open Virtual Companion"
             >
               <UserAvatar size="md" priority={true} />
+              {/* Install App Badge - Only show if not installed */}
+              {!isInstalled && (
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                  <svg className="w-3.5 h-3.5 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} 
+                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                  </svg>
+                </div>
+              )}
             </button>
             
             {/* Greeting Text */}

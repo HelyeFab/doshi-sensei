@@ -34,7 +34,8 @@ describe('ReviewNotificationAggregator', () => {
   let aggregator: ReviewNotificationAggregator;
 
   beforeEach(() => {
-    // Get fresh instance for each test
+    // Reset singleton for fresh instance in each test
+    ReviewNotificationAggregator.resetForTesting();
     aggregator = ReviewNotificationAggregator.getInstance();
     jest.clearAllMocks();
   });
@@ -49,13 +50,26 @@ describe('ReviewNotificationAggregator', () => {
       expect(mockRegistry.addEventListener).toHaveBeenCalledWith('CONFIG_CHANGED', expect.any(Function));
     });
 
-    it('should return status correctly', () => {
+    it('should return status correctly before initialization', () => {
       const status = aggregator.getNotificationStatus();
       
       expect(status).toEqual({
         initialized: false, // Not initialized yet
         registryConnected: false,
         notificationServiceConnected: false,
+        activeSchedules: 0,
+        goldenTimeActive: expect.any(Boolean)
+      });
+    });
+
+    it('should return status correctly after initialization', async () => {
+      await aggregator.initialize(mockRegistry as any, mockNotificationService as any);
+      const status = aggregator.getNotificationStatus();
+      
+      expect(status).toEqual({
+        initialized: true, // Now initialized
+        registryConnected: true,
+        notificationServiceConnected: true,
         activeSchedules: 0,
         goldenTimeActive: expect.any(Boolean)
       });
@@ -274,6 +288,7 @@ describe('ReviewNotificationAggregator', () => {
 // Example of how to test the system integration
 describe('Integration Example', () => {
   it('should demonstrate full workflow', async () => {
+    ReviewNotificationAggregator.resetForTesting();
     const aggregator = ReviewNotificationAggregator.getInstance();
     
     // Mock a realistic scenario
@@ -311,9 +326,9 @@ describe('Integration Example', () => {
     expect(summary.totalDue).toBe(23);
     expect(Object.keys(summary.bySource)).toHaveLength(3);
 
-    // Test message building
+    // Test message building - should prioritize overdue items in title
     const message = aggregator.buildNotificationMessage(summary, { isActive: false });
-    expect(message.title).toContain('23 Items Ready for Review');
+    expect(message.title).toBe('⏰ 23 Items Due (3 overdue)'); // Overdue takes priority
     expect(message.body).toContain('12 Textbook Vocabulary, 8 Kanji Mastery, 3 Flashcards');
 
     // Test status

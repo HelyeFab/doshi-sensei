@@ -52,7 +52,7 @@ describe('ValidationUtils.isGuestUser', () => {
   test('should reject user IDs containing guest words in context', () => {
     expect(ValidationUtils.isGuestUser('guestlike')).toBe(true); // contains 'guest'
     expect(ValidationUtils.isGuestUser('myguest')).toBe(true);   // contains 'guest'
-    expect(ValidationUtils.isGuestUser('anotheranon')).toBe(true); // starts with 'anon'
+    expect(ValidationUtils.isGuestUser('anon123')).toBe(true); // starts with 'anon'
   });
 
   test('should accept user IDs that do not match guest patterns', () => {

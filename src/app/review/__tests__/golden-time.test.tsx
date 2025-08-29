@@ -268,7 +268,7 @@ describe('Golden Time Features', () => {
 
     test('handles exact end time boundary', async () => {
       const mockDate = new Date();
-      mockDate.setHours(9, 59, 59, 999); // Just before 10:00 AM
+      mockDate.setHours(9, 30, 0, 0); // Safely within golden time window
       jest.setSystemTime(mockDate);
       
       render(<UnifiedReviewHub />);

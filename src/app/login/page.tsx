@@ -28,6 +28,7 @@ export default function LoginPage() {
   
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [showVerificationReminder, setShowVerificationReminder] = useState(false);
 
@@ -71,7 +72,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
+    setIsGoogleLoading(true);
     
     try {
       const result = await signInWithGoogle();
@@ -85,7 +86,7 @@ export default function LoginPage() {
     } catch (error: any) {
       toast.error('Failed to sign in with Google');
     } finally {
-      setIsLoading(false);
+      setIsGoogleLoading(false);
     }
   };
 
@@ -297,14 +298,14 @@ export default function LoginPage() {
                   className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary pr-12"
                   placeholder="you@example.com"
                   required
-                  disabled={isLoading}
+                  disabled={isLoading || isGoogleLoading}
                 />
                 <Mail className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               </div>
               
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
                 className="w-full mt-4 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isLoading ? (
@@ -333,7 +334,7 @@ export default function LoginPage() {
             {/* Google Sign In */}
             <button
               onClick={handleGoogleSignIn}
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-background border-2 border-border rounded-xl hover:bg-muted transition-all duration-200 disabled:opacity-50"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -342,7 +343,14 @@ export default function LoginPage() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              <span className="font-medium">Sign in with Google</span>
+              {isGoogleLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
+                  <span className="font-medium">Redirecting...</span>
+                </div>
+              ) : (
+                <span className="font-medium">Sign in with Google</span>
+              )}
             </button>
 
             {/* Benefits */}

@@ -136,16 +136,27 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
     };
   }, [registry]);
 
-  // Calculate golden time status
-  const goldenTimeStatus = useMemo((): GoldenTimeStatus => {
+  // Calculate golden time status (function to recalculate on every render for tests)
+  const getGoldenTimeStatus = (): GoldenTimeStatus => {
     const now = new Date();
     const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    // Create a time value in minutes since midnight for precise comparison
+    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+    const morningStartMinutes = TIME_CONSTANTS.GOLDEN_TIME.MORNING_START * 60;
+    const morningEndMinutes = TIME_CONSTANTS.GOLDEN_TIME.MORNING_END * 60;
+    const eveningStartMinutes = TIME_CONSTANTS.GOLDEN_TIME.EVENING_START * 60;
+    const eveningEndMinutes = TIME_CONSTANTS.GOLDEN_TIME.EVENING_END * 60;
+    
     
     // Check if we're in golden time
-    const inMorningWindow = currentHour >= TIME_CONSTANTS.GOLDEN_TIME.MORNING_START && 
-                           currentHour < TIME_CONSTANTS.GOLDEN_TIME.MORNING_END;
-    const inEveningWindow = currentHour >= TIME_CONSTANTS.GOLDEN_TIME.EVENING_START && 
-                           currentHour < TIME_CONSTANTS.GOLDEN_TIME.EVENING_END;
+    // Morning: 7:00 AM (420 min) to 9:59 AM (599 min)
+    // Evening: 6:00 PM (1080 min) to 8:59 PM (1259 min)  
+    const inMorningWindow = currentTimeInMinutes >= morningStartMinutes && 
+                           currentTimeInMinutes < morningEndMinutes;
+    const inEveningWindow = currentTimeInMinutes >= eveningStartMinutes && 
+                           currentTimeInMinutes < eveningEndMinutes;
     
     if (inMorningWindow || inEveningWindow) {
       return {
@@ -190,7 +201,10 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
       isActive: false,
       nextWindow
     };
-  }, []);
+  };
+
+  // Get golden time status (calculated fresh each render for test compatibility)
+  const goldenTimeStatus = getGoldenTimeStatus();
 
   // Priority management handlers
   const handlePriorityChange = useCallback(async (sourceId: string, newPriority: SourcePriority) => {
@@ -233,9 +247,9 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
     return registry.getPrioritizedSources();
   }, [registry]);
 
-  // Check if premium features are available
+  // Check if user has paid subscription (monthly or yearly)
   const isPremium = useMemo(() => {
-    return subscriptionTier === 'premium' || subscriptionTier === 'lifetime';
+    return subscriptionTier === 'monthly' || subscriptionTier === 'yearly';
   }, [subscriptionTier]);
 
   if (loading) {
@@ -315,20 +329,12 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
           </div>
         </header>
 
-        {/* Aggregated Statistics */}
-        {aggregatedStats && (
+        {/* Aggregated Statistics - Premium Only */}
+        {isPremium && aggregatedStats ? (
           <div className="px-4 pb-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Today's Overview</h2>
-                {!isPremium && (
-                  <Link
-                    href="/subscription"
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                  >
-                    Upgrade for sync →
-                  </Link>
-                )}
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -379,46 +385,68 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                   </div>
                 </div>
               </div>
-
-              {/* Quick Actions */}
-              <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t border-gray-100">
-                <button
-                  onClick={startUnifiedReview}
-                  disabled={aggregatedStats.totals.dueToday === 0}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                    aggregatedStats.totals.dueToday > 0
-                      ? 'bg-red-600 text-white hover:bg-red-700 shadow-sm'
-                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
+            </div>
+          </div>
+        ) : !isPremium ? (
+          /* Upgrade Prompt for Non-Premium Users */
+          <div className="px-4 pb-6">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-blue-900 mb-2">Unlock Detailed Statistics</h2>
+                  <p className="text-blue-700 text-sm">
+                    Get insights into your learning progress with detailed statistics, streaks, and retention metrics.
+                  </p>
+                </div>
+                <Link
+                  href="/subscription"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium whitespace-nowrap"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Start Review ({aggregatedStats.totals.dueToday})
-                </button>
-
-                <button
-                  onClick={() => setPriorityEditMode(!priorityEditMode)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg font-medium transition-all"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                  </svg>
-                  {priorityEditMode ? 'Done' : 'Manage Priorities'}
-                </button>
-
-                {goldenTimeStatus.nextWindow && !goldenTimeStatus.isActive && (
-                  <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Next golden time: {goldenTimeStatus.nextWindow.type} ({new Date(goldenTimeStatus.nextWindow.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
-                  </div>
-                )}
+                  Upgrade Now →
+                </Link>
               </div>
             </div>
           </div>
-        )}
+        ) : null}
+
+        {/* Quick Actions - Available to All Users */}
+        <div className="px-4 pb-6">
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={startUnifiedReview}
+              disabled={!aggregatedStats || aggregatedStats.totals.dueToday === 0}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                aggregatedStats && aggregatedStats.totals.dueToday > 0
+                  ? 'bg-red-600 text-white hover:bg-red-700 shadow-sm'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Start Review {aggregatedStats ? `(${aggregatedStats.totals.dueToday})` : ''}
+            </button>
+            
+            <button
+              onClick={() => setPriorityEditMode(!priorityEditMode)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg font-medium transition-all"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+              {priorityEditMode ? 'Done' : 'Manage Priorities'}
+            </button>
+
+            {goldenTimeStatus.nextWindow && !goldenTimeStatus.isActive && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Next golden time: {goldenTimeStatus.nextWindow.type} ({new Date(goldenTimeStatus.nextWindow.startsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Review Source Cards */}
         <div className="px-4 pb-6">

@@ -48,9 +48,9 @@ const DesktopNavMenu = React.memo(() => {
       {/* Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-12 h-12 bg-card/80 backdrop-blur-md rounded-full hover:bg-card/90 transition-all duration-300 shadow-lg border-2 border-border"
+        className="flex items-center justify-center w-12 h-12 bg-card/80 backdrop-blur-md rounded-full hover:bg-card/90 transition-all duration-300 shadow-lg border-2 border-primary"
         style={{
-          boxShadow: 'inset 0 0 0 1px hsl(var(--primary)), 0 6px 20px rgba(0, 0, 0, 0.2)'
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)'
         }}
         aria-label="Navigation Menu"
       >

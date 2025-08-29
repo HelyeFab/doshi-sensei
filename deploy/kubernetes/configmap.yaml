@@ -1,0 +1,131 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: doshi-sensei-config
+  namespace: doshi-sensei
+data:
+  # Application Configuration
+  NODE_ENV: "production"
+  NEXT_TELEMETRY_DISABLED: "1"
+  PORT: "3000"
+  
+  # WebSocket Configuration
+  WS_PORT: "8080"
+  WS_HEARTBEAT_INTERVAL: "30000"
+  WS_MAX_RECONNECT_ATTEMPTS: "5"
+  
+  # Redis Configuration
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  REDIS_MAX_RETRIES: "3"
+  REDIS_RETRY_DELAY: "200"
+  
+  # Database Configuration
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "doshi_sensei"
+  DB_POOL_MIN: "2"
+  DB_POOL_MAX: "10"
+  
+  # Cache Configuration
+  CACHE_TTL_MEMORY: "300"
+  CACHE_TTL_REDIS: "3600"
+  CACHE_TTL_INDEXEDDB: "86400"
+  
+  # Rate Limiting
+  RATE_LIMIT_WINDOW: "60000"
+  RATE_LIMIT_MAX_REQUESTS: "100"
+  
+  # Sync Configuration
+  SYNC_BATCH_SIZE: "50"
+  SYNC_RETRY_ATTEMPTS: "3"
+  SYNC_RETRY_DELAY: "1000"
+  
+  # Performance Monitoring
+  METRICS_ENABLED: "true"
+  METRICS_INTERVAL: "60000"
+  SLOW_QUERY_THRESHOLD: "100"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: doshi-sensei
+data:
+  nginx.conf: |
+    upstream app_backend {
+        least_conn;
+        server app-service:3000 max_fails=3 fail_timeout=30s;
+    }
+    
+    upstream websocket_backend {
+        ip_hash;
+        server websocket-service:8080;
+    }
+    
+    server {
+        listen 80;
+        server_name doshisensei.com;
+        
+        # Security headers
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        
+        # Gzip compression
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_types text/plain text/css text/xml text/javascript application/json application/javascript application/xml+rss application/rss+xml application/atom+xml image/svg+xml text/javascript application/vnd.ms-fontobject application/x-font-ttf font/opentype;
+        
+        # Main application
+        location / {
+            proxy_pass http://app_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # Timeouts
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 60s;
+            proxy_read_timeout 60s;
+        }
+        
+        # WebSocket endpoint
+        location /ws {
+            proxy_pass http://websocket_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # WebSocket timeouts
+            proxy_connect_timeout 7d;
+            proxy_send_timeout 7d;
+            proxy_read_timeout 7d;
+        }
+        
+        # Health check endpoint
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+        
+        # Static files caching
+        location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
+            proxy_pass http://app_backend;
+            expires 30d;
+            add_header Cache-Control "public, immutable";
+        }
+    }

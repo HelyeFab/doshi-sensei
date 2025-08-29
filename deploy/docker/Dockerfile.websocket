@@ -1,0 +1,43 @@
+# WebSocket Server Dockerfile
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy WebSocket server files
+COPY src/services/websocket ./src/services/websocket
+COPY package.json ./
+COPY tsconfig.json ./
+
+# Install dependencies
+RUN npm install --production=false && \
+    npm install ws socket.io redis ioredis jsonwebtoken
+
+# Build TypeScript
+RUN npx tsc --project tsconfig.websocket.json || \
+    npx tsc src/services/websocket/server.ts --outDir dist --module commonjs --target es2020 --esModuleInterop
+
+# Production stage
+FROM node:20-alpine
+
+RUN apk add --no-cache dumb-init
+
+WORKDIR /app
+
+# Copy built files and dependencies
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S websocket -u 1001
+
+USER websocket
+
+EXPOSE 8080
+
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:8080/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "dist/server.js"]

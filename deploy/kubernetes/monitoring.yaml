@@ -1,0 +1,187 @@
+# ServiceMonitor for Prometheus
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: doshi-sensei-monitor
+  namespace: doshi-sensei
+  labels:
+    app: doshi-sensei
+    prometheus: kube-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: doshi-sensei
+  endpoints:
+  - port: http
+    path: /api/metrics
+    interval: 30s
+    scrapeTimeout: 10s
+  - port: websocket
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+
+---
+# PrometheusRule for alerts
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: doshi-sensei-alerts
+  namespace: doshi-sensei
+  labels:
+    prometheus: kube-prometheus
+spec:
+  groups:
+  - name: doshi-sensei.rules
+    interval: 30s
+    rules:
+    # High error rate
+    - alert: HighErrorRate
+      expr: |
+        rate(http_requests_total{job="doshi-sensei",status=~"5.."}[5m]) > 0.05
+      for: 5m
+      labels:
+        severity: critical
+        app: doshi-sensei
+      annotations:
+        summary: "High error rate detected"
+        description: "Error rate is above 5% for {{ $labels.instance }}"
+    
+    # High response time
+    - alert: HighResponseTime
+      expr: |
+        histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="doshi-sensei"}[5m])) > 0.5
+      for: 5m
+      labels:
+        severity: warning
+        app: doshi-sensei
+      annotations:
+        summary: "High response time"
+        description: "95th percentile response time is above 500ms"
+    
+    # Pod memory usage
+    - alert: HighMemoryUsage
+      expr: |
+        container_memory_usage_bytes{pod=~"app-deployment-.*"} / container_spec_memory_limit_bytes > 0.9
+      for: 5m
+      labels:
+        severity: warning
+        app: doshi-sensei
+      annotations:
+        summary: "High memory usage"
+        description: "Pod {{ $labels.pod }} memory usage is above 90%"
+    
+    # WebSocket disconnections
+    - alert: HighWebSocketDisconnections
+      expr: |
+        rate(websocket_disconnections_total{job="doshi-sensei"}[5m]) > 10
+      for: 5m
+      labels:
+        severity: warning
+        app: doshi-sensei
+      annotations:
+        summary: "High WebSocket disconnection rate"
+        description: "WebSocket disconnection rate is above 10/min"
+    
+    # Database connection pool exhaustion
+    - alert: DatabasePoolExhaustion
+      expr: |
+        db_pool_available_connections{job="doshi-sensei"} < 2
+      for: 2m
+      labels:
+        severity: critical
+        app: doshi-sensei
+      annotations:
+        summary: "Database connection pool nearly exhausted"
+        description: "Less than 2 database connections available"
+    
+    # Redis cache hit rate
+    - alert: LowCacheHitRate
+      expr: |
+        rate(redis_cache_hits_total[5m]) / (rate(redis_cache_hits_total[5m]) + rate(redis_cache_misses_total[5m])) < 0.8
+      for: 10m
+      labels:
+        severity: warning
+        app: doshi-sensei
+      annotations:
+        summary: "Low cache hit rate"
+        description: "Redis cache hit rate is below 80%"
+    
+    # Sync failures
+    - alert: HighSyncFailureRate
+      expr: |
+        rate(sync_failures_total{job="doshi-sensei"}[5m]) > 0.01
+      for: 5m
+      labels:
+        severity: critical
+        app: doshi-sensei
+      annotations:
+        summary: "High sync failure rate"
+        description: "Sync failure rate is above 1%"
+
+---
+# Grafana Dashboard ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-doshi-sensei
+  namespace: doshi-sensei
+  labels:
+    grafana_dashboard: "1"
+data:
+  doshi-sensei-dashboard.json: |
+    {
+      "dashboard": {
+        "title": "Doshi Sensei Review Hub",
+        "panels": [
+          {
+            "title": "Request Rate",
+            "targets": [
+              {
+                "expr": "rate(http_requests_total{job='doshi-sensei'}[5m])"
+              }
+            ]
+          },
+          {
+            "title": "Response Time (p95)",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job='doshi-sensei'}[5m]))"
+              }
+            ]
+          },
+          {
+            "title": "Active WebSocket Connections",
+            "targets": [
+              {
+                "expr": "websocket_active_connections{job='doshi-sensei'}"
+              }
+            ]
+          },
+          {
+            "title": "Review Events/sec",
+            "targets": [
+              {
+                "expr": "rate(review_events_total{job='doshi-sensei'}[1m])"
+              }
+            ]
+          },
+          {
+            "title": "Cache Hit Rate",
+            "targets": [
+              {
+                "expr": "rate(redis_cache_hits_total[5m]) / (rate(redis_cache_hits_total[5m]) + rate(redis_cache_misses_total[5m]))"
+              }
+            ]
+          },
+          {
+            "title": "Database Pool Usage",
+            "targets": [
+              {
+                "expr": "db_pool_active_connections{job='doshi-sensei'} / db_pool_max_connections{job='doshi-sensei'}"
+              }
+            ]
+          }
+        ]
+      }
+    }

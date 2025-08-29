@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: doshi-sensei
+  labels:
+    name: doshi-sensei
+    app: review-hub
+    environment: production

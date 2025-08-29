@@ -45,30 +45,34 @@ export async function POST(request: NextRequest) {
     console.log(`📊 [AI FORMAT] Combined text length: ${fullText.length} characters`);
 
     const systemPrompt = `You are an expert Japanese language educator specializing in shadowing practice.
-Your task is to split Japanese text into segments ideal for shadowing practice.
+Your task is to split Japanese text into SHORT segments ideal for shadowing practice.
 
 CRITICAL RULES:
-1. NEVER split です/ます/でした/ました/だ/だった from their stems
-   - WRONG: "これはももさんのお話" | "です"
-   - CORRECT: "これはももさんのお話です"
-2. NEVER split particles from preceding words
-3. Keep grammatical units complete
-4. Each segment should be 10-30 characters ideally
-5. PRIORITIZE grammatical correctness over length
+1. MAXIMUM 20 characters per segment (HARD LIMIT - this is essential for shadowing)
+2. NEVER split です/ます/でした/ました/だ/だった from their stems
+3. NEVER split particles from preceding words
+4. Aim for 8-15 characters ideally (2-3 seconds of speech)
+
+BREAKING LONG SENTENCES:
+For sentences over 20 characters, break at these natural points:
+- After て-form: して、見て、食べて、行って
+- After connectors: から、けど、が、のに、ので、し
+- Between clauses (before new subjects)
+- After time/place markers if the rest is too long
+
+EXAMPLES:
+"昨日友達と一緒に映画を見てとても楽しかったです" (35 chars - TOO LONG!)
+Split as: ["昨日友達と一緒に", "映画を見て", "とても楽しかったです"]
+
+"これはとても難しい問題だと思いますがやってみます" (24 chars - TOO LONG!)  
+Split as: ["これはとても難しい", "問題だと思いますが", "やってみます"]
+
+"私は毎朝六時に起きて朝ごはんを食べてから学校に行きます" (28 chars - TOO LONG!)
+Split as: ["私は毎朝六時に起きて", "朝ごはんを食べてから", "学校に行きます"]
 
 OUTPUT FORMAT:
 Return a JSON object with a "segments" array.
-Each segment should be a complete, grammatically correct phrase.
-
-Example Input: "これはももさんのお話ですももさんは日本人ですカフェで働いています"
-Example Output:
-{
-  "segments": [
-    "これはももさんのお話です",
-    "ももさんは日本人です", 
-    "カフェで働いています"
-  ]
-}`;
+Each segment must be under 20 characters for comfortable shadowing repetition.`;
 
     const userPrompt = `Split this continuous Japanese text into segments for shadowing practice.
 The text has NO punctuation, so you must identify natural break points based on grammar.
@@ -76,10 +80,10 @@ The text has NO punctuation, so you must identify natural break points based on 
 Text: ${fullText}
 
 Remember:
+- MAXIMUM 20 characters per segment (break longer sentences at natural points)
 - NEVER break です/ます/だ from their stems
-- Each segment must be grammatically complete
-- Aim for 10-30 characters per segment
-- If unsure, keep phrases together`;
+- For long sentences, break after て-form or connectors like から/けど/が
+- Each segment should be easy to repeat (2-3 seconds when spoken)`;
 
     try {
       const completion = await openai.chat.completions.create({
@@ -210,6 +214,23 @@ Remember:
         });
       }
 
+      // Check for segments that are too long for shadowing
+      const longSegments = formattedTranscript.filter(seg => seg.text.length > 20);
+      if (longSegments.length > 0) {
+        console.warn(`⚠️ [AI FORMAT] Found ${longSegments.length} segments over 20 characters (too long for comfortable shadowing)`);
+        longSegments.slice(0, 5).forEach(seg => {
+          console.warn(`  - [${seg.text.length} chars] "${seg.text}"`);
+        });
+      }
+
+      // Log segment length statistics
+      const lengths = formattedTranscript.map(seg => seg.text.length);
+      const avgLength = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+      const maxLength = Math.max(...lengths);
+      const minLength = Math.min(...lengths);
+      console.log(`📊 [AI FORMAT] Segment length stats: avg=${avgLength.toFixed(1)}, min=${minLength}, max=${maxLength}`);
+      console.log(`📊 [AI FORMAT] Ideal range (8-15 chars): ${lengths.filter(l => l >= 8 && l <= 15).length}/${lengths.length} segments`);
+
       // Save the formatted transcript to cache if contentId is provided
       if (contentId) {
         try {
@@ -230,7 +251,11 @@ Remember:
         stats: {
           originalLines: transcript.length,
           formattedLines: formattedTranscript.length,
-          violations: violations.length
+          violations: violations.length,
+          longSegments: longSegments.length,
+          avgSegmentLength: parseFloat(avgLength.toFixed(1)),
+          maxSegmentLength: maxLength,
+          idealSegments: lengths.filter(l => l >= 8 && l <= 15).length
         }
       });
 

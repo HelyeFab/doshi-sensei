@@ -187,16 +187,19 @@ async function formatTranscriptWithAI(
     const fullText = transcript.map(line => line.text).join('');
     const totalDuration = transcript[transcript.length - 1].endTime - transcript[0].startTime;
     
-    const systemPrompt = `You are an expert Japanese language educator. Split this Japanese text into natural segments for shadowing practice.
+    const systemPrompt = `You are an expert Japanese language educator. Split this Japanese text into SHORT segments for shadowing practice.
 
-RULES:
-1. Split at natural sentence boundaries (。、！、？)
-2. Each segment should be 3-8 seconds long ideally
-3. Keep complete thoughts together
-4. Fix any transcription errors
-5. Return ONLY a JSON array of strings, no other text
+CRITICAL RULES:
+1. MAXIMUM 20 characters per segment (essential for comfortable repetition)
+2. NEVER split です/ます/でした/ました/だ/だった from their stems
+3. Aim for 8-15 characters ideally (2-3 seconds when spoken)
+4. Break long sentences at natural points:
+   - After て-form (して、見て、食べて)
+   - After connectors (から、けど、が、のに、ので)
+   - Between clauses
+5. Return ONLY a JSON array of strings
 
-Example output: ["おはようございます", "今日はいい天気ですね", "一緒に勉強しましょう"]`;
+Example: ["昨日友達と", "映画を見て", "楽しかったです"]`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -232,7 +235,18 @@ Example output: ["おはようございます", "今日はいい天気ですね"
       return segment;
     });
     
+    // Check segment lengths
+    const lengths = formattedTranscript.map(s => s.text.length);
+    const avgLength = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+    const longSegments = lengths.filter(l => l > 20).length;
+    
     console.log(`✅ [AI] Successfully formatted ${formattedTranscript.length} segments`);
+    console.log(`📊 [AI] Avg length: ${avgLength.toFixed(1)} chars, Long segments (>20): ${longSegments}/${formattedTranscript.length}`);
+    
+    if (longSegments > 0) {
+      console.warn(`⚠️ [AI] ${longSegments} segments exceed 20 chars - may be difficult for shadowing`);
+    }
+    
     return formattedTranscript;
     
   } catch (error) {

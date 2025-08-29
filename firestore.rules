@@ -1158,6 +1158,23 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Recent Study Items - for notification system (Red Panda Review System)
+    match /users/{userId}/recentStudyItems/{itemId} {
+      // Users can read their own recent study items
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can create/update their own recent study items
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['type', 'item', 'timestamp', 'nextReviewDate']) &&
+        request.resource.data.type is string &&
+        request.resource.data.item is map &&
+        request.resource.data.timestamp is timestamp;
+      
+      // Users can delete their own recent study items
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
     // Usage collection at root level (for feature limits tracking)
     match /usage/{userId} {
       // Users can read their own usage data
@@ -1280,6 +1297,78 @@ service cloud.firestore {
       
       // Only admin can delete mnemonics
       allow delete: if isAdmin();
+    }
+
+    // Unified Review Engine Collections
+    // Review Items - shared content for review across all users
+    match /reviewItems/{itemId} {
+      // Anyone can read review items (shared content)
+      allow read: if true;
+      
+      // Only admin can create/update/delete review items
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Review Progress - user-specific progress tracking
+    match /users/{userId}/reviewProgress/{progressId} {
+      // Users can read their own review progress
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can create/update their own review progress
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['itemId', 'userId', 'algorithm', 'nextReview']) &&
+        request.resource.data.userId == userId;
+      
+      // Users can delete their own review progress
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Review Sessions - track review session history
+    match /users/{userId}/reviewSessions/{sessionId} {
+      // Users can read their own review sessions
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can create their own review sessions
+      allow create: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.keys().hasAll(['sessionId', 'userId', 'startTime']) &&
+        request.resource.data.userId == userId;
+      
+      // Users can update their own active sessions
+      allow update: if request.auth != null && 
+        request.auth.uid == userId &&
+        resource.data.userId == userId;
+      
+      // Users can delete their own old sessions
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Review Notifications - scheduled review reminders
+    match /users/{userId}/reviewNotifications/{notificationId} {
+      // Users can read their own review notifications
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can create/update their own review notifications
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.data.userId == userId;
+      
+      // Users can delete their own review notifications
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Review Settings - user preferences for review system
+    match /users/{userId}/reviewSettings/{settingKey} {
+      // Users can read their own review settings
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can create/update their own review settings
+      allow create, update: if request.auth != null && 
+        request.auth.uid == userId;
+      
+      // Users can delete their own review settings
+      allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
     // Learning Events collection - Universal Learning Analytics System

@@ -3,9 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Image from 'next/image';
-import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
+import DoshiMascot from '@/components/DoshiMascot';
 
 interface NavItem {
   label: string;
@@ -16,7 +15,6 @@ interface NavItem {
 const DesktopNavMenu = React.memo(() => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { user } = useAuth();
   const { isAdmin } = useAdmin();
 
   // Menu items
@@ -50,19 +48,20 @@ const DesktopNavMenu = React.memo(() => {
       {/* Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-12 h-12 bg-card/80 backdrop-blur-md rounded-full hover:bg-card/90 transition-all duration-300 shadow-lg border-2 border-border"
+        className="flex items-center justify-center w-16 h-16 bg-card/80 backdrop-blur-md rounded-full hover:bg-card/90 shadow-lg border-2 border-primary"
         style={{
-          boxShadow: 'inset 0 0 0 1px hsl(var(--primary)), 0 6px 20px rgba(0, 0, 0, 0.2)'
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)'
         }}
         aria-label="Navigation Menu"
       >
-        <div className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
-          <Image
-            src="/menu.svg"
+        <div>
+          <DoshiMascot
+            variant="animated"
+            size="small"
             alt="Menu"
-            width={24}
-            height={24}
-            className="w-6 h-6"
+            loop={true}
+            animationSpeed={0.5}
+            className="w-10 h-10"
           />
         </div>
       </button>
@@ -109,7 +108,11 @@ const DesktopNavMenu = React.memo(() => {
             {/* App Info */}
             <div className="px-4 py-3 bg-muted">
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <span className="text-lg">🏮</span>
+                <img
+                  src="/doshi.png"
+                  alt="Doshi"
+                  className="w-4 h-4 object-contain flex-shrink-0"
+                />
                 <span className="font-medium">Dōshi Sensei</span>
               </div>
             </div>

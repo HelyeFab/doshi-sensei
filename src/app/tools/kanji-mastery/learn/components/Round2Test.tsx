@@ -81,7 +81,34 @@ export default function Round2Test({
       .slice(0, 3)
       .map(k => k.meaning);
     
-    return [...options, ...others];
+    // If we don't have enough distractors from the kanji set, add common distractors
+    const distractors = [...others];
+    const commonDistracters = [
+      'water', 'fire', 'earth', 'wind', 'mountain', 'river', 'tree', 'flower',
+      'sun', 'moon', 'star', 'sky', 'cloud', 'rain', 'snow', 'ice',
+      'house', 'door', 'window', 'road', 'bridge', 'city', 'village', 'field',
+      'book', 'paper', 'pen', 'school', 'teacher', 'student', 'child', 'adult',
+      'hand', 'foot', 'eye', 'ear', 'mouth', 'heart', 'mind', 'body',
+      'morning', 'evening', 'day', 'night', 'week', 'month', 'year', 'time',
+      'spring', 'summer', 'autumn', 'winter', 'hot', 'cold', 'warm', 'cool',
+      'big', 'small', 'long', 'short', 'high', 'low', 'new', 'old',
+      'good', 'bad', 'right', 'left', 'up', 'down', 'front', 'back',
+      'love', 'hate', 'happy', 'sad', 'angry', 'calm', 'peace', 'war'
+    ].filter(word => word.toLowerCase() !== correct.meaning.toLowerCase());
+    
+    // Shuffle and pick random distractors if needed
+    const shuffledDistracters = commonDistracters.sort(() => Math.random() - 0.5);
+    
+    while (distractors.length < 3) {
+      const nextDistractor = shuffledDistracters[distractors.length];
+      if (nextDistractor && !distractors.includes(nextDistractor)) {
+        distractors.push(nextDistractor);
+      } else {
+        break;
+      }
+    }
+    
+    return [correct.meaning, ...distractors.slice(0, 3)];
   };
 
   const generateReadingOptions = (

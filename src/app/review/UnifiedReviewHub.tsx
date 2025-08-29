@@ -148,14 +148,31 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
       loadData(); // Refresh data when sources update
     };
 
+    // Refresh data when page becomes visible again (e.g., returning from review)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        loadData();
+      }
+    };
+
+    // Refresh data when focus returns to the window
+    const handleFocus = () => {
+      loadData();
+    };
+
     registry.addEventListener(ReviewSourceEvent.ITEMS_UPDATED, handleSourceUpdate);
     registry.addEventListener(ReviewSourceEvent.CONFIG_CHANGED, handleSourceUpdate);
     registry.addEventListener(ReviewSourceEvent.STATS_UPDATED, handleSourceUpdate);
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
 
     return () => {
       registry.removeEventListener(ReviewSourceEvent.ITEMS_UPDATED, handleSourceUpdate);
       registry.removeEventListener(ReviewSourceEvent.CONFIG_CHANGED, handleSourceUpdate);
       registry.removeEventListener(ReviewSourceEvent.STATS_UPDATED, handleSourceUpdate);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
     };
   }, [registry]);
 

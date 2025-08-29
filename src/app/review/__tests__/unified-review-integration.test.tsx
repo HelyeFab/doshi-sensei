@@ -447,7 +447,7 @@ describe('Unified Review Hub Integration Tests', () => {
     });
   });
 
-  describe('Premium Features', () => {
+  describe('Subscription Features', () => {
     test('shows upgrade prompt for free users', async () => {
       mockRegistry.init.mockResolvedValue(undefined);
       
@@ -458,10 +458,10 @@ describe('Unified Review Hub Integration Tests', () => {
       });
     });
 
-    test('hides upgrade prompt for premium users', async () => {
+    test('hides upgrade prompt for subscribers', async () => {
       (useAuth as jest.Mock).mockReturnValue({
         ...mockAuthContext,
-        subscriptionTier: 'premium',
+        subscriptionTier: 'monthly',
       });
       
       mockRegistry.init.mockResolvedValue(undefined);
@@ -475,7 +475,7 @@ describe('Unified Review Hub Integration Tests', () => {
       expect(screen.queryByText('Upgrade for sync →')).not.toBeInTheDocument();
     });
 
-    test('shows premium notification upgrade in settings', async () => {
+    test('shows subscription upgrade prompt in settings', async () => {
       mockRegistry.init.mockResolvedValue(undefined);
       
       render(<UnifiedReviewHub />);
@@ -488,7 +488,7 @@ describe('Unified Review Hub Integration Tests', () => {
       const settingsButton = screen.getByLabelText('Settings');
       fireEvent.click(settingsButton);
       
-      expect(screen.getByText('🔄 Upgrade to Premium for cross-device sync and advanced notification scheduling.')).toBeInTheDocument();
+      expect(screen.getByText('🔄 Upgrade for cross-device sync and advanced notification scheduling.')).toBeInTheDocument();
     });
   });
 

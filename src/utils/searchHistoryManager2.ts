@@ -32,6 +32,9 @@ export class SearchHistoryManager2 {
     try {
       const userId = user?.uid || null;
       const history = await this.getSearchHistory(user, userType);
+      
+      // Ensure history is an array
+      const validHistory = Array.isArray(history) ? history : [];
 
       // Create new entry
       const newEntry: SearchHistoryEntry = {
@@ -44,7 +47,7 @@ export class SearchHistoryManager2 {
       };
 
       // Remove any existing entry with the same search term
-      const filteredHistory = history.filter(entry =>
+      const filteredHistory = validHistory.filter(entry =>
         entry.searchTerm.toLowerCase() !== searchTerm.toLowerCase()
       );
 
@@ -82,15 +85,19 @@ export class SearchHistoryManager2 {
           this.loadFromIndexedDB(userId)
         ]);
 
+        // Ensure both are arrays before proceeding
+        const validLocalHistory = Array.isArray(localHistory) ? localHistory : [];
+        const validFirebaseHistory = Array.isArray(firebaseHistory) ? firebaseHistory : [];
+
         // Merge histories (local takes precedence for same search terms)
-        const mergedHistory = this.mergeHistories(localHistory, firebaseHistory);
+        const mergedHistory = this.mergeHistories(validLocalHistory, validFirebaseHistory);
         
         // Save merged history back to IndexedDB
         await this.saveToIndexedDB(mergedHistory, userId);
         
         // If we have more entries locally than in Firebase, sync the merged data
-        if (localHistory.length > firebaseHistory.length || 
-            this.hasNewEntries(localHistory, firebaseHistory)) {
+        if (validLocalHistory.length > validFirebaseHistory.length || 
+            this.hasNewEntries(validLocalHistory, validFirebaseHistory)) {
           await this.syncToFirebase(mergedHistory, user);
         }
         
@@ -115,7 +122,9 @@ export class SearchHistoryManager2 {
   ): Promise<void> {
     try {
       const history = await this.getSearchHistory(user, userType);
-      const filteredHistory = history.filter(entry => entry.id !== entryId);
+      // Ensure history is an array
+      const validHistory = Array.isArray(history) ? history : [];
+      const filteredHistory = validHistory.filter(entry => entry.id !== entryId);
       
       const userId = user?.uid || null;
       await this.saveToIndexedDB(filteredHistory, userId);
@@ -160,11 +169,13 @@ export class SearchHistoryManager2 {
   ): Promise<JapaneseWord[]> {
     try {
       const history = await this.getSearchHistory(user, userType);
+      // Ensure history is an array
+      const validHistory = Array.isArray(history) ? history : [];
       const allWords: JapaneseWord[] = [];
       const seenIds = new Set<string>();
 
       // Collect all unique words from all search results
-      history.forEach(entry => {
+      validHistory.forEach(entry => {
         entry.results.forEach(word => {
           if (!seenIds.has(word.id)) {
             seenIds.add(word.id);
@@ -195,7 +206,13 @@ export class SearchHistoryManager2 {
    */
   private static async loadFromIndexedDB(userId: string | null): Promise<SearchHistoryEntry[]> {
     const history = await UserScopedStorage.getFromStore(STORE_NAME, 'history', userId);
-    return history || [];
+    // Ensure we always return an array
+    if (!history) return [];
+    if (!Array.isArray(history)) {
+      console.warn('Search history in IndexedDB is not an array, resetting to empty array');
+      return [];
+    }
+    return history;
   }
 
   /**
@@ -243,7 +260,10 @@ export class SearchHistoryManager2 {
 
       if (docSnap.exists()) {
         const data = docSnap.data();
-        return data.history || [];
+        // Ensure history is actually an array
+        if (Array.isArray(data.history)) {
+          return data.history;
+        }
       }
 
       return [];
@@ -261,18 +281,22 @@ export class SearchHistoryManager2 {
     primary: SearchHistoryEntry[], 
     secondary: SearchHistoryEntry[]
   ): SearchHistoryEntry[] {
+    // Ensure both parameters are arrays
+    const primaryArray = Array.isArray(primary) ? primary : [];
+    const secondaryArray = Array.isArray(secondary) ? secondary : [];
+    
     // Create a map to track unique entries by search term and timestamp
     const historyMap = new Map<string, SearchHistoryEntry>();
     
     // Add secondary (Firebase) entries first
-    secondary.forEach(entry => {
+    secondaryArray.forEach(entry => {
       // Use a composite key of search term and rough timestamp (to handle minor differences)
       const key = `${entry.searchTerm.toLowerCase()}_${Math.floor(entry.timestamp / 60000)}`; // Group by minute
       historyMap.set(key, entry);
     });
     
     // Add primary (local) entries, which will override Firebase entries with same key
-    primary.forEach(entry => {
+    primaryArray.forEach(entry => {
       const key = `${entry.searchTerm.toLowerCase()}_${Math.floor(entry.timestamp / 60000)}`;
       historyMap.set(key, entry);
     });
@@ -292,12 +316,21 @@ export class SearchHistoryManager2 {
     localHistory: SearchHistoryEntry[], 
     firebaseHistory: SearchHistoryEntry[]
   ): boolean {
-    if (localHistory.length === 0) return false;
-    if (firebaseHistory.length === 0) return localHistory.length > 0;
+    // Ensure both parameters are arrays
+    const localArray = Array.isArray(localHistory) ? localHistory : [];
+    const firebaseArray = Array.isArray(firebaseHistory) ? firebaseHistory : [];
+    
+    if (localArray.length === 0) return false;
+    if (firebaseArray.length === 0) return localArray.length > 0;
     
     // Check if the most recent local entry is newer than the most recent Firebase entry
-    const mostRecentLocal = Math.max(...localHistory.map(e => e.timestamp));
-    const mostRecentFirebase = Math.max(...firebaseHistory.map(e => e.timestamp));
+    const localTimestamps = localArray.map(e => e.timestamp || 0);
+    const firebaseTimestamps = firebaseArray.map(e => e.timestamp || 0);
+    
+    if (localTimestamps.length === 0 || firebaseTimestamps.length === 0) return false;
+    
+    const mostRecentLocal = Math.max(...localTimestamps);
+    const mostRecentFirebase = Math.max(...firebaseTimestamps);
     
     return mostRecentLocal > mostRecentFirebase;
   }

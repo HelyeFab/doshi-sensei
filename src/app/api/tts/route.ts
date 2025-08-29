@@ -15,8 +15,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Text is required' }, { status: 400 });
     }
 
+    // If Google is explicitly requested, skip ElevenLabs
+    if (provider === 'google') {
+      // Jump directly to Google TTS implementation below
+    }
     // Try ElevenLabs first if requested and API key exists
-    if (provider === 'elevenlabs') {
+    else if (provider === 'elevenlabs') {
       const elevenLabsApiKey = process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY;
       
       if (elevenLabsApiKey) {

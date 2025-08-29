@@ -208,7 +208,7 @@ export function VocabularyTTSButton({
     <TTSButton
       text={textToSpeak}
       reading={reading}
-      options={{ voice, speed, context: 'vocabulary' }}
+      options={{ voice, speed, context: 'vocabulary', provider: 'google' }}
       {...props}
     />
   );
@@ -237,7 +237,8 @@ export function KanjiTTSButton({
       options={{
         voice,
         speed,
-        context: `kanji-${readingType}-reading`
+        context: `kanji-${readingType}-reading`,
+        provider: 'google' // Explicitly force Google TTS for kanji
       }}
       {...props}
     />

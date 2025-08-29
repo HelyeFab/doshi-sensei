@@ -16,6 +16,34 @@ interface SaveWordModalProps {
 export function SaveWordModal({ word, onClose, onSaveComplete, itemType = 'word' }: SaveWordModalProps) {
   const { user } = useAuth();
   const strings = useStrings();
+  
+  // CRITICAL: Block guest users from saving words
+  if (!user) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
+          <h3 className="text-lg font-semibold mb-4">Sign In Required</h3>
+          <p className="text-muted-foreground mb-6">
+            You must be signed in to save words to study lists.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => window.location.href = '/account'}
+              className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const [studyLists, setStudyLists] = useState<StudyList[]>([]);
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [showCreateNew, setShowCreateNew] = useState(false);

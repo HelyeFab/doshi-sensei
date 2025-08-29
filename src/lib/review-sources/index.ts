@@ -194,6 +194,11 @@ export function filterByContentType(items: ReviewItem[], contentTypes: ContentTy
 }
 
 /**
+ * Export source initialization functions
+ */
+export { initializeAllReviewSources } from './sources';
+
+/**
  * Create a simple review source for testing
  */
 export function createMockReviewSource(

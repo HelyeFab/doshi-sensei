@@ -29,6 +29,7 @@ import { WordCardSkeletonGrid } from "@/components/ui/WordCardSkeleton";
 import { VocabularyTTSButton } from "@/components/ui/TTSButton";
 import { popularSearches } from "@/services/popularSearches";
 import { ComprehensiveConjugationDisplay } from "@/components/conjugation/ComprehensiveConjugationDisplay";
+import { SaveWordModal } from "@/components/drill/SaveWordModal";
 
 // Structured Data for Conjugation Practice Page
 const conjugationStructuredData = {
@@ -474,46 +475,8 @@ interface WordCardProps {
 }
 
 function WordCard({ word, onSelect }: WordCardProps) {
-  const { checkAndTrack } = useFeature('word_lists', {
-    showToast: true,
-    trackUsage: true
-  });
-  const { isPremium, userType } = useSubscription2();
-  const [wordLists, setWordLists] = useState<WordList[]>([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const [newListName, setNewListName] = useState("");
-  const [selectedLists, setSelectedLists] = useState<string[]>([]);
-  const [isSaving, setIsSaving] = useState(false);
-
   const isConjugable = isConjugableWord(word);
-
-  useEffect(() => {
-    loadWordLists();
-  }, []);
-
-  const loadWordLists = async () => {
-    try {
-      // Load study lists and convert to legacy format for compatibility
-      const studyLists = await StudyListManager.getAllStudyLists();
-      const legacyWordLists: WordList[] = studyLists
-        .filter(
-          (list) => list.type === "flashcard" || list.type === "drillable"
-        ) // Only word lists
-        .map((studyList) => ({
-          id: studyList.id,
-          name: studyList.name,
-          description: studyList.description,
-          wordIds: studyList.itemIds,
-          createdAt: studyList.createdAt,
-          updatedAt: studyList.updatedAt,
-          color: studyList.color,
-          isConjugable: studyList.type === "drillable",
-        }));
-      setWordLists(legacyWordLists);
-    } catch (err) {
-      console.error("Error loading word lists:", err);
-    }
-  };
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -533,74 +496,13 @@ function WordCard({ word, onSelect }: WordCardProps) {
   };
 
   const handleSaveClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click
+    e.stopPropagation();
     setShowSaveModal(true);
-  };
-
-  const handleListToggle = (listId: string) => {
-    setSelectedLists((prev) =>
-      prev.includes(listId)
-        ? prev.filter((id) => id !== listId)
-        : [...prev, listId]
-    );
-  };
-
-  const handleCreateNewList = async () => {
-    if (!newListName.trim()) return;
-
-    // Check if user can create more lists using new system
-    const canCreate = await checkAndTrack();
-    if (!canCreate) {
-      // The access system will show the appropriate modal
-      return;
-    }
-
-    try {
-      // Create flashcard list by default (can store any words)
-      await StudyListManager.createStudyList(
-        newListName.trim(),
-        "flashcard",
-        undefined,
-        user,
-        isPremium ? "active" : undefined
-      );
-      // Usage tracking is handled automatically by checkAndTrack
-      setNewListName("");
-      await loadWordLists(); // Reload lists
-    } catch (err) {
-      console.error("Error creating list:", err);
-    }
-  };
-
-  const handleSaveToLists = async () => {
-    if (selectedLists.length === 0) return;
-
-    try {
-      setIsSaving(true);
-
-      // Add word to selected lists
-      await StudyListManager.addItemToLists(
-        word,
-        "word",
-        selectedLists,
-        user,
-        isPremium ? "active" : undefined
-      );
-
-      setShowSaveModal(false);
-      setSelectedLists([]);
-
-      // Show success message briefly
-    } catch (err) {
-      console.error("Error saving word to lists:", err);
-    } finally {
-      setIsSaving(false);
-    }
   };
 
   return (
     <>
-      <div className="bg-card border border-border rounded-lg p-4 hover:bg-muted transition-colors cursor-pointer group relative">
+      <div className="bg-background border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors cursor-pointer group relative">
         {/* Save Button */}
         <button
           onClick={handleSaveClick}
@@ -685,121 +587,11 @@ function WordCard({ word, onSelect }: WordCardProps) {
 
       {/* Save to List Modal */}
       {showSaveModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-card-foreground">
-                Save to List
-              </h3>
-              <button
-                onClick={() => setShowSaveModal(false)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <svg
-                  className="w-5 h-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-
-            <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-              <div className="text-lg japanese-text font-medium text-foreground">
-                {word.kanji}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {word.meaning}
-              </div>
-            </div>
-
-            {/* Create New List */}
-            <div className="mb-4">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newListName}
-                  onChange={(e) => setNewListName(e.target.value)}
-                  placeholder="Create new list..."
-                  className="flex-1 px-3 py-2 text-sm rounded border border-input bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                  onKeyPress={(e) => e.key === "Enter" && handleCreateNewList()}
-                />
-                <button
-                  onClick={handleCreateNewList}
-                  disabled={!newListName.trim()}
-                  className="px-3 py-2 text-sm bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Create
-                </button>
-              </div>
-            </div>
-
-            {/* Existing Lists */}
-            <div className="mb-6">
-              <div className="text-sm text-muted-foreground mb-2">
-                Select lists:
-              </div>
-              {wordLists.length > 0 ? (
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {wordLists.map((list) => (
-                    <label
-                      key={list.id}
-                      className="flex items-center gap-3 cursor-pointer p-2 rounded hover:bg-muted/50"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedLists.includes(list.id)}
-                        onChange={() => handleListToggle(list.id)}
-                        className="rounded border-border"
-                      />
-                      <div className="flex items-center gap-2 flex-1">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: list.color }}
-                        ></div>
-                        <span className="text-sm text-foreground">
-                          {list.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          ({list.wordIds.length} words)
-                        </span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-sm text-muted-foreground p-4 border border-border rounded-lg text-center">
-                  No lists found. Create your first list above.
-                </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowSaveModal(false)}
-                className="flex-1 px-4 py-2 text-muted-foreground border border-border rounded hover:bg-muted transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveToLists}
-                disabled={selectedLists.length === 0 || isSaving}
-                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSaving
-                  ? "Saving..."
-                  : `Save to ${selectedLists.length} list${
-                      selectedLists.length !== 1 ? "s" : ""
-                    }`}
-              </button>
-            </div>
-          </div>
-        </div>
+        <SaveWordModal
+          word={word}
+          onClose={() => setShowSaveModal(false)}
+          itemType="word"
+        />
       )}
     </>
   );

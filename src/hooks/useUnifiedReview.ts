@@ -40,7 +40,7 @@ export function useUnifiedReview() {
           if (!engineInstance) {
             // Default to guest user
             let userId = 'guest';
-            let userType = 'guest';
+            let userType: 'guest' | 'free' | 'monthly' | 'yearly' = 'guest';
             
             // Try to get user info from localStorage if available
             if (typeof window !== 'undefined') {
@@ -64,6 +64,7 @@ export function useUnifiedReview() {
             // Create the engine instance with configuration
             engineInstance = new UnifiedReviewEngine({
               userId: userId,
+              subscriptionTier: userType === 'guest' ? 'free' : userType,
               enableSync: userType === 'monthly' || userType === 'yearly',
               defaultAlgorithm: (userType === 'monthly' || userType === 'yearly') ? AlgorithmType.FSRS : AlgorithmType.SIMPLE,
               enableNotifications: true
@@ -83,6 +84,7 @@ export function useUnifiedReview() {
         // Create fallback guest engine
         engineInstance = new UnifiedReviewEngine({
           userId: 'guest',
+          subscriptionTier: 'free',
           enableSync: false,
           defaultAlgorithm: AlgorithmType.SIMPLE
         });
@@ -112,6 +114,7 @@ export async function getReviewEngine(): Promise<UnifiedReviewEngine> {
   if (!engineInstance) {
     engineInstance = new UnifiedReviewEngine({
       userId: 'guest',
+      subscriptionTier: 'free',
       enableSync: false,
       defaultAlgorithm: AlgorithmType.SIMPLE
     });

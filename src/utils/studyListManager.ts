@@ -115,6 +115,11 @@ export class StudyListManager {
     user: User | null = null,
     subscriptionStatus?: string
   ): Promise<StudyList> {
+    // CRITICAL: Prevent guest users from creating lists
+    if (!user) {
+      throw new Error('You must be signed in to create study lists');
+    }
+    
     try {
       const existingLists = await this.getAllStudyLists();
 
@@ -277,6 +282,14 @@ export class StudyListManager {
     user: User | null = null,
     subscriptionStatus?: string
   ): Promise<{ success: boolean; errors: string[] }> {
+    // CRITICAL: Prevent guest users from saving items
+    if (!user) {
+      return {
+        success: false,
+        errors: ['You must be signed in to save items to study lists']
+      };
+    }
+    
     try {
       const errors: string[] = [];
       const validListIds: string[] = [];

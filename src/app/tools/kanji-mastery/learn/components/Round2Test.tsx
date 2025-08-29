@@ -190,18 +190,6 @@ export default function Round2Test({
               <div className="text-8xl font-bold text-foreground mb-4">
                 {kanji.kanji}
               </div>
-              {/* TTS Button for Kanji - only show for reading questions */}
-              {(testType === 'kun' || testType === 'on') && (
-                <div className="absolute -right-14 top-1/2 -translate-y-1/2">
-                  <KanjiTTSButton 
-                    kanji={kanji.kanji}
-                    reading={testType === 'kun' ? kanji.kunyomi.join('、') : kanji.onyomi.join('、')}
-                    readingType={testType}
-                    size="md"
-                    variant="pill"
-                  />
-                </div>
-              )}
             </div>
             <p className="text-lg text-muted-foreground">
               {question.question}

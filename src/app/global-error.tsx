@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import DoshiMascot from '@/components/DoshiMascot';
 import { AlertTriangle, RefreshCw, Home, Bug } from 'lucide-react';
+import './globals.css';
 
 const KANJI_CHARACTERS = ['愛', '学', '美', '心', '道', '師', '和', '知', '光', '夢'];
 
@@ -39,6 +40,14 @@ export default function GlobalError({
 
   return (
     <html>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <div 
           className="min-h-screen flex items-center justify-center overflow-hidden relative"
@@ -256,9 +265,13 @@ export default function GlobalError({
             body {
               margin: 0;
               padding: 0;
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+              font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
                 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
                 sans-serif;
+            }
+            
+            * {
+              box-sizing: border-box;
             }
           `}</style>
         </div>

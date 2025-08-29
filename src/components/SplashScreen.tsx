@@ -40,9 +40,10 @@ const getPseudoRandom = (index: number, seed: number = 0) => {
   return value - Math.floor(value);
 };
 
-export default function SplashScreen({ duration = 3000, forceShow = false }: SplashScreenProps) {
+export default function SplashScreen({ duration = 6000, forceShow = false }: SplashScreenProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isAppReady, setIsAppReady] = useState(false);
   
   // Use a deterministic message based on current date to avoid hydration mismatch
   const loadingMessage = useMemo(() => {
@@ -74,18 +75,27 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
     } else if (forceShow) {
       setIsVisible(true);
     }
+
+    // Check if app is ready (this could be tied to your app's loading state)
+    const checkAppReady = () => {
+      // You can add more conditions here to check if the app is fully loaded
+      // For now, we'll just set it to true after a short delay
+      setTimeout(() => setIsAppReady(true), 100);
+    };
+    
+    checkAppReady();
   }, [forceShow]);
 
   useEffect(() => {
-    if (!forceShow && isMounted && isVisible) {
-      // Hide splash screen after specified duration
+    if (!forceShow && isMounted && isVisible && isAppReady) {
+      // Hide splash screen after specified duration (minimum 6 seconds)
       const timer = setTimeout(() => {
         setIsVisible(false);
       }, duration);
 
       return () => clearTimeout(timer);
     }
-  }, [duration, forceShow, isMounted, isVisible]);
+  }, [duration, forceShow, isMounted, isVisible, isAppReady]);
 
   // Don't render anything on server to avoid hydration issues
   if (!isMounted) {
@@ -148,6 +158,39 @@ export default function SplashScreen({ duration = 3000, forceShow = false }: Spl
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
+            {/* Big Welcome Text in Japanese */}
+            <div className="mb-8 flex">
+              {['よ', 'う', 'こ', 'そ'].map((char, index) => (
+                <motion.span
+                  key={index}
+                  className="text-6xl md:text-8xl font-bold text-white japanese-text"
+                  initial={{ opacity: 0, y: -50, scale: 0.5 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{
+                    delay: 0.1 + index * 0.15,
+                    duration: 0.8,
+                    scale: {
+                      repeat: Infinity,
+                      repeatDelay: 0.5,
+                      duration: 2,
+                      delay: 0.5 + index * 0.3,
+                      ease: "easeInOut"
+                    }
+                  }}
+                  style={{
+                    textShadow: '0 0 30px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.4)',
+                    filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))',
+                  }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </div>
+
             {/* Doshi Logo */}
             <motion.div
               animate={{

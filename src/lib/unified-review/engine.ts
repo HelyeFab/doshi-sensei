@@ -44,6 +44,9 @@ import { ReviewScheduler, ScheduledSession, DailySchedule } from './scheduling/s
 import { GoldenTimeCalculator } from './scheduling/golden-time';
 import { NotificationScheduler } from './scheduling/notification-scheduler';
 
+// Access control
+import { ReviewAccessControlService } from '../review-sources/services/reviewAccessControl';
+
 /**
  * Engine configuration options
  */
@@ -56,6 +59,9 @@ export interface EngineConfig {
   
   /** User ID for this engine instance */
   userId?: string;
+  
+  /** User subscription tier for access control */
+  subscriptionTier?: 'free' | 'monthly' | 'yearly';
   
   /** Enable automatic sync for premium users */
   enableSync?: boolean;
@@ -106,6 +112,7 @@ const DEFAULT_CONFIG: Required<EngineConfig> = {
   storage: {},
   defaultAlgorithm: AlgorithmType.FSRS,
   userId: 'anonymous',
+  subscriptionTier: 'free',
   enableSync: false,
   enableNotifications: true,
   debug: false
@@ -336,7 +343,7 @@ export class UnifiedReviewEngine {
   }
 
   /**
-   * Process a review response
+   * Process a review response with access control
    */
   public async processReview(
     itemId: string, 
@@ -348,58 +355,66 @@ export class UnifiedReviewEngine {
       throw new UREError('No active session', 'NO_SESSION_ERROR');
     }
 
-    try {
-      // Find the item in current session
-      const currentItem = this.currentSession.items.find(item => item.itemId === itemId);
-      if (!currentItem) {
-        throw new UREError(`Item ${itemId} not found in current session`, 'ITEM_NOT_FOUND_ERROR');
+    // Wrap the actual processing logic with access control
+    return ReviewAccessControlService.processReviewWithAccessControl(
+      this.config.userId,
+      this.config.subscriptionTier,
+      async () => {
+        // Original review processing logic
+        try {
+          // Find the item in current session
+          const currentItem = this.currentSession!.items.find(item => item.itemId === itemId);
+          if (!currentItem) {
+            throw new UREError(`Item ${itemId} not found in current session`, 'ITEM_NOT_FOUND_ERROR');
+          }
+
+          // Get the review item data
+          const reviewItem = await this.storage.getReviewItem(itemId);
+          if (!reviewItem) {
+            throw new UREError(`Review item ${itemId} not found`, 'REVIEW_ITEM_NOT_FOUND_ERROR');
+          }
+
+          // Get the appropriate algorithm
+          const algorithm = this.algorithms.get(currentItem.algorithm);
+          if (!algorithm) {
+            throw new UREError(`Algorithm ${currentItem.algorithm} not found`, 'ALGORITHM_NOT_FOUND_ERROR');
+          }
+
+          // Process the review with the algorithm
+          const updatedProgress = algorithm.processReview(
+            reviewItem,
+            response.rating,
+            response.responseTime,
+            currentItem
+          );
+
+          // Save updated progress
+          await this.storage.updateReviewProgress(updatedProgress);
+
+          // Update session statistics
+          this.updateSessionStats(response, updatedProgress);
+
+          // Create result
+          const result: ReviewResult = {
+            itemId,
+            response,
+            progress: updatedProgress,
+            timestamp: new Date()
+          };
+
+          // Add to session completed items
+          this.currentSession!.completed.push(result);
+          this.currentSession!.currentIndex++;
+
+          this.log(`Processed review for item ${itemId}: ${ReviewRating[response.rating]} (${response.responseTime}s)`);
+
+          return result;
+
+        } catch (error) {
+          throw new UREError(`Failed to process review for item ${itemId}`, 'PROCESS_REVIEW_ERROR', error as Error);
+        }
       }
-
-      // Get the review item data
-      const reviewItem = await this.storage.getReviewItem(itemId);
-      if (!reviewItem) {
-        throw new UREError(`Review item ${itemId} not found`, 'REVIEW_ITEM_NOT_FOUND_ERROR');
-      }
-
-      // Get the appropriate algorithm
-      const algorithm = this.algorithms.get(currentItem.algorithm);
-      if (!algorithm) {
-        throw new UREError(`Algorithm ${currentItem.algorithm} not found`, 'ALGORITHM_NOT_FOUND_ERROR');
-      }
-
-      // Process the review with the algorithm
-      const updatedProgress = algorithm.processReview(
-        reviewItem,
-        response.rating,
-        response.responseTime,
-        currentItem
-      );
-
-      // Save updated progress
-      await this.storage.updateReviewProgress(updatedProgress);
-
-      // Update session statistics
-      this.updateSessionStats(response, updatedProgress);
-
-      // Create result
-      const result: ReviewResult = {
-        itemId,
-        response,
-        progress: updatedProgress,
-        timestamp: new Date()
-      };
-
-      // Add to session completed items
-      this.currentSession.completed.push(result);
-      this.currentSession.currentIndex++;
-
-      this.log(`Processed review for item ${itemId}: ${ReviewRating[response.rating]} (${response.responseTime}s)`);
-
-      return result;
-
-    } catch (error) {
-      throw new UREError(`Failed to process review for item ${itemId}`, 'PROCESS_REVIEW_ERROR', error as Error);
-    }
+    );
   }
 
   /**

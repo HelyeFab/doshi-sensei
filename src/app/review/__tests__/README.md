@@ -7,7 +7,7 @@ This directory contains comprehensive tests for the Unified Review Hub system, c
 ### Integration Tests
 - `unified-review-integration.test.tsx` - Main integration test suite covering the complete hub workflow
 - `golden-time.test.tsx` - Specific tests for golden time learning optimization features  
-- `premium-features.test.tsx` - Tests for subscription tier-based access control and premium features
+- `subscription-features.test.tsx` - Tests for subscription tier-based access control and subscriber features
 - `test-utils.tsx` - Shared mocks, fixtures, and helper functions
 - `jest.setup.js` - Jest configuration and global test setup
 
@@ -60,9 +60,9 @@ Follow the comprehensive checklist in `UNIFIED_REVIEW_HUB_TESTING.md` to verify:
 - Transition handling between windows
 - Next window predictions
 
-✅ **Premium Features and Access Control**
+✅ **Subscription Features and Access Control**
 - Subscription tier detection
-- Feature gating for free vs premium users
+- Feature gating for free vs subscription users
 - Upgrade prompts and messaging
 - Cross-tier functionality preservation
 

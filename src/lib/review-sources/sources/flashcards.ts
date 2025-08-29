@@ -47,7 +47,7 @@ export class FlashcardsSource implements ReviewSource {
   ) {
     // Initialize flashcard SRS manager if user is provided
     if (this.userId && auth?.currentUser) {
-      flashcardSRSManager.setUser(this.userId, false); // Premium status should be updated separately
+      flashcardSRSManager.setUser(this.userId, false); // Subscription status should be updated separately
     }
   }
 
@@ -66,7 +66,7 @@ export class FlashcardsSource implements ReviewSource {
       // Initialize flashcard SRS manager
       if (this.userId) {
         try {
-          // Note: Premium status should be set separately via updatePremiumStatus method
+          // Note: Subscription status should be set separately via updateSubscriptionStatus method
           flashcardSRSManager.setUser(this.userId, false);
         } catch (error) {
           console.warn('Failed to initialize SRS manager - using local storage only:', error);
@@ -719,11 +719,11 @@ export class FlashcardsSource implements ReviewSource {
   }
 
   /**
-   * Update premium status for enhanced features
+   * Update subscription status for enhanced features
    */
-  async updatePremiumStatus(isPremium: boolean): Promise<void> {
+  async updateSubscriptionStatus(hasSubscription: boolean): Promise<void> {
     if (this.userId) {
-      flashcardSRSManager.setUser(this.userId, isPremium);
+      flashcardSRSManager.setUser(this.userId, hasSubscription);
     }
   }
 

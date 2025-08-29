@@ -1101,7 +1101,6 @@ function SaveWordModal({ word, isSentence = false, onClose, onSaveToLists }: Sav
           </button>
         </div>
       </div>
-      <ClearHistoryDialog />
     </div>
   );
 }

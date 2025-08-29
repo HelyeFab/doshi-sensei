@@ -1,8 +1,8 @@
 /**
- * Premium Features and Access Control Tests
+ * Subscription Features and Access Control Tests
  * 
  * Tests for subscription tier-based feature access,
- * upgrade prompts, and premium-only functionality.
+ * upgrade prompts, and subscriber-only functionality.
  */
 
 import React from 'react';
@@ -30,7 +30,7 @@ jest.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => children,
 }));
 
-describe('Premium Features and Access Control', () => {
+describe('Subscription Features and Access Control', () => {
   const mockRegistry = createMockRegistry();
   
   beforeEach(() => {
@@ -72,7 +72,7 @@ describe('Premium Features and Access Control', () => {
       const settingsButton = screen.getByLabelText('Settings');
       fireEvent.click(settingsButton);
       
-      expect(screen.getByText(/Upgrade to Premium for cross-device sync/)).toBeInTheDocument();
+      expect(screen.getByText(/Upgrade for cross-device sync/)).toBeInTheDocument();
       expect(screen.getByText(/advanced notification scheduling/)).toBeInTheDocument();
     });
 
@@ -86,7 +86,7 @@ describe('Premium Features and Access Control', () => {
       const settingsButton = screen.getByLabelText('Settings');
       fireEvent.click(settingsButton);
       
-      const upgradePrompt = screen.getByText(/Upgrade to Premium/).closest('div');
+      const upgradePrompt = screen.getByText(/Upgrade for/).closest('div');
       expect(upgradePrompt).toHaveClass('bg-blue-50');
       expect(upgradePrompt).toHaveClass('border-blue-200');
       expect(upgradePrompt).toHaveClass('text-blue-800');
@@ -141,7 +141,7 @@ describe('Premium Features and Access Control', () => {
       const settingsButton = screen.getByLabelText('Settings');
       fireEvent.click(settingsButton);
       
-      expect(screen.queryByText(/Upgrade to Premium/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Upgrade for/)).not.toBeInTheDocument();
     });
 
     test('shows all notification options without restrictions', async () => {
@@ -217,7 +217,7 @@ describe('Premium Features and Access Control', () => {
       const settingsButton = screen.getByLabelText('Settings');
       fireEvent.click(settingsButton);
       
-      expect(screen.getByText(/Upgrade to Premium/)).toBeInTheDocument();
+      expect(screen.getByText(/Upgrade for/)).toBeInTheDocument();
     });
   });
 
@@ -289,7 +289,7 @@ describe('Premium Features and Access Control', () => {
     });
   });
 
-  describe('Premium Feature Descriptions', () => {
+  describe('Subscription Feature Descriptions', () => {
     test('clearly explains sync benefits', async () => {
       (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('free'));
       
@@ -332,7 +332,7 @@ describe('Premium Features and Access Control', () => {
       const settingsButton = screen.getByLabelText('Settings');
       fireEvent.click(settingsButton);
       
-      expect(screen.getByText(/🔄 Upgrade to Premium/)).toBeInTheDocument();
+      expect(screen.getByText(/🔄 Upgrade for/)).toBeInTheDocument();
     });
   });
 
@@ -348,7 +348,7 @@ describe('Premium Features and Access Control', () => {
         expect(screen.getByText('Upgrade for sync →')).toBeInTheDocument();
       });
       
-      // Upgrade to premium
+      // Upgrade to subscription
       (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('monthly'));
       rerender(<UnifiedReviewHub />);
       
@@ -361,7 +361,7 @@ describe('Premium Features and Access Control', () => {
       expect(screen.getByText(/Start Review/)).toBeInTheDocument();
     });
 
-    test('shows stats only for premium users', async () => {
+    test('shows stats only for subscribers', async () => {
       // Test with paid user - stats should be visible
       (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('monthly'));
       const { rerender } = render(<UnifiedReviewHub />);
@@ -396,7 +396,7 @@ describe('Premium Features and Access Control', () => {
       });
     });
 
-    test('premium features do not interfere with screen readers', async () => {
+    test('subscription features do not interfere with screen readers', async () => {
       (useAuth as jest.Mock).mockReturnValue(createMockAuthContext('free'));
       
       render(<UnifiedReviewHub />);

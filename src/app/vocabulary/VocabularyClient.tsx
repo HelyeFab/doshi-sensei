@@ -248,79 +248,6 @@ export default function VocabularyClient() {
     setShowSaveModal(true);
   };
 
-  const handleSaveWordToLists = async (word: JapaneseWord, listIds: string[], newListName?: string) => {
-    try {
-      const listsToSaveTo = [...listIds];
-
-      // Check if we're saving an example sentence
-      if (exampleToSave) {
-        // Create sentence item
-        const sentenceItem = {
-          id: exampleToSave.id,
-          text: exampleToSave.japanese,
-          furigana: '',
-          translation: exampleToSave.english || '',
-          source: {
-            type: 'tatoeba' as const,
-            id: exampleToSave.id,
-            title: 'Tatoeba Example',
-            url: `https://tatoeba.org/en/sentences/show/${exampleToSave.id}`
-          }
-        };
-
-        // Create new list if specified
-        if (newListName?.trim()) {
-          const newList = await StudyListManager.createStudyList(
-            newListName,
-            'sentence',
-            `Created for saving example sentences`,
-            user,
-            subscription?.status
-          );
-          listsToSaveTo.push(newList.id);
-        }
-
-        // Save sentence to selected lists
-        await StudyListManager.addItemToLists(
-          sentenceItem,
-          'sentence',
-          listsToSaveTo,
-          user,
-          subscription?.status
-        );
-      } else {
-        // Create new list if specified
-        if (newListName?.trim()) {
-          const newList = await StudyListManager.createStudyList(
-            newListName,
-            'flashcard', // Default to flashcard for words
-            `Created for saving ${word.kanji}`,
-            user,
-            subscription?.status
-          );
-          listsToSaveTo.push(newList.id);
-        }
-
-        // Save word to selected lists
-        await StudyListManager.addItemToLists(
-          word,
-          'word',
-          listsToSaveTo,
-          user,
-          subscription?.status
-        );
-      }
-
-      setShowSaveModal(false);
-      setWordToSave(null);
-      setExampleToSave(null);
-
-      // Show success message (optional)
-
-    } catch (error) {
-      console.error('Error saving to lists:', error);
-    }
-  };
 
   const handleSearchHistoryClick = async (entry: SearchHistoryEntry) => {
     setSearchTerm(entry.searchTerm);
@@ -603,13 +530,12 @@ export default function VocabularyClient() {
         {showSaveModal && wordToSave && (
           <SaveWordModal
             word={wordToSave}
-            isSentence={!!exampleToSave}
+            itemType={exampleToSave ? 'sentence' : 'word'}
             onClose={() => {
               setShowSaveModal(false);
               setWordToSave(null);
               setExampleToSave(null);
             }}
-            onSaveToLists={handleSaveWordToLists}
           />
         )}
 

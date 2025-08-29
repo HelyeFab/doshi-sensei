@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ReviewSourceRegistry } from '@/lib/review-sources/registry';
+import { ReviewAccessControlService, AccessControlResult } from '@/lib/review-sources/services/reviewAccessControl';
 import { 
   ReviewSource, 
   AggregatedStats, 
@@ -53,12 +54,19 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
   const [priorityEditMode, setPriorityEditMode] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
   const [draggedSourceId, setDraggedSourceId] = useState<string | null>(null);
+  
+  // Access control state
+  const [accessControl, setAccessControl] = useState<AccessControlResult | null>(null);
 
   // Initialize registry and sources
   useEffect(() => {
     const initializeRegistry = async () => {
       try {
         setLoading(true);
+        
+        // Check access control first
+        const accessResult = ReviewAccessControlService.checkAccess(user?.uid, subscriptionTier);
+        setAccessControl(accessResult);
         
         // Initialize ALL review sources with real data connections
         // This now includes:
@@ -263,9 +271,42 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
   }, [registry]);
 
   // Check if user has paid subscription (monthly or yearly)
-  const isPremium = useMemo(() => {
+  const hasSubscription = useMemo(() => {
     return subscriptionTier === 'monthly' || subscriptionTier === 'yearly';
   }, [subscriptionTier]);
+
+  // CRITICAL: Block guest users (no uid) - show login prompt
+  if (!user?.uid && !loading) {
+    return (
+      <div className={`min-h-screen bg-gray-50 ${className}`}>
+        <div className="mobile-nav-padding">
+          <div className="px-4 py-8">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+              <div className="text-4xl mb-4">🔐</div>
+              <h2 className="text-lg font-semibold text-blue-800 mb-2">Login Required</h2>
+              <p className="text-blue-600 mb-4">
+                Please sign in to access the review system and start your Japanese learning journey.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link
+                  href="/auth/login"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="px-6 py-2 border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
+                >
+                  Create Account
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -344,8 +385,8 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
           </div>
         </header>
 
-        {/* Aggregated Statistics - Premium Only */}
-        {isPremium && aggregatedStats ? (
+        {/* Aggregated Statistics - Subscription Only */}
+        {hasSubscription && aggregatedStats ? (
           <div className="px-4 pb-6">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
               <div className="flex items-center justify-between mb-4">
@@ -402,23 +443,56 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
               </div>
             </div>
           </div>
-        ) : !isPremium ? (
-          /* Upgrade Prompt for Non-Premium Users */
+        ) : !hasSubscription ? (
+          /* Daily Limit Display for Free Users */
           <div className="px-4 pb-6">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-blue-900 mb-2">Unlock Detailed Statistics</h2>
-                  <p className="text-blue-700 text-sm">
-                    Get insights into your learning progress with detailed statistics, streaks, and retention metrics.
+                  <h2 className="text-lg font-semibold text-amber-900 mb-2">
+                    Daily Review Limit: {accessControl?.remainingCount ?? 0}/10
+                  </h2>
+                  <p className="text-amber-700 text-sm">
+                    {accessControl?.canReview 
+                      ? `You have ${accessControl.remainingCount} reviews remaining today.`
+                      : "Daily limit reached. Upgrade for unlimited reviews."
+                    }
                   </p>
+                  {!accessControl?.canReview && (
+                    <p className="text-amber-600 text-xs mt-1">
+                      Your limit resets at midnight.
+                    </p>
+                  )}
                 </div>
                 <Link
                   href="/subscription"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium whitespace-nowrap"
+                  className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium whitespace-nowrap"
                 >
                   Upgrade Now →
                 </Link>
+              </div>
+              
+              {/* Visual progress bar */}
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-sm text-amber-700 mb-2">
+                  <span>Reviews Used Today</span>
+                  <span>{(accessControl?.remainingCount !== undefined) ? (10 - accessControl.remainingCount) : 0}/10</span>
+                </div>
+                <div className="w-full bg-amber-100 rounded-full h-2">
+                  <div 
+                    className="bg-amber-500 h-2 rounded-full transition-all duration-300" 
+                    style={{ 
+                      width: `${((accessControl?.remainingCount !== undefined) ? ((10 - accessControl.remainingCount) / 10) * 100 : 0)}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+              
+              {/* Additional upgrade prompt */}
+              <div className="mt-4 pt-4 border-t border-amber-200">
+                <p className="text-amber-600 text-sm">
+                  🚀 <strong>Upgrade for:</strong> Unlimited reviews, detailed statistics, streaks, and retention metrics.
+                </p>
               </div>
             </div>
           </div>
@@ -429,9 +503,13 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
           <div className="flex flex-wrap gap-3">
             <button
               onClick={startUnifiedReview}
-              disabled={!aggregatedStats || aggregatedStats.totals.dueToday === 0}
+              disabled={
+                !aggregatedStats || 
+                aggregatedStats.totals.dueToday === 0 || 
+                !accessControl?.canReview
+              }
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                aggregatedStats && aggregatedStats.totals.dueToday > 0
+                aggregatedStats && aggregatedStats.totals.dueToday > 0 && accessControl?.canReview
                   ? 'bg-red-600 text-white hover:bg-red-700 shadow-sm'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               }`}
@@ -439,7 +517,10 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Start Review {aggregatedStats ? `(${aggregatedStats.totals.dueToday})` : ''}
+              {!accessControl?.canReview && !hasSubscription 
+                ? 'Daily Limit Reached'
+                : `Start Review ${aggregatedStats ? `(${aggregatedStats.totals.dueToday})` : ''}`
+              }
             </button>
             
             <button
@@ -475,7 +556,15 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <AnimatePresence>
               {prioritizedSources.map((source) => {
-                const config = REVIEW_SOURCE_CONFIGS[source.type];
+                // Use source properties directly if available, fallback to config
+                const config = source.type && REVIEW_SOURCE_CONFIGS[source.type] 
+                  ? REVIEW_SOURCE_CONFIGS[source.type]
+                  : {
+                      name: source.name,
+                      icon: source.icon || '📚',
+                      description: source.description || '',
+                      paths: source.paths || { main: '/' }
+                    };
                 const userPrefs = registry?.getUserPreferences();
                 const isEnabled = userPrefs?.enabled[source.id] !== false;
                 const priority = userPrefs?.priorities[source.id] || SourcePriority.MEDIUM;
@@ -666,10 +755,10 @@ const UnifiedReviewHub: React.FC<UnifiedReviewHubProps> = ({ className = '' }) =
                     <input type="checkbox" className="rounded" />
                   </div>
                   
-                  {!isPremium && (
+                  {!hasSubscription && (
                     <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                       <p className="text-sm text-blue-800">
-                        🔄 Upgrade to Premium for cross-device sync and advanced notification scheduling.
+                        🔄 Upgrade for cross-device sync and advanced notification scheduling.
                       </p>
                     </div>
                   )}

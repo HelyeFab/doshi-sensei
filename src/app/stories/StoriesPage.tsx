@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { SmartPageHeader } from '@/components/navigation/SmartPageHeader';
 import { Story } from '@/types/story';
@@ -17,8 +17,13 @@ import { MobileAwareContainer } from '@/components/layout/MobileAwareContainer';
 import { ExternalImage } from '@/components/ui/OptimizedImage';
 import { DesktopContainer } from '@/components/layout/DesktopContainer';
 
-export default function StoriesPage() {
+function StoriesPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Check if we're in review mode from Review Hub
+  const isReviewMode = searchParams.get('mode') === 'review';
+  const returnTo = searchParams.get('returnTo') || '/';
   const { user } = useAuth();
   const { checkAndTrack, canUse, remaining, isLoading: featureLoading } = useFeature('ai_stories', {
     showModal: true,
@@ -113,7 +118,10 @@ export default function StoriesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SmartPageHeader title="Stories" backHref="/" />
+      <SmartPageHeader 
+        title={isReviewMode ? "Stories" : "Stories"}
+        backHref={isReviewMode && returnTo ? returnTo : "/"}
+      />
       
       {/* Main Content */}
       <DesktopContainer>
@@ -337,5 +345,21 @@ export default function StoriesPage() {
       </MobileAwareContainer>
       </DesktopContainer>
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function StoriesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading Stories...</p>
+        </div>
+      </div>
+    }>
+      <StoriesPageContent />
+    </Suspense>
   );
 }

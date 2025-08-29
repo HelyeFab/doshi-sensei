@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useConfirmDialog } from '@/components/ConfirmDialog';
 import { JapaneseWord, StudyList, StudyListType } from '@/types';
 import type { ExampleSentence } from '@/types/sentences';
@@ -76,7 +77,13 @@ const mapUserType = (type: string): 'guest' | 'free' | 'monthly' | 'yearly' => {
   return type as 'guest' | 'free' | 'monthly' | 'yearly';
 };
 
-export default function VocabularyPage() {
+function VocabularyPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Check if we're in review mode from Review Hub
+  const isReviewMode = searchParams.get('mode') === 'review';
+  const returnTo = searchParams.get('returnTo') || '/';
   const { user } = useAuth();
   const { subscription, userType } = useSubscription2();
   const strings = useStrings();
@@ -375,7 +382,10 @@ export default function VocabularyPage() {
         }}
       />
       
-      <SmartPageHeader title="Vocabulary" />
+      <SmartPageHeader 
+        title="Vocabulary" 
+        backHref={isReviewMode && returnTo ? returnTo : "/"}
+      />
       
       {/* Main Content */}
       <DesktopContainer>
@@ -621,6 +631,22 @@ export default function VocabularyPage() {
       </MobileAwareContainer>
       </DesktopContainer>
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function VocabularyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading Vocabulary...</p>
+        </div>
+      </div>
+    }>
+      <VocabularyPageContent />
+    </Suspense>
   );
 }
 

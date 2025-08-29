@@ -67,27 +67,27 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
   // Determine gradient colors based on source type
   const getGradientColors = () => {
     const baseColors = {
-      'kanji-mastery': 'from-red-500 to-red-600',
-      'textbook-vocabulary': 'from-blue-500 to-blue-600',
-      'flashcards': 'from-purple-500 to-purple-600',
-      'grammar-drills': 'from-pink-500 to-pink-600',
-      'custom-lists': 'from-gray-500 to-gray-600',
-      'shadowing-practice': 'from-indigo-500 to-indigo-600',
-      'reading-comprehension': 'from-green-500 to-green-600',
-      'listening-practice': 'from-yellow-500 to-yellow-600'
+      'kanji-mastery': 'from-destructive to-destructive/80',
+      'textbook-vocabulary': 'from-primary to-primary/80',
+      'flashcards': 'from-accent to-accent/80',
+      'grammar-drills': 'from-secondary to-secondary/80',
+      'custom-lists': 'from-muted to-muted/80',
+      'shadowing-practice': 'from-primary/60 to-primary/40',
+      'reading-comprehension': 'from-secondary/60 to-secondary/40',
+      'listening-practice': 'from-accent/60 to-accent/40'
     };
     
-    return baseColors[source.type] || 'from-gray-500 to-gray-600';
+    return baseColors[source.type] || 'from-muted to-muted/80';
   };
 
   return (
     <motion.div
-      className={`bg-white rounded-lg shadow-sm border transition-all cursor-pointer ${
+      className={`bg-card rounded-lg shadow-sm border transition-all cursor-pointer ${
         isDisabled 
-          ? 'border-gray-200 opacity-60' 
+          ? 'border-border/50 opacity-60' 
           : hasItemsDue 
-            ? 'border-gray-100 hover:shadow-md hover:scale-[1.02]' 
-            : 'border-gray-100 hover:shadow-sm'
+            ? 'border-border hover:shadow-md hover:scale-[1.02]' 
+            : 'border-border hover:shadow-sm'
       }`}
       onClick={!isDisabled ? onNavigate : undefined}
       whileHover={!isDisabled ? { y: -2 } : undefined}
@@ -101,9 +101,9 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute top-2 right-2 bg-amber-100 border border-amber-200 rounded-full px-2 py-1"
+            className="absolute top-2 right-2 bg-accent/20 border border-accent/30 rounded-full px-2 py-1"
           >
-            <span className="text-xs font-medium text-amber-700">🌅 Golden Time</span>
+            <span className="text-xs font-medium text-accent-foreground">🌅 Golden Time</span>
           </motion.div>
         )}
 
@@ -122,13 +122,13 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
           {/* Due Now */}
           <div className="text-center">
             <div className={`text-2xl font-bold ${
-              isOverdue ? 'text-red-600' : stats.dueToday > 0 ? 'text-orange-600' : 'text-gray-400'
+              isOverdue ? 'text-destructive' : stats.dueToday > 0 ? 'text-accent' : 'text-muted-foreground'
             }`}>
               {stats.dueToday}
             </div>
-            <div className="text-xs text-gray-500">Due Now</div>
+            <div className="text-xs text-muted-foreground">Due Now</div>
             {isOverdue && (
-              <div className="text-xs text-red-500 mt-1">
+              <div className="text-xs text-destructive mt-1">
                 +{stats.overdue} overdue
               </div>
             )}
@@ -136,49 +136,49 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
 
           {/* Total Items */}
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-primary">
               {stats.totalItems}
             </div>
-            <div className="text-xs text-gray-500">Total</div>
+            <div className="text-xs text-muted-foreground">Total</div>
           </div>
 
           {/* Accuracy */}
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-secondary">
               {(stats.retentionRate).toFixed(0)}%
             </div>
-            <div className="text-xs text-gray-500">Accuracy</div>
+            <div className="text-xs text-muted-foreground">Accuracy</div>
           </div>
         </div>
 
         {/* Preview Cards */}
         {showPreview && hasItemsDue && dueItems.length > 0 && (
           <div className="mb-4">
-            <div className="text-sm text-gray-600 mb-2">Next items:</div>
+            <div className="text-sm text-muted-foreground mb-2">Next items:</div>
             <div className="space-y-2">
               {dueItems.slice(0, 3).map((item, index) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded-lg text-sm"
+                  className="flex items-center justify-between p-2 bg-muted/30 rounded-lg text-sm"
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-900 truncate">
+                    <div className="font-medium text-foreground truncate">
                       {item.content.primary}
                     </div>
                     {item.content.secondary && (
-                      <div className="text-gray-500 text-xs truncate">
+                      <div className="text-muted-foreground text-xs truncate">
                         {item.content.secondary}
                       </div>
                     )}
                   </div>
-                  <div className="text-xs text-gray-400 ml-2">
+                  <div className="text-xs text-muted-foreground/70 ml-2">
                     {formatLastReviewed(item.metadata.source?.lastReviewed)}
                   </div>
                 </div>
               ))}
               
               {dueItems.length > 3 && (
-                <div className="text-center text-sm text-gray-500 py-2">
+                <div className="text-center text-sm text-muted-foreground py-2">
                   +{dueItems.length - 3} more items
                 </div>
               )}
@@ -188,17 +188,17 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
 
         {/* Estimated Time */}
         {hasItemsDue && (
-          <div className="flex items-center justify-between mb-4 p-3 bg-blue-50 rounded-lg">
+          <div className="flex items-center justify-between mb-4 p-3 bg-primary/10 rounded-lg">
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span className="text-sm font-medium text-blue-800">
+              <span className="text-sm font-medium text-primary">
                 Estimated time: {formatTime(estimatedTimeMinutes)}
               </span>
             </div>
             {isGoldenTime && (
-              <span className="text-xs text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
+              <span className="text-xs text-accent-foreground bg-accent/20 px-2 py-1 rounded-full">
                 1.2× bonus
               </span>
             )}
@@ -221,10 +221,10 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
 
           {/* Action Button/Arrow */}
           {isDisabled ? (
-            <span className="text-xs text-gray-400">Disabled</span>
+            <span className="text-xs text-muted-foreground">Disabled</span>
           ) : hasItemsDue ? (
             <motion.button
-              className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 bg-destructive text-destructive-foreground rounded-lg text-sm font-medium hover:bg-destructive/90 transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={(e) => {
@@ -238,7 +238,7 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
               </svg>
             </motion.button>
           ) : (
-            <div className="flex items-center gap-1 text-gray-400">
+            <div className="flex items-center gap-1 text-muted-foreground">
               <span className="text-sm">Up to date</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -250,13 +250,13 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
         {/* No Items State */}
         {!hasItemsDue && !isDisabled && (
           <div className="text-center py-4">
-            <div className="text-green-600 mb-2">
+            <div className="text-secondary mb-2">
               <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-sm text-gray-600">All caught up!</p>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-sm text-muted-foreground">All caught up!</p>
+            <p className="text-xs text-muted-foreground/70 mt-1">
               Next review: {stats.lastReviewSession ? 'Tomorrow' : 'Add items to start'}
             </p>
           </div>
@@ -265,13 +265,13 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
         {/* Disabled State */}
         {isDisabled && (
           <div className="text-center py-4">
-            <div className="text-gray-400 mb-2">
+            <div className="text-muted-foreground mb-2">
               <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636" />
               </svg>
             </div>
-            <p className="text-sm text-gray-500">Source disabled</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-sm text-muted-foreground">Source disabled</p>
+            <p className="text-xs text-muted-foreground/70 mt-1">
               Enable in settings to start reviewing
             </p>
           </div>
@@ -279,10 +279,10 @@ const ReviewSourceCard: React.FC<ReviewSourceCardProps> = ({
 
         {/* Study Streak Indicator */}
         {stats.studyStreak > 0 && hasItemsDue && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="mt-3 pt-3 border-t border-border">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Study streak:</span>
-              <span className="font-medium text-orange-600">
+              <span className="text-muted-foreground">Study streak:</span>
+              <span className="font-medium text-accent">
                 🔥 {stats.studyStreak} days
               </span>
             </div>

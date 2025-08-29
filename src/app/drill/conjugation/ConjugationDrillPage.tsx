@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { JapaneseWord, DrillQuestion, WordList } from '@/types';
 import { ExtendedConjugationForms } from '@/types/conjugation-extended';
 import { ExtendedConjugationEngine, getRandomConjugationForm as getRandomForm, generateQuestionStem as generateStem } from '@/utils/conjugation-extended';
@@ -73,8 +73,13 @@ const conjugationDrillStructuredData = {
   ]
 };
 
-export default function ConjugationDrillPage() {
+function ConjugationDrillPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Check if we're in review mode from Review Hub
+  const isReviewMode = searchParams.get('mode') === 'review';
+  const returnTo = searchParams.get('returnTo') || '/drill';
   const { settings, isLoading: settingsLoading } = useSettings();
   const { user } = useAuth();
   const { checkAndTrack, canUse, remaining, isLoading: featureLoading } = useFeature('drill_practice', {
@@ -441,7 +446,10 @@ export default function ConjugationDrillPage() {
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-background">
-        <SmartPageHeader title="Conjugation Drill" backHref="/drill" />
+        <SmartPageHeader 
+          title={isReviewMode ? "Conjugation Drill" : "Conjugation Drill"}
+          backHref={isReviewMode && returnTo ? returnTo : "/drill"}
+        />
         
         {/* Main Content */}
         <MobileAwareContainer className="container mx-auto px-4 py-8">
@@ -781,5 +789,21 @@ export default function ConjugationDrillPage() {
         />
       )}
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function ConjugationDrillPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading Conjugation Drill...</p>
+        </div>
+      </div>
+    }>
+      <ConjugationDrillPageContent />
+    </Suspense>
   );
 }

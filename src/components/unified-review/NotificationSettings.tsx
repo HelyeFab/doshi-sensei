@@ -224,7 +224,7 @@ export default function NotificationSettings({
         <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
           🔔 Notification Settings
           {hasUnsavedChanges && (
-            <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">
+            <span className="text-xs bg-accent/20 text-accent-foreground px-2 py-1 rounded">
               Unsaved changes
             </span>
           )}
@@ -233,7 +233,7 @@ export default function NotificationSettings({
 
       <CardContent className="space-y-6">
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+          <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-md text-destructive text-sm">
             {error}
           </div>
         )}

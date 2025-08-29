@@ -55,25 +55,25 @@ const RATING_CONFIGS = {
   [ReviewRating.AGAIN]: {
     label: 'Again',
     description: 'Complete failure',
-    color: 'bg-red-600 hover:bg-red-700 text-white',
+    color: 'bg-destructive hover:bg-destructive/90 text-destructive-foreground',
     shortcut: '1'
   },
   [ReviewRating.HARD]: {
     label: 'Hard',
     description: 'Incorrect but some knowledge',
-    color: 'bg-orange-600 hover:bg-orange-700 text-white',
+    color: 'bg-accent hover:bg-accent/90 text-accent-foreground',
     shortcut: '2'
   },
   [ReviewRating.GOOD]: {
     label: 'Good',
     description: 'Correct with effort',
-    color: 'bg-blue-600 hover:bg-blue-700 text-white',
+    color: 'bg-primary hover:bg-primary/90 text-primary-foreground',
     shortcut: '3'
   },
   [ReviewRating.EASY]: {
     label: 'Easy',
     description: 'Correct with ease',
-    color: 'bg-green-600 hover:bg-green-700 text-white',
+    color: 'bg-secondary hover:bg-secondary/90 text-secondary-foreground',
     shortcut: '4'
   }
 };

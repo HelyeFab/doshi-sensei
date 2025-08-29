@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { JapaneseWord, WordList } from '@/types';
 import { FlashcardItem, isAnkiCard, isJapaneseWord, getFlashcardDisplayText } from '@/types/flashcard';
 import { Upload, Settings, ChevronDown, Volume2, Keyboard, BarChart3, BookOpen, Zap, Clock, Hash, AlertCircle } from 'lucide-react';
@@ -92,8 +92,13 @@ const DEFAULT_CARD_SETTINGS: CardSettings = {
   focusMode: 'standard'
 };
 
-export default function FlashcardReviewPage() {
+function FlashcardReviewPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Check if we're in review mode from Review Hub
+  const isReviewMode = searchParams.get('mode') === 'review';
+  const returnTo = searchParams.get('returnTo') || '/drill';
   const { settings, isLoading: settingsLoading } = useSettings();
   const { user } = useAuth();
   const { checkAndTrack, canUse, remaining, isLoading: featureLoading } = useFeature('flashcard_review', {
@@ -783,7 +788,10 @@ export default function FlashcardReviewPage() {
   if (!sessionStarted) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <SmartPageHeader title="Flashcard Review" backHref="/drill" />
+        <SmartPageHeader 
+          title={isReviewMode ? "Flashcard Review" : "Flashcard Review"}
+          backHref={isReviewMode && returnTo ? returnTo : "/drill"}
+        />
         
         {/* Main Content */}
         <MobileAwareContainer className="container mx-auto px-4 py-8 md:pb-8">
@@ -1222,5 +1230,21 @@ export default function FlashcardReviewPage() {
         loading={confirmDialog.loading}
       />
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function FlashcardReviewPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading Flashcard Review...</p>
+        </div>
+      </div>
+    }>
+      <FlashcardReviewPageContent />
+    </Suspense>
   );
 }

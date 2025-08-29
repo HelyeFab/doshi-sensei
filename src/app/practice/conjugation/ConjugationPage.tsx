@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useMemo, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { JapaneseWord, WordList } from "@/types";
 import { ExtendedConjugationForms } from "@/types/conjugation-extended";
 import { searchWords } from "@/utils/api";
@@ -74,8 +74,13 @@ const conjugationStructuredData = {
   ],
 };
 
-export default function ConjugationPage() {
+function ConjugationPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Check if we're in review mode from Review Hub
+  const isReviewMode = searchParams.get('mode') === 'review';
+  const returnTo = searchParams.get('returnTo') || '/';
   const { user } = useAuth();
   // Note: This main component doesn't use access control directly
   // Access control is handled in child WordCard components
@@ -207,7 +212,10 @@ export default function ConjugationPage() {
           }}
         />
 
-        <SmartPageHeader title="Conjugation Practice" />
+        <SmartPageHeader 
+          title="Conjugation Practice" 
+          backHref={isReviewMode && returnTo ? returnTo : "/"}
+        />
 
         <main className="max-w-7xl mx-auto mb-32 md:mb-8 pb-safe">
           {/* Target Icon */}
@@ -251,6 +259,22 @@ export default function ConjugationPage() {
       </MobileAwareContainer>
       </DesktopContainer>
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function ConjugationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading Conjugation Practice...</p>
+        </div>
+      </div>
+    }>
+      <ConjugationPageContent />
+    </Suspense>
   );
 }
 

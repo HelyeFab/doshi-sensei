@@ -67,20 +67,20 @@ interface ProgressDashboardProps {
 }
 
 const CONTENT_TYPE_CONFIG = {
-  [ContentType.KANJI]: { label: 'Kanji', icon: '漢', color: 'bg-destructive' },
-  [ContentType.VOCABULARY]: { label: 'Vocabulary', icon: '語', color: 'bg-primary' },
-  [ContentType.FLASHCARD]: { label: 'Flashcards', icon: '📚', color: 'bg-secondary' },
-  [ContentType.GRAMMAR]: { label: 'Grammar', icon: '文', color: 'bg-accent' },
-  [ContentType.SENTENCE]: { label: 'Sentences', icon: '例', color: 'bg-muted' },
-  [ContentType.RADICAL]: { label: 'Radicals', icon: '部', color: 'bg-card' },
-  [ContentType.CUSTOM]: { label: 'Custom', icon: '⭐', color: 'bg-primary/80' }
+  [ContentType.KANJI]: { label: 'Kanji', icon: '漢', color: 'bg-red-500' },
+  [ContentType.VOCABULARY]: { label: 'Vocabulary', icon: '語', color: 'bg-blue-500' },
+  [ContentType.FLASHCARD]: { label: 'Flashcards', icon: '📚', color: 'bg-green-500' },
+  [ContentType.GRAMMAR]: { label: 'Grammar', icon: '文', color: 'bg-purple-500' },
+  [ContentType.SENTENCE]: { label: 'Sentences', icon: '例', color: 'bg-orange-500' },
+  [ContentType.RADICAL]: { label: 'Radicals', icon: '部', color: 'bg-pink-500' },
+  [ContentType.CUSTOM]: { label: 'Custom', icon: '⭐', color: 'bg-yellow-500' }
 };
 
 const RATING_CONFIG = {
-  [ReviewRating.AGAIN]: { label: 'Again', color: 'bg-destructive' },
-  [ReviewRating.HARD]: { label: 'Hard', color: 'bg-accent' },
-  [ReviewRating.GOOD]: { label: 'Good', color: 'bg-primary' },
-  [ReviewRating.EASY]: { label: 'Easy', color: 'bg-secondary' }
+  [ReviewRating.AGAIN]: { label: 'Again', color: 'bg-red-500' },
+  [ReviewRating.HARD]: { label: 'Hard', color: 'bg-orange-500' },
+  [ReviewRating.GOOD]: { label: 'Good', color: 'bg-blue-500' },
+  [ReviewRating.EASY]: { label: 'Easy', color: 'bg-green-500' }
 };
 
 export default function ProgressDashboard({
@@ -381,7 +381,7 @@ export default function ProgressDashboard({
                     .map((day, i) => (
                     <div key={i} className="flex flex-col items-center gap-1">
                       <div 
-                        className="bg-primary rounded-t w-4"
+                        className="bg-blue-500 rounded-t w-4"
                         style={{ height: `${(day.reviews / 60) * 100}%` }}
                       ></div>
                       <div className="text-xs text-muted-foreground transform -rotate-45">
@@ -404,7 +404,7 @@ export default function ProgressDashboard({
                     return (
                       <div key={rating} className="text-center">
                         <div className={`h-16 ${config.color} rounded mb-2 flex items-end justify-center pb-2`}>
-                          <span className="text-card font-bold">{count}</span>
+                          <span className="text-white font-bold">{count}</span>
                         </div>
                         <div className="text-sm text-foreground">{config.label}</div>
                         <div className="text-xs text-muted-foreground">{Math.round(percentage)}%</div>
@@ -458,23 +458,23 @@ export default function ProgressDashboard({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
-                <div className="p-3 bg-secondary/10 border border-secondary/30 rounded-lg">
-                  <div className="font-medium text-secondary-foreground">Strong Performance</div>
-                  <div className="text-sm text-secondary-foreground/80">
+                <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="font-medium text-green-800">Strong Performance</div>
+                  <div className="text-sm text-green-700">
                     Your retention rate of {stats.overview.retentionRate}% is excellent! Keep up the consistent practice.
                   </div>
                 </div>
                 
-                <div className="p-3 bg-primary/10 border border-primary/30 rounded-lg">
-                  <div className="font-medium text-primary">Study Recommendation</div>
-                  <div className="text-sm text-primary/80">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="font-medium text-blue-800">Study Recommendation</div>
+                  <div className="text-sm text-blue-700">
                     Focus on grammar items - you have {stats.contentTypes[ContentType.GRAMMAR].dueToday} items due today.
                   </div>
                 </div>
                 
-                <div className="p-3 bg-accent/10 border border-accent/30 rounded-lg">
-                  <div className="font-medium text-accent-foreground">Streak Goal</div>
-                  <div className="text-sm text-accent-foreground/80">
+                <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                  <div className="font-medium text-orange-800">Streak Goal</div>
+                  <div className="text-sm text-orange-700">
                     You're {stats.overview.longestStreak - stats.overview.currentStreak} days away from beating your longest streak!
                   </div>
                 </div>

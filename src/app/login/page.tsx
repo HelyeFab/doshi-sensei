@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import DoshiMascot from '@/components/DoshiMascot';
@@ -21,9 +21,10 @@ import {
   Home
 } from 'lucide-react';
 
-export default function LoginPage() {
+function LoginPageContent() {
   const { user, sendMagicLink, signInWithGoogle, isEmailVerified, sendVerificationEmail } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   
   const [email, setEmail] = useState('');
@@ -31,6 +32,21 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [showVerificationReminder, setShowVerificationReminder] = useState(false);
+  
+  // Get message and returnTo from URL params
+  const message = searchParams.get('message');
+  const returnTo = searchParams.get('returnTo') || '/';
+  
+  // Custom message for review system
+  const getCustomMessage = () => {
+    if (message === 'start-japanese-journey') {
+      return {
+        title: '🎌 Start Your Japanese Journey',
+        subtitle: 'Sign in to access the review system and track your learning progress'
+      };
+    }
+    return null;
+  };
 
   // Check if user is logged in
   useEffect(() => {
@@ -39,8 +55,8 @@ export default function LoginPage() {
       if (!isEmailVerified()) {
         setShowVerificationReminder(true);
       } else {
-        // Redirect to home if logged in and verified
-        router.push('/');
+        // Redirect to returnTo URL or home if logged in and verified
+        router.push(returnTo);
       }
     }
   }, [user, router, isEmailVerified]);
@@ -79,7 +95,7 @@ export default function LoginPage() {
       
       if (result.success) {
         toast.success('Welcome back!');
-        router.push('/');
+        router.push(returnTo);
       } else {
         toast.error(result.message || 'Failed to sign in with Google');
       }
@@ -199,7 +215,7 @@ export default function LoginPage() {
             </button>
             
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push(returnTo)}
               className="w-full py-3 bg-secondary text-secondary-foreground rounded-xl font-medium hover:bg-secondary/80 transition-colors"
             >
               Continue to App
@@ -258,10 +274,10 @@ export default function LoginPage() {
               />
             </motion.div>
             <h1 className="text-2xl font-bold mb-2">
-              Welcome to Dōshi Sensei
+              {getCustomMessage()?.title || 'Welcome to Dōshi Sensei'}
             </h1>
             <p className="text-white/90 text-sm">
-              Sign in securely with no password needed
+              {getCustomMessage()?.subtitle || 'Sign in securely with no password needed'}
             </p>
           </div>
 
@@ -392,5 +408,21 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+// Wrapper component with Suspense boundary
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading login...</p>
+        </div>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
   );
 }

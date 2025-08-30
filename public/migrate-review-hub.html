@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Migrate Review Hub Data</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        #output {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        .warning { color: #ffd93d; }
+        .info { color: #74c0fc; }
+        h1 { color: #fff; }
+    </style>
+</head>
+<body>
+    <h1>🔄 Migrate Review Hub Data to Firebase</h1>
+    <p>This will migrate your 101 review items from IndexedDB to Firebase.</p>
+    
+    <div>
+        <button id="checkBtn" onclick="checkData()">Check Data</button>
+        <button id="migrateBtn" onclick="startMigration()" disabled>Start Migration</button>
+        <button id="clearBtn" onclick="clearOutput()">Clear Output</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, collection, writeBatch } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYpEVR4ijiVQuJVY1QVRytjvRH9LzWKpg",
+            authDomain: "doshi-sensei.firebaseapp.com",
+            projectId: "doshi-sensei",
+            storageBucket: "doshi-sensei.appspot.com",
+            messagingSenderId: "280687059324",
+            appId: "1:280687059324:web:36c0a4e1c756a5b0073ca7",
+            measurementId: "G-W49QVZP6ZJ"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const output = document.getElementById('output');
+        const migrateBtn = document.getElementById('migrateBtn');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            output.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Check auth status
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                log(`✅ Logged in as: ${user.uid}`, 'success');
+                log(`📧 Email: ${user.email}`, 'info');
+                // Enable the button
+                const btn = document.getElementById('migrateBtn');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.background = '#4CAF50';
+                    btn.style.cursor = 'pointer';
+                }
+            } else {
+                log('❌ Not logged in. Please log in to the main app first.', 'error');
+                const btn = document.getElementById('migrateBtn');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.style.background = '#666';
+                    btn.style.cursor = 'not-allowed';
+                }
+            }
+        });
+        
+        async function checkData() {
+            log('Checking Review Hub data...', 'info');
+            
+            try {
+                // Open review_hub_db
+                const reviewDB = await new Promise((resolve, reject) => {
+                    const request = indexedDB.open('review_hub_db');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                log(`✅ Database opened: review_hub_db`, 'success');
+                log(`  Object stores: ${Array.from(reviewDB.objectStoreNames).join(', ')}`, 'info');
+
+                // Count items in review_store
+                const tx = reviewDB.transaction(['review_store'], 'readonly');
+                const store = tx.objectStore('review_store');
+                
+                const count = await new Promise((resolve, reject) => {
+                    const request = store.count();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                log(`📚 Found ${count} review items in IndexedDB`, 'success');
+
+                // Get sample data
+                const sampleData = await new Promise((resolve, reject) => {
+                    const request = store.getAll(null, 3);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                if (sampleData && sampleData.length > 0) {
+                    log('\nSample item:', 'info');
+                    const sample = sampleData[0];
+                    log(`  ID: ${sample.id}`, 'info');
+                    log(`  Source: ${sample.sourceType}`, 'info');
+                    log(`  Content Type: ${sample.contentType}`, 'info');
+                    log(`  Keys: ${Object.keys(sample).slice(0, 10).join(', ')}...`, 'info');
+                }
+
+                reviewDB.close();
+            } catch (error) {
+                log(`Error checking data: ${error.message}`, 'error');
+            }
+        }
+
+        async function startMigration() {
+            const user = auth.currentUser;
+            if (!user) {
+                log('❌ Not logged in!', 'error');
+                return;
+            }
+
+            log('🚀 Starting migration...', 'info');
+            
+            const results = {
+                found: 0,
+                migrated: 0,
+                errors: []
+            };
+
+            try {
+                // Open review_hub_db
+                const reviewDB = await new Promise((resolve, reject) => {
+                    const request = indexedDB.open('review_hub_db');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                const tx = reviewDB.transaction(['review_store'], 'readonly');
+                const store = tx.objectStore('review_store');
+                
+                // Get all review items
+                const allItems = await new Promise((resolve, reject) => {
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                    request.onerror = () => reject(request.error);
+                });
+
+                results.found = allItems.length;
+                log(`\n📚 Found ${allItems.length} review items to migrate`, 'info');
+
+                if (allItems.length > 0) {
+                    // Group items by source type for better organization
+                    const itemsBySource = {};
+                    allItems.forEach(item => {
+                        const source = item.sourceType || 'unknown';
+                        if (!itemsBySource[source]) {
+                            itemsBySource[source] = [];
+                        }
+                        itemsBySource[source].push(item);
+                    });
+
+                    log('\nItems by source:', 'info');
+                    Object.entries(itemsBySource).forEach(([source, items]) => {
+                        log(`  ${source}: ${items.length} items`, 'info');
+                    });
+
+                    // Migrate to Firebase
+                    log('\n🔄 Migrating to Firebase...', 'info');
+                    
+                    // Process in batches of 500 (Firestore limit)
+                    const batchSize = 500;
+                    for (let i = 0; i < allItems.length; i += batchSize) {
+                        const batch = writeBatch(db);
+                        const batchItems = allItems.slice(i, Math.min(i + batchSize, allItems.length));
+                        
+                        for (const item of batchItems) {
+                            try {
+                                // Determine collection based on source type
+                                let collectionName = 'reviewHub';
+                                if (item.sourceType === 'TEXTBOOK_VOCAB') {
+                                    collectionName = 'textbookVocabularyProgress';
+                                } else if (item.sourceType === 'KANJI_MASTERY') {
+                                    collectionName = 'kanjiProgress';
+                                }
+                                
+                                const docRef = doc(db, 'users', user.uid, collectionName, item.id);
+                                
+                                // Prepare data for Firebase
+                                const firebaseData = {
+                                    ...item,
+                                    userId: user.uid,
+                                    migratedAt: new Date().toISOString(),
+                                    // Convert dates to ISO strings
+                                    createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : item.createdAt || new Date().toISOString(),
+                                    updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : item.updatedAt || new Date().toISOString(),
+                                    lastReviewed: item.lastReviewed instanceof Date ? item.lastReviewed.toISOString() : item.lastReviewed,
+                                    nextReview: item.nextReview instanceof Date ? item.nextReview.toISOString() : item.nextReview,
+                                    dueDate: item.dueDate instanceof Date ? item.dueDate.toISOString() : item.dueDate
+                                };
+                                
+                                batch.set(docRef, firebaseData);
+                                results.migrated++;
+                                
+                                if (results.migrated % 10 === 0) {
+                                    log(`  Progress: ${results.migrated}/${allItems.length}`, 'info');
+                                }
+                            } catch (error) {
+                                results.errors.push(`Item ${item.id}: ${error.message}`);
+                            }
+                        }
+                        
+                        await batch.commit();
+                        log(`  ✅ Batch committed: ${Math.min(i + batchSize, allItems.length)}/${allItems.length}`, 'success');
+                    }
+                }
+
+                reviewDB.close();
+
+                // Also migrate localStorage data if present
+                const reviewEventsProcessed = localStorage.getItem('review_events_processed');
+                if (reviewEventsProcessed) {
+                    try {
+                        const events = JSON.parse(reviewEventsProcessed);
+                        log(`\n📋 Found ${events.length} processed review events in localStorage`, 'info');
+                        
+                        const docRef = doc(db, 'users', user.uid, 'reviewEventsProcessed', 'events');
+                        await setDoc(docRef, {
+                            events: events,
+                            userId: user.uid,
+                            migratedAt: new Date().toISOString()
+                        });
+                        
+                        log(`  ✅ Migrated review events to Firebase`, 'success');
+                    } catch (e) {
+                        log(`  ❌ Failed to migrate review events: ${e.message}`, 'error');
+                    }
+                }
+
+            } catch (error) {
+                log(`❌ Error during migration: ${error.message}`, 'error');
+                results.errors.push(error.message);
+            }
+
+            // Summary
+            log('\n' + '='.repeat(50), 'info');
+            log('📊 MIGRATION SUMMARY', 'info');
+            log('='.repeat(50), 'info');
+            
+            log(`\n✅ Successfully Migrated: ${results.migrated}/${results.found} items`, 'success');
+            
+            if (results.errors.length > 0) {
+                log('\n❌ Errors:', 'error');
+                results.errors.slice(0, 10).forEach(err => log(`  - ${err}`, 'error'));
+                if (results.errors.length > 10) {
+                    log(`  ... and ${results.errors.length - 10} more errors`, 'error');
+                }
+            } else {
+                log('\n🎉 Migration completed successfully!', 'success');
+                log('Your review hub data is now synced to Firebase.', 'success');
+            }
+        }
+
+        function clearOutput() {
+            output.innerHTML = '';
+        }
+        
+        // Make functions available globally
+        window.checkData = checkData;
+        window.startMigration = startMigration;
+        window.clearOutput = clearOutput;
+
+        // Auto-check on load
+        setTimeout(() => {
+            window.checkData();
+        }, 1000);
+    </script>
+</body>
+</html>

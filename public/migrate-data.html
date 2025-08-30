@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Migration Tool</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        #output {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        .warning { color: #ffd93d; }
+        .info { color: #74c0fc; }
+        h1 { color: #fff; }
+    </style>
+</head>
+<body>
+    <h1>🔄 Doshi Sensei Data Migration Tool</h1>
+    <p>This tool will migrate your local IndexedDB data to Firebase.</p>
+    
+    <div>
+        <button id="checkBtn" onclick="checkStatus()">Check Status</button>
+        <button id="migrateBtn" onclick="startMigration()" disabled>Start Migration</button>
+        <button id="clearBtn" onclick="clearOutput()">Clear Output</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, collection, writeBatch } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase config (from your app)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYpEVR4ijiVQuJVY1QVRytjvRH9LzWKpg",
+            authDomain: "doshi-sensei.firebaseapp.com",
+            projectId: "doshi-sensei",
+            storageBucket: "doshi-sensei.appspot.com",
+            messagingSenderId: "280687059324",
+            appId: "1:280687059324:web:36c0a4e1c756a5b0073ca7",
+            measurementId: "G-W49QVZP6ZJ"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const output = document.getElementById('output');
+        const migrateBtn = document.getElementById('migrateBtn');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            output.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Check auth status
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                log(`✅ Logged in as: ${user.uid}`, 'success');
+                log(`📧 Email: ${user.email}`, 'info');
+                migrateBtn.disabled = false;
+            } else {
+                log('❌ Not logged in. Please log in to the main app first.', 'error');
+                migrateBtn.disabled = true;
+            }
+        });
+
+        window.checkStatus = async function() {
+            log('Checking migration status...', 'info');
+            
+            try {
+                // Check IndexedDB
+                const databases = await indexedDB.databases();
+                log(`Found ${databases.length} IndexedDB databases:`, 'info');
+                databases.forEach(db => {
+                    log(`  - ${db.name} (v${db.version})`, 'info');
+                });
+
+                // Check specific database
+                const vocabDB = await new Promise((resolve, reject) => {
+                    const request = indexedDB.open('textbook_vocabulary_WawMEtfq0dcoVPMr3nuwpFAzr9F2');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                // Check what object stores exist
+                log(`  Object stores in textbook DB: ${Array.from(vocabDB.objectStoreNames).join(', ')}`, 'info');
+                
+                const storeName = vocabDB.objectStoreNames.contains('reviewStates') ? 'reviewStates' :
+                                 vocabDB.objectStoreNames.contains('cards') ? 'cards' :
+                                 vocabDB.objectStoreNames.contains('progress') ? 'progress' :
+                                 Array.from(vocabDB.objectStoreNames)[0];
+                
+                if (!storeName) {
+                    log('  No object stores found in textbook vocabulary database', 'warning');
+                    vocabDB.close();
+                    return;
+                }
+                
+                const progressTx = vocabDB.transaction([storeName], 'readonly');
+                const progressStore = progressTx.objectStore(storeName);
+                const count = await new Promise((resolve, reject) => {
+                    const request = progressStore.count();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                log(`📚 Found ${count} textbook vocabulary records in IndexedDB`, 'success');
+                vocabDB.close();
+
+                // Check localStorage
+                const studyLists = localStorage.getItem('doshi_sensei_study_lists');
+                if (studyLists) {
+                    const lists = JSON.parse(studyLists);
+                    log(`📋 Found ${lists.length} study lists in localStorage`, 'success');
+                }
+
+            } catch (error) {
+                log(`Error checking status: ${error.message}`, 'error');
+            }
+        };
+
+        window.startMigration = async function() {
+            const user = auth.currentUser;
+            if (!user) {
+                log('❌ Not logged in!', 'error');
+                return;
+            }
+
+            log('🚀 Starting migration...', 'info');
+            
+            const results = {
+                textbookVocab: { found: 0, migrated: 0 },
+                studyLists: { found: 0, migrated: 0 },
+                errors: []
+            };
+
+            // Migrate Textbook Vocabulary
+            try {
+                log('\n📚 Migrating Textbook Vocabulary...', 'info');
+                
+                const vocabDB = await new Promise((resolve, reject) => {
+                    const request = indexedDB.open('textbook_vocabulary_WawMEtfq0dcoVPMr3nuwpFAzr9F2');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                // Check what object stores exist
+                log(`  Database opened. Object stores: ${Array.from(vocabDB.objectStoreNames).join(', ')}`, 'info');
+                
+                // Check if reviewStates exists, otherwise try other common names
+                const storeName = vocabDB.objectStoreNames.contains('reviewStates') ? 'reviewStates' :
+                                 vocabDB.objectStoreNames.contains('cards') ? 'cards' :
+                                 vocabDB.objectStoreNames.contains('progress') ? 'progress' :
+                                 Array.from(vocabDB.objectStoreNames)[0]; // Use first store if others don't exist
+                
+                if (!storeName) {
+                    throw new Error('No object stores found in database');
+                }
+                
+                log(`  Using object store: ${storeName}`, 'info');
+                
+                const progressTx = vocabDB.transaction([storeName], 'readonly');
+                const progressStore = progressTx.objectStore(storeName);
+                const allProgress = await new Promise((resolve, reject) => {
+                    const request = progressStore.getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                    request.onerror = () => reject(request.error);
+                });
+
+                results.textbookVocab.found = allProgress.length;
+                log(`  Found ${allProgress.length} vocabulary records`, 'info');
+
+                if (allProgress.length > 0) {
+                    const batch = writeBatch(db);
+                    
+                    for (const progress of allProgress) {
+                        // The card_id is the document ID
+                        const docRef = doc(db, 'users', user.uid, 'textbookVocabularyProgress', progress.card_id);
+                        
+                        // Convert FSRS data format
+                        const progressData = {
+                            id: progress.card_id,
+                            userId: user.uid,
+                            textbook: progress.card_id.split('_')[0] || 'unknown',
+                            lesson: parseInt(progress.card_id.split('_')[1]?.replace('l', '') || '1'),
+                            lastReviewed: progress.last_review || new Date().toISOString(),
+                            nextReview: progress.due || new Date().toISOString(),
+                            reviewCount: progress.reps || 0,
+                            easeFactor: progress.ease || 2.5,
+                            interval: progress.interval || 1,
+                            quality: progress.rating || 3,
+                            masteryLevel: Math.min(100, (progress.reps || 0) * 20),
+                            stability: progress.stability || 1,
+                            difficulty: progress.difficulty || 0.3,
+                            elapsed_days: progress.elapsed_days || 0,
+                            scheduled_days: progress.scheduled_days || 1,
+                            state: progress.state || 0,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                        };
+                        
+                        batch.set(docRef, progressData);
+                        results.textbookVocab.migrated++;
+                        
+                        if (results.textbookVocab.migrated % 10 === 0) {
+                            log(`  Progress: ${results.textbookVocab.migrated}/${allProgress.length}`, 'info');
+                        }
+                    }
+                    
+                    await batch.commit();
+                    log(`  ✅ Migrated ${results.textbookVocab.migrated} vocabulary records`, 'success');
+                }
+
+                vocabDB.close();
+            } catch (error) {
+                log(`  ❌ Error: ${error.message}`, 'error');
+                results.errors.push(error.message);
+            }
+
+            // Migrate Study Lists
+            try {
+                log('\n📋 Migrating Study Lists...', 'info');
+                
+                const studyListsData = localStorage.getItem('doshi_sensei_study_lists');
+                if (studyListsData) {
+                    const studyLists = JSON.parse(studyListsData);
+                    results.studyLists.found = studyLists.length;
+                    log(`  Found ${studyLists.length} study lists`, 'info');
+                    
+                    const batch = writeBatch(db);
+                    for (const list of studyLists) {
+                        const docRef = doc(db, 'users', user.uid, 'studyLists', list.id);
+                        batch.set(docRef, {
+                            ...list,
+                            userId: user.uid,
+                            createdAt: list.createdAt || new Date().toISOString(),
+                            updatedAt: list.updatedAt || new Date().toISOString()
+                        });
+                        results.studyLists.migrated++;
+                    }
+                    
+                    await batch.commit();
+                    log(`  ✅ Migrated ${results.studyLists.migrated} study lists`, 'success');
+                }
+            } catch (error) {
+                log(`  ❌ Error: ${error.message}`, 'error');
+                results.errors.push(error.message);
+            }
+
+            // Summary
+            log('\n' + '='.repeat(50), 'info');
+            log('📊 MIGRATION SUMMARY', 'info');
+            log('='.repeat(50), 'info');
+            
+            const total = results.textbookVocab.migrated + results.studyLists.migrated;
+            log(`✅ Total migrated: ${total} items`, 'success');
+            log(`  📚 Vocabulary: ${results.textbookVocab.migrated}/${results.textbookVocab.found}`, 'info');
+            log(`  📋 Study Lists: ${results.studyLists.migrated}/${results.studyLists.found}`, 'info');
+            
+            if (results.errors.length > 0) {
+                log('\n❌ Errors:', 'error');
+                results.errors.forEach(err => log(`  - ${err}`, 'error'));
+            } else {
+                log('\n🎉 Migration completed successfully!', 'success');
+            }
+        };
+
+        window.clearOutput = function() {
+            output.innerHTML = '';
+        };
+
+        // Auto-check status on load
+        setTimeout(() => {
+            window.checkStatus();
+        }, 1000);
+    </script>
+</body>
+</html>

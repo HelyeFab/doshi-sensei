@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restore Local Data</title>
+    <style>
+        body { 
+            background: #1a1a1a; 
+            color: white; 
+            padding: 20px; 
+            font-family: monospace;
+        }
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            margin: 10px;
+        }
+        #output { 
+            background: #2a2a2a; 
+            padding: 20px; 
+            margin-top: 20px; 
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Restore Data to Local IndexedDB</h1>
+    <p>This will restore your data to local storage so Review Hub works again.</p>
+    
+    <button onclick="restoreData()">Restore Local Data</button>
+    
+    <div id="output"></div>
+
+    <script>
+        async function restoreData() {
+            const output = document.getElementById('output');
+            output.textContent = 'Restoring data to local IndexedDB...\n\n';
+            
+            try {
+                // Load the exported data
+                const response = await fetch('/doshi-sensei-data-1756550684557.json');
+                if (!response.ok) {
+                    throw new Error('Could not load data file. You may need to copy it to the public folder.');
+                }
+                
+                const data = await response.json();
+                output.textContent += `Loaded ${data.reviewHub.length} items from backup\n`;
+                
+                // Open review_hub_db
+                const db = await new Promise((resolve, reject) => {
+                    const request = indexedDB.open('review_hub_db', 1);
+                    
+                    request.onupgradeneeded = (event) => {
+                        const db = event.target.result;
+                        if (!db.objectStoreNames.contains('review_store')) {
+                            db.createObjectStore('review_store', { keyPath: 'id' });
+                        }
+                    };
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                
+                output.textContent += 'Opened review_hub_db\n';
+                
+                // Clear existing data
+                const clearTx = db.transaction(['review_store'], 'readwrite');
+                const clearStore = clearTx.objectStore('review_store');
+                await clearStore.clear();
+                
+                output.textContent += 'Cleared old data\n';
+                
+                // Add all items back
+                const tx = db.transaction(['review_store'], 'readwrite');
+                const store = tx.objectStore('review_store');
+                
+                let restored = 0;
+                for (const item of data.reviewHub) {
+                    await store.add(item);
+                    restored++;
+                    if (restored % 10 === 0) {
+                        output.textContent += `Progress: ${restored}/${data.reviewHub.length}\n`;
+                    }
+                }
+                
+                output.textContent += `\n✅ Successfully restored ${restored} items to local IndexedDB!\n`;
+                output.textContent += '\nYour Review Hub should now show all your items again.\n';
+                output.textContent += 'Refresh the Review Hub page to see your data.';
+                
+                db.close();
+                
+            } catch (error) {
+                output.textContent += `\n❌ Error: ${error.message}\n`;
+                
+                // Provide alternative manual method
+                output.textContent += '\nAlternative: Load your backup file manually:\n';
+                output.textContent += '1. Copy /home/helye/Downloads/doshi-sensei-data-1756550684557.json\n';
+                output.textContent += '2. To /home/helye/Development/Projects/Work/Nextjs/doshi-sensei/public/\n';
+                output.textContent += '3. Then click the restore button again.\n';
+            }
+        }
+    </script>
+</body>
+</html>

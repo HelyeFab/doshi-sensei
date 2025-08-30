@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real Data Migration</title>
+    <style>
+        body { 
+            background: #1a1a1a; 
+            color: white; 
+            padding: 20px; 
+            font-family: monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            margin: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #output { 
+            background: #2a2a2a; 
+            padding: 20px; 
+            margin-top: 20px; 
+            white-space: pre-wrap;
+            border: 1px solid #444;
+            border-radius: 5px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .success { color: #51cf66; }
+        .error { color: #ff6b6b; }
+        .info { color: #74c0fc; }
+        #dataPreview {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Real Data Migration - Your Actual IndexedDB Data</h1>
+    
+    <p>This will read your ACTUAL data from IndexedDB and show it to you before migration.</p>
+    
+    <button onclick="readRealData()">Step 1: Read My Real Data</button>
+    <button onclick="exportToFile()" id="exportBtn" style="display:none;">Step 2: Export to File</button>
+    <button onclick="copyToClipboard()" id="copyBtn" style="display:none;">Step 2: Copy to Clipboard</button>
+    
+    <div id="dataPreview"></div>
+    <div id="output"></div>
+
+    <script>
+        let realData = null;
+        const output = document.getElementById('output');
+        const dataPreview = document.getElementById('dataPreview');
+
+        function log(msg, type = 'info') {
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            output.innerHTML += `<span class="${className}">${new Date().toLocaleTimeString()} - ${msg}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function readRealData() {
+            log('📖 Reading your ACTUAL data from IndexedDB...', 'info');
+            realData = {
+                reviewHub: [],
+                textbookVocab: [],
+                kanjiMastery: [],
+                localStorage: {}
+            };
+
+            try {
+                // 1. Read review_hub_db
+                log('Opening review_hub_db...', 'info');
+                const reviewDB = await new Promise((resolve, reject) => {
+                    const request = indexedDB.open('review_hub_db');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                if (reviewDB.objectStoreNames.contains('review_store')) {
+                    const tx = reviewDB.transaction(['review_store'], 'readonly');
+                    const store = tx.objectStore('review_store');
+                    const items = await new Promise((resolve, reject) => {
+                        const request = store.getAll();
+                        request.onsuccess = () => resolve(request.result || []);
+                        request.onerror = () => reject(request.error);
+                    });
+                    
+                    realData.reviewHub = items;
+                    log(`✅ Found ${items.length} items in review_hub_db`, 'success');
+                    
+                    if (items.length > 0) {
+                        log('Sample item from review_hub:', 'info');
+                        log(JSON.stringify(items[0], null, 2).substring(0, 500) + '...', 'info');
+                    }
+                }
+                reviewDB.close();
+
+                // 2. Check for textbook vocabulary with user ID
+                const userDBName = `textbook_vocabulary_WawMEtfq0dcoVPMr3nuwpFAzr9F2`;
+                log(`\nChecking ${userDBName}...`, 'info');
+                
+                try {
+                    const vocabDB = await new Promise((resolve, reject) => {
+                        const request = indexedDB.open(userDBName);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+
+                    const storeNames = Array.from(vocabDB.objectStoreNames);
+                    log(`Object stores: ${storeNames.join(', ') || 'none'}`, 'info');
+                    
+                    for (const storeName of storeNames) {
+                        const tx = vocabDB.transaction([storeName], 'readonly');
+                        const store = tx.objectStore(storeName);
+                        const items = await new Promise((resolve, reject) => {
+                            const request = store.getAll();
+                            request.onsuccess = () => resolve(request.result || []);
+                            request.onerror = () => reject(request.error);
+                        });
+                        
+                        if (items.length > 0) {
+                            realData.textbookVocab = items;
+                            log(`✅ Found ${items.length} items in ${storeName}`, 'success');
+                        }
+                    }
+                    vocabDB.close();
+                } catch (e) {
+                    log(`No data in ${userDBName}`, 'info');
+                }
+
+                // 3. Check localStorage
+                log('\nChecking localStorage...', 'info');
+                const relevantKeys = [
+                    'review_events_processed',
+                    'doshi_sensei_study_lists',
+                    'kanji_mastery_progress',
+                    'doshi_recent_study_items'
+                ];
+
+                for (const key of relevantKeys) {
+                    const value = localStorage.getItem(key);
+                    if (value) {
+                        try {
+                            realData.localStorage[key] = JSON.parse(value);
+                            log(`✅ Found ${key}`, 'success');
+                        } catch (e) {
+                            realData.localStorage[key] = value;
+                        }
+                    }
+                }
+
+                // Show summary
+                log('\n' + '='.repeat(60), 'info');
+                log('📊 DATA SUMMARY', 'success');
+                log('='.repeat(60), 'info');
+                log(`Review Hub items: ${realData.reviewHub.length}`, 'info');
+                log(`Textbook Vocab items: ${realData.textbookVocab.length}`, 'info');
+                log(`localStorage keys: ${Object.keys(realData.localStorage).length}`, 'info');
+                
+                // Show preview
+                dataPreview.innerHTML = '<h3>Data Preview (first item from each source):</h3>';
+                if (realData.reviewHub.length > 0) {
+                    dataPreview.innerHTML += '<h4>Review Hub Item:</h4>';
+                    dataPreview.innerHTML += '<pre>' + JSON.stringify(realData.reviewHub[0], null, 2) + '</pre>';
+                }
+                
+                // Show export buttons
+                document.getElementById('exportBtn').style.display = 'inline-block';
+                document.getElementById('copyBtn').style.display = 'inline-block';
+                
+                log('\n✅ Data read successfully! Now you can export it.', 'success');
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+
+        function exportToFile() {
+            if (!realData) {
+                log('❌ No data to export. Read data first.', 'error');
+                return;
+            }
+
+            const dataStr = JSON.stringify(realData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `doshi-sensei-data-${Date.now()}.json`;
+            a.click();
+            
+            log('✅ Data exported to file!', 'success');
+        }
+
+        function copyToClipboard() {
+            if (!realData) {
+                log('❌ No data to copy. Read data first.', 'error');
+                return;
+            }
+
+            const dataStr = JSON.stringify(realData, null, 2);
+            navigator.clipboard.writeText(dataStr).then(() => {
+                log('✅ Data copied to clipboard!', 'success');
+                log('You can now paste this into a file and share it.', 'info');
+            }).catch(err => {
+                log('❌ Failed to copy: ' + err.message, 'error');
+            });
+        }
+    </script>
+</body>
+</html>

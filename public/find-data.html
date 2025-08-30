@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Find Your Data</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #output {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 600px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        .warning { color: #ffd93d; }
+        .info { color: #74c0fc; }
+        .data { color: #ff9ff3; }
+        h1 { color: #fff; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Find Your Data</h1>
+    <p>This tool will scan ALL IndexedDB databases and localStorage to find your data.</p>
+    
+    <div>
+        <button onclick="scanEverything()">Scan Everything</button>
+        <button onclick="clearOutput()">Clear Output</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script>
+        const output = document.getElementById('output');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            output.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function scanEverything() {
+            log('🔍 Starting comprehensive data scan...', 'info');
+            
+            const dataFound = {
+                indexedDB: [],
+                localStorage: [],
+                sessionStorage: []
+            };
+            
+            // 1. Scan ALL IndexedDB databases
+            log('\n📊 Scanning IndexedDB...', 'info');
+            try {
+                const databases = await indexedDB.databases();
+                log(`Found ${databases.length} databases:`, 'info');
+                
+                for (const dbInfo of databases) {
+                    log(`\n  Database: ${dbInfo.name} (version ${dbInfo.version})`, 'warning');
+                    
+                    try {
+                        const db = await new Promise((resolve, reject) => {
+                            const request = indexedDB.open(dbInfo.name);
+                            request.onsuccess = () => resolve(request.result);
+                            request.onerror = () => reject(request.error);
+                            request.onupgradeneeded = (e) => {
+                                e.target.transaction.abort();
+                                reject(new Error('Upgrade needed'));
+                            };
+                        });
+                        
+                        const storeNames = Array.from(db.objectStoreNames);
+                        if (storeNames.length === 0) {
+                            log(`    ⚠️ Empty database (no object stores)`, 'warning');
+                        } else {
+                            log(`    Object stores: ${storeNames.join(', ')}`, 'info');
+                            
+                            // Check each store
+                            for (const storeName of storeNames) {
+                                try {
+                                    const tx = db.transaction([storeName], 'readonly');
+                                    const store = tx.objectStore(storeName);
+                                    
+                                    // Get count
+                                    const count = await new Promise((resolve, reject) => {
+                                        const request = store.count();
+                                        request.onsuccess = () => resolve(request.result);
+                                        request.onerror = () => reject(request.error);
+                                    });
+                                    
+                                    if (count > 0) {
+                                        log(`      ✅ ${storeName}: ${count} records`, 'success');
+                                        
+                                        // Get sample data
+                                        const sampleData = await new Promise((resolve, reject) => {
+                                            const request = store.getAll(null, 3); // Get first 3 records
+                                            request.onsuccess = () => resolve(request.result);
+                                            request.onerror = () => reject(request.error);
+                                        });
+                                        
+                                        if (sampleData && sampleData.length > 0) {
+                                            log(`        Sample record:`, 'data');
+                                            const sample = sampleData[0];
+                                            const keys = Object.keys(sample).slice(0, 5);
+                                            log(`          Keys: ${keys.join(', ')}`, 'data');
+                                            
+                                            // Check if this looks like vocabulary data
+                                            if (sample.card_id || sample.due || sample.ease || sample.interval) {
+                                                log(`        🎯 FOUND VOCABULARY DATA!`, 'success');
+                                                dataFound.indexedDB.push({
+                                                    database: dbInfo.name,
+                                                    store: storeName,
+                                                    count: count,
+                                                    sample: sample
+                                                });
+                                            }
+                                        }
+                                    } else {
+                                        log(`      ${storeName}: empty`, 'info');
+                                    }
+                                } catch (e) {
+                                    log(`      Error reading ${storeName}: ${e.message}`, 'error');
+                                }
+                            }
+                        }
+                        
+                        db.close();
+                    } catch (e) {
+                        log(`    Error opening database: ${e.message}`, 'error');
+                    }
+                }
+            } catch (error) {
+                log(`  Error scanning IndexedDB: ${error.message}`, 'error');
+            }
+            
+            // 2. Scan localStorage
+            log('\n💾 Scanning localStorage...', 'info');
+            const localStorageKeys = Object.keys(localStorage);
+            log(`Found ${localStorageKeys.length} keys`, 'info');
+            
+            for (const key of localStorageKeys) {
+                const value = localStorage.getItem(key);
+                try {
+                    const parsed = JSON.parse(value);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        log(`  ✅ ${key}: Array with ${parsed.length} items`, 'success');
+                        if (parsed[0].card_id || parsed[0].due || key.includes('vocab') || key.includes('textbook')) {
+                            log(`    🎯 Possible vocabulary data!`, 'success');
+                            dataFound.localStorage.push({ key, count: parsed.length, sample: parsed[0] });
+                        }
+                    } else if (typeof parsed === 'object' && parsed !== null) {
+                        const keys = Object.keys(parsed);
+                        if (keys.length > 0) {
+                            log(`  ${key}: Object with keys: ${keys.slice(0, 5).join(', ')}`, 'info');
+                        }
+                    }
+                } catch {
+                    // Not JSON
+                    if (value.length < 100) {
+                        log(`  ${key}: "${value.substring(0, 50)}..."`, 'info');
+                    }
+                }
+            }
+            
+            // 3. Scan sessionStorage
+            log('\n🔄 Scanning sessionStorage...', 'info');
+            const sessionStorageKeys = Object.keys(sessionStorage);
+            log(`Found ${sessionStorageKeys.length} keys`, 'info');
+            
+            for (const key of sessionStorageKeys) {
+                const value = sessionStorage.getItem(key);
+                if (key.includes('vocab') || key.includes('textbook') || key.includes('review')) {
+                    log(`  ${key}: ${value.length} bytes`, 'info');
+                }
+            }
+            
+            // Summary
+            log('\n' + '='.repeat(60), 'info');
+            log('📊 SCAN SUMMARY', 'success');
+            log('='.repeat(60), 'info');
+            
+            if (dataFound.indexedDB.length > 0) {
+                log('\n🎯 Vocabulary data found in IndexedDB:', 'success');
+                for (const item of dataFound.indexedDB) {
+                    log(`  Database: ${item.database}`, 'success');
+                    log(`  Store: ${item.store}`, 'success');
+                    log(`  Records: ${item.count}`, 'success');
+                    log(`  Sample keys: ${Object.keys(item.sample).join(', ')}`, 'data');
+                }
+            }
+            
+            if (dataFound.localStorage.length > 0) {
+                log('\n🎯 Possible vocabulary data in localStorage:', 'success');
+                for (const item of dataFound.localStorage) {
+                    log(`  Key: ${item.key}`, 'success');
+                    log(`  Count: ${item.count}`, 'success');
+                }
+            }
+            
+            if (dataFound.indexedDB.length === 0 && dataFound.localStorage.length === 0) {
+                log('\n⚠️ No vocabulary data found', 'warning');
+                log('Your data might be:', 'info');
+                log('  1. In a different browser profile', 'info');
+                log('  2. Cleared/deleted', 'info');
+                log('  3. Not yet created (need to study first)', 'info');
+            }
+            
+            return dataFound;
+        }
+
+        function clearOutput() {
+            output.innerHTML = '';
+        }
+
+        // Auto-scan on load
+        setTimeout(scanEverything, 500);
+    </script>
+</body>
+</html>

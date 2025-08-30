@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Migration</title>
+    <style>
+        body { 
+            background: #1a1a1a; 
+            color: white; 
+            padding: 20px; 
+            font-family: monospace;
+        }
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            margin: 10px;
+        }
+        #output { 
+            background: #2a2a2a; 
+            padding: 20px; 
+            margin-top: 20px; 
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Migration - Just Click and Go</h1>
+    
+    <button onclick="migrateNow()">MIGRATE MY DATA NOW</button>
+    
+    <div id="output"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const app = initializeApp({
+            apiKey: "AIzaSyBYpEVR4ijiVQuJVY1QVRytjvRH9LzWKpg",
+            authDomain: "doshi-sensei.firebaseapp.com",
+            projectId: "doshi-sensei",
+            storageBucket: "doshi-sensei.appspot.com",
+            messagingSenderId: "280687059324",
+            appId: "1:280687059324:web:36c0a4e1c756a5b0073ca7"
+        });
+
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.migrateNow = async function() {
+            const output = document.getElementById('output');
+            output.textContent = 'Starting migration...\n\n';
+            
+            try {
+                // Check if already logged in
+                let user = auth.currentUser;
+                
+                if (!user) {
+                    output.textContent += 'You need to be logged in. Please log in on the main app first.\n';
+                    return;
+                }
+                
+                output.textContent += `✅ Logged in as: ${user.uid}\n\n`;
+                
+                // Open the review_hub_db database
+                output.textContent += 'Opening review_hub_db...\n';
+                
+                const db_indexed = await new Promise((resolve, reject) => {
+                    const request = indexedDB.open('review_hub_db');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(new Error('Failed to open database'));
+                });
+                
+                // Get all items from review_store
+                const tx = db_indexed.transaction(['review_store'], 'readonly');
+                const store = tx.objectStore('review_store');
+                
+                const allItems = await new Promise((resolve, reject) => {
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                    request.onerror = () => reject(new Error('Failed to read data'));
+                });
+                
+                output.textContent += `Found ${allItems.length} items to migrate\n\n`;
+                
+                if (allItems.length === 0) {
+                    output.textContent += 'No data to migrate!\n';
+                    db_indexed.close();
+                    return;
+                }
+                
+                // Migrate to Firebase in batches
+                output.textContent += 'Migrating to Firebase...\n';
+                
+                let migrated = 0;
+                const batchSize = 500;
+                
+                for (let i = 0; i < allItems.length; i += batchSize) {
+                    const batch = writeBatch(db);
+                    const items = allItems.slice(i, Math.min(i + batchSize, allItems.length));
+                    
+                    for (const item of items) {
+                        const docRef = doc(db, 'users', user.uid, 'reviewHub', item.id || String(Date.now() + Math.random()));
+                        batch.set(docRef, {
+                            ...item,
+                            userId: user.uid,
+                            migratedAt: new Date().toISOString()
+                        });
+                        migrated++;
+                    }
+                    
+                    await batch.commit();
+                    output.textContent += `Progress: ${migrated}/${allItems.length}\n`;
+                }
+                
+                db_indexed.close();
+                
+                output.textContent += '\n✅ MIGRATION COMPLETE!\n';
+                output.textContent += `Successfully migrated ${migrated} items to Firebase.\n`;
+                
+            } catch (error) {
+                output.textContent += `\n❌ ERROR: ${error.message}\n`;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

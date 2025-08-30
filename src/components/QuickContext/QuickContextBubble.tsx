@@ -12,7 +12,6 @@ import { JapaneseWord } from "@/types";
 import { searchJMdictWords } from "@/utils/jmdictLocalSearch";
 import { useFeature } from "@/hooks/useFeature";
 import { useAnalytics } from "@/hooks/useAnalytics";
-import { useLearnTracking } from "@/hooks/useLearnTracking";
 import { useTTS } from "@/hooks/useTTS";
 import { QuickContextSelection } from "./QuickContextProvider";
 import { cleanFurigana } from "@/utils/cleanFurigana";
@@ -60,24 +59,21 @@ export default function QuickContextBubble({
   const bubbleRef = useRef<HTMLDivElement>(null);
   const constraintsRef = useRef(null);
   const dragControls = useDragControls();
-  const { checkAndTrack, getRemainingUsage } = useFeature('quick_context', {
-    showModal: true,
+  const { checkAndTrack, remaining } = useFeature('quick_context', {
     showToast: true,
+    showModal: true,
     trackUsage: true
   });
   const { track } = useAnalytics();
-  const { track: trackLearning } = useLearnTracking();
   const { speak: speakTTS, stop: stopTTS, state: ttsState } = useTTS();
   const [remainingUses, setRemainingUses] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
     // Get remaining uses on mount
-    getRemainingUsage("quick_context").then((uses) => {
-      setRemainingUses(uses);
-    });
+    setRemainingUses(remaining);
     return () => setMounted(false);
-  }, []);
+  }, [remaining]);
 
   // Notify parent when modals are open/closed
   useEffect(() => {
@@ -161,28 +157,12 @@ export default function QuickContextBubble({
 
   const handleSave = useCallback(async () => {
     try {
-      const canUse = await checkAndTrack("quick_context");
+      const canUse = await checkAndTrack();
       if (!canUse) {
         return;
       }
 
       track("quick_context_save", { text: selectedText });
-
-      // Track save action with ULAS
-      trackLearning({
-        type: 'save',
-        category: isKanji ? 'kanji' : 'vocabulary',
-        content: {
-          value: selectedText,
-          metadata: {
-            feature: 'quick_context',
-            action: 'save_to_list',
-            textType,
-            hasWordData: !!wordData,
-            context: surroundingContext?.substring(0, 100)
-          }
-        }
-      });
 
       // Create a word object if we don't have one
       const wordToSave = wordData || {
@@ -201,8 +181,7 @@ export default function QuickContextBubble({
       setKeepBubbleVisible(true); // Keep bubble visible when modal opens
 
       // Update remaining uses
-      const newUses = await getRemainingUsage("quick_context");
-      setRemainingUses(newUses);
+      setRemainingUses(remaining);
     } catch (error) {
       console.error("Error in handleSave:", error);
     }
@@ -211,30 +190,15 @@ export default function QuickContextBubble({
     track,
     selectedText,
     wordData,
-    getRemainingUsage,
+    remaining,
     isKanji,
   ]);
 
   const handleLookup = useCallback(async () => {
-    const canUse = await checkAndTrack("quick_context");
+    const canUse = await checkAndTrack();
     if (!canUse) return;
 
     track("quick_context_lookup", { text: selectedText });
-
-    // Track lookup action with ULAS
-    trackLearning({
-      type: 'search',
-      category: isKanji ? 'kanji' : 'vocabulary',
-      content: {
-        value: selectedText,
-        metadata: {
-          feature: 'quick_context',
-          action: 'dictionary_lookup',
-          textType,
-          context: surroundingContext?.substring(0, 100)
-        }
-      }
-    });
 
     // Clean furigana from text before searching
     const cleanText = cleanFurigana(selectedText);
@@ -255,19 +219,18 @@ export default function QuickContextBubble({
     }
 
     // Update remaining uses
-    const newUses = await getRemainingUsage("quick_context");
-    setRemainingUses(newUses);
+    setRemainingUses(remaining);
   }, [
     checkAndTrack,
     track,
     selectedText,
     textType,
     isKanji,
-    getRemainingUsage,
+    remaining,
   ]);
 
   const handleListen = useCallback(async () => {
-    const canUse = await checkAndTrack("quick_context");
+    const canUse = await checkAndTrack();
     if (!canUse) return;
 
     track("quick_context_tts", { text: selectedText });
@@ -280,13 +243,12 @@ export default function QuickContextBubble({
     });
 
     // Update remaining uses
-    const newUses = await getRemainingUsage("quick_context");
-    setRemainingUses(newUses);
-  }, [checkAndTrack, track, selectedText, speakTTS, getRemainingUsage]);
+    setRemainingUses(remaining);
+  }, [checkAndTrack, track, selectedText, speakTTS, remaining]);
 
   const handleAIExplain = useCallback(async () => {
     try {
-      const canUse = await checkAndTrack("quick_context");
+      const canUse = await checkAndTrack();
       if (!canUse) {
         return;
       }

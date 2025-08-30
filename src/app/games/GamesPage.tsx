@@ -91,6 +91,38 @@ function GamesContent() {
   });
   const { feature: kanjiFeature, access: kanjiAccess, remaining: kanjiRemaining } = useFeature('kanji_quest');
   const { isPremium, userType, subscription } = useSubscription2();
+  
+  // Set up all game feature hooks at the top level
+  const { checkAndTrack: checkListeningQuiz } = useFeature('listening_quiz', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
+  const { checkAndTrack: checkWordAssembly } = useFeature('word_assembly', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
+  const { checkAndTrack: checkKanaDrop } = useFeature('kana_drop', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
+  const { checkAndTrack: checkSentenceScramble } = useFeature('sentence_scramble', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
+  const { checkAndTrack: checkMatchingGame } = useFeature('matching_game', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
+  const { checkAndTrack: checkStrokeOrder } = useFeature('stroke_order_practice', {
+    showModal: true,
+    showToast: true,
+    trackUsage: true
+  });
   const { selectedKanji, clearSelectedKanji } = useKanjiSelection();
   const [currentGameMode, setCurrentGameMode] = useState<string | null>(null);
   const [studyLists, setStudyLists] = useState<StudyList[]>([]);
@@ -524,20 +556,21 @@ function GamesContent() {
   const handleGameModeSelect = async (gameMode: GameMode) => {
     if (gameMode.comingSoon) return;
 
-    // Map game mode to feature ID for Three-Pillar Architecture
-    const featureMap: Record<string, string> = {
-      'listening': 'listening_quiz',
-      'assembly': 'word_assembly',
-      'kanji-quest': 'kanji_quest',
-      'kana-drop': 'kana_drop',
-      'sentence-scramble': 'sentence_scramble',
-      'matching': 'matching_game',
-      'stroke-order': 'stroke_order_practice'
+    // Map game mode to the appropriate check function
+    const checkAccessMap: Record<string, () => Promise<boolean>> = {
+      'listening': checkListeningQuiz,
+      'assembly': checkWordAssembly,
+      'kanji-quest': checkKanjiQuestAccess,
+      'kana-drop': checkKanaDrop,
+      'sentence-scramble': checkSentenceScramble,
+      'matching': checkMatchingGame,
+      'stroke-order': checkStrokeOrder
     };
 
-    const featureId = featureMap[gameMode.id];
-    if (!featureId) {
-      // For games that navigate directly (kanji-simon, reading-routes)
+    const checkAccess = checkAccessMap[gameMode.id];
+    
+    // For games that navigate directly without access check
+    if (!checkAccess) {
       if (gameMode.id === 'reading-routes') {
         router.push('/games/reading-routes');
       } else if (gameMode.id === 'kanji-simon') {
@@ -549,13 +582,7 @@ function GamesContent() {
     }
 
     // Check access using Three-Pillar Architecture
-    const { checkAndTrack } = useFeature(featureId, {
-      showModal: true,
-      showToast: true,
-      trackUsage: true
-    });
-
-    const hasAccess = await checkAndTrack();
+    const hasAccess = await checkAccess();
     if (!hasAccess) {
       // Access denied - modal will be shown automatically
       return;
@@ -590,23 +617,17 @@ function GamesContent() {
   const handleStartQuiz = async () => {
     if (selectedListIds.length === 0 || savedWords.length === 0) return;
 
-    // Check access using three-pillar system
-    let featureId: string;
+    // Check access using the appropriate check function
+    let checkAccess: () => Promise<boolean>;
     if (currentGameMode === 'assembly') {
-      featureId = 'word_assembly';
+      checkAccess = checkWordAssembly;
     } else if (currentGameMode === 'matching') {
-      featureId = 'matching_game';
+      checkAccess = checkMatchingGame;
     } else {
-      featureId = 'listening_quiz';
+      checkAccess = checkListeningQuiz;
     }
 
-    const { checkAndTrack } = useFeature(featureId, {
-      showModal: true,
-      showToast: true,
-      trackUsage: true
-    });
-
-    const canPlay = await checkAndTrack();
+    const canPlay = await checkAccess();
 
     if (!canPlay) {
       // Access denied - modals are shown automatically by checkAndTrack

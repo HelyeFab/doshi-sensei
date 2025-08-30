@@ -375,7 +375,11 @@ class LearningEventsService {
       return;
     }
 
-    if (!this.currentUser) return;
+    // Ensure we have a valid authenticated user (not guest or anonymous)
+    if (!this.currentUser || this.currentUser.uid === 'guest' || this.currentUser.isAnonymous) {
+      return;
+    }
+    
     if (this.isSyncing && !force) return;
     if (typeof navigator !== 'undefined' && !navigator.onLine) return;
 
@@ -410,10 +414,17 @@ class LearningEventsService {
         processedIds.push(event.id);
       }
 
-      await batch.commit();
-
-      // Mark events as synced in local storage
-      await storageManager.markEventsSynced(processedIds);
+      // Try to commit the batch, but handle errors gracefully
+      try {
+        await batch.commit();
+        // Mark events as synced in local storage only if commit succeeded
+        await storageManager.markEventsSynced(processedIds);
+      } catch (commitError: any) {
+        // Log the error but don't throw - this prevents the app from crashing
+        console.warn('[LearningEvents] Failed to sync to Firestore:', commitError.message);
+        // Don't mark as synced so we can retry later
+        return;
+      }
 
 
       // Update user stats document
@@ -459,7 +470,10 @@ class LearningEventsService {
    * Update aggregated stats in cloud
    */
   private async updateCloudStats(): Promise<void> {
-    if (!this.currentUser) return;
+    // Ensure we have a valid authenticated user (not guest or anonymous)
+    if (!this.currentUser || this.currentUser.uid === 'guest' || this.currentUser.isAnonymous) {
+      return;
+    }
 
     try {
       const stats = await this.getStats();

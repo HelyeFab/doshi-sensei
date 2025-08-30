@@ -49,7 +49,7 @@ const StunningBottomNavbar = React.memo(() => {
     {
       id: 'review',
       label: 'Review',
-      href: '/review',
+      href: '/review-hub',
       icon: '/flat-icons/ui/book.svg',
       activeIcon: '/flat-icons/ui/book.svg'
     },

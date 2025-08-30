@@ -707,6 +707,41 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Game Progress - users can track their game progress
+    match /gameProgress/{progressId} {
+      // Users can read their own game progress
+      allow read: if request.auth != null && 
+        (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Users can create their own game progress
+      allow create: if request.auth != null && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can update their own game progress
+      allow update: if request.auth != null && 
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      
+      // Users can delete their own game progress
+      allow delete: if request.auth != null && 
+        resource.data.userId == request.auth.uid;
+    }
+
+    // Search History - users can track their search history
+    match /users/{userId}/searchHistory/{historyId} {
+      // Users can read their own search history
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can create their own search history
+      allow create: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can update their own search history
+      allow update: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can delete their own search history
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
     // User Practice History - users can only access their own history
     match /userPracticeHistory/{documentId} {
       // Users can read their own practice history or when document doesn't exist yet
@@ -1442,6 +1477,31 @@ service cloud.firestore {
       allow delete: if request.auth != null && 
         request.auth.uid == userId && 
         isPremiumUser(userId);
+    }
+
+    // Review Hub collection - Premium users can sync their review data
+    match /review_hub/{documentId} {
+      // Premium users can read documents they own
+      allow read: if request.auth != null && 
+        (isAdmin() || 
+         (isPremiumUser(request.auth.uid) && 
+          (resource == null || resource.data.userId == request.auth.uid)));
+      
+      // Premium users can create their own review hub documents
+      allow create: if request.auth != null && 
+        isPremiumUser(request.auth.uid) &&
+        request.resource.data.userId == request.auth.uid;
+      
+      // Premium users can update their own review hub documents
+      allow update: if request.auth != null && 
+        isPremiumUser(request.auth.uid) &&
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      
+      // Premium users can delete their own review hub documents
+      allow delete: if request.auth != null && 
+        isPremiumUser(request.auth.uid) &&
+        resource.data.userId == request.auth.uid;
     }
 
     // Deny all other access

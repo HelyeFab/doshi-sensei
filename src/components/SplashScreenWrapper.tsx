@@ -1,0 +1,330 @@
+'use client';
+
+import { useState, useEffect, ReactNode, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import DoshiMascot from '@/components/DoshiMascot';
+
+const KANJI_CHARACTERS = ['愛', '学', '美', '心', '道', '師', '和', '知', '光', '夢'];
+
+const LOADING_MESSAGES = [
+  "Teaching Dōshi-kun new verb forms...",
+  "Convincing kanji to stay in order...",
+  "Feeding the digital tanuki...",
+  "Calibrating the furigana generator...",
+  "Organizing the particle party...",
+  "Waking up the sleepy senpai...",
+  "Polishing the virtual genkan...",
+  "Charging the kawaii meters...",
+  "Summoning the grammar gods...",
+  "Bribing the JLPT dragons...",
+  "Untangling the keigo knots...",
+  "Warming up the wa particles...",
+  "Debugging the dakuten...",
+  "Alphabetizing the あいうえお...",
+  "Caffeinating the code monkeys...",
+  "Negotiating with nihongo...",
+  "Downloading more RAM-en...",
+  "Reticulating splines in Japanese...",
+  "Pressing X to pay respects (敬語)...",
+  "404: Humor not found. Just kidding!",
+];
+
+interface SplashScreenWrapperProps {
+  children: ReactNode;
+  duration?: number;
+}
+
+// Deterministic pseudo-random based on index
+const getPseudoRandom = (index: number, seed: number = 0) => {
+  const value = Math.sin(index * 12.9898 + seed * 78.233) * 43758.5453123;
+  return value - Math.floor(value);
+};
+
+export default function SplashScreenWrapper({ 
+  children, 
+  duration = 6000 
+}: SplashScreenWrapperProps) {
+  const [appState, setAppState] = useState<'loading' | 'splash' | 'ready'>('loading');
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Use a deterministic message based on current date to avoid hydration mismatch
+  const loadingMessage = useMemo(() => {
+    const index = new Date().getDate() % LOADING_MESSAGES.length;
+    return LOADING_MESSAGES[index];
+  }, []);
+
+  // Generate deterministic positions for kanji
+  const kanjiPositions = useMemo(() => {
+    return KANJI_CHARACTERS.map((_, index) => ({
+      fontSize: getPseudoRandom(index, 1) * 60 + 40,
+      left: getPseudoRandom(index, 2) * 100,
+      top: getPseudoRandom(index, 3) * 100,
+      animateX: getPseudoRandom(index, 4) * 200 - 100,
+      animateY: getPseudoRandom(index, 5) * 200 - 100,
+    }));
+  }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
+    
+    // Check if splash has already been shown this session
+    const hasShownSplash = sessionStorage.getItem('splash-shown') === 'true';
+    
+    if (hasShownSplash) {
+      // If already shown, skip splash and show content immediately
+      setAppState('ready');
+    } else {
+      // Show splash screen
+      setAppState('splash');
+      sessionStorage.setItem('splash-shown', 'true');
+      
+      // Hide splash after duration
+      const timer = setTimeout(() => {
+        setAppState('ready');
+      }, duration);
+
+      return () => clearTimeout(timer);
+    }
+  }, [duration]);
+
+  // During SSR and initial client render, show nothing to prevent flash
+  if (!isMounted || appState === 'loading') {
+    return null;
+  }
+
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        {appState === 'splash' && (
+          <motion.div
+            key="splash"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
+            style={{
+              backgroundImage: 'linear-gradient(to right bottom, #b84386, #c9447e, #d84775, #e44d6b, #ee565f, #ed5473, #e75685, #df5a97, #aa6aba, #6477c0, #1b7bac, #11778a)',
+              backgroundSize: '400% 400%',
+              animation: 'gradientShift 8s ease infinite'
+            }}
+          >
+            {/* Floating Kanji Background */}
+            <div className="absolute inset-0">
+              {KANJI_CHARACTERS.map((kanji, index) => {
+                const pos = kanjiPositions[index];
+                return (
+                  <motion.div
+                    key={kanji}
+                    className="absolute text-white/10 select-none"
+                    style={{
+                      fontSize: `${pos.fontSize}px`,
+                      left: `${pos.left}%`,
+                      top: `${pos.top}%`,
+                    }}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{
+                      opacity: [0, 0.3, 0],
+                      scale: [0, 1.2, 0.8],
+                      rotate: [0, 180, 360],
+                      x: [0, pos.animateX],
+                      y: [0, pos.animateY],
+                    }}
+                    transition={{
+                      duration: 3,
+                      delay: index * 0.2,
+                      repeat: Infinity,
+                      repeatDelay: 1,
+                    }}
+                  >
+                    {kanji}
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Center Content */}
+            <motion.div
+              className="relative z-10 flex flex-col items-center"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >
+              {/* Big Welcome Text in Japanese */}
+              <div className="mb-8 flex">
+                {['よ', 'う', 'こ', 'そ'].map((char, index) => (
+                  <motion.span
+                    key={index}
+                    className="text-6xl md:text-8xl font-bold text-white japanese-text"
+                    initial={{ opacity: 0, y: -50, scale: 0.5 }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{
+                      delay: 0.1 + index * 0.15,
+                      duration: 0.8,
+                      scale: {
+                        repeat: Infinity,
+                        repeatDelay: 0.5,
+                        duration: 2,
+                        delay: 0.5 + index * 0.3,
+                        ease: "easeInOut"
+                      }
+                    }}
+                    style={{
+                      textShadow: '0 0 30px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.4)',
+                      filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))',
+                    }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </div>
+
+              {/* Doshi Logo */}
+              <motion.div
+                animate={{
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="mb-8 drop-shadow-2xl"
+              >
+                <DoshiMascot
+                  variant="animated"
+                  size="large"
+                  priority
+                />
+              </motion.div>
+
+              {/* Animated Kanji Row */}
+              <div className="flex gap-4 mb-8">
+                {['道', '師', '先', '生'].map((kanji, index) => (
+                  <motion.div
+                    key={kanji}
+                    className="text-4xl font-bold text-white"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.5 + index * 0.1,
+                      duration: 0.5,
+                    }}
+                    style={{
+                      textShadow: '0 0 20px rgba(255,255,255,0.5)',
+                    }}
+                  >
+                    {kanji}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Title with macron */}
+              <motion.h1
+                className="text-2xl font-bold text-white mb-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+              >
+                Dōshi Sensei
+              </motion.h1>
+
+              {/* Loading Message */}
+              <motion.p
+                className="text-lg text-white/90 mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 0.5 }}
+                style={{
+                  textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                }}
+              >
+                {loadingMessage}
+              </motion.p>
+
+              {/* Loading Dots */}
+              <div className="flex gap-2">
+                {[0, 1, 2].map((index) => (
+                  <motion.div
+                    key={index}
+                    className="w-3 h-3 bg-white rounded-full"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      delay: index * 0.2,
+                    }}
+                  />
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Particle Effects */}
+            <div className="absolute inset-0 pointer-events-none">
+              {Array.from({ length: 20 }).map((_, index) => {
+                const particleLeft = getPseudoRandom(index + 100, 6) * 100;
+                const particleTop = getPseudoRandom(index + 100, 7) * 100;
+                const particleDelay = getPseudoRandom(index + 100, 8) * 2;
+                
+                return (
+                  <motion.div
+                    key={index}
+                    className="absolute w-1 h-1 bg-white rounded-full"
+                    style={{
+                      left: `${particleLeft}%`,
+                      top: `${particleTop}%`,
+                    }}
+                    animate={{
+                      opacity: [0, 1, 0],
+                      scale: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: particleDelay,
+                    }}
+                  />
+                );
+              })}
+            </div>
+
+            {/* CSS for gradient animation */}
+            <style jsx global>{`
+              @keyframes gradientShift {
+                0% {
+                  background-position: 0% 50%;
+                }
+                50% {
+                  background-position: 100% 50%;
+                }
+                100% {
+                  background-position: 0% 50%;
+                }
+              }
+            `}</style>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {appState === 'ready' && (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

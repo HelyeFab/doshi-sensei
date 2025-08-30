@@ -1,10 +1,12 @@
 /**
  * IndexedDB storage service for Textbook Vocabulary feature
  * Handles local progress persistence with Firebase sync for premium users
+ * NOW USING UNIFIED STORAGE LAYER
  */
 
 import { auth } from '@/lib/firebase';
 import { getFirestore, doc, setDoc, getDoc, getDocs, collection, query, where, orderBy, writeBatch, Timestamp } from 'firebase/firestore';
+import { getUnifiedStorage } from '@/services/storage/UnifiedStorageLayer';
 
 export interface VocabularyProgress {
   id: string; // vocabulary item ID
@@ -114,7 +116,6 @@ class TextbookVocabularyStorage {
 
   // Progress Management
   async saveProgress(progress: VocabularyProgress): Promise<void> {
-    const db = await this.ensureDb();
     const userId = auth.currentUser?.uid;
     
     const progressWithUser = {
@@ -123,41 +124,26 @@ class TextbookVocabularyStorage {
       updatedAt: new Date()
     };
 
-    const transaction = db.transaction(['progress'], 'readwrite');
-    const store = transaction.objectStore('progress');
-    await store.put(progressWithUser);
-
-    // TODO: Sync with Firebase for premium users
-    if (userId && await this.isPremiumUser()) {
-      this.syncProgressToFirebase(progressWithUser);
-    }
+    // Use unified storage layer - automatically handles local + cloud sync
+    const unifiedStorage = getUnifiedStorage();
+    await unifiedStorage.save('textbook_vocabulary_progress', progress.id, progressWithUser);
   }
 
   async getProgress(vocabularyId: string): Promise<VocabularyProgress | null> {
-    const db = await this.ensureDb();
-    const transaction = db.transaction(['progress'], 'readonly');
-    const store = transaction.objectStore('progress');
-    
-    return new Promise((resolve, reject) => {
-      const request = store.get(vocabularyId);
-      request.onsuccess = () => resolve(request.result || null);
-      request.onerror = () => reject(request.error);
-    });
+    // Use unified storage layer - automatically handles local + cloud sync
+    const unifiedStorage = getUnifiedStorage();
+    return await unifiedStorage.load('textbook_vocabulary_progress', vocabularyId);
   }
 
   async getProgressByTextbook(textbook: string): Promise<VocabularyProgress[]> {
-    const db = await this.ensureDb();
+    // Load all progress and filter by textbook
+    const unifiedStorage = getUnifiedStorage();
+    const allProgress: VocabularyProgress[] = await unifiedStorage.loadAll('textbook_vocabulary_progress');
     const userId = auth.currentUser?.uid || 'anonymous';
     
-    const transaction = db.transaction(['progress'], 'readonly');
-    const store = transaction.objectStore('progress');
-    const index = store.index('composite');
-    
-    return new Promise((resolve, reject) => {
-      const request = index.getAll([userId, textbook]);
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
+    return allProgress.filter(progress => 
+      progress.textbook === textbook && progress.userId === userId
+    );
   }
 
   async getProgressIds(textbook: string): Promise<Set<string>> {
@@ -195,7 +181,6 @@ class TextbookVocabularyStorage {
 
   // Study Sessions
   async startStudySession(textbook: string): Promise<string> {
-    const db = await this.ensureDb();
     const userId = auth.currentUser?.uid || 'anonymous';
     const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
@@ -209,9 +194,9 @@ class TextbookVocabularyStorage {
       avgQuality: 0
     };
     
-    const transaction = db.transaction(['sessions'], 'readwrite');
-    const store = transaction.objectStore('sessions');
-    await store.add(session);
+    // Use unified storage layer
+    const unifiedStorage = getUnifiedStorage();
+    await unifiedStorage.save('textbook_vocabulary_sessions', sessionId, session);
     
     return sessionId;
   }

@@ -79,7 +79,7 @@ export function useReviewNavigation() {
     sessionMetadata?: ReviewNavigationState['sessionMetadata']
   ) => {
     const state: ReviewNavigationState = {
-      returnTo: '/review',
+      returnTo: '/review-hub',
       sourceId,
       startTime: Date.now(),
       completedItems: 0,
@@ -91,7 +91,7 @@ export function useReviewNavigation() {
     // Navigate to the source with review mode parameters
     const params = new URLSearchParams({
       mode: 'review',
-      returnTo: '/review',
+      returnTo: '/review-hub',
       sourceId
     });
 
@@ -113,7 +113,7 @@ export function useReviewNavigation() {
     
     if (!state) {
       // No navigation state found, just go to review hub
-      router.push('/review');
+      router.push('/review-hub');
       return;
     }
 

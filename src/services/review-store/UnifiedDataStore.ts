@@ -36,6 +36,7 @@ import { FirebaseAdapter } from './adapters/FirebaseAdapter';
 import { MemoryCacheAdapter } from './adapters/MemoryCacheAdapter';
 import { SyncEngine } from './SyncEngine';
 import { TransactionManager } from './TransactionManager';
+import { getTextbookVocabularyItems, getKanjiMasteryItems } from './source-connectors';
 
 /**
  * UnifiedReviewDataStore - Central data management for reviews
@@ -95,6 +96,52 @@ export class UnifiedReviewDataStore {
       this.instance = new UnifiedReviewDataStore(config);
     }
     return this.instance;
+  }
+
+  /**
+   * Get completed items count for today
+   */
+  async getCompletedToday(userId: string): Promise<number> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    try {
+      // Query from local DB for now (would query Firebase in production)
+      const key = `stats:${userId}:${today.toISOString().split('T')[0]}`;
+      const stats = await this.cache.get(key);
+      return stats?.completed || 0;
+    } catch (error) {
+      console.error('[UnifiedDataStore] Failed to get completed today:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Get current streak for user
+   */
+  async getCurrentStreak(userId: string): Promise<number> {
+    try {
+      const key = `streak:${userId}`;
+      const streak = await this.cache.get(key);
+      return streak || 0;
+    } catch (error) {
+      console.error('[UnifiedDataStore] Failed to get streak:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Sync with remote database
+   */
+  async syncWithRemote(userId: string): Promise<void> {
+    if (!this.config.enableSync) return;
+    
+    try {
+      await this.syncEngine.sync(userId);
+    } catch (error) {
+      console.error('[UnifiedDataStore] Sync failed:', error);
+      throw error;
+    }
   }
 
   /**
@@ -212,6 +259,12 @@ export class UnifiedReviewDataStore {
 
       // Apply intelligent scheduling
       const scheduled = await this.applySchedulingAlgorithm(unified, params);
+
+      // Save all items to local DB for quick access during reviews
+      // This is critical for the review process to work
+      for (const item of scheduled) {
+        await this.localDB.set(`item:${item.id}`, item);
+      }
 
       // Calculate statistics
       const now = new Date();
@@ -361,6 +414,37 @@ export class UnifiedReviewDataStore {
       return remote;
     }
 
+    // If not in databases, try to get from the current session's loaded items
+    // This is critical because items from source connectors aren't saved to DB yet
+    const userId = this.config.userId || 'guest';
+    const cachedData = await this.getCachedData(`due-items:${userId}`);
+    if (cachedData && cachedData.items) {
+      const item = cachedData.items.find((i: UnifiedReviewItem) => i.id === itemId);
+      if (item) {
+        // Save to local DB for future access
+        await this.localDB.set(`item:${itemId}`, item);
+        return item;
+      }
+    }
+
+    // As last resort, try to fetch directly from source systems
+    // This requires parsing the itemId to determine the source
+    if (itemId.startsWith('textbook-vocab-')) {
+      const items = await getTextbookVocabularyItems({ userId, limit: 1000 });
+      const item = items.find(i => i.id === itemId);
+      if (item) {
+        await this.localDB.set(`item:${itemId}`, item);
+        return item;
+      }
+    } else if (itemId.startsWith('kanji-mastery-')) {
+      const items = await getKanjiMasteryItems({ userId, limit: 1000 });
+      const item = items.find(i => i.id === itemId);
+      if (item) {
+        await this.localDB.set(`item:${itemId}`, item);
+        return item;
+      }
+    }
+
     return null;
   }
 
@@ -504,9 +588,56 @@ export class UnifiedReviewDataStore {
     source: ReviewSource,
     params: GetDueItemsParams
   ): Promise<UnifiedReviewItem[]> {
-    // This would connect to the actual source databases
-    // For now, return empty array
-    return [];
+    // Import the source connectors (using mock for now while fixing real connectors)
+    const { 
+      getKanjiMasteryItems, 
+      getTextbookVocabularyItems,
+      getFlashcardItems,
+      getStudyListItems,
+      getDrillPracticeItems 
+    } = await import('./source-connectors');
+    
+    const connectorParams = {
+      userId: params.userId,
+      contentTypes: params.contentTypes,
+      limit: params.limit,
+      offset: params.offset,
+      includeOverdue: params.includeOverdue
+    };
+    
+    switch (source) {
+      case ReviewSource.KANJI_MASTERY:
+        return await getKanjiMasteryItems(connectorParams);
+        
+      case ReviewSource.TEXTBOOK_VOCAB:
+        return await getTextbookVocabularyItems(connectorParams);
+        
+      case ReviewSource.FLASHCARDS:
+        return await getFlashcardItems(connectorParams);
+        
+      case ReviewSource.VOCABULARY_PAGE:
+      case ReviewSource.KANJI_BROWSER:
+        // Both use study lists
+        return await getStudyListItems(connectorParams);
+        
+      case ReviewSource.DRILL_PRACTICE:
+        return await getDrillPracticeItems(connectorParams);
+        
+      case ReviewSource.KANA_STUDY:
+      case ReviewSource.STORY_MODE:
+      case ReviewSource.GAMES:
+        // These sources don't have traditional review items yet
+        // They could be added later
+        return [];
+        
+      case ReviewSource.REVIEW_HUB:
+        // Review hub doesn't have its own items, it aggregates from others
+        return [];
+        
+      default:
+        console.warn(`Unknown review source: ${source}`);
+        return [];
+    }
   }
 
   private mergeAndDeduplicate(items: UnifiedReviewItem[]): UnifiedReviewItem[] {

@@ -33,7 +33,7 @@ function KanjiMasteryDashboardContent() {
   
   // Check if we're in review mode from Review Hub
   const isReviewMode = searchParams.get('mode') === 'review';
-  const returnTo = searchParams.get('returnTo') || '/review';
+  const returnTo = searchParams.get('returnTo') || '/review-hub';
   
   const { checkAndTrack, remaining } = useFeature('kanji_mastery');
   const { isPremium, userType } = useSubscription2();

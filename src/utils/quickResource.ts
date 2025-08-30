@@ -27,40 +27,23 @@ const PASTEL_COLORS = [
 // Sample icons from different collections (based on the folder structure)
 const SAMPLE_ICONS = [
   // Watermelon emotions
-  '17517790-summer-watermelon/png/001-happy.png',
-  '17517790-summer-watermelon/png/002-love.png',
-  '17517790-summer-watermelon/png/013-wow.png',
-  '17517790-summer-watermelon/png/014-angel.png',
-  '17517790-summer-watermelon/png/020-ok.png',
-  
-  // Pride stickers
-  '18986852-pride-stickers/png/005-knowledge.png',
-  '18986852-pride-stickers/png/015-teacher.png',
-  '18986852-pride-stickers/png/022-trophy.png',
-  '18986852-pride-stickers/png/036-achivement.png',
-  '18986852-pride-stickers/png/065-reading.png',
+  '17517790-summer-watermelon/svg/001-happy.svg',
+  '17517790-summer-watermelon/svg/002-love.svg',
+  '17517790-summer-watermelon/svg/013-wow.svg',
+  '17517790-summer-watermelon/svg/014-angel.svg',
+  '17517790-summer-watermelon/svg/020-ok.svg',
   
   // Animals
-  '4193242-animals/png/016-panda bear.png',
-  '4193242-animals/png/009-fox.png',
-  '4193242-animals/png/010-rabbit.png',
-  '4193242-animals/png/033-lion.png',
-  '4193242-animals/png/022-elephant.png',
+  '4193242-animals/svg/002-buffalo.svg',
+  '4193242-animals/svg/004-sheep.svg',
+  '4193242-animals/svg/010-rabbit.svg',
+  '4193242-animals/svg/019-llama.svg',
+  '4193242-animals/svg/020-goat.svg',
   
   // Education themed
-  '4341021-education/png/001-book.png',
-  '4341021-education/png/015-graduation cap.png',
-  '4341021-education/png/020-light bulb.png',
-  
-  // Nature
-  '4359705-nature/png/001-sun.png',
-  '4359705-nature/png/015-tree.png',
-  '4359705-nature/png/025-flower.png',
-  
-  // Creativity
-  '4228672-creativity/png/001-paint brush.png',
-  '4228672-creativity/png/010-art palette.png',
-  '4228672-creativity/png/015-pencil.png',
+  '4341021-education/svg/011-book.svg',
+  '4341021-education/svg/049-mortarboard.svg',
+  '4341021-education/svg/037-trophy.svg',
 ];
 
 /**

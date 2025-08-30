@@ -48,6 +48,7 @@ export enum ReviewSource {
   KANJI_MASTERY = 'kanji_mastery',
   TEXTBOOK_VOCAB = 'textbook_vocab',
   FLASHCARDS = 'flashcards',
+  SAVED_ITEMS = 'saved_items',
   DRILL_PRACTICE = 'drill_practice',
   KANA_STUDY = 'kana_study',
   VOCABULARY_PAGE = 'vocabulary_page',

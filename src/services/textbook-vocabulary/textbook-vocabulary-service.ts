@@ -103,12 +103,9 @@ export class TextbookVocabularyService {
     }
     
     try {
-      const response = await fetch(`/data/textbook-vocabulary/${textbook}/all.json`);
-      if (!response.ok) {
-        throw new Error(`Failed to load vocabulary data for ${textbook}`);
-      }
-      
-      const data: VocabularyItem[] = await response.json();
+      // Use dynamic import to load from src/data/textbook-vocabulary
+      const dataModule = await import(`@/data/textbook-vocabulary/${textbook}/all.json`);
+      const data: VocabularyItem[] = dataModule.default;
       
       // Add textbook and lesson info if missing
       const processedData = data.map(item => ({
@@ -121,6 +118,7 @@ export class TextbookVocabularyService {
       return processedData;
     } catch (error) {
       console.error(`Error loading vocabulary data for ${textbook}:`, error);
+      // Return empty array if data file doesn't exist
       return [];
     }
   }

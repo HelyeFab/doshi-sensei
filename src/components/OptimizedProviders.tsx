@@ -10,6 +10,7 @@ import { UserProfileProvider } from "@/contexts/UserProfileContext";
 import { ModalProvider } from "@/contexts/ModalContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { KanjiSelectionProvider } from "@/contexts/KanjiSelectionContext";
+// import { QuickContextProvider } from "@/components/QuickContext"; // Removed Quick Context
 
 // Group critical providers that need to be loaded immediately
 export function CriticalProviders({ children }: { children: React.ReactNode }) {
@@ -39,6 +40,10 @@ export function CriticalProviders({ children }: { children: React.ReactNode }) {
 // Non-critical providers that can be loaded after initial render
 export function NonCriticalProviders({ children }: { children: React.ReactNode }) {
   // AdminProvider moved to CriticalProviders since components depend on it
-  // Using React.Fragment explicitly to avoid hydration issues
-  return <React.Fragment>{children}</React.Fragment>;
+  // QuickContextProvider removed - no longer needed
+  return (
+    <>
+      {children}
+    </>
+  );
 }

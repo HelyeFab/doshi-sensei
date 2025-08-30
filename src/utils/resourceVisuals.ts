@@ -191,20 +191,15 @@ export function getResourceColorTheme(resourceId: string) {
  */
 export function getResourceIcon(resourceId: string): string {
   const icons = [
-    '17517790-summer-watermelon/png/001-happy.png',
-    '17517790-summer-watermelon/png/002-love.png',
-    '17517790-summer-watermelon/png/013-wow.png',
-    '17517790-summer-watermelon/png/020-ok.png',
-    '18986852-pride-stickers/png/005-knowledge.png',
-    '18986852-pride-stickers/png/015-teacher.png',
-    '18986852-pride-stickers/png/022-trophy.png',
-    '18986852-pride-stickers/png/036-achivement.png',
-    '18986852-pride-stickers/png/065-reading.png',
-    '4193242-animals/png/016-panda bear.png',
-    '4193242-animals/png/009-fox.png',
-    '4193242-animals/png/010-rabbit.png',
-    '4193242-animals/png/033-lion.png',
-    '4193242-animals/png/022-elephant.png',
+    '17517790-summer-watermelon/svg/001-happy.svg',
+    '17517790-summer-watermelon/svg/002-love.svg',
+    '17517790-summer-watermelon/svg/013-wow.svg',
+    '17517790-summer-watermelon/svg/020-ok.svg',
+    '4193242-animals/svg/002-buffalo.svg',
+    '4193242-animals/svg/003-flamingo.svg',
+    '4193242-animals/svg/010-rabbit.svg',
+    '4193242-animals/svg/019-llama.svg',
+    '4193242-animals/svg/026-squirrel.svg',
   ];
   
   // Use the same hash logic for consistency

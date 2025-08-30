@@ -29,7 +29,7 @@ function TextbookVocabularyPageContent() {
   
   // Check if we're in review mode from Review Hub
   const isReviewMode = searchParams.get('mode') === 'review';
-  const returnTo = searchParams.get('returnTo') || '/review';
+  const returnTo = searchParams.get('returnTo') || '/review-hub';
   
   // Review navigation hook
   const { getCurrentState, returnFromReview } = useReviewNavigation();

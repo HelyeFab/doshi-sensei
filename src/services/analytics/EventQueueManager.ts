@@ -231,7 +231,10 @@ class EventQueueManager {
     if (events.length === 0) return;
     
     const user = await this.getCurrentUser();
-    if (!user) return;
+    // Ensure we have a valid authenticated user (not guest or anonymous)
+    if (!user || user.uid === 'guest' || user.isAnonymous) {
+      return;
+    }
     
     try {
       // Use batch writes for efficiency

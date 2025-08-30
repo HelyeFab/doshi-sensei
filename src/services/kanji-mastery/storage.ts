@@ -1,11 +1,13 @@
 /**
  * Kanji Mastery Storage Service
  * Handles all data persistence for kanji learning progress
+ * NOW USING UNIFIED STORAGE LAYER
  */
 
 import EnhancedStorageManager from '@/utils/storage';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, getDocs, collection, query, where, orderBy } from 'firebase/firestore';
+import { getUnifiedStorage } from '@/services/storage/UnifiedStorageLayer';
 
 export interface KanjiProgress {
   id: string; // kanji character
@@ -68,59 +70,25 @@ class KanjiStorageService {
   async saveProgress(progress: KanjiProgress): Promise<void> {
     const auth = getAuth();
     const user = auth.currentUser;
+    
+    const progressWithUser = {
+      ...progress,
+      userId: user?.uid || 'anonymous',
+      updatedAt: new Date()
+    };
 
-    if (user) {
-      // Save to Firebase for logged-in users
-      try {
-        await setDoc(
-          doc(this.db, 'users', user.uid, 'kanjiProgress', progress.id),
-          {
-            ...progress,
-            lastReviewed: progress.lastReviewed.toISOString(),
-            nextReview: progress.nextReview.toISOString(),
-            createdAt: progress.createdAt.toISOString(),
-            updatedAt: progress.updatedAt.toISOString()
-          }
-        );
-      } catch (error) {
-        console.error('Error saving to Firebase:', error);
-      }
-    }
-
-    // Always save to IndexedDB for offline support
-    await this.saveToLocal(progress);
+    // Use unified storage layer - automatically handles local + cloud sync
+    const unifiedStorage = getUnifiedStorage();
+    await unifiedStorage.save('kanji_mastery_progress', progress.id, progressWithUser);
   }
 
   /**
    * Get progress for a specific kanji
    */
   async getProgress(kanjiId: string): Promise<KanjiProgress | null> {
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    // Try Firebase first for logged-in users
-    if (user) {
-      try {
-        const docRef = doc(this.db, 'users', user.uid, 'kanjiProgress', kanjiId);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          return {
-            ...data,
-            lastReviewed: new Date(data.lastReviewed),
-            nextReview: new Date(data.nextReview),
-            createdAt: new Date(data.createdAt),
-            updatedAt: new Date(data.updatedAt)
-          } as KanjiProgress;
-        }
-      } catch (error) {
-        console.error('Error fetching from Firebase:', error);
-      }
-    }
-
-    // Fall back to local storage
-    return this.getFromLocal(kanjiId);
+    // Use unified storage layer - automatically handles local + cloud sync
+    const unifiedStorage = getUnifiedStorage();
+    return await unifiedStorage.load('kanji_mastery_progress', kanjiId);
   }
 
   /**
@@ -176,25 +144,13 @@ class KanjiStorageService {
 
     const sessionWithId = {
       ...session,
-      id: session.id || Date.now().toString()
+      id: session.id || Date.now().toString(),
+      userId: user?.uid || 'anonymous'
     };
 
-    if (user) {
-      try {
-        await setDoc(
-          doc(this.db, 'users', user.uid, 'kanjiStudySessions', sessionWithId.id),
-          {
-            ...sessionWithId,
-            date: session.date.toISOString()
-          }
-        );
-      } catch (error) {
-        console.error('Error saving session to Firebase:', error);
-      }
-    }
-
-    // Save to local storage
-    await this.saveSessionToLocal(sessionWithId);
+    // Use unified storage layer - automatically handles local + cloud sync
+    const unifiedStorage = getUnifiedStorage();
+    await unifiedStorage.save('kanji_study_sessions', sessionWithId.id, sessionWithId);
   }
 
   /**

@@ -13,9 +13,9 @@ import { BackgroundSyncProvider } from "@/contexts/BackgroundSyncContext";
 import PWAUpdateNotification from "@/components/PWAUpdateNotification";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import SplashScreenMeta from "@/components/SplashScreenMeta";
-import SplashScreen from "@/components/SplashScreen";
+import SplashScreenWrapper from "@/components/SplashScreenWrapper";
 import ThemeInitScript from "@/components/ThemeInitScript";
-import QuickContextProvider from "@/components/QuickContext/QuickContextProvider";
+// import QuickContextProvider from "@/components/QuickContext/QuickContextProvider"; // Removed Quick Context
 import SyncInitializer from "@/components/SyncInitializer";
 import { InAppNotifications } from "@/components/InAppNotifications";
 
@@ -116,8 +116,7 @@ export default function RootLayout({
             <BackgroundSyncProvider>
               <VirtualCompanionProvider>
                 <ToastProvider>
-                  <QuickContextProvider>
-                    <SplashScreen />
+                  <SplashScreenWrapper>
                     <SyncInitializer />
                     <div className="min-h-screen pb-16 md:pb-0">
                       {children}
@@ -130,7 +129,7 @@ export default function RootLayout({
                     <PWAUpdateNotification />
                     <PWAInstallPrompt />
                     <InAppNotifications />
-                  </QuickContextProvider>
+                  </SplashScreenWrapper>
                 </ToastProvider>
               </VirtualCompanionProvider>
             </BackgroundSyncProvider>

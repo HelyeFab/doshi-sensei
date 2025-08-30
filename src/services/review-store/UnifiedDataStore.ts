@@ -36,7 +36,7 @@ import { FirebaseAdapter } from './adapters/FirebaseAdapter';
 import { MemoryCacheAdapter } from './adapters/MemoryCacheAdapter';
 import { SyncEngine } from './SyncEngine';
 import { TransactionManager } from './TransactionManager';
-import { getTextbookVocabularyItems, getKanjiMasteryItems } from './source-connectors';
+import { getTextbookVocabularyItems, getKanjiMasteryItems, getKanaStudyItems } from './source-connectors';
 
 /**
  * UnifiedReviewDataStore - Central data management for reviews
@@ -624,6 +624,8 @@ export class UnifiedReviewDataStore {
         return await getDrillPracticeItems(connectorParams);
         
       case ReviewSource.KANA_STUDY:
+        return await getKanaStudyItems(connectorParams);
+        
       case ReviewSource.STORY_MODE:
       case ReviewSource.GAMES:
         // These sources don't have traditional review items yet

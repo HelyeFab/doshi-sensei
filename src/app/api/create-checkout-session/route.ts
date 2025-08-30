@@ -16,6 +16,8 @@ export async function POST(request: NextRequest) {
     // The checkout session creation has been moved to Google Cloud Functions
     // to consolidate all Stripe operations in one place
     
+    // Pass the idToken for authentication to the Firebase Function
+    // The Firebase function will get userId and email from the authenticated context
     const result = await serverFirebaseFunctions.createCheckoutSession(
       { priceId },
       idToken

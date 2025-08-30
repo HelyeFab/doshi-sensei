@@ -31,7 +31,7 @@ export async function callFirebaseFunction<T = any, R = any>(
   const url = `https://${FIREBASE_REGION}-${FIREBASE_PROJECT_ID}.cloudfunctions.net/${functionName}`;
   
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
   };
   
   if (idToken) {
@@ -45,13 +45,17 @@ export async function callFirebaseFunction<T = any, R = any>(
       body: JSON.stringify({ data }),
     });
 
-    const result = await response.json() as FirebaseFunctionResponse<R>;
+    const responseBody = await response.json();
 
-    if (!response.ok || result.error) {
-      throw new Error(result.error?.message || `Function ${functionName} failed`);
+    // Handle Firebase onCall function response format
+    // onCall functions return either { result: ... } for success or { error: ... } for errors
+    if (!response.ok || responseBody.error) {
+      const error = responseBody.error;
+      throw new Error(error?.message || `Function ${functionName} failed`);
     }
 
-    return result.result as R;
+    // Return the result field which contains the actual data
+    return responseBody.result as R;
   } catch (error: any) {
     console.error(`Error calling Firebase Function ${functionName}:`, error);
     throw new Error(error.message || 'Failed to call Firebase function');

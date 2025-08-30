@@ -6,8 +6,6 @@
 import { LearningEvent } from '@/types/analytics';
 import { storageManager } from './StorageManager';
 import { learningEventsService } from './LearningEventsService';
-import { doc, setDoc, collection, writeBatch } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 
 class EventQueueManager {
   private queue: LearningEvent[] = [];
@@ -77,80 +75,27 @@ class EventQueueManager {
   }
   
   async syncBatch(force: boolean = false): Promise<void> {
-    // Don't sync if already syncing
-    if (this.isSyncing && !force) return;
+    // DEPRECATED: EventQueueManager no longer handles syncing directly.
+    // LearningEventsService handles all tiered storage and syncing.
+    // This method is kept for backward compatibility but only clears the queue.
     
-    // Don't sync if offline
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      // Offline - skipping sync
-      return;
+    // Clear the queue to prevent memory leaks
+    this.queue = [];
+    
+    // Clear sync timer
+    if (this.syncTimer) {
+      clearTimeout(this.syncTimer);
+      this.syncTimer = null;
     }
     
-    this.isSyncing = true;
-    
-    try {
-      // Get events to sync (from memory queue and unsynced from storage)
-      const eventsToSync = [...this.queue];
-      
-      if (eventsToSync.length === 0) {
-        // Try to sync any unsynced events from storage
-        await this.syncFromStorage();
-        return;
-      }
-      
-      // Clear memory queue
-      this.queue = [];
-      
-      // Sync to Firebase (for premium users)
-      const user = await this.getCurrentUser();
-      if (user && await this.isUserPremium(user.uid)) {
-        await this.syncToFirebase(eventsToSync);
-      }
-      
-      // Mark events as synced in IndexedDB
-      const eventIds = eventsToSync.map(e => e.id);
-      await storageManager.markEventsSynced(eventIds);
-      
-      // Successfully synced events
-      
-    } catch (error) {
-      // Failed to sync batch
-      // Re-queue events on failure
-      this.queue.push(...this.queue);
-    } finally {
-      this.isSyncing = false;
-      
-      // Clear sync timer
-      if (this.syncTimer) {
-        clearTimeout(this.syncTimer);
-        this.syncTimer = null;
-      }
-    }
+    // Reset syncing flag
+    this.isSyncing = false;
   }
   
   private async syncFromStorage(): Promise<void> {
-    try {
-      const user = await this.getCurrentUser();
-      if (!user) return;
-      
-      // Get unsynced events from storage
-      const unsyncedEvents = await storageManager.getUnsyncedEvents(user.uid);
-      
-      if (unsyncedEvents.length === 0) return;
-      
-      // Sync to Firebase if premium
-      if (await this.isUserPremium(user.uid)) {
-        await this.syncToFirebase(unsyncedEvents);
-        
-        // Mark as synced
-        const eventIds = unsyncedEvents.map(e => e.id);
-        await storageManager.markEventsSynced(eventIds);
-        
-        // Synced events from storage
-      }
-    } catch (error) {
-      // Failed to sync from storage
-    }
+    // DEPRECATED: This method should not be used anymore.
+    // LearningEventsService handles all storage syncing.
+    return;
   }
   
   private cleanEventData(data: any): any {
@@ -228,80 +173,17 @@ class EventQueueManager {
   }
   
   private async syncToFirebase(events: LearningEvent[]): Promise<void> {
-    if (events.length === 0) return;
-    
-    const user = await this.getCurrentUser();
-    // Ensure we have a valid authenticated user (not guest or anonymous)
-    if (!user || user.uid === 'guest' || user.isAnonymous) {
-      return;
-    }
-    
-    try {
-      // Use batch writes for efficiency
-      const batch = writeBatch(db);
-      
-      events.forEach(event => {
-        const eventRef = doc(
-          collection(db, 'analytics', user.uid, 'events'),
-          event.id
-        );
-        
-        // Clean the event data - remove undefined values
-        const cleanEvent = this.cleanEventData({
-          ...event,
-          synced: true,
-          syncedAt: Date.now()
-        });
-        
-        // Validate the cleaned event doesn't have any invalid fields
-        try {
-          // Ensure no invalid field names or values
-          const validatedEvent = JSON.parse(JSON.stringify(cleanEvent));
-          batch.set(eventRef, validatedEvent);
-        } catch (e) {
-          // Skip this event if it can't be serialized
-          // Silently handle the error
-        }
-      });
-      
-      // Only commit if there are valid operations
-      try {
-        await batch.commit();
-      } catch (error: any) {
-        // Check if it's a field validation error and handle silently
-        if (error?.message?.includes('Unsupported field value')) {
-          // Skip this batch silently
-          return;
-        }
-        throw error;
-      }
-      
-      // Also update aggregated stats
-      await this.updateFirebaseStats(user.uid, events);
-      
-    } catch (error) {
-      // Failed to sync to Firebase
-      throw error;
-    }
+    // DEPRECATED: This method should not be used anymore.
+    // LearningEventsService handles all Firebase syncing.
+    // This prevents duplicate writes to Firebase.
+    return;
   }
   
   private async updateFirebaseStats(userId: string, newEvents: LearningEvent[]): Promise<void> {
-    try {
-      // Get current stats
-      const stats = await storageManager.getUserStats(userId);
-      if (!stats) return;
-      
-      // Update stats document in Firebase
-      const statsRef = doc(db, 'analytics', userId, 'stats', 'current');
-      const cleanStats = this.cleanEventData({
-        ...stats,
-        lastUpdated: Date.now()
-      });
-      await setDoc(statsRef, cleanStats, { merge: true });
-      
-    } catch (error) {
-      // Failed to update Firebase stats
-    }
+    // DEPRECATED: This method should not be used anymore.
+    // LearningEventsService handles all Firebase stats updates.
+    // This prevents duplicate writes to Firebase.
+    return;
   }
   
   private async getCurrentUser(): Promise<{ uid: string } | null> {

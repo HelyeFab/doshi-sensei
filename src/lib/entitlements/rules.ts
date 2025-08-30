@@ -22,6 +22,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       // Learning
       'hiragana_practice': -1,  // Unlimited for basic kana
       'katakana_practice': -1,  // Unlimited for basic kana
+      'kana_study': 10,         // Limited spaced repetition sessions
       'drill_practice': 3,      // Taste of the feature
       'vocabulary_search': 20,  // More generous searches (API protection)
       'kanji_study': -1,        // Unlimited browsing (read-only)
@@ -112,6 +113,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       // Learning
       'hiragana_practice': -1,  // Unlimited
       'katakana_practice': -1,  // Unlimited
+      'kana_study': 30,         // Good amount of spaced repetition sessions
       'drill_practice': 5,      // Limited drills
       'vocabulary_search': -1,  // Unlimited searches
       'kanji_study': -1,        // Unlimited viewing
@@ -199,6 +201,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       // Learning - all unlimited
       'hiragana_practice': -1,
       'katakana_practice': -1,
+      'kana_study': -1,         // Unlimited spaced repetition for premium
       'drill_practice': -1,
       'vocabulary_search': -1,
       'kanji_study': -1,
@@ -289,6 +292,7 @@ export const entitlementRules: Record<UserType, EntitlementLimits> = {
       // Learning - all unlimited
       'hiragana_practice': -1,
       'katakana_practice': -1,
+      'kana_study': -1,         // Unlimited spaced repetition for premium
       'drill_practice': -1,
       'vocabulary_search': -1,
       'kanji_study': -1,

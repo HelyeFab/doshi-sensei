@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { kanaData, KanaCharacter, playKanaAudio } from '@/data/kanaData';
 import { useLearnTracking } from '@/hooks/useLearnTracking';
+import { kanaStudyIntegration } from '@/services/kana-study/review-hub-integration';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface KanaStudyModalProps {
   isOpen: boolean;
@@ -21,12 +23,17 @@ export default function KanaStudyModal({
   const [showAnswer, setShowAnswer] = useState(false);
   const [studyKana, setStudyKana] = useState<KanaCharacter[]>([]);
   const [mode, setMode] = useState<'recognition' | 'recall'>('recognition');
+  const [userResponse, setUserResponse] = useState<'correct' | 'incorrect' | null>(null);
   
   // Tracking
   const { track: trackLearning } = useLearnTracking();
+  const { user } = useAuth();
   const studyStartTime = useRef(Date.now());
   const cardStartTime = useRef(Date.now());
   const cardsViewed = useRef(0);
+  const correctCount = useRef(0);
+  const incorrectCount = useRef(0);
+  const totalResponseTime = useRef(0);
 
   useEffect(() => {
     if (isOpen && selectedKanaIds.length > 0) {
@@ -41,6 +48,9 @@ export default function KanaStudyModal({
       studyStartTime.current = Date.now();
       cardStartTime.current = Date.now();
       cardsViewed.current = 0;
+      correctCount.current = 0;
+      incorrectCount.current = 0;
+      totalResponseTime.current = 0;
       
       // Track study session start
       trackLearning({
@@ -60,12 +70,46 @@ export default function KanaStudyModal({
           }
         }
       });
+      
+      // Track in Review Hub if user is logged in
+      if (user?.uid) {
+        kanaStudyIntegration.trackSessionStart(studyType, user.uid);
+      }
     }
   }, [isOpen, selectedKanaIds, studyType]);
 
   const currentKana = studyKana[currentIndex];
   const displayKana = currentKana && (studyType === 'hiragana' ? currentKana.hiragana : currentKana.katakana);
   const progress = studyKana.length > 0 ? ((currentIndex + 1) / studyKana.length) * 100 : 0;
+
+  const handleResponse = async (response: 'correct' | 'incorrect') => {
+    setUserResponse(response);
+    const responseTime = Date.now() - cardStartTime.current;
+    
+    // Update stats
+    if (response === 'correct') {
+      correctCount.current++;
+    } else {
+      incorrectCount.current++;
+    }
+    totalResponseTime.current += responseTime;
+    
+    // Track in Review Hub for logged-in users
+    if (user?.uid && currentKana) {
+      await kanaStudyIntegration.trackKanaPractice(
+        displayKana || '',
+        studyType,
+        response === 'correct',
+        responseTime,
+        user.uid
+      );
+    }
+    
+    // Auto-advance after a short delay
+    setTimeout(() => {
+      handleNext();
+    }, 500);
+  };
 
   const handleNext = () => {
     // Track current card view
@@ -83,7 +127,8 @@ export default function KanaStudyModal({
             cardIndex: currentIndex,
             totalCards: studyKana.length,
             viewDuration: Date.now() - cardStartTime.current,
-            sawAnswer: showAnswer
+            sawAnswer: showAnswer,
+            response: userResponse
           }
         },
         metrics: {
@@ -92,6 +137,9 @@ export default function KanaStudyModal({
       });
       cardsViewed.current++;
     }
+    
+    // Reset response for next card
+    setUserResponse(null);
     
     if (currentIndex < studyKana.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -117,6 +165,20 @@ export default function KanaStudyModal({
           cardsViewed: cardsViewed.current + 1
         }
       });
+      
+      // Track session completion in Review Hub
+      if (user?.uid) {
+        const totalAttempts = correctCount.current + incorrectCount.current;
+        const averageTime = totalAttempts > 0 ? totalResponseTime.current / totalAttempts : 0;
+        
+        kanaStudyIntegration.trackSessionComplete({
+          correct: correctCount.current,
+          incorrect: incorrectCount.current,
+          averageTime,
+          kanaType: studyType
+        }, user.uid);
+      }
+      
       handleClose(true);
     }
   };
@@ -282,18 +344,38 @@ export default function KanaStudyModal({
           >
             Previous
           </button>
-          <button
-            onClick={() => setShowAnswer(!showAnswer)}
-            className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
-          >
-            {showAnswer ? 'Hide' : 'Show'} Answer
-          </button>
-          <button
-            onClick={handleNext}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            {currentIndex === studyKana.length - 1 ? 'Finish' : 'Next'}
-          </button>
+          {!showAnswer ? (
+            <button
+              onClick={() => setShowAnswer(true)}
+              className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors font-medium"
+            >
+              Show Answer
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => handleResponse('incorrect')}
+                className="flex-1 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+              >
+                ✗ Incorrect
+              </button>
+              <button
+                onClick={() => handleResponse('correct')}
+                className="flex-1 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+              >
+                ✓ Correct
+              </button>
+            </>
+          )}
+          
+          {!showAnswer && (
+            <button
+              onClick={handleNext}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              {currentIndex === studyKana.length - 1 ? 'Finish' : 'Next'}
+            </button>
+          )}
         </div>
 
         {/* Keyboard Hints */}

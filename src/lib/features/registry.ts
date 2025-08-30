@@ -44,6 +44,17 @@ const _internalRegistry: Record<string, Feature> = {
     requiresSubscription: false,
     status: 'active',
   },
+  'kana_study': {
+    id: 'kana_study',
+    name: 'Kana Study',
+    description: 'Comprehensive hiragana and katakana practice with spaced repetition',
+    category: 'learning',
+    icon: 'あア',
+    limitType: 'daily',
+    requiresAuth: false,
+    requiresSubscription: false,
+    status: 'active',
+  },
   'drill_practice': {
     id: 'drill_practice',
     name: 'Drill Practice',

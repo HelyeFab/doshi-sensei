@@ -482,6 +482,7 @@ class LearningEventsService {
       // Stats are already clean now - no Set objects
       const statsForFirebase = {
         ...stats,
+        userId: this.currentUser.uid,  // Required by Firebase rules
         lastUpdated: serverTimestamp(),
         userTier: this.userTier
       };

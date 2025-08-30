@@ -132,12 +132,12 @@ export class StatsFactory {
   static cloneStats(stats: UserStatsV2): UserStatsV2 {
     return {
       ...stats,
-      learnedKanjiSet: [...stats.learnedKanjiSet],
-      learnedWordsSet: [...stats.learnedWordsSet],
-      caughtPokemonSet: [...stats.caughtPokemonSet],
-      drillStats: { ...stats.drillStats },
-      kanjiStats: { ...stats.kanjiStats },
-      gameStats: { ...stats.gameStats },
+      learnedKanjiSet: Array.isArray(stats.learnedKanjiSet) ? [...stats.learnedKanjiSet] : [],
+      learnedWordsSet: Array.isArray(stats.learnedWordsSet) ? [...stats.learnedWordsSet] : [],
+      caughtPokemonSet: Array.isArray(stats.caughtPokemonSet) ? [...stats.caughtPokemonSet] : [],
+      drillStats: stats.drillStats ? { ...stats.drillStats } : { totalQuestions: 0, totalCorrect: 0 },
+      kanjiStats: stats.kanjiStats ? { ...stats.kanjiStats } : { totalQuestions: 0, totalCorrect: 0 },
+      gameStats: stats.gameStats ? { ...stats.gameStats } : { totalQuestions: 0, totalCorrect: 0 },
       lastUpdated: Date.now()
     };
   }
@@ -192,18 +192,18 @@ export class StatsFactory {
       // Merge arrays with size limits (Issue #3 fix)
       ...this.mergeBoundedArrays(stats1, stats2, logger, metricsCallback),
       
-      // Merge sub-objects
+      // Merge sub-objects (with safety checks)
       drillStats: {
-        totalQuestions: Math.max(stats1.drillStats.totalQuestions, stats2.drillStats.totalQuestions),
-        totalCorrect: Math.max(stats1.drillStats.totalCorrect, stats2.drillStats.totalCorrect)
+        totalQuestions: Math.max(stats1.drillStats?.totalQuestions || 0, stats2.drillStats?.totalQuestions || 0),
+        totalCorrect: Math.max(stats1.drillStats?.totalCorrect || 0, stats2.drillStats?.totalCorrect || 0)
       },
       kanjiStats: {
-        totalQuestions: Math.max(stats1.kanjiStats.totalQuestions, stats2.kanjiStats.totalQuestions),
-        totalCorrect: Math.max(stats1.kanjiStats.totalCorrect, stats2.kanjiStats.totalCorrect)
+        totalQuestions: Math.max(stats1.kanjiStats?.totalQuestions || 0, stats2.kanjiStats?.totalQuestions || 0),
+        totalCorrect: Math.max(stats1.kanjiStats?.totalCorrect || 0, stats2.kanjiStats?.totalCorrect || 0)
       },
       gameStats: {
-        totalQuestions: Math.max(stats1.gameStats.totalQuestions, stats2.gameStats.totalQuestions),
-        totalCorrect: Math.max(stats1.gameStats.totalCorrect, stats2.gameStats.totalCorrect)
+        totalQuestions: Math.max(stats1.gameStats?.totalQuestions || 0, stats2.gameStats?.totalQuestions || 0),
+        totalCorrect: Math.max(stats1.gameStats?.totalCorrect || 0, stats2.gameStats?.totalCorrect || 0)
       },
       
       // Use current timestamp
@@ -264,20 +264,35 @@ export class StatsFactory {
     totalWordsLearned: number;
     pokemonCaught: number;
   } {
-    // Merge kanji arrays
-    const kanjiResult = mergeBoundedArrays(stats1.learnedKanjiSet, stats2.learnedKanjiSet, 'kanji', logger);
+    // Merge kanji arrays (with safety checks)
+    const kanjiResult = mergeBoundedArrays(
+      stats1.learnedKanjiSet || [], 
+      stats2.learnedKanjiSet || [], 
+      'kanji', 
+      logger
+    );
     if (kanjiResult.metrics && metricsCallback) {
       metricsCallback(kanjiResult.metrics);
     }
 
-    // Merge words arrays
-    const wordsResult = mergeBoundedArrays(stats1.learnedWordsSet, stats2.learnedWordsSet, 'words', logger);
+    // Merge words arrays (with safety checks)
+    const wordsResult = mergeBoundedArrays(
+      stats1.learnedWordsSet || [], 
+      stats2.learnedWordsSet || [], 
+      'words', 
+      logger
+    );
     if (wordsResult.metrics && metricsCallback) {
       metricsCallback(wordsResult.metrics);
     }
 
-    // Merge pokemon arrays
-    const pokemonResult = mergeBoundedArrays(stats1.caughtPokemonSet, stats2.caughtPokemonSet, 'pokemon', logger);
+    // Merge pokemon arrays (with safety checks)
+    const pokemonResult = mergeBoundedArrays(
+      stats1.caughtPokemonSet || [], 
+      stats2.caughtPokemonSet || [], 
+      'pokemon', 
+      logger
+    );
     if (pokemonResult.metrics && metricsCallback) {
       metricsCallback(pokemonResult.metrics);
     }
